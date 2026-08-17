@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const formatAmount = (n: number | string | undefined | null) =>
   Number(n || 0).toLocaleString(undefined, {
@@ -26,11 +27,8 @@ const TrialBalance = () => {
   // A trial balance is per currency — debits and credits from two currencies
   // would never balance against each other.
   const [currency, setCurrency] = useState("SAR");
-  const [totals, setTotals] = useState<any>({
-    totalDebits: 0,
-    totalCredits: 0,
-    difference: 0,
-  });
+  // Starts empty, not zeroed — see `summary` below.
+  const [totals, setTotals] = useState<any>({});
   const [loading, setLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -56,23 +54,22 @@ const TrialBalance = () => {
       const response = await getTrialBalanceReport(finalDate, currency);
       if (response && response.data) {
         const root = response.data?.data ?? response.data;
-        const list =
-          root?.accounts ||
-          root?.items ||
-          (Array.isArray(root) ? root : []);
+        const list = root?.accounts || root?.items || (Array.isArray(root) ? root : []);
         setAccounts(Array.isArray(list) ? list : []);
+        // Left undefined when the response omits them, so the summary below can
+        // tell "the ledger says zero" from "the ledger didn't say".
         setTotals({
-          totalDebits: root?.totalDebits ?? 0,
-          totalCredits: root?.totalCredits ?? 0,
-          difference: root?.difference ?? 0,
+          totalDebits: root?.totalDebits,
+          totalCredits: root?.totalCredits,
+          difference: root?.difference,
           currency: root?.currency,
         });
       }
     } catch (error: any) {
       console.error("Error fetching trial balance:", error);
-      toast.error(ledgerErrorMessage(error, t('trialBalance.toast.fetchError')));
+      toast.error(ledgerErrorMessage(error, t("trialBalance.toast.fetchError")));
       setAccounts([]);
-      setTotals({ totalDebits: 0, totalCredits: 0, difference: 0 });
+      setTotals({});
     } finally {
       setLoading(false);
     }
@@ -101,6 +98,18 @@ const TrialBalance = () => {
     });
   }, [accounts, debouncedSearch]);
 
+  // The ledger does not always send the totals block; when it doesn't, add the
+  // rows up here rather than showing 0.00 under a table full of figures.
+  const summary = useMemo(() => {
+    const debits = filteredAccounts.reduce((sum, row) => sum + Number(row.debitBalance || 0), 0);
+    const credits = filteredAccounts.reduce((sum, row) => sum + Number(row.creditBalance || 0), 0);
+    return {
+      totalDebits: totals?.totalDebits ?? debits,
+      totalCredits: totals?.totalCredits ?? credits,
+      difference: totals?.difference ?? debits - credits,
+    };
+  }, [filteredAccounts, totals]);
+
   const totalRows = filteredAccounts.length;
   const totalPage = Math.max(1, Math.ceil(totalRows / pageSize));
 
@@ -121,35 +130,35 @@ const TrialBalance = () => {
 
   const columns = [
     {
-      name: t('trialBalance.col.sNo'),
+      name: t("trialBalance.col.sNo"),
       selector: (row: any) => row.Sr,
       sortable: true,
       width: "70px",
     },
     {
-      name: t('trialBalance.col.accountCode'),
+      name: t("trialBalance.col.accountCode"),
       selector: (row: any) => row.accountCode,
       sortable: true,
     },
     {
-      name: t('trialBalance.col.accountName'),
+      name: t("trialBalance.col.accountName"),
       selector: (row: any) => row.accountName,
       sortable: true,
       wrap: true,
     },
     {
-      name: t('trialBalance.col.accountType'),
+      name: t("trialBalance.col.accountType"),
       selector: (row: any) => row.accountType,
       sortable: true,
     },
     {
-      name: t('trialBalance.col.debitBalance'),
+      name: t("trialBalance.col.debitBalance"),
       selector: (row: any) => `${formatAmount(row.debitBalance)} ${reportCurrency}`,
       sortable: true,
       right: true,
     },
     {
-      name: t('trialBalance.col.creditBalance'),
+      name: t("trialBalance.col.creditBalance"),
       selector: (row: any) => `${formatAmount(row.creditBalance)} ${reportCurrency}`,
       sortable: true,
       right: true,
@@ -158,7 +167,7 @@ const TrialBalance = () => {
 
   const exportToCSV = () => {
     if (!filteredAccounts || filteredAccounts.length === 0) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
     const headers = [
@@ -179,81 +188,74 @@ const TrialBalance = () => {
           row.creditBalance ?? 0,
         ].join(",")
       ),
-      ["", "", "TOTALS", totals.totalDebits, totals.totalCredits].join(","),
-      ["", "", "DIFFERENCE", "", totals.difference].join(","),
+      ["", "", "TOTALS", summary.totalDebits, summary.totalCredits].join(","),
+      ["", "", "DIFFERENCE", "", summary.difference].join(","),
     ].join("\n");
 
     const blob = new Blob([csvLines], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, "trial_balance.csv");
   };
 
-  const isBalanced = Number(totals.difference || 0) === 0;
+  const isBalanced = Number(summary.difference || 0) === 0;
 
   return (
     <>
       {loading && <Loader />}
-      <div className="service p-4">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-            <span className="pro-head-badge">
-              <Scale className="h-4 w-4" />
-            </span>
-            {t('trialBalance.title')}
-          </h3>
-        </div>
+      <div className="service col-12">
+        <ReportHeader icon={<Scale className="h-4 w-4" />} title={t("trialBalance.title")} />
 
         <div className="pro-card p-3 mb-3">
-        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <AntInput
-            allowClear
-            placeholder={t('trialBalance.searchPlaceholder')}
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-          />
-          <DatePicker
-            value={date}
-            onChange={(d) => setDate(d)}
-            format="YYYY-MM-DD"
-            placeholder={t('filter.asOfDate')}
-            style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 2, height: 40 }}
-          />
-          <CurrencySelect value={currency} onChange={setCurrency} />
-          <button
-            type="button"
-            className="theme-btn-next"
-            onClick={exportToCSV}
-            disabled={!filteredAccounts.length}
-            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            {t('action.exportCsv')}
-          </button>
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <AntInput
+              allowClear
+              placeholder={t("trialBalance.searchPlaceholder")}
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+            />
+            <DatePicker
+              value={date}
+              onChange={(d) => setDate(d)}
+              format="YYYY-MM-DD"
+              placeholder={t("filter.asOfDate")}
+              style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 2, height: 40 }}
+            />
+            <CurrencySelect value={currency} onChange={setCurrency} />
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={exportToCSV}
+              disabled={!filteredAccounts.length}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              {t("action.exportCsv")}
+            </button>
+          </div>
         </div>
-      </div>
 
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('trialBalance.summary.totalDebits')}</div>
+              <div style={{ fontSize: 14 }}>{t("trialBalance.summary.totalDebits")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(totals.totalDebits)}{" "}
+                {formatAmount(summary.totalDebits)}{" "}
                 <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('trialBalance.summary.totalCredits')}</div>
+              <div style={{ fontSize: 14 }}>{t("trialBalance.summary.totalCredits")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(totals.totalCredits)}{" "}
+                {formatAmount(summary.totalCredits)}{" "}
                 <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('trialBalance.summary.difference')}</div>
+              <div style={{ fontSize: 14 }}>{t("trialBalance.summary.difference")}</div>
               <div
                 style={{
                   fontSize: 22,
@@ -261,16 +263,14 @@ const TrialBalance = () => {
                   color: isBalanced ? "var(--color-status-green)" : "var(--color-status-red)",
                 }}
               >
-                {formatAmount(totals.difference)}{" "}
+                {formatAmount(summary.difference)}{" "}
                 <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
         </AntRow>
 
-        <div
-          className="pro-card"
-        >
+        <div className="pro-card">
           <TableView
             data={mappedData}
             header={columns}

@@ -4,12 +4,11 @@ import { Activity } from "lucide-react";
 import { Col, DatePicker, Input, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
-import {
-  getDailyTransactionReport,
-} from "../../redux/apis/apisCrudLms";
+import { getDailyTransactionReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const DailyTransactionSummary = () => {
   const { t } = useTranslation("reports");
@@ -52,7 +51,7 @@ const DailyTransactionSummary = () => {
         setSummaryData(responseData && !Array.isArray(responseData) ? responseData : null);
       }
     } catch (error: any) {
-      toast.error(error?.message || t('dailyTransactionSummary.toast.fetchError'));
+      toast.error(error?.message || t("dailyTransactionSummary.toast.fetchError"));
       setAllCallActivity([]);
       setSummaryData(null);
     } finally {
@@ -81,9 +80,7 @@ const DailyTransactionSummary = () => {
 
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
-    return all.filter((row: any) =>
-      String(row.channel).toLowerCase().includes(term)
-    );
+    return all.filter((row: any) => String(row.channel).toLowerCase().includes(term));
   }, [allCallActivity, debouncedSearch]);
 
   // Visible totals derived from the filtered rows
@@ -114,12 +111,12 @@ const DailyTransactionSummary = () => {
 
   const Call_Activity_Header = [
     {
-      name: t('dailyTransactionSummary.col.channelName'),
+      name: t("dailyTransactionSummary.col.channelName"),
       cell: (row: any) => <span className="fw-bold">{row.channel}</span>,
     },
-    { name: t('dailyTransactionSummary.col.transactionCount'), selector: (row: any) => row.count },
+    { name: t("dailyTransactionSummary.col.transactionCount"), selector: (row: any) => row.count },
     {
-      name: t('dailyTransactionSummary.col.totalAmount'),
+      name: t("dailyTransactionSummary.col.totalAmount"),
       cell: (row: any) => (
         <span className="text-primary fw-bold">{formatNumber(row.amount)} SAR</span>
       ),
@@ -128,7 +125,7 @@ const DailyTransactionSummary = () => {
 
   const exportToCSV = () => {
     if (!mappedData.length) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvHeaders = ["Channel Name", "Transaction Count", "Total Amount"];
@@ -145,42 +142,38 @@ const DailyTransactionSummary = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <Activity className="h-4 w-4" />
-          </span>
-          {t('dailyTransactionSummary.title')}
-        </h3>
-      </div>
+      <ReportHeader
+        icon={<Activity className="h-4 w-4" />}
+        title={t("dailyTransactionSummary.title")}
+      />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t('dailyTransactionSummary.searchPlaceholder')}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <DatePicker
-          placeholder={t('dailyTransactionSummary.transactionDatePlaceholder')}
-          value={targetDate}
-          onChange={(d) => setTargetDate(d)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!mappedData.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t('action.exportCsv')}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("dailyTransactionSummary.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <DatePicker
+            placeholder={t("dailyTransactionSummary.transactionDatePlaceholder")}
+            value={targetDate}
+            onChange={(d) => setTargetDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!mappedData.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
@@ -189,7 +182,9 @@ const DailyTransactionSummary = () => {
           {summaryData?.totalCredits != null && (
             <Col xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.totalCredits')}</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("dailyTransactionSummary.summary.totalCredits")}
+                </div>
                 <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {formatNumber(summaryData.totalCredits)} SAR
                 </div>
@@ -199,7 +194,9 @@ const DailyTransactionSummary = () => {
           {summaryData?.totalDebits != null && (
             <Col xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.totalDebits')}</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("dailyTransactionSummary.summary.totalDebits")}
+                </div>
                 <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {formatNumber(summaryData.totalDebits)} SAR
                 </div>
@@ -208,7 +205,9 @@ const DailyTransactionSummary = () => {
           )}
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.transactionCount')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("dailyTransactionSummary.summary.transactionCount")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalCount}
               </div>
@@ -216,7 +215,9 @@ const DailyTransactionSummary = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.channels')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("dailyTransactionSummary.summary.channels")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.channelCount}
               </div>
@@ -225,9 +226,7 @@ const DailyTransactionSummary = () => {
         </Row>
       )}
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

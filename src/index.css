@@ -1,6 +1,6 @@
 /* All @imports must be at the top (CSS spec) */
 @import "./styles/tokens.css";
-@import 'tailwindcss';
+@import "tailwindcss";
 @import "./assets/scss/custom.scss";
 @import "./styles/rtl.css";
 @import "./styles/business-onboarding.css";
@@ -175,6 +175,65 @@ body,
 }
 
 /* ---------------------------------------------------------------------------
+   Report switcher (the reports hub).
+
+   The 27 reports are grouped onto 5 category pages; this strip picks which one
+   is shown. It was a dropdown, which hid the choice — you could not tell there
+   were other reports without opening it. The strip shows every report in the
+   category at a glance and marks the open one.
+
+   Written as real classes rather than utilities on purpose: Bootstrap's
+   utilities are `!important` and would win over identically-named Tailwind ones
+   (`.border`, `.shadow-sm`, `.bg-primary`, `.px-3`), so a utility-built pill
+   would not render as intended.
+--------------------------------------------------------------------------- */
+.report-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+.report-switch__item {
+  appearance: none;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-card);
+  color: var(--muted-foreground);
+  border-radius: 2px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+.report-switch__item:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--surface-border));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface-card));
+  color: var(--foreground);
+}
+.report-switch__item:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  outline-offset: 2px;
+}
+/* The open report: solid emerald so it reads at a glance from across the row. */
+.report-switch__item[aria-selected="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .report-switch__item {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Reusable professional card pattern — emerald-tinted border + subtle shadow,
    a soft emerald glow accent (::before), and a gentle hover lift. Keeps the
    app's 2px corner radius. Use `.pro-card` on any container and
@@ -186,12 +245,14 @@ body,
   background: var(--surface-card);
   border: 1px solid color-mix(in srgb, #10b981 16%, var(--surface-border));
   border-radius: 2px;
-  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05),
+  box-shadow:
+    0 1px 2px rgba(16, 185, 129, 0.05),
     0 8px 20px -16px color-mix(in srgb, #10b981 35%, transparent);
   transition: box-shadow 0.2s ease;
 }
 .pro-card:hover {
-  box-shadow: 0 6px 22px -10px rgba(16, 185, 129, 0.22),
+  box-shadow:
+    0 6px 22px -10px rgba(16, 185, 129, 0.22),
     0 8px 20px -16px rgba(0, 0, 0, 0.18);
 }
 .pro-card::before {
@@ -423,12 +484,14 @@ body,
   position: relative;
   overflow: hidden;
   border-color: color-mix(in srgb, #10b981 16%, var(--surface-border)) !important;
-  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05),
+  box-shadow:
+    0 1px 2px rgba(16, 185, 129, 0.05),
     0 8px 20px -16px color-mix(in srgb, #10b981 35%, transparent) !important;
   transition: box-shadow 0.2s ease;
 }
 .pro-card-glow:hover {
-  box-shadow: 0 6px 22px -10px rgba(16, 185, 129, 0.22),
+  box-shadow:
+    0 6px 22px -10px rgba(16, 185, 129, 0.22),
     0 8px 20px -16px rgba(0, 0, 0, 0.18) !important;
 }
 .pro-card-glow::before {
@@ -450,10 +513,26 @@ body,
 /* Consistent, professional heading scale for the Product Management create/edit
    flow — Bootstrap otherwise oversizes h1–h4 on these pages. Add `pm-create-page`
    to the page root so every step shares the same title sizes. */
-.pm-create-page h1 { font-size: 1.125rem !important; line-height: 1.3 !important; margin: 0 !important; }
-.pm-create-page h2 { font-size: 1rem !important; line-height: 1.3 !important; margin: 0 !important; }
-.pm-create-page h3 { font-size: 0.9375rem !important; line-height: 1.3 !important; margin: 0 !important; }
-.pm-create-page h4 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
+.pm-create-page h1 {
+  font-size: 1.125rem !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+}
+.pm-create-page h2 {
+  font-size: 1rem !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+}
+.pm-create-page h3 {
+  font-size: 0.9375rem !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+}
+.pm-create-page h4 {
+  font-size: 0.875rem !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+}
 
 /* Confirmation dialogs (delete / discard, etc.) — drop the header/footer
    divider lines that the global themed-modal rule adds, since these dialogs
@@ -522,8 +601,12 @@ label:has(> [data-slot="checkbox"]) {
 
 /* Reusable compact dialog — professional, consistent 12px text and 36px fields.
    Add `pro-dialog` to a shadcn DialogContent to apply it. */
-.pro-dialog [data-slot="dialog-title"] { font-size: 15px !important; }
-.pro-dialog [data-slot="dialog-description"] { font-size: 12px !important; }
+.pro-dialog [data-slot="dialog-title"] {
+  font-size: 15px !important;
+}
+.pro-dialog [data-slot="dialog-description"] {
+  font-size: 12px !important;
+}
 .pro-dialog [data-slot="label"],
 .pro-dialog label,
 .pro-dialog label span,
@@ -535,7 +618,9 @@ label:has(> [data-slot="checkbox"]) {
 .pro-dialog [data-slot="button"] {
   font-size: 12px !important;
 }
-.pro-dialog [data-slot="label"] { font-weight: 600; }
+.pro-dialog [data-slot="label"] {
+  font-weight: 600;
+}
 .pro-dialog input:not([type="checkbox"]),
 .pro-dialog [data-slot="select-trigger"] {
   height: 36px !important;
@@ -574,8 +659,9 @@ label:has(> [data-slot="checkbox"]) {
 }
 :root {
   /* Single source of truth for the app's professional font stack */
-  --app-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  --app-font:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
 }
 html,
 body {
@@ -602,7 +688,12 @@ textarea,
 .ant-table,
 [class*="ant-"],
 .btn,
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--app-font);
 }
 html.dark,
@@ -631,16 +722,17 @@ html.dark .surface-card {
   border-radius: 2px;
   box-shadow: var(--surface-elevation-1);
 }
-.surface-divider { border-bottom: 1px solid var(--surface-border); }
+.surface-divider {
+  border-bottom: 1px solid var(--surface-border);
+}
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
-.rounded-md{
+.rounded-md {
   border-radius: 2px;
 }
-.bg-primary-50{
+.bg-primary-50 {
   background-color: rgba(0, 0, 0, 0.05);
 }
 /* Global placeholder color — light gray across all inputs, textareas, and antd fields */
@@ -653,9 +745,9 @@ textarea::placeholder,
   opacity: 1;
 }
 
-input.pl-9{
+input.pl-9 {
   padding-left: 2.25rem !important;
 }
-input.pr-9{
+input.pr-9 {
   padding-right: 2.25rem !important;
 }

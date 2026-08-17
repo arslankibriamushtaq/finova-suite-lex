@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { getAccountBalancesReport } from "../../redux/apis/apisCrudLms";
 import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import ReportHeader from "./ReportHeader";
 
 const formatNumber = (n: any) => {
   if (n === null || n === undefined || n === "") return "-";
@@ -130,14 +131,7 @@ const AccountBalancesReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <Wallet className="h-4 w-4" />
-          </span>
-          {t("accountBalances.title")}
-        </h3>
-      </div>
+      <ReportHeader icon={<Wallet className="h-4 w-4" />} title={t("accountBalances.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">

@@ -8,6 +8,7 @@ import CurrencySelect from "./CurrencySelect";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const CashFlowReport = () => {
   const { t } = useTranslation("reports");
@@ -34,15 +35,15 @@ const CashFlowReport = () => {
 
   const columns = [
     {
-      name: t('cashFlow.col.metric'),
+      name: t("cashFlow.col.metric"),
       selector: (row: any) => row.metric || "-",
     },
     {
-      name: t('cashFlow.col.value'),
+      name: t("cashFlow.col.value"),
       selector: (row: any) => row.value || 0,
       cell: (row: any) => (
         <b>{row.value != null ? `${Number(row.value).toLocaleString()} ${reportCurrency}` : "-"}</b>
-      )
+      ),
     },
   ];
 
@@ -58,10 +59,10 @@ const CashFlowReport = () => {
           // It's a summary object
           setTotals(data);
           const summaryRows = [
-            { metric: t('cashFlow.summary.totalInflows'), value: data.totalInflows },
-            { metric: t('cashFlow.summary.totalOutflows'), value: data.totalOutflows },
-            { metric: t('cashFlow.summary.netPosition'), value: data.netPosition },
-            { metric: t('cashFlow.summary.bankBalance'), value: data.bankBalance },
+            { metric: t("cashFlow.summary.totalInflows"), value: data.totalInflows },
+            { metric: t("cashFlow.summary.totalOutflows"), value: data.totalOutflows },
+            { metric: t("cashFlow.summary.netPosition"), value: data.netPosition },
+            { metric: t("cashFlow.summary.bankBalance"), value: data.bankBalance },
           ];
           setReportData(summaryRows);
           setTotalRows(summaryRows.length);
@@ -79,7 +80,7 @@ const CashFlowReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching cash flow report:", error);
-      toast.error(ledgerErrorMessage(error, t('cashFlow.toast.fetchError')));
+      toast.error(ledgerErrorMessage(error, t("cashFlow.toast.fetchError")));
       setReportData([]);
       setTotals(null);
     } finally {
@@ -89,25 +90,26 @@ const CashFlowReport = () => {
 
   const exportToCSV = () => {
     if (!reportData || reportData.length === 0) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
 
     const headers = ["Metric", "Value", "Currency"];
     const csvContent = [
       headers.join(","),
-      ...reportData.map((item: any) => [
-        `"${item.metric || ""}"`,
-        item.value || 0,
-        reportCurrency,
-      ].join(",")),
+      ...reportData.map((item: any) =>
+        [`"${item.metric || ""}"`, item.value || 0, reportCurrency].join(",")
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Cash_Flow_Report_${(date || dayjs()).format("YYYY_MM_DD")}_${reportCurrency}.csv`);
+    link.setAttribute(
+      "download",
+      `Cash_Flow_Report_${(date || dayjs()).format("YYYY_MM_DD")}_${reportCurrency}.csv`
+    );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -116,15 +118,11 @@ const CashFlowReport = () => {
 
   return (
     <div className="service cash-flow-report-page">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <TrendingUp className="h-4 w-4" />
-          </span>
-          {t('cashFlow.title')}
-          <span className="fs-6 fw-normal text-muted">· {reportCurrency}</span>
-        </h3>
-      </div>
+      <ReportHeader
+        icon={<TrendingUp className="h-4 w-4" />}
+        title={t("cashFlow.title")}
+        suffix={reportCurrency}
+      />
 
       {/* Filters card */}
       <div className="pro-card p-3 mb-3">
@@ -132,8 +130,14 @@ const CashFlowReport = () => {
           <DatePicker
             onChange={(d) => setDate(d)}
             format="YYYY-MM-DD"
-            placeholder={t('common:date')}
-            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2, background: "#fff" }}
+            placeholder={t("common:date")}
+            style={{
+              flex: "1 1 200px",
+              minWidth: 180,
+              height: 40,
+              borderRadius: 2,
+              background: "#fff",
+            }}
           />
           <CurrencySelect value={currency} onChange={setCurrency} />
           <Button
@@ -142,14 +146,14 @@ const CashFlowReport = () => {
             loading={loading}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {t('cashFlow.fetchReport')}
+            {t("cashFlow.fetchReport")}
           </Button>
           <Button
             className="theme-btn-next"
             onClick={exportToCSV}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {t('action.exportCsv')}
+            {t("action.exportCsv")}
           </Button>
         </div>
       </div>
@@ -158,42 +162,52 @@ const CashFlowReport = () => {
         <div className="row mb-3 g-3">
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.totalInflows')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("cashFlow.summary.totalInflows")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.totalInflows?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {totals.totalInflows?.toLocaleString()}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.totalOutflows')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("cashFlow.summary.totalOutflows")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.totalOutflows?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {totals.totalOutflows?.toLocaleString()}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.netPosition')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("cashFlow.summary.netPosition")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.netPosition?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {totals.netPosition?.toLocaleString()}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.bankBalance')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("cashFlow.summary.bankBalance")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.bankBalance?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {totals.bankBalance?.toLocaleString()}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           header={columns}
           setPage={setPage}

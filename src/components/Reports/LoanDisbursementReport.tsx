@@ -7,6 +7,7 @@ import { getLoanDisbursementReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const LoanDisbursementReport = () => {
   const { t } = useTranslation("reports");
@@ -78,7 +79,7 @@ const LoanDisbursementReport = () => {
       );
     } catch (error: any) {
       console.error("Error fetching disbursement report:", error);
-      toast.error(error?.message || t('loanDisbursement.toast.fetchError'));
+      toast.error(error?.message || t("loanDisbursement.toast.fetchError"));
       setReportData([]);
       setTotals(null);
     } finally {
@@ -102,12 +103,23 @@ const LoanDisbursementReport = () => {
   const filteredData = useMemo(() => {
     if (!debouncedSearch) return reportData;
     const term = debouncedSearch.toLowerCase();
-    return reportData.filter((row: any) =>
-      String(row.applicationNumber || "").toLowerCase().includes(term) ||
-      String(row.customerName || row.name || "").toLowerCase().includes(term) ||
-      String(row.productName || row.productCode || "").toLowerCase().includes(term) ||
-      String(row.branchName || row.branch || "").toLowerCase().includes(term) ||
-      String(row.status || "").toLowerCase().includes(term)
+    return reportData.filter(
+      (row: any) =>
+        String(row.applicationNumber || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.customerName || row.name || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.productName || row.productCode || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.branchName || row.branch || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.status || "")
+          .toLowerCase()
+          .includes(term)
     );
   }, [reportData, debouncedSearch]);
 
@@ -131,36 +143,34 @@ const LoanDisbursementReport = () => {
 
   const columns = [
     {
-      name: t('loanDisbursement.col.applicationNo'),
+      name: t("loanDisbursement.col.applicationNo"),
       selector: (row: any) => row.applicationNumber || "-",
     },
     {
-      name: t('loanDisbursement.col.customerName'),
+      name: t("loanDisbursement.col.customerName"),
       selector: (row: any) => row.customerName || row.name || "-",
     },
     {
-      name: t('loanDisbursement.col.disbursementDate'),
+      name: t("loanDisbursement.col.disbursementDate"),
       cell: (row: any) =>
         row.disbursementDate || row.date
           ? dayjs(row.disbursementDate || row.date).format("YYYY-MM-DD")
           : "-",
     },
     {
-      name: t('common:amount'),
-      cell: (row: any) => (
-        <b>{formatNumber(row.amount ?? row.disbursedAmount ?? 0)} SAR</b>
-      ),
+      name: t("common:amount"),
+      cell: (row: any) => <b>{formatNumber(row.amount ?? row.disbursedAmount ?? 0)} SAR</b>,
     },
     {
-      name: t('loanDisbursement.col.product'),
+      name: t("loanDisbursement.col.product"),
       selector: (row: any) => row.productName || row.productCode || "-",
     },
     {
-      name: t('loanDisbursement.col.branch'),
+      name: t("loanDisbursement.col.branch"),
       selector: (row: any) => row.branchName || row.branch || "-",
     },
     {
-      name: t('common:status'),
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -169,9 +179,7 @@ const LoanDisbursementReport = () => {
             fontSize: "12px",
             fontWeight: 500,
             backgroundColor:
-              row.status === "DISBURSED"
-                ? "var(--color-status-green)"
-                : "var(--color-status-blue)",
+              row.status === "DISBURSED" ? "var(--color-status-green)" : "var(--color-status-blue)",
             color: "var(--primary-foreground)",
           }}
         >
@@ -183,10 +191,18 @@ const LoanDisbursementReport = () => {
 
   const exportToCSV = () => {
     if (!filteredData.length) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
-    const headers = ["Application No", "Customer Name", "Date", "Amount", "Product", "Branch", "Status"];
+    const headers = [
+      "Application No",
+      "Customer Name",
+      "Date",
+      "Amount",
+      "Product",
+      "Branch",
+      "Status",
+    ];
     const csvContent = [
       headers.join(","),
       ...filteredData.map((item: any) =>
@@ -217,50 +233,43 @@ const LoanDisbursementReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <Banknote className="h-4 w-4" />
-          </span>
-          {t('loanDisbursement.title')}
-        </h3>
-      </div>
+      <ReportHeader icon={<Banknote className="h-4 w-4" />} title={t("loanDisbursement.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t('loanDisbursement.searchPlaceholder')}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <DatePicker
-          placeholder={t('common:from')}
-          value={fromDate}
-          onChange={(d) => setFromDate(d)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-        />
-        <DatePicker
-          placeholder={t('common:to')}
-          value={toDate}
-          onChange={(d) => setToDate(d)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!filteredData.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t('action.exportCsv')}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("loanDisbursement.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <DatePicker
+            placeholder={t("common:from")}
+            value={fromDate}
+            onChange={(d) => setFromDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <DatePicker
+            placeholder={t("common:to")}
+            value={toDate}
+            onChange={(d) => setToDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!filteredData.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
@@ -268,7 +277,9 @@ const LoanDisbursementReport = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={12}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanDisbursement.summary.totalDisbursedAmount')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("loanDisbursement.summary.totalDisbursedAmount")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalAmount)} SAR
               </div>
@@ -276,7 +287,9 @@ const LoanDisbursementReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={12}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanDisbursement.summary.totalLoanCount')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("loanDisbursement.summary.totalLoanCount")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalCount}
               </div>
@@ -285,9 +298,7 @@ const LoanDisbursementReport = () => {
         </Row>
       )}
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           header={columns}
           setPage={setPage}

@@ -5,12 +5,11 @@ import { DatePicker, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  getWriteOffLoansReport,
-} from "../../redux/apis/apisCrudLms";
+import { getWriteOffLoansReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const WriteOff = () => {
   const { t } = useTranslation("reports");
@@ -89,10 +88,11 @@ const WriteOff = () => {
 
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
-    return all.filter((row: any) =>
-      String(row.loanId).toLowerCase().includes(term) ||
-      String(row.customerId).toLowerCase().includes(term) ||
-      String(formatDate(row.writeOffDate)).toLowerCase().includes(term)
+    return all.filter(
+      (row: any) =>
+        String(row.loanId).toLowerCase().includes(term) ||
+        String(row.customerId).toLowerCase().includes(term) ||
+        String(formatDate(row.writeOffDate)).toLowerCase().includes(term)
     );
   }, [allCallActivity, debouncedSearch]);
 
@@ -142,8 +142,11 @@ const WriteOff = () => {
       return;
     }
     const csvHeaders = [
-      "Loan ID", "Customer ID", "Write Off Date",
-      "Principal Written Off", "Provision Released",
+      "Loan ID",
+      "Customer ID",
+      "Write Off Date",
+      "Principal Written Off",
+      "Provision Released",
     ];
     const csvRows = [csvHeaders.join(",")];
     mappedData.forEach((r: any) => {
@@ -162,49 +165,40 @@ const WriteOff = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <FileX2 className="h-4 w-4" />
-          </span>
-          {t("writeOff.title")}
-        </h3>
-      </div>
+      <ReportHeader icon={<FileX2 className="h-4 w-4" />} title={t("writeOff.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t("writeOff.searchPlaceholder")}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <DatePicker
-          picker="month"
-          placeholder={t("writeOff.period")}
-          value={period}
-          onChange={(date) => setPeriod(date)}
-          format="YYYY-MM"
-          allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!mappedData.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t("action.exportCsv")}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("writeOff.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <DatePicker
+            picker="month"
+            placeholder={t("writeOff.period")}
+            value={period}
+            onChange={(date) => setPeriod(date)}
+            format="YYYY-MM"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!mappedData.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

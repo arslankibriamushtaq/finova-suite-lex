@@ -5,6 +5,7 @@ import { getCollectionsReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const CollectionReport = () => {
   const { t } = useTranslation("reports");
@@ -34,7 +35,7 @@ const CollectionReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching collection report:", error);
-      toast.error(error?.message || t('collection.toast.fetchError'));
+      toast.error(error?.message || t("collection.toast.fetchError"));
       setTotals(null);
     } finally {
       setLoading(false);
@@ -50,7 +51,7 @@ const CollectionReport = () => {
 
   const exportToCSV = () => {
     if (!totals) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
 
@@ -78,32 +79,37 @@ const CollectionReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <HandCoins className="h-4 w-4" />
-          </span>
-          {t('collection.title')}
-        </h3>
-      </div>
+      <ReportHeader icon={<HandCoins className="h-4 w-4" />} title={t("collection.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <DatePicker
-            placeholder={t('common:from')}
+            placeholder={t("common:from")}
             value={fromDate}
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 2, background: "#fff" }}
+            style={{
+              flex: "1 1 240px",
+              minWidth: 200,
+              height: 40,
+              borderRadius: 2,
+              background: "#fff",
+            }}
           />
           <DatePicker
-            placeholder={t('common:to')}
+            placeholder={t("common:to")}
             value={toDate}
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 2, background: "#fff" }}
+            style={{
+              flex: "1 1 240px",
+              minWidth: 200,
+              height: 40,
+              borderRadius: 2,
+              background: "#fff",
+            }}
           />
           <button
             type="button"
@@ -112,7 +118,7 @@ const CollectionReport = () => {
             disabled={loading}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {loading ? t('common:loading') : t('common:refresh')}
+            {loading ? t("common:loading") : t("common:refresh")}
           </button>
           <button
             type="button"
@@ -121,7 +127,7 @@ const CollectionReport = () => {
             disabled={!totals}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {t('action.exportCsv')}
+            {t("action.exportCsv")}
           </button>
         </div>
       </div>
@@ -130,18 +136,19 @@ const CollectionReport = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('collection.summary.totalCollected')}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("collection.summary.totalCollected")}
+              </div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(totals.totalCollected ?? 0)} SAR
               </div>
             </div>
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('collection.summary.onTimeRate')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("collection.summary.onTimeRate")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.onTimeRate ?? 0}%
               </div>
@@ -149,7 +156,9 @@ const CollectionReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('collection.summary.collectionCount')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("collection.summary.collectionCount")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.collectionCount ?? 0}
               </div>
@@ -157,11 +166,7 @@ const CollectionReport = () => {
           </Col>
         </Row>
       ) : (
-        !loading && (
-          <div className="text-center py-5 text-muted">
-            {t('collection.noDataRange')}
-          </div>
-        )
+        !loading && <div className="text-center py-5 text-muted">{t("collection.noDataRange")}</div>
       )}
     </div>
   );

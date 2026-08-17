@@ -10,6 +10,7 @@ import TableView from "../TableView/TableView";
 import CurrencySelect from "./CurrencySelect";
 import { getPortfolioSummaryReport } from "../../redux/apis/apisCrudLms";
 import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import ReportHeader from "./ReportHeader";
 
 const { RangePicker } = DatePicker;
 
@@ -103,15 +104,11 @@ const PortfolioSummaryReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <Briefcase className="h-4 w-4" />
-          </span>
-          {t("portfolioSummary.title")}
-          <span className="fs-6 fw-normal text-muted">· {reportCurrency}</span>
-        </h3>
-      </div>
+      <ReportHeader
+        icon={<Briefcase className="h-4 w-4" />}
+        title={t("portfolioSummary.title")}
+        suffix={reportCurrency}
+      />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">

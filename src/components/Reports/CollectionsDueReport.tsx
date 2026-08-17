@@ -1,14 +1,15 @@
 ﻿import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker } from "antd";
+import { DatePicker, Input } from "antd";
+import { Search } from "lucide-react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  getCollectionsDueReport,
-} from "../../redux/apis/apisCrudLms";
+import { getCollectionsDueReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import { extractReportRows, extractReportTotal } from "../../utils/ledgerErrors";
+import ReportHeader from "./ReportHeader";
 const CollectionsDueReport = () => {
   const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<any>("");
@@ -18,7 +19,19 @@ const CollectionsDueReport = () => {
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const id = useParams();
+
+  // The endpoint takes `search`, so filtering happens server-side — debounced so
+  // we don't fire a request per keystroke.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const handleSubmit = async () => {
     try {
@@ -26,20 +39,21 @@ const CollectionsDueReport = () => {
       // Both dates are required by the ledger; default to the current month
       // rather than firing a call that is guaranteed to 422.
       const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-        .toISOString()
-        .slice(0, 10);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
       const res = await getCollectionsDueReport(
         fromDate || monthStart,
         toDate || now.toISOString().slice(0, 10),
-        { page: page - 1, size: pageSize }
+        { search: debouncedSearch || undefined, page: page - 1, size: pageSize }
       );
       if (res) {
-        const data = res.data.data;
-        setAllCallActivity(data || []);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
+        // collections-due answers with an envelope, not a bare array.
+        const rows = extractReportRows(res?.data?.data);
+        setAllCallActivity(rows);
+        setTotalRows(extractReportTotal(res?.data, rows));
       }
     } catch (error: any) {
+      setAllCallActivity([]);
+      setTotalRows(0);
       toast.error(error?.message);
     } finally {
       setLoading(false);
@@ -57,66 +71,71 @@ const CollectionsDueReport = () => {
     if (amount === null || amount === undefined) return "-";
     return typeof amount === "number" ? amount.toFixed(2) : amount;
   };
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
-      return {
-        customerName: item.customerName ? item.customerName : "-",
-        installmentAmount: item.installmentAmount || item.installmentAmount == 0 ? formatCurrency(item.installmentAmount) : "-",
-        principalDue: item.principalDue || item.principalDue == 0 ? formatCurrency(item.principalDue) : "-",
-        dueDate: formatDate(item.dueDate ? item.dueDate : "_"),
-        profitDue: item.profitDue || item.profitDue == 0 ? formatCurrency(item.profitDue) : "-",
-        penaltyDue: item.penaltyDue || item.penaltyDue == 0 ? formatCurrency(item.penaltyDue) : "-",
-        totalAmountDue: item.totalAmountDue || item.totalAmountDue == 0 ? formatCurrency(item.totalAmountDue) : "-",
-        daysPastDue: item.daysPastDue ? item.daysPastDue : "-",
-      };
-    });
+  const mappedData = (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
+    return {
+      customerName: item.customerName ? item.customerName : "-",
+      installmentAmount:
+        item.installmentAmount || item.installmentAmount == 0
+          ? formatCurrency(item.installmentAmount)
+          : "-",
+      principalDue:
+        item.principalDue || item.principalDue == 0 ? formatCurrency(item.principalDue) : "-",
+      dueDate: formatDate(item.dueDate ? item.dueDate : "_"),
+      profitDue: item.profitDue || item.profitDue == 0 ? formatCurrency(item.profitDue) : "-",
+      penaltyDue: item.penaltyDue || item.penaltyDue == 0 ? formatCurrency(item.penaltyDue) : "-",
+      totalAmountDue:
+        item.totalAmountDue || item.totalAmountDue == 0 ? formatCurrency(item.totalAmountDue) : "-",
+      daysPastDue: item.daysPastDue ? item.daysPastDue : "-",
+    };
+  });
 
+  // One fetch effect covering every input. There used to be a second one keyed
+  // on both dates, which meant picking only a To date never refetched.
   useEffect(() => {
     handleSubmit();
-    return () => { };
-  }, [id, page, pageSize, fromDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, page, pageSize, fromDate, toDate, debouncedSearch]);
+
   const Call_Activity_Header = [
     {
-      name: t('collectionsDue.col.customer'),
+      name: t("collectionsDue.col.customer"),
       cell: (row: any) => row.customerName,
     },
     {
-      name: t('collectionsDue.col.installmentAmount'),
+      name: t("collectionsDue.col.installmentAmount"),
       selector: (row: { installmentAmount: any }) => row.installmentAmount,
     },
     {
-      name: t('collectionsDue.col.principalDue'),
+      name: t("collectionsDue.col.principalDue"),
       selector: (row: { principalDue: any }) => row.principalDue,
     },
     {
-      name: t('collectionsDue.col.profitDue'),
+      name: t("collectionsDue.col.profitDue"),
       selector: (row: { profitDue: any }) => row.profitDue,
     },
     {
-      name: t('collectionsDue.col.penaltyDue'),
+      name: t("collectionsDue.col.penaltyDue"),
       selector: (row: { penaltyDue: any }) => row.penaltyDue,
     },
     {
-      name: t('collectionsDue.col.totalAmountDue'),
+      name: t("collectionsDue.col.totalAmountDue"),
       selector: (row: { totalAmountDue: any }) => row.totalAmountDue,
     },
     {
-      name: t('collectionsDue.col.daysPastDue'),
+      name: t("collectionsDue.col.daysPastDue"),
       selector: (row: { daysPastDue: any }) => row.daysPastDue,
     },
     {
-      name: t('collectionsDue.col.dueDate'),
+      name: t("collectionsDue.col.dueDate"),
       selector: (row: { dueDate: any }) => row.dueDate,
     },
   ];
 
-  useEffect(() => {
-    if (fromDate && toDate) {
-      handleSubmit();
-    }
-  }, [fromDate, toDate]);
   const exportToCSV = (data: any[], fileName: string) => {
+    if (!Array.isArray(data) || data.length === 0) {
+      toast.error(t("toast.noExportData"));
+      return;
+    }
     const csvRows = [];
     const headers = Object.keys(data[0]); // Assuming all objects have the same keys
     csvRows.push(headers.join(",")); // Join header row with commas
@@ -134,128 +153,85 @@ const CollectionsDueReport = () => {
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
   };
+  // antd hands back a dayjs object, or null when the field is cleared.
   const handleFromDateChange = (date: any) => {
-    const dateFrom = dayjs(date);
-    if (dateFrom) {
-      const formattedDate = dateFrom.format("YYYY-MM-DDTHH:mm:ss");
-      setFromDate(formattedDate);
-    } else {
-      setFromDate(null); // Handle case when date is cleared
-    }
+    setFromDate(date ? date.format("YYYY-MM-DDTHH:mm:ss") : "");
+    setPage(1);
   };
 
-  // Handle "to" date change
-  const handleToDateChange = (date: any | null) => {
-    const dateTo = dayjs(date);
-    if (dateTo) {
-      const formattedDate = dateTo.format("YYYY-MM-DDTHH:mm:ss");
-      setToDate(formattedDate);
-    } else {
-      setToDate(null); // Handle case when date is cleared
-    }
+  const handleToDateChange = (date: any) => {
+    setToDate(date ? date.format("YYYY-MM-DDTHH:mm:ss") : "");
+    setPage(1);
   };
 
   return (
-    <>
-      <div className="col-12">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">{t('collectionsDue.title')}</h3>
-        </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                {t('common:from')}
-              </label>
-              <DatePicker
-                onChange={(e: any) => {
-                  handleFromDateChange(e);
-                }}
-                placeholder={t('collectionsDue.selectFromDate')}
-              />
-            </div>
+    <div className="service col-12">
+      <ReportHeader title={t("collectionsDue.title")} />
 
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                {t('common:to')}
-              </label>
-              <DatePicker
-                onChange={handleToDateChange}
-                placeholder={t('collectionsDue.selectToDate')}
-              />
-            </div>
-
-            {/* Voucher Type Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-                    <Select id="voucherType" /> */}
-              <button
-                className="invoice-btn bg-dark mt-4 "
-                onClick={() => {
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                {t('common:clear')}
-              </button>
-            </div>
-
-            {/* Account Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
-            </div>
-          </div>
-          <div className="col-md-3 mt-3">
-            {/* <button
-              className="mt-2 theme-btn-next bg-dark"
-              onClick={() => {
-                setFromDate("");
-                setToDate("");
-              }}
-            >
-              Clear
-            </button> */}
-          </div>
-          <div className="col-2 text-end">
-            <button
-              className="invoice-btn mt-4 bg-dark"
-              onClick={() => {
-                exportToCSV(allCallActivity, "OverDueLoans");
-              }}
-            >
-              {t('action.exportCsv')}
-            </button>
-          </div>
-        </div>
-        <div
-          className="bg-white"
-          style={{
-            borderRadius: 2,
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-            border: "1px solid var(--border)",
-            overflow: "hidden",
-          }}
-        >
-          <TableView
-            setPage={setPage}
-            setPageSize={setPageSize}
-            totalRows={totalRows}
-            header={Call_Activity_Header}
-            data={mappedData}
-            isLoading={loading}
+      <div className="pro-card p-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder={t("collectionsDue.searchPlaceholder")}
+            prefix={<Search size={14} style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
+          <DatePicker
+            placeholder={t("common:from")}
+            value={fromDate ? dayjs(fromDate) : null}
+            onChange={handleFromDateChange}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <DatePicker
+            placeholder={t("common:to")}
+            value={toDate ? dayjs(toDate) : null}
+            onChange={handleToDateChange}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={handleSubmit}
+            disabled={loading}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {loading ? t("common:loading") : t("common:refresh")}
+          </button>
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={() => exportToCSV(mappedData, "CollectionsDue")}
+            disabled={!mappedData.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
-      {/* <TableView /> */}
-    </>
+      <div className="pro-card">
+        <TableView
+          setPage={setPage}
+          setPageSize={setPageSize}
+          page={page}
+          pageSize={pageSize}
+          totalRows={totalRows}
+          totalPage={Math.max(1, Math.ceil(totalRows / pageSize))}
+          from={totalRows > 0 ? (page - 1) * pageSize + 1 : 0}
+          to={Math.min(page * pageSize, totalRows)}
+          header={Call_Activity_Header}
+          data={mappedData}
+          isLoading={loading}
+          paginationShow={true}
+        />
+      </div>
+    </div>
   );
 };
 

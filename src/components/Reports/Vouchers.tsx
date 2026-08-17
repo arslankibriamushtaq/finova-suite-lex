@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
 import { ReceiptText } from "lucide-react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -35,6 +35,7 @@ import {
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 const Vouchers = () => {
   const { t } = useTranslation("reports");
   const [modal, setModal] = useState(false);
@@ -568,14 +569,7 @@ const Vouchers = () => {
   return (
     <>
       <div className="service vouchers-page">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-            <span className="pro-head-badge">
-              <ReceiptText className="h-4 w-4" />
-            </span>
-            {t("vouchers.title")}
-          </h3>
-        </div>
+        <ReportHeader icon={<ReceiptText className="h-4 w-4" />} title={t("vouchers.title")} />
 
         {/* Filters card */}
         <div className="pro-card p-3 mb-3">
@@ -680,7 +674,7 @@ const Vouchers = () => {
                     {t("vouchers.summary.dateRange")}
                   </div>
                   <div className="mt-2" style={{ fontSize: 14, fontWeight: 600 }}>
-                    {summary.fromDate} → {summary.toDate}
+                    {summary.fromDate} â†’ {summary.toDate}
                   </div>
                 </div>
               </AntCol>
@@ -1232,7 +1226,6 @@ const Vouchers = () => {
           }}
         </Formik>
       </Modal>
-      {/* <TableView /> */}
     </>
   );
 };

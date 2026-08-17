@@ -8,6 +8,7 @@ import { getOverdueLoansReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const OverDue = () => {
   const { t } = useTranslation("reports");
@@ -82,9 +83,7 @@ const OverDue = () => {
 
       setRows(combined);
       const inner = firstParsed.inner;
-      setSummary(
-        inner && typeof inner === "object" && !Array.isArray(inner) ? inner : null
-      );
+      setSummary(inner && typeof inner === "object" && !Array.isArray(inner) ? inner : null);
     } catch (error: any) {
       console.error("Error fetching overdue loans:", error);
       toast.error(error?.message || t("overDue.toast.fetchError"));
@@ -122,7 +121,8 @@ const OverDue = () => {
       principalOverdue: item.principalOverdue ?? null,
       profitOverdue: item.profitOverdue ?? null,
       penaltyAmount: item.penaltyAmount ?? null,
-      totalOverdue: item.totalOverdue ?? item.overdueAmount ?? item.amountOverdue ?? item.amount ?? null,
+      totalOverdue:
+        item.totalOverdue ?? item.overdueAmount ?? item.amountOverdue ?? item.amount ?? null,
       daysPastDue: item.daysPastDue ?? item.dpd ?? null,
       dpdBucket: item.dpdBucket || null,
       oldestUnpaidDate: item.oldestUnpaidDate || item.dueDate || item.nextDueDate || null,
@@ -132,14 +132,29 @@ const OverDue = () => {
 
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
-    return all.filter((row: any) =>
-      String(row.loanAccountNumber || "").toLowerCase().includes(term) ||
-      String(row.customerId || "").toLowerCase().includes(term) ||
-      String(row.customerName || "").toLowerCase().includes(term) ||
-      String(row.nationalId || "").toLowerCase().includes(term) ||
-      String(row.productName || "").toLowerCase().includes(term) ||
-      String(row.dpdBucket || "").toLowerCase().includes(term) ||
-      String(row.status || "").toLowerCase().includes(term)
+    return all.filter(
+      (row: any) =>
+        String(row.loanAccountNumber || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.customerId || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.customerName || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.nationalId || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.productName || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.dpdBucket || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.status || "")
+          .toLowerCase()
+          .includes(term)
     );
   }, [rows, debouncedSearch]);
 
@@ -171,11 +186,16 @@ const OverDue = () => {
 
   const dpdBucketColor = (bucket: string | null) => {
     switch (String(bucket || "")) {
-      case "1-30": return "#FAB65E";
-      case "31-60": return "#F87E3D";
-      case "61-90": return "#F85F54";
-      case "90+":   return "#B71C1C";
-      default:      return "#959595";
+      case "1-30":
+        return "#FAB65E";
+      case "31-60":
+        return "#F87E3D";
+      case "61-90":
+        return "#F85F54";
+      case "90+":
+        return "#B71C1C";
+      default:
+        return "#959595";
     }
   };
 
@@ -205,25 +225,19 @@ const OverDue = () => {
     },
     {
       name: t("overDue.col.principalOverdue"),
-      cell: (row: any) => (
-        <span>{formatNumber(row.principalOverdue)}</span>
-      ),
+      cell: (row: any) => <span>{formatNumber(row.principalOverdue)}</span>,
       sortable: true,
       width: "150px",
     },
     {
       name: t("overDue.col.profitOverdue"),
-      cell: (row: any) => (
-        <span>{formatNumber(row.profitOverdue)}</span>
-      ),
+      cell: (row: any) => <span>{formatNumber(row.profitOverdue)}</span>,
       sortable: true,
       width: "140px",
     },
     {
       name: t("overDue.col.penalty"),
-      cell: (row: any) => (
-        <span>{formatNumber(row.penaltyAmount)}</span>
-      ),
+      cell: (row: any) => <span>{formatNumber(row.penaltyAmount)}</span>,
       sortable: true,
       width: "120px",
     },
@@ -231,7 +245,9 @@ const OverDue = () => {
       name: t("overDue.col.totalOverdue"),
       cell: (row: any) => (
         <span style={{ fontWeight: 600 }}>
-          {row.totalOverdue != null ? `${formatNumber(row.totalOverdue)} ${row.currency || ""}`.trim() : "-"}
+          {row.totalOverdue != null
+            ? `${formatNumber(row.totalOverdue)} ${row.currency || ""}`.trim()
+            : "-"}
         </span>
       ),
       sortable: true,
@@ -296,10 +312,20 @@ const OverDue = () => {
       return;
     }
     const csvHeaders = [
-      "Loan Account No", "Customer ID", "Customer Name", "National ID",
-      "Product", "Principal Overdue", "Profit Overdue", "Penalty",
-      "Total Overdue", "Currency", "Days Past Due", "DPD Bucket",
-      "Oldest Unpaid Date", "Status",
+      "Loan Account No",
+      "Customer ID",
+      "Customer Name",
+      "National ID",
+      "Product",
+      "Principal Overdue",
+      "Profit Overdue",
+      "Penalty",
+      "Total Overdue",
+      "Currency",
+      "Days Past Due",
+      "DPD Bucket",
+      "Oldest Unpaid Date",
+      "Status",
     ];
     const csvRows = [csvHeaders.join(",")];
     mappedAndFiltered.forEach((row: any) => {
@@ -327,34 +353,27 @@ const OverDue = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <CalendarX className="h-4 w-4" />
-          </span>
-          {t("overDue.title")}
-        </h3>
-      </div>
+      <ReportHeader icon={<CalendarX className="h-4 w-4" />} title={t("overDue.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t("overDue.searchPlaceholder")}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!mappedAndFiltered.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t("action.exportCsv")}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("overDue.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!mappedAndFiltered.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
@@ -380,11 +399,10 @@ const OverDue = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("overDue.summary.totalOverdue")}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("overDue.summary.totalOverdue")}
+              </div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalOverdueAmount)}
               </div>
             </div>
@@ -392,9 +410,7 @@ const OverDue = () => {
         </Row>
       )}
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           header={headers}
           data={paginated}

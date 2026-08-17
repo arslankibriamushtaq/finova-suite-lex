@@ -8,6 +8,7 @@ import { getLoanBalanceReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const LoanBalanceReport = () => {
   const { t } = useTranslation("reports");
@@ -62,12 +63,10 @@ const LoanBalanceReport = () => {
       console.log("[LoanBalance] response =", root, "â†’ rows:", list.length);
 
       setItems(list);
-      setSummary(
-        inner && typeof inner === "object" && !Array.isArray(inner) ? inner : null
-      );
+      setSummary(inner && typeof inner === "object" && !Array.isArray(inner) ? inner : null);
     } catch (error: any) {
       console.error("Error fetching loan balance report:", error);
-      toast.error(error?.message || t('loanBalance.toast.fetchError'));
+      toast.error(error?.message || t("loanBalance.toast.fetchError"));
       setItems([]);
       setSummary(null);
     } finally {
@@ -95,12 +94,23 @@ const LoanBalanceReport = () => {
   const filtered = useMemo(() => {
     if (!debouncedSearch) return items;
     const term = debouncedSearch.toLowerCase();
-    return items.filter((item: any) =>
-      String(item.loanAccountNumber || "").toLowerCase().includes(term) ||
-      String(item.customerId || "").toLowerCase().includes(term) ||
-      String(item.customerName || "").toLowerCase().includes(term) ||
-      String(item.productName || "").toLowerCase().includes(term) ||
-      String(item.loanStatus || "").toLowerCase().includes(term)
+    return items.filter(
+      (item: any) =>
+        String(item.loanAccountNumber || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(item.customerId || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(item.customerName || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(item.productName || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(item.loanStatus || "")
+          .toLowerCase()
+          .includes(term)
     );
   }, [items, debouncedSearch]);
 
@@ -117,8 +127,7 @@ const LoanBalanceReport = () => {
         totalCount: acc.totalCount + 1,
         totalPrincipalOutstanding:
           acc.totalPrincipalOutstanding + Number(r.principalOutstanding ?? 0),
-        totalProfitOutstanding:
-          acc.totalProfitOutstanding + Number(r.profitOutstanding ?? 0),
+        totalProfitOutstanding: acc.totalProfitOutstanding + Number(r.profitOutstanding ?? 0),
         totalPenaltiesOutstanding:
           acc.totalPenaltiesOutstanding + Number(r.penaltiesOutstanding ?? 0),
       }),
@@ -141,71 +150,61 @@ const LoanBalanceReport = () => {
 
   const columns = [
     {
-      name: t('loanBalance.col.loanAccountNo'),
+      name: t("loanBalance.col.loanAccountNo"),
       selector: (row: any) => row.loanAccountNumber || "-",
       sortable: true,
       width: "170px",
     },
     {
-      name: t('loanBalance.col.customer'),
+      name: t("loanBalance.col.customer"),
       selector: (row: any) => row.customerName || row.customerId || "-",
       sortable: true,
       grow: 2,
     },
     {
-      name: t('loanBalance.col.product'),
+      name: t("loanBalance.col.product"),
       selector: (row: any) => row.productName || "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: t('loanBalance.col.disbursedAmount'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.disbursedAmount)}</span>
-      ),
+      name: t("loanBalance.col.disbursedAmount"),
+      cell: (row: any) => <span>{formatNumber(row.disbursedAmount)}</span>,
       sortable: true,
       width: "150px",
     },
     {
-      name: t('loanBalance.col.totalPaid'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.totalPaid)}</span>
-      ),
+      name: t("loanBalance.col.totalPaid"),
+      cell: (row: any) => <span>{formatNumber(row.totalPaid)}</span>,
       sortable: true,
       width: "130px",
     },
     {
-      name: t('loanBalance.col.principalOs'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.principalOutstanding)}</span>
-      ),
+      name: t("loanBalance.col.principalOs"),
+      cell: (row: any) => <span>{formatNumber(row.principalOutstanding)}</span>,
       sortable: true,
       width: "140px",
     },
     {
-      name: t('loanBalance.col.profitOs'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.profitOutstanding)}</span>
-      ),
+      name: t("loanBalance.col.profitOs"),
+      cell: (row: any) => <span>{formatNumber(row.profitOutstanding)}</span>,
       sortable: true,
       width: "130px",
     },
     {
-      name: t('loanBalance.col.penaltiesOs'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.penaltiesOutstanding)}</span>
-      ),
+      name: t("loanBalance.col.penaltiesOs"),
+      cell: (row: any) => <span>{formatNumber(row.penaltiesOutstanding)}</span>,
       sortable: true,
       width: "140px",
     },
     {
-      name: t('loanBalance.col.nextDueDate'),
+      name: t("loanBalance.col.nextDueDate"),
       selector: (row: any) => formatDate(row.nextDueDate),
       sortable: true,
       width: "130px",
     },
     {
-      name: t('common:status'),
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.loanStatus || "-";
         const color = (() => {
@@ -243,20 +242,36 @@ const LoanBalanceReport = () => {
 
   const exportToCSV = () => {
     if (!filtered.length) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvHeaders = [
-      "Loan Account No", "Customer ID", "Customer Name", "Product",
-      "Disbursed Amount", "Total Paid", "Principal Outstanding",
-      "Profit Outstanding", "Penalties Outstanding", "Next Due Date", "Status",
+      "Loan Account No",
+      "Customer ID",
+      "Customer Name",
+      "Product",
+      "Disbursed Amount",
+      "Total Paid",
+      "Principal Outstanding",
+      "Profit Outstanding",
+      "Penalties Outstanding",
+      "Next Due Date",
+      "Status",
     ];
     const csvRows = [csvHeaders.join(",")];
     filtered.forEach((item: any) => {
       const values = [
-        item.loanAccountNumber, item.customerId, item.customerName, item.productName,
-        item.disbursedAmount, item.totalPaid, item.principalOutstanding,
-        item.profitOutstanding, item.penaltiesOutstanding, item.nextDueDate, item.loanStatus,
+        item.loanAccountNumber,
+        item.customerId,
+        item.customerName,
+        item.productName,
+        item.disbursedAmount,
+        item.totalPaid,
+        item.principalOutstanding,
+        item.profitOutstanding,
+        item.penaltiesOutstanding,
+        item.nextDueDate,
+        item.loanStatus,
       ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
       csvRows.push(values.join(","));
     });
@@ -266,34 +281,27 @@ const LoanBalanceReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <Scale className="h-4 w-4" />
-          </span>
-          {t('loanBalance.title')}
-        </h3>
-      </div>
+      <ReportHeader icon={<Scale className="h-4 w-4" />} title={t("loanBalance.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t('loanBalance.searchPlaceholder')}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!filtered.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t('action.exportCsv')}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("loanBalance.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!filtered.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
@@ -301,7 +309,9 @@ const LoanBalanceReport = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.totalLoans')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("loanBalance.summary.totalLoans")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalCount}
               </div>
@@ -309,7 +319,9 @@ const LoanBalanceReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.principalOutstanding')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("loanBalance.summary.principalOutstanding")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalPrincipalOutstanding)} SAR
               </div>
@@ -317,7 +329,9 @@ const LoanBalanceReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.profitOutstanding')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("loanBalance.summary.profitOutstanding")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalProfitOutstanding)} SAR
               </div>
@@ -325,7 +339,9 @@ const LoanBalanceReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.penaltiesOutstanding')}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("loanBalance.summary.penaltiesOutstanding")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalPenaltiesOutstanding)} SAR
               </div>
@@ -334,9 +350,7 @@ const LoanBalanceReport = () => {
         </Row>
       )}
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           header={columns}
           data={paginated}

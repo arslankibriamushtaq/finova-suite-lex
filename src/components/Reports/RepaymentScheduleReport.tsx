@@ -8,6 +8,7 @@ import { getRepaymentScheduleReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const formatNumber = (n: any) => {
   if (n === null || n === undefined || n === "") return "-";
@@ -90,11 +91,20 @@ const RepaymentScheduleReport = () => {
 
   const filteredLoans = useMemo(() => {
     if (!debouncedSearch) return loans;
-    return loans.filter((row: any) =>
-      String(row.loanAccountNumber || "").toLowerCase().includes(debouncedSearch) ||
-      String(row.productName || "").toLowerCase().includes(debouncedSearch) ||
-      String(row.customerName || "").toLowerCase().includes(debouncedSearch) ||
-      String(row.loanId || "").toLowerCase().includes(debouncedSearch)
+    return loans.filter(
+      (row: any) =>
+        String(row.loanAccountNumber || "")
+          .toLowerCase()
+          .includes(debouncedSearch) ||
+        String(row.productName || "")
+          .toLowerCase()
+          .includes(debouncedSearch) ||
+        String(row.customerName || "")
+          .toLowerCase()
+          .includes(debouncedSearch) ||
+        String(row.loanId || "")
+          .toLowerCase()
+          .includes(debouncedSearch)
     );
   }, [loans, debouncedSearch]);
 
@@ -216,41 +226,39 @@ const RepaymentScheduleReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <CalendarDays className="h-4 w-4" />
-          </span>
-          {t("repaymentSchedule.title")}
-        </h3>
-      </div>
+      <ReportHeader
+        icon={<CalendarDays className="h-4 w-4" />}
+        title={t("repaymentSchedule.title")}
+      />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t("repaymentSchedule.searchPlaceholder")}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!filteredLoans.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t("action.exportCsv")}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("repaymentSchedule.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!filteredLoans.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
       <Row gutter={[16, 16]} className="mb-3">
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.totalLoans")}</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>
+              {t("repaymentSchedule.summary.totalLoans")}
+            </div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
               {totalRows.toLocaleString()}
             </div>
@@ -258,7 +266,9 @@ const RepaymentScheduleReport = () => {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.disbursedPrincipal")}</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>
+              {t("repaymentSchedule.summary.disbursedPrincipal")}
+            </div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
               {formatNumber(visibleTotals.disbursedPrincipal)}{" "}
               <span style={{ fontSize: 14 }}>SAR</span>
@@ -267,27 +277,27 @@ const RepaymentScheduleReport = () => {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.totalProfit")}</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>
+              {t("repaymentSchedule.summary.totalProfit")}
+            </div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-              {formatNumber(visibleTotals.totalProfit)}{" "}
-              <span style={{ fontSize: 14 }}>SAR</span>
+              {formatNumber(visibleTotals.totalProfit)} <span style={{ fontSize: 14 }}>SAR</span>
             </div>
           </div>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.totalPayable")}</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>
+              {t("repaymentSchedule.summary.totalPayable")}
+            </div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-              {formatNumber(visibleTotals.totalPayable)}{" "}
-              <span style={{ fontSize: 14 }}>SAR</span>
+              {formatNumber(visibleTotals.totalPayable)} <span style={{ fontSize: 14 }}>SAR</span>
             </div>
           </div>
         </Col>
       </Row>
 
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

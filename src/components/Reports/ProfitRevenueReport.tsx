@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const formatAmount = (n: number | string | undefined | null) =>
   Number(n || 0).toLocaleString(undefined, {
@@ -20,7 +21,7 @@ const formatAmount = (n: number | string | undefined | null) =>
 const ProfitRevenueReport = () => {
   const { t } = useTranslation("reports");
   const [period, setPeriod] = useState<any>(null);
-  // Profit is reported in one currency at a time — never summed across them.
+  // Profit is reported in one currency at a time â€” never summed across them.
   const [currency, setCurrency] = useState("SAR");
   const [loading, setLoading] = useState(false);
   const [responseData, setResponseData] = useState<any>(null);
@@ -70,7 +71,7 @@ const ProfitRevenueReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching profit revenue report:", error);
-      toast.error(ledgerErrorMessage(error, t('profitRevenue.toast.fetchError')));
+      toast.error(ledgerErrorMessage(error, t("profitRevenue.toast.fetchError")));
       setResponseData(null);
       setItems([]);
     } finally {
@@ -87,7 +88,9 @@ const ProfitRevenueReport = () => {
     if (!debouncedSearch) return items;
     return items.filter((row: any) => {
       return Object.values(row || {}).some((v) =>
-        String(v ?? "").toLowerCase().includes(debouncedSearch)
+        String(v ?? "")
+          .toLowerCase()
+          .includes(debouncedSearch)
       );
     });
   }, [items, debouncedSearch]);
@@ -110,7 +113,7 @@ const ProfitRevenueReport = () => {
   const columns = useMemo(() => {
     const base = [
       {
-        name: t('profitRevenue.col.sNo'),
+        name: t("profitRevenue.col.sNo"),
         selector: (row: any) => row.Sr,
         sortable: true,
         width: "70px",
@@ -176,21 +179,14 @@ const ProfitRevenueReport = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="service p-4">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-            <span className="pro-head-badge">
-              <TrendingUp className="h-4 w-4" />
-            </span>
-            {t('profitRevenue.title')}
-          </h3>
-        </div>
+      <div className="service col-12">
+        <ReportHeader icon={<TrendingUp className="h-4 w-4" />} title={t("profitRevenue.title")} />
 
         <div className="pro-card p-3 mb-3">
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <AntInput
               allowClear
-              placeholder={t('common:search')}
+              placeholder={t("common:search")}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -201,8 +197,14 @@ const ProfitRevenueReport = () => {
               onChange={(d) => setPeriod(d)}
               picker="month"
               format="YYYY-MM"
-              placeholder={t('profitRevenue.periodPlaceholder')}
-              style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40, background: "#fff" }}
+              placeholder={t("profitRevenue.periodPlaceholder")}
+              style={{
+                flex: "1 1 180px",
+                minWidth: 160,
+                borderRadius: 2,
+                height: 40,
+                background: "#fff",
+              }}
             />
             <CurrencySelect value={currency} onChange={setCurrency} />
             <button
@@ -212,7 +214,7 @@ const ProfitRevenueReport = () => {
               disabled={!responseData}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              {t('action.exportCsv')}
+              {t("action.exportCsv")}
             </button>
           </div>
         </div>
@@ -220,34 +222,35 @@ const ProfitRevenueReport = () => {
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.profitEarned')}</div>
+              <div style={{ fontSize: 14 }}>{t("profitRevenue.summary.profitEarned")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(responseData?.profitEarned)} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {formatAmount(responseData?.profitEarned)}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.profitCollected')}</div>
+              <div style={{ fontSize: 14 }}>{t("profitRevenue.summary.profitCollected")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(responseData?.profitCollected)} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {formatAmount(responseData?.profitCollected)}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.accruedProfit')}</div>
+              <div style={{ fontSize: 14 }}>{t("profitRevenue.summary.accruedProfit")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(responseData?.accruedProfit)} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
+                {formatAmount(responseData?.accruedProfit)}{" "}
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
         </AntRow>
 
         {items.length > 0 && (
-          <div
-            className="pro-card"
-          >
+          <div className="pro-card">
             <TableView
               data={mappedData}
               header={columns}

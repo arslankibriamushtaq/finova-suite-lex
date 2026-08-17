@@ -8,6 +8,7 @@ import { getNplReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const PerformingLoans = () => {
   const { t } = useTranslation("reports");
@@ -59,7 +60,9 @@ const PerformingLoans = () => {
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
     return all.filter((row: any) =>
-      String(row.bucket || "").toLowerCase().includes(term)
+      String(row.bucket || "")
+        .toLowerCase()
+        .includes(term)
     );
   }, [reportData, debouncedSearch]);
 
@@ -81,11 +84,7 @@ const PerformingLoans = () => {
     },
     {
       name: t("performingLoans.col.outstandingAmount"),
-      cell: (row: any) => (
-        <span>
-          {formatNumber(row.outstanding)} SAR
-        </span>
-      ),
+      cell: (row: any) => <span>{formatNumber(row.outstanding)} SAR</span>,
       sortable: true,
     },
   ];
@@ -108,51 +107,47 @@ const PerformingLoans = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <AlertTriangle className="h-4 w-4" />
-          </span>
-          {t("performingLoans.title")}
-        </h3>
-      </div>
+      <ReportHeader
+        icon={<AlertTriangle className="h-4 w-4" />}
+        title={t("performingLoans.title")}
+      />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <Input
-          allowClear
-          placeholder={t("performingLoans.searchPlaceholder")}
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-        />
-        <DatePicker
-          placeholder={t("filter.asOfDate")}
-          value={asOfDate}
-          onChange={(d) => setAsOfDate(d)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {loading ? t("common:loading") : t("common:refresh")}
-        </button>
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!buckets.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {t("action.exportCsv")}
-        </button>
+          <Input
+            allowClear
+            placeholder={t("performingLoans.searchPlaceholder")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <DatePicker
+            placeholder={t("filter.asOfDate")}
+            value={asOfDate}
+            onChange={(d) => setAsOfDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={handleSubmit}
+            disabled={loading}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {loading ? t("common:loading") : t("common:refresh")}
+          </button>
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!buckets.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {t("action.exportCsv")}
+          </button>
         </div>
       </div>
 
@@ -160,40 +155,39 @@ const PerformingLoans = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.totalOutstanding")}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("performingLoans.summary.totalOutstanding")}
+              </div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(reportData.totalOutstanding)} SAR
               </div>
             </div>
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.nplOutstanding")}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("performingLoans.summary.nplOutstanding")}
+              </div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(reportData.nplOutstanding)} SAR
               </div>
             </div>
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.nplRatio")}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("performingLoans.summary.nplRatio")}
+              </div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {reportData.nplRatio ?? 0}%
               </div>
             </div>
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.filteredBuckets")}</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {t("performingLoans.summary.filteredBuckets")}
+              </div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.bucketCount}
               </div>
@@ -210,8 +204,8 @@ const PerformingLoans = () => {
           totalRows={buckets.length}
           pageSize={buckets.length || 10}
           page={1}
-          setPage={() => { }}
-          setPageSize={() => { }}
+          setPage={() => {}}
+          setPageSize={() => {}}
           from={buckets.length > 0 ? 1 : 0}
           to={buckets.length}
         />

@@ -10,6 +10,7 @@ import TableView from "../TableView/TableView";
 import CurrencySelect from "./CurrencySelect";
 import { getWriteOffProvisionsReport } from "../../redux/apis/apisCrudLms";
 import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import ReportHeader from "./ReportHeader";
 
 const formatNumber = (n: any) => {
   if (n === null || n === undefined || n === "") return "-";
@@ -64,11 +65,12 @@ const WriteOffProvisionsReport = () => {
         ? data.items
         : null;
 
-  const summaryRows = data && !list
-    ? Object.entries(data)
-        .filter(([key, value]) => key !== "currency" && typeof value === "number")
-        .map(([key, value]) => ({ metric: key, value }))
-    : [];
+  const summaryRows =
+    data && !list
+      ? Object.entries(data)
+          .filter(([key, value]) => key !== "currency" && typeof value === "number")
+          .map(([key, value]) => ({ metric: key, value }))
+      : [];
 
   const rows = list ?? summaryRows;
 
@@ -128,15 +130,11 @@ const WriteOffProvisionsReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <ShieldOff className="h-4 w-4" />
-          </span>
-          {t("writeOffProvisions.title")}
-          <span className="fs-6 fw-normal text-muted">· {reportCurrency}</span>
-        </h3>
-      </div>
+      <ReportHeader
+        icon={<ShieldOff className="h-4 w-4" />}
+        title={t("writeOffProvisions.title")}
+        suffix={reportCurrency}
+      />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">

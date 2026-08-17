@@ -7,6 +7,7 @@ import { getDaybookReport } from "../../redux/apis/apisCrudLms";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const DayBook = () => {
   const { t } = useTranslation("reports");
@@ -77,7 +78,7 @@ const DayBook = () => {
       });
     } catch (error: any) {
       console.error("Error fetching daybook:", error);
-      toast.error(error?.message || t('dayBook.toast.fetchError'));
+      toast.error(error?.message || t("dayBook.toast.fetchError"));
       setEntries([]);
       setSummary(null);
     } finally {
@@ -106,51 +107,48 @@ const DayBook = () => {
 
   const headers = [
     {
-      name: t('dayBook.col.postedAt'),
+      name: t("dayBook.col.postedAt"),
       selector: (row: any) => formatDate(row.postedAt),
       sortable: true,
       width: "160px",
     },
     {
-      name: t('dayBook.col.voucherNo'),
+      name: t("dayBook.col.voucherNo"),
       selector: (row: any) => row.voucherNumber || "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: t('dayBook.col.referenceType'),
+      name: t("dayBook.col.referenceType"),
       selector: (row: any) => row.referenceType || "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: t('dayBook.col.account'),
-      selector: (row: any) => row.accountCode ? `${row.accountCode} — ${row.accountName || ""}` : (row.accountName || "-"),
+      name: t("dayBook.col.account"),
+      selector: (row: any) =>
+        row.accountCode ? `${row.accountCode} — ${row.accountName || ""}` : row.accountName || "-",
       sortable: true,
     },
     {
-      name: t('common:description'),
+      name: t("common:description"),
       selector: (row: any) => row.lineDescription || row.description || "-",
       grow: 2,
     },
     {
-      name: t('dayBook.col.debit'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.debitAmount)}</span>
-      ),
+      name: t("dayBook.col.debit"),
+      cell: (row: any) => <span>{formatNumber(row.debitAmount)}</span>,
       sortable: true,
       width: "130px",
     },
     {
-      name: t('dayBook.col.credit'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.creditAmount)}</span>
-      ),
+      name: t("dayBook.col.credit"),
+      cell: (row: any) => <span>{formatNumber(row.creditAmount)}</span>,
       sortable: true,
       width: "130px",
     },
     {
-      name: t('common:status'),
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -173,15 +171,32 @@ const DayBook = () => {
   const filteredEntries = useMemo(() => {
     if (!debouncedSearch) return entries;
     const term = debouncedSearch.toLowerCase();
-    return entries.filter((row: any) =>
-      String(row.voucherNumber || "").toLowerCase().includes(term) ||
-      String(row.referenceType || "").toLowerCase().includes(term) ||
-      String(row.accountCode || "").toLowerCase().includes(term) ||
-      String(row.accountName || "").toLowerCase().includes(term) ||
-      String(row.lineDescription || "").toLowerCase().includes(term) ||
-      String(row.description || "").toLowerCase().includes(term) ||
-      String(row.status || "").toLowerCase().includes(term) ||
-      String(row.transactionType || "").toLowerCase().includes(term)
+    return entries.filter(
+      (row: any) =>
+        String(row.voucherNumber || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.referenceType || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.accountCode || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.accountName || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.lineDescription || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.description || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.status || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.transactionType || "")
+          .toLowerCase()
+          .includes(term)
     );
   }, [entries, debouncedSearch]);
 
@@ -222,41 +237,46 @@ const DayBook = () => {
     <>
       {loading && <Loader />}
       <div className="service day-book-page">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-            <span className="pro-head-badge">
-              <BookOpen className="h-4 w-4" />
-            </span>
-            {t('dayBook.title')}
-          </h3>
-        </div>
+        <ReportHeader icon={<BookOpen className="h-4 w-4" />} title={t("dayBook.title")} />
 
         {/* Filters card */}
         <div className="pro-card p-3 mb-3">
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <Input
               allowClear
-              placeholder={t('dayBook.searchPlaceholder')}
+              placeholder={t("dayBook.searchPlaceholder")}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
             <DatePicker
-              placeholder={t('common:from')}
+              placeholder={t("common:from")}
               value={fromDate}
               onChange={(d) => setFromDate(d)}
               format="YYYY-MM-DD"
               allowClear
-              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+              style={{
+                flex: "1 1 180px",
+                minWidth: 160,
+                height: 40,
+                borderRadius: 2,
+                background: "#fff",
+              }}
             />
             <DatePicker
-              placeholder={t('common:to')}
+              placeholder={t("common:to")}
               value={toDate}
               onChange={(d) => setToDate(d)}
               format="YYYY-MM-DD"
               allowClear
-              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+              style={{
+                flex: "1 1 180px",
+                minWidth: 160,
+                height: 40,
+                borderRadius: 2,
+                background: "#fff",
+              }}
             />
             <button
               type="button"
@@ -265,64 +285,64 @@ const DayBook = () => {
               disabled={loading}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              {loading ? t('common:loading') : t('common:refresh')}
+              {loading ? t("common:loading") : t("common:refresh")}
             </button>
           </div>
         </div>
 
-      {(entries.length > 0 || summary) && (
-        <Row gutter={[16, 16]} className="mb-3">
-          <Col xs={24} sm={12} lg={6}>
-            <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.totalTransactions')}</div>
-              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {visibleTotals.totalTransactions}
+        {(entries.length > 0 || summary) && (
+          <Row gutter={[16, 16]} className="mb-3">
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("dayBook.summary.totalTransactions")}
+                </div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {visibleTotals.totalTransactions}
+                </div>
               </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.totalDebits')}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
-                {formatNumber(visibleTotals.totalDebits)}
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("dayBook.summary.totalDebits")}
+                </div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(visibleTotals.totalDebits)}
+                </div>
               </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.totalCredits')}</div>
-              <div
-                className="mt-2"
-                style={{ fontSize: 22, fontWeight: 700 }}
-              >
-                {formatNumber(visibleTotals.totalCredits)}
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("dayBook.summary.totalCredits")}
+                </div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(visibleTotals.totalCredits)}
+                </div>
               </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.difference')}</div>
-              <div
-                className="mt-2"
-                style={{
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: Number(visibleTotals.difference) === 0 ? "#198754" : "#dc3545",
-                }}
-              >
-                {formatNumber(visibleTotals.difference)}
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("dayBook.summary.difference")}
+                </div>
+                <div
+                  className="mt-2"
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: Number(visibleTotals.difference) === 0 ? "#198754" : "#dc3545",
+                  }}
+                >
+                  {formatNumber(visibleTotals.difference)}
+                </div>
               </div>
-            </div>
-          </Col>
-        </Row>
-      )}
+            </Col>
+          </Row>
+        )}
 
-        <div
-          className="pro-card"
-        >
+        <div className="pro-card">
           <TableView
             header={headers}
             setPage={setPage}

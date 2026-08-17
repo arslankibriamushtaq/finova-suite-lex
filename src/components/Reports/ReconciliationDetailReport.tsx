@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { getReconciliationDetailReport } from "../../redux/apis/apisCrudLms";
 import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import ReportHeader from "./ReportHeader";
 
 const formatNumber = (n: any) => {
   if (n === null || n === undefined || n === "") return "-";
@@ -27,9 +28,7 @@ const ReconciliationDetailReport = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await getReconciliationDetailReport(
-        date ? date.format("YYYY-MM-DD") : undefined
-      );
+      const res = await getReconciliationDetailReport(date ? date.format("YYYY-MM-DD") : undefined);
       setData(res?.data?.data ?? null);
     } catch (error: any) {
       toast.error(ledgerErrorMessage(error, t("reconciliationDetail.toast.fetchError")));
@@ -65,7 +64,9 @@ const ReconciliationDetailReport = () => {
     {
       name: t("reconciliationDetail.col.ledgerBalance"),
       cell: (row: any) => (
-        <span>{formatNumber(row.ledgerBalance ?? row.glBalance)} {row.currency || ""}</span>
+        <span>
+          {formatNumber(row.ledgerBalance ?? row.glBalance)} {row.currency || ""}
+        </span>
       ),
     },
     {
@@ -121,14 +122,7 @@ const ReconciliationDetailReport = () => {
 
   return (
     <div className="service col-12">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <Scale className="h-4 w-4" />
-          </span>
-          {t("reconciliationDetail.title")}
-        </h3>
-      </div>
+      <ReportHeader icon={<Scale className="h-4 w-4" />} title={t("reconciliationDetail.title")} />
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">

@@ -5,11 +5,10 @@ import { DatePicker, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  getDueLoansReport,
-} from "../../redux/apis/apisCrudLms";
+import { getDueLoansReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const Due = () => {
   const { t } = useTranslation("reports");
@@ -66,9 +65,11 @@ const Due = () => {
         productName: item.productName || "-",
         installmentNumber: item.installmentNumber != null ? item.installmentNumber : "-",
         dueDate: item.dueDate ? formatDate(item.dueDate) : "-",
-        principalDue: item.principalDue != null ? `${Number(item.principalDue).toFixed(2)} SAR` : "-",
+        principalDue:
+          item.principalDue != null ? `${Number(item.principalDue).toFixed(2)} SAR` : "-",
         profitDue: item.profitDue != null ? `${Number(item.profitDue).toFixed(2)} SAR` : "-",
-        installmentAmount: item.installmentAmount != null ? `${Number(item.installmentAmount).toFixed(2)} SAR` : "-",
+        installmentAmount:
+          item.installmentAmount != null ? `${Number(item.installmentAmount).toFixed(2)} SAR` : "-",
         daysUntilDue: item.daysUntilDue != null ? item.daysUntilDue : "-",
         status: item.status || "-",
       };
@@ -76,12 +77,13 @@ const Due = () => {
 
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
-    return all.filter((row: any) =>
-      String(row.loanAccountNumber).toLowerCase().includes(term) ||
-      String(row.customerName).toLowerCase().includes(term) ||
-      String(row.productName).toLowerCase().includes(term) ||
-      String(row.status).toLowerCase().includes(term) ||
-      String(row.dueDate).toLowerCase().includes(term)
+    return all.filter(
+      (row: any) =>
+        String(row.loanAccountNumber).toLowerCase().includes(term) ||
+        String(row.customerName).toLowerCase().includes(term) ||
+        String(row.productName).toLowerCase().includes(term) ||
+        String(row.status).toLowerCase().includes(term) ||
+        String(row.dueDate).toLowerCase().includes(term)
     );
   }, [allCallActivity, debouncedSearch]);
 
@@ -187,63 +189,54 @@ const Due = () => {
   return (
     <>
       <div className="service col-12">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-            <span className="pro-head-badge">
-              <Clock className="h-4 w-4" />
-            </span>
-            {t("due.title")}
-          </h3>
-        </div>
+        <ReportHeader icon={<Clock className="h-4 w-4" />} title={t("due.title")} />
         <div className="pro-card p-3 mb-3">
-        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <Input
-            allowClear
-            placeholder={t("due.searchPlaceholder")}
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-          />
-          <DatePicker
-            placeholder={t("common:from")}
-            value={fromDate}
-            onChange={(d) => setFromDate(d)}
-            format="YYYY-MM-DD"
-            allowClear
-            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-          />
-          <DatePicker
-            placeholder={t("common:to")}
-            value={toDate}
-            onChange={(d) => setToDate(d)}
-            format="YYYY-MM-DD"
-            allowClear
-            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
-          />
-          <button
-            type="button"
-            className="theme-btn-next"
-            onClick={handleSubmit}
-            disabled={loading}
-            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            {loading ? t("common:loading") : t("common:refresh")}
-          </button>
-          <button
-            type="button"
-            className="theme-btn-next"
-            onClick={() => exportToCSV(mappedData, "DueLoans")}
-            disabled={!mappedData.length}
-            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            {t("action.exportCsv")}
-          </button>
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <Input
+              allowClear
+              placeholder={t("due.searchPlaceholder")}
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+            />
+            <DatePicker
+              placeholder={t("common:from")}
+              value={fromDate}
+              onChange={(d) => setFromDate(d)}
+              format="YYYY-MM-DD"
+              allowClear
+              style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+            />
+            <DatePicker
+              placeholder={t("common:to")}
+              value={toDate}
+              onChange={(d) => setToDate(d)}
+              format="YYYY-MM-DD"
+              allowClear
+              style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
+            />
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={handleSubmit}
+              disabled={loading}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              {loading ? t("common:loading") : t("common:refresh")}
+            </button>
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={() => exportToCSV(mappedData, "DueLoans")}
+              disabled={!mappedData.length}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              {t("action.exportCsv")}
+            </button>
+          </div>
         </div>
-      </div>
-        <div
-        className="pro-card"
-      >
+        <div className="pro-card">
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}

@@ -8,6 +8,7 @@ import { getSimahReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const SimahReport = ({ loader }: any) => {
   const { t } = useTranslation("reports");
@@ -44,32 +45,32 @@ const SimahReport = ({ loader }: any) => {
   };
 
   const Simah_Report_Header = [
-    // { 
-    //   name: "Loan ID", 
+    // {
+    //   name: "Loan ID",
     //   selector: (row: any) => row.loanId,
     //   sortable: true,
     //   width: "250px"
     // },
-    // { 
-    //   name: "Customer ID", 
+    // {
+    //   name: "Customer ID",
     //   selector: (row: any) => row.customerId,
     //   sortable: true,
     //   width: "250px"
     // },
     {
-      name: t('simah.col.facilityType'),
+      name: t("simah.col.facilityType"),
       selector: (row: any) => row.facilityType,
       sortable: true,
       // width: "150px"
     },
     {
-      name: t('simah.col.paymentStatus'),
+      name: t("simah.col.paymentStatus"),
       selector: (row: any) => row.paymentStatus,
       sortable: true,
       // width: "150px"
     },
     {
-      name: t('simah.col.simahStatus'),
+      name: t("simah.col.simahStatus"),
       selector: (row: any) => row.simahStatus,
       sortable: true,
       // width: "150px"
@@ -80,7 +81,6 @@ const SimahReport = ({ loader }: any) => {
   // 📡 API CALL
   // ================================
   const fetchSimahReport = async () => {
-
     try {
       setLoading(true);
 
@@ -123,7 +123,7 @@ const SimahReport = ({ loader }: any) => {
       setTo(Math.min(page * pageSize, totalItems));
     } catch (error: any) {
       console.error("❌ Error fetching Simah Report:", error);
-      toast.error(error?.message || t('simah.toast.fetchError'));
+      toast.error(error?.message || t("simah.toast.fetchError"));
     } finally {
       setLoading(false);
     }
@@ -136,24 +136,28 @@ const SimahReport = ({ loader }: any) => {
     setInitialRender(true);
   }, [page, pageSize, loader]);
 
-  const mappedData = useMemo(() =>
-    ledgerData?.map((item: any) => ({
-      loanId: item.loanId || "-",
-      customerId: item.customerId || "-",
-      facilityType: item.facilityType || "-",
-      paymentStatus: item.paymentStatus || "-",
-      simahStatus: item.simahStatus || "-",
-    })) || [], [ledgerData]);
+  const mappedData = useMemo(
+    () =>
+      ledgerData?.map((item: any) => ({
+        loanId: item.loanId || "-",
+        customerId: item.customerId || "-",
+        facilityType: item.facilityType || "-",
+        paymentStatus: item.paymentStatus || "-",
+        simahStatus: item.simahStatus || "-",
+      })) || [],
+    [ledgerData]
+  );
 
   const filteredData = useMemo(() => {
     if (!debouncedSearch) return mappedData;
     const term = debouncedSearch.toLowerCase();
-    return mappedData.filter((row: any) =>
-      String(row.loanId).toLowerCase().includes(term) ||
-      String(row.customerId).toLowerCase().includes(term) ||
-      String(row.facilityType).toLowerCase().includes(term) ||
-      String(row.paymentStatus).toLowerCase().includes(term) ||
-      String(row.simahStatus).toLowerCase().includes(term)
+    return mappedData.filter(
+      (row: any) =>
+        String(row.loanId).toLowerCase().includes(term) ||
+        String(row.customerId).toLowerCase().includes(term) ||
+        String(row.facilityType).toLowerCase().includes(term) ||
+        String(row.paymentStatus).toLowerCase().includes(term) ||
+        String(row.simahStatus).toLowerCase().includes(term)
     );
   }, [mappedData, debouncedSearch]);
 
@@ -197,7 +201,7 @@ const SimahReport = ({ loader }: any) => {
   // ===========================================
   const exportToCSV = (data: any[], fileName: string) => {
     if (!data || data.length === 0) {
-      toast.error(t('toast.noExportData'));
+      toast.error(t("toast.noExportData"));
       return;
     }
 
@@ -228,7 +232,7 @@ const SimahReport = ({ loader }: any) => {
     const csvString = csvRows.join("\n");
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
-    toast.success(t('toast.exportSuccess'));
+    toast.success(t("toast.exportSuccess"));
   };
 
   // ===========================================
@@ -236,58 +240,63 @@ const SimahReport = ({ loader }: any) => {
   // ===========================================
   return (
     <div className="service simah-report-page">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          <span className="pro-head-badge">
-            <ShieldCheck className="h-4 w-4" />
-          </span>
-          {t('simah.title')}
-        </h3>
-      </div>
+      <ReportHeader icon={<ShieldCheck className="h-4 w-4" />} title={t("simah.title")} />
 
       {/* Filters card */}
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder={t('simah.searchPlaceholder')}
+            placeholder={t("simah.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
-            placeholder={t('common:from')}
+            placeholder={t("common:from")}
             value={fromDate}
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+            style={{
+              flex: "1 1 180px",
+              minWidth: 160,
+              height: 40,
+              borderRadius: 2,
+              background: "#fff",
+            }}
           />
           <DatePicker
-            placeholder={t('common:to')}
+            placeholder={t("common:to")}
             value={toDate}
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+            style={{
+              flex: "1 1 180px",
+              minWidth: 160,
+              height: 40,
+              borderRadius: 2,
+              background: "#fff",
+            }}
           />
           <button
             type="button"
             className="theme-btn-next"
             disabled={filteredData.length === 0}
-            onClick={() => exportToCSV(filteredData, `Simah_Report_${dayjs().format("YYYY-MM-DD")}`)}
+            onClick={() =>
+              exportToCSV(filteredData, `Simah_Report_${dayjs().format("YYYY-MM-DD")}`)
+            }
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {t('action.exportReport')}
+            {t("action.exportReport")}
           </button>
         </div>
       </div>
 
       {/* Table card */}
-      <div
-        className="pro-card"
-      >
+      <div className="pro-card">
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

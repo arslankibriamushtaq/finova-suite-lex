@@ -3,14 +3,12 @@ import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "ant
 import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { Library } from "lucide-react";
-import {
-  getLedgerAccount,
-  getLedgerReport,
-} from "../../redux/apis/apisCrudLms";
+import { getLedgerAccount, getLedgerReport } from "../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
 import { useTranslation } from "react-i18next";
+import ReportHeader from "./ReportHeader";
 
 const formatAmount = (n: number | string | undefined | null) =>
   Number(n || 0).toLocaleString(undefined, {
@@ -92,12 +90,10 @@ const Ledger = () => {
 
   const mappedData = useMemo(
     () =>
-      filteredRows
-        .slice((page - 1) * pageSize, page * pageSize)
-        .map((row: any, index: number) => ({
-          Sr: (page - 1) * pageSize + index + 1,
-          ...row,
-        })),
+      filteredRows.slice((page - 1) * pageSize, page * pageSize).map((row: any, index: number) => ({
+        Sr: (page - 1) * pageSize + index + 1,
+        ...row,
+      })),
     [filteredRows, page, pageSize]
   );
 
@@ -115,24 +111,24 @@ const Ledger = () => {
 
   const columns = [
     {
-      name: t('ledger.col.sNo'),
+      name: t("ledger.col.sNo"),
       selector: (row: { Sr: number }) => row.Sr,
       sortable: true,
       width: "70px",
     },
     {
-      name: t('common:date'),
+      name: t("common:date"),
       selector: (row: any) => row.entryDate,
       sortable: true,
       width: "110px",
     },
     {
-      name: t('ledger.col.voucherNo'),
+      name: t("ledger.col.voucherNo"),
       selector: (row: any) => row.voucherNumber,
       sortable: true,
     },
     {
-      name: t('ledger.col.account'),
+      name: t("ledger.col.account"),
       cell: (row: any) => (
         <div className="d-flex flex-column">
           <span className="fw-bold">{row.accountCode}</span>
@@ -142,35 +138,35 @@ const Ledger = () => {
       sortable: true,
     },
     {
-      name: t('common:type'),
+      name: t("common:type"),
       selector: (row: any) => row.transactionType,
       sortable: true,
     },
     {
-      name: t('common:description'),
+      name: t("common:description"),
       selector: (row: any) => row.description,
       wrap: true,
       grow: 2,
     },
     {
-      name: t('ledger.col.debit'),
+      name: t("ledger.col.debit"),
       selector: (row: any) => formatAmount(row.debitAmount),
       sortable: true,
       right: true,
     },
     {
-      name: t('ledger.col.credit'),
+      name: t("ledger.col.credit"),
       selector: (row: any) => formatAmount(row.creditAmount),
       sortable: true,
       right: true,
     },
     {
-      name: t('ledger.col.runningBalance'),
+      name: t("ledger.col.runningBalance"),
       selector: (row: any) => formatAmount(row.runningBalance),
       right: true,
     },
     {
-      name: t('common:status'),
+      name: t("common:status"),
       selector: (row: any) => row.status,
     },
   ];
@@ -202,7 +198,7 @@ const Ledger = () => {
       }
     } catch (error: any) {
       console.error("Error fetching ledger:", error);
-      toast.error(error?.message || t('ledger.toast.fetchError'));
+      toast.error(error?.message || t("ledger.toast.fetchError"));
       setAccounts([]);
     } finally {
       setLoading(false);
@@ -264,64 +260,55 @@ const Ledger = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="service p-4">
-        <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-            <span className="pro-head-badge">
-              <Library className="h-4 w-4" />
-            </span>
-            {t('ledger.title')}
-          </h3>
-        </div>
+      <div className="service col-12">
+        <ReportHeader icon={<Library className="h-4 w-4" />} title={t("ledger.title")} />
 
         <div className="pro-card p-3 mb-3">
-        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <AntInput
-            allowClear
-            placeholder={t('ledger.searchPlaceholder')}
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-          />
-          <DatePicker
-            value={fromDate}
-            onChange={(date) => setFromDate(date)}
-            format="YYYY-MM-DD"
-            placeholder={t('filter.fromDate')}
-            style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40 }}
-          />
-          <DatePicker
-            value={toDate}
-            onChange={(date) => setToDate(date)}
-            format="YYYY-MM-DD"
-            placeholder={t('filter.toDate')}
-            style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40 }}
-          />
-          <button
-            type="button"
-            className="theme-btn-next"
-            onClick={exportToCSV}
-            disabled={filteredRows.length === 0}
-            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            {t('action.exportCsv')}
-          </button>
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <AntInput
+              allowClear
+              placeholder={t("ledger.searchPlaceholder")}
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+            />
+            <DatePicker
+              value={fromDate}
+              onChange={(date) => setFromDate(date)}
+              format="YYYY-MM-DD"
+              placeholder={t("filter.fromDate")}
+              style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40 }}
+            />
+            <DatePicker
+              value={toDate}
+              onChange={(date) => setToDate(date)}
+              format="YYYY-MM-DD"
+              placeholder={t("filter.toDate")}
+              style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40 }}
+            />
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={exportToCSV}
+              disabled={filteredRows.length === 0}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              {t("action.exportCsv")}
+            </button>
+          </div>
         </div>
-      </div>
 
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('ledger.summary.totalEntries')}</div>
-              <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {totalRows.toLocaleString()}
-              </div>
+              <div style={{ fontSize: 14 }}>{t("ledger.summary.totalEntries")}</div>
+              <div style={{ fontSize: 22, fontWeight: 700 }}>{totalRows.toLocaleString()}</div>
             </div>
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('ledger.summary.totalDebits')}</div>
+              <div style={{ fontSize: 14 }}>{t("ledger.summary.totalDebits")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(visibleTotals.debits)}
               </div>
@@ -329,7 +316,7 @@ const Ledger = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>{t('ledger.summary.totalCredits')}</div>
+              <div style={{ fontSize: 14 }}>{t("ledger.summary.totalCredits")}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(visibleTotals.credits)}
               </div>
@@ -337,9 +324,7 @@ const Ledger = () => {
           </AntCol>
         </AntRow>
 
-        <div
-          className="pro-card"
-        >
+        <div className="pro-card">
           <TableView
             data={mappedData}
             header={columns}
