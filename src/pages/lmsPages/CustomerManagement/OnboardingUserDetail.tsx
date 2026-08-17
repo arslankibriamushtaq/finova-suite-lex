@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  ArrowLeft,
   RefreshCw,
   Check,
   Clock,
@@ -132,7 +131,6 @@ const OnboardingUserDetail = () => {
   // When Arabic is active, prefer the API's Arabic step label (labelAr).
   const isArabic = i18n.language === "ar";
   const params = useParams();
-  const navigate = useNavigate();
   const workflowId = params.workflowId || params.id || "";
 
   const [session, setSession] = useState<OnboardingSession | null>(null);
@@ -201,17 +199,7 @@ const OnboardingUserDetail = () => {
   return (
     <div className="service customer-list-page onb-detail-page">
       {/* Top bar */}
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="group inline-flex items-center gap-2 rounded-lg py-1 pe-3 ps-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <span className="flex size-8 items-center justify-center rounded-lg border bg-card shadow-sm transition-all group-hover:border-emerald-500/40 group-hover:text-emerald-600 group-hover:shadow">
-            <ArrowLeft className="size-4" />
-          </span>
-          {t("common:back")}
-        </button>
+      <div className="mb-4 flex items-center justify-end gap-2">
         <Button
           variant="outline"
           size="sm"
