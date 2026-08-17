@@ -4,7 +4,6 @@ import { BarChart3 } from "lucide-react";
 import { SearchOutlined } from "@ant-design/icons";
 import Papa from "papaparse";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Tab, Tabs } from "react-bootstrap";
 import Account from "./account";
 import toast from "react-hot-toast";
 import { ImageElementContainer } from "html2canvas/dist/types/dom/replaced-elements/image-element-container";
@@ -15,21 +14,9 @@ import { useTranslation } from "react-i18next";
 
 // import { useDropzone } from "react-dropzone";
 
-const validAccountTypes = [
-  "assets",
-  "liability",
-  "equity",
-  "revenue",
-  "expense",
-  "-",
-];
+const validAccountTypes = ["assets", "liability", "equity", "revenue", "expense", "-"];
 
-const requiredHeaders = [
-  "account id",
-  "account code",
-  "account name",
-  "account parent",
-];
+const requiredHeaders = ["account id", "account code", "account name", "account parent"];
 const accountCodePattern = /^[A-Za-z0-9-]+$/; // Alphanumeric with optional dashes
 
 // interface CoaProps {
@@ -37,11 +24,9 @@ const accountCodePattern = /^[A-Za-z0-9-]+$/; // Alphanumeric with optional dash
 // }
 const Coa = () => {
   const { t } = useTranslation("accountingLoans");
-  const [selectTab, setSelectedTab] = useState("account");
   const navigate = useNavigate();
   const location = useLocation(); // Get current route
-  const isChartOfAccountPage =
-    location.pathname === "/Lms/ChartOfAccount/ChartOfAccount";
+  const isChartOfAccountPage = location.pathname === "/Lms/ChartOfAccount/ChartOfAccount";
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [jsonData, setJsonData] = useState<any>(null);
   const [loader, setLoader] = useState(false);
@@ -54,7 +39,7 @@ const Coa = () => {
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0);
   const [ledgerData, setLedgerData] = useState<any>();
-  const [csvData, setcsvData]= useState([])
+  const [csvData, setcsvData] = useState([]);
   const [loading, setLoading] = useState(false);
   // Lifted up from <Account /> so the search + date filter can sit on the
   // same responsive row as the action buttons.
@@ -74,7 +59,7 @@ const Coa = () => {
           if (res?.data?.notificationMessage === "Operation successful.") {
             // onSuccess();
             // toast.success(res?.data?.notificationMessage);
-            navigate("/lms/ChartOfAccount/CoaConfiguration")
+            navigate("/lms/ChartOfAccount/CoaConfiguration");
 
             return res?.data?.notificationMessage;
           } else if (res?.data?.errors) {
@@ -174,14 +159,8 @@ const Coa = () => {
 
     if (accountNameIndex !== undefined && parentAccountIndex !== undefined) {
       data.forEach((row: any, rowIndex: any) => {
-        const accountName = row[headers[accountNameIndex]]
-          ?.toString()
-          .trim()
-          .toLowerCase();
-        const parentAccount = row[headers[parentAccountIndex]]
-          ?.toString()
-          .trim()
-          .toLowerCase();
+        const accountName = row[headers[accountNameIndex]]?.toString().trim().toLowerCase();
+        const parentAccount = row[headers[parentAccountIndex]]?.toString().trim().toLowerCase();
 
         // Check if parent account is invalid
         if (!validAccountTypes.includes(parentAccount)) {
@@ -217,16 +196,12 @@ const Coa = () => {
 
       if (accountCode) {
         if (accountCodeSet.has(accountCode)) {
-          errors.push(
-            t("coa.val.duplicateCode", { row: rowIndex + 2, value: accountCode })
-          );
+          errors.push(t("coa.val.duplicateCode", { row: rowIndex + 2, value: accountCode }));
         } else {
           accountCodeSet.add(accountCode);
         }
       } else {
-        errors.push(
-          t("coa.val.missingCode", { row: rowIndex + 2 })
-        );
+        errors.push(t("coa.val.missingCode", { row: rowIndex + 2 }));
       }
     });
 
@@ -241,16 +216,12 @@ const Coa = () => {
 
       if (accountCode) {
         if (accountCodeSet.has(accountCode)) {
-          errors.push(
-            t("coa.val.duplicateName", { row: rowIndex + 2, value: accountCode })
-          );
+          errors.push(t("coa.val.duplicateName", { row: rowIndex + 2, value: accountCode }));
         } else {
           accountCodeSet.add(accountCode);
         }
       } else {
-        errors.push(
-          t("coa.val.missingName", { row: rowIndex + 2 })
-        );
+        errors.push(t("coa.val.missingName", { row: rowIndex + 2 }));
       }
     });
 
@@ -270,10 +241,7 @@ const Coa = () => {
         if (requiredHeader.toLowerCase() === "account parent") {
           // Allow "account parent" to be empty only when "account name" is in validAccountTypes
           const accountNameIndex = headerMap["account name"];
-          const accountName = row[headers[accountNameIndex]]
-            ?.toString()
-            .trim()
-            .toLowerCase();
+          const accountName = row[headers[accountNameIndex]]?.toString().trim().toLowerCase();
 
           if (
             !validAccountTypes.includes(accountName) &&
@@ -307,9 +275,7 @@ const Coa = () => {
   const validateAccountCodes = (data: any[], headers: string[]) => {
     const errors: string[] = [];
 
-    const colIndex = headers.findIndex(
-      (header) => header.trim().toLowerCase() === "account code"
-    );
+    const colIndex = headers.findIndex((header) => header.trim().toLowerCase() === "account code");
 
     if (colIndex !== -1) {
       data.forEach((row, rowIndex) => {
@@ -329,7 +295,7 @@ const Coa = () => {
   };
 
   const assignParentCodes = (data: any) => {
-    const accountMap: any= {}; // Map of accountName -> accountCode
+    const accountMap: any = {}; // Map of accountName -> accountCode
     const errors: any = [];
 
     // Step 1: Build a map of account names to their respective codes
@@ -395,10 +361,7 @@ const Coa = () => {
           const accountCodeErrors = validateAccountCodes(data, headers);
           const uniqueAccountCodeErrors = validateUniqueAccountCodes(data);
           const uniqueAccountName = validateUniqueAccountName(data);
-          const sameNameCheck = validateAccountNamesAndParentAccountNotSame(
-            data,
-            headers
-          );
+          const sameNameCheck = validateAccountNamesAndParentAccountNotSame(data, headers);
           // const checkTopLevelAccount = validateTopLevelAccountForParent(
           //   data,
           //   headers
@@ -444,27 +407,6 @@ const Coa = () => {
     link.download = "COA Template.csv"; // The file name for the downloaded file
     link.click();
   };
-  const tapOptions = [
-    {
-      title: t("coa.tabAccount"),
-      key: "account",
-      folder: (
-        <Account
-          loader={loader}
-          setAddGroupMod={setAddGroupMod}
-          addGroupMod={addGroupMod}
-          setcsvData={setcsvData}
-          searchValue={searchValue}
-          fromDate={fromDate}
-        />
-      ),
-    },
-    /* {
-      title: "Group",
-      key: "group",
-      folder: <Group />,
-    }, */
-  ];
   const ledgerAccount = async () => {
     try {
       setLoading(true);
@@ -472,12 +414,12 @@ const Coa = () => {
       if (response) {
         const data = response.data.data;
         setLedgerData(data || []);
-        
+
         // Extract pagination data from API response
         const pageInfo = response?.data?.pageInfo;
         const totalItems = pageInfo?.totalItems || 0;
         setTotalRows(totalItems);
-        
+
         // Calculate from and to based on pagination
         const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
         const calculatedTo = Math.min(page * pageSize, totalItems);
@@ -524,16 +466,12 @@ const Coa = () => {
             const transformedData = result.data.map((item: any, index) => {
               const accountCode = String(item["account code"]).trim();
               const accountName = item["account name"]?.trim()?.toLowerCase();
-              const parentAccountName = item["account parent"]
-                ?.trim()
-                ?.toLowerCase();
+              const parentAccountName = item["account parent"]?.trim()?.toLowerCase();
 
               return {
                 accountCode: Number(accountCode) || 0,
                 accountName: item["account name"] || "string",
-                parentAccount: parentAccountName
-                  ? accountMap[parentAccountName] || ""
-                  : "",
+                parentAccount: parentAccountName ? accountMap[parentAccountName] || "" : "",
                 accountDescription: "string",
               };
             });
@@ -598,7 +536,7 @@ const Coa = () => {
       setJsonData([]); // Clear JSON data when a file is removed
     },
   };
- const exportToCSV = (data: any[], fileName: string) => {
+  const exportToCSV = (data: any[], fileName: string) => {
     const csvRows = [];
     const headers = Object.keys(data[0]); // Assuming all objects have the same keys
     csvRows.push(headers.join(",")); // Join header row with commas
@@ -644,7 +582,13 @@ const Coa = () => {
             onChange={(date: any) => setFromDate(date)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+            style={{
+              flex: "1 1 180px",
+              minWidth: 160,
+              height: 40,
+              borderRadius: 2,
+              background: "#fff",
+            }}
           />
           <button
             type="button"
@@ -703,21 +647,19 @@ const Coa = () => {
           ))}
         </div>
       )}
+      {/* The accounts table used to sit behind a <Tabs> with a single "Account"
+          tab — the second tab ("Group") was commented out, leaving a tab bar
+          that could not switch to anything. Rendered directly instead. */}
       {isChartOfAccountPage && (
         <div className="pro-card">
-          <Tabs
-            id="controlled-tab-example"
-            className="px-3 pt-3"
-            defaultActiveKey={"account"}
-            activeKey={selectTab}
-            onSelect={(tab: any) => setSelectedTab(tab)}
-          >
-            {tapOptions.map((item) => (
-              <Tab eventKey={item.key} title={item.title}>
-                {selectTab === item.key && item.folder}
-              </Tab>
-            ))}
-          </Tabs>
+          <Account
+            loader={loader}
+            setAddGroupMod={setAddGroupMod}
+            addGroupMod={addGroupMod}
+            setcsvData={setcsvData}
+            searchValue={searchValue}
+            fromDate={fromDate}
+          />
         </div>
       )}
     </div>

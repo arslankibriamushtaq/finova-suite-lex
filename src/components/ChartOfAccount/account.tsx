@@ -118,17 +118,12 @@ const Account = ({
   const Account_Documents_List_Header = [
     {
       name: t("account.col.code"),
-      // Indented by depth so a row's place in the chart is visible. Not a
-      // collapsible tree: the list is paged server-side, so a row's parent may
-      // sit on another page and cannot be linked up from here.
-      cell: (row: any) => (
-        <span
-          className="font-monospace"
-          style={{ paddingInlineStart: `${Math.min(row.hierarchyLevel ?? 0, 4) * 12}px` }}
-        >
-          {row.accountCode}
-        </span>
-      ),
+      // Flush left, one column edge. Rows used to be indented by
+      // `hierarchyLevel`, but the list is paged server-side in no particular
+      // order, so a row's parent is usually not on screen — the indentation
+      // read as a ragged left edge rather than as a tree. Depth is still
+      // visible: header accounts carry the "Header" badge in Account Type.
+      cell: (row: any) => <span className="font-monospace">{row.accountCode}</span>,
     },
     {
       name: t("account.col.name"),
@@ -317,7 +312,9 @@ const Account = ({
     <div>
       {/* {loading && <Loader />} */}
 
-      <div className="cs-table mt-2">
+      {/* No top margin: the table is the first thing in its card now that the
+          single-tab bar above it is gone. */}
+      <div className="cs-table">
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}
