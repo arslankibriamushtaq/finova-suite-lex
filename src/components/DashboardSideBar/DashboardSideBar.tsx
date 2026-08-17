@@ -59,6 +59,10 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   lms: { Icon: Landmark, color: "#10b981" },
   "loan management": { Icon: Banknote, color: "#3b82f6" },
   reports: { Icon: FileBarChart2, color: "#0ea5e9" },
+  // Top-level accounting desks — they sit beside Ledger/Accounts Limit Setting
+  // now, so they need their own icon+color instead of the legacy PNG fallback.
+  "all reports": { Icon: FileBarChart2, color: "#0ea5e9" },
+  "general ledger": { Icon: BookOpen, color: "#6366f1" },
   "chart of account": { Icon: BarChart3, color: "#14b8a6" },
   collections: { Icon: HandCoins, color: "#22c55e" },
   setting: { Icon: SettingsIcon, color: "#64748b" },
@@ -319,12 +323,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         const nested = sub.submenu || sub.menu;
         return Array.isArray(nested) && nested.some((c: any) => c?.active);
       });
-    // Financing and Connector Management stay open by default so the primary
-    // workflows are always visible regardless of the current route (their nested
-    // submenus stay collapsed unless they own the active route).
-    const financingIndex = items.findIndex((it: any) => it && it.label === "Financing");
+    // Connector Management stays open by default so its workflows are always
+    // visible regardless of the current route (its nested submenus stay
+    // collapsed unless they own the active route). Financing used to do the
+    // same, but it is the largest group in the list and pushed everything
+    // below it off screen — it now opens only when it owns the active route.
     const connectorIndex = items.findIndex((it: any) => it && it.label === "Connector Management");
-    const defaultOpen = [financingIndex, connectorIndex].filter((i) => i !== -1);
+    const defaultOpen = [connectorIndex].filter((i) => i !== -1);
 
     const matchIndex = items.findIndex(hasActiveLeaf);
     // Open the route's owning group (if any) on top of the always-open defaults.
@@ -1430,115 +1435,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     // },
         //   ].filter(Boolean),
         // },
-        // hasAccess("LEDGER") &&
-        // hasAccess("REPORT") &&
-        hasAccess("REPORT_READ") && {
-          // Every report the ledger exposes, grouped the way the API groups
-          // them. Each child opens the hub for that category, where the
-          // individual report is picked — a flat list of 27 would be unusable.
-          label: "All Reports",
-          Link: "ReportsCenter/currency",
-          img: Images.reportsIconDark,
-          active: pathname.split("/").includes("ReportsCenter"),
-          submenu: [
-            hasAccess("REPORT_READ") && {
-              label: "Currency Reports",
-              Link: "currency",
-              LinkLable: "/Lms/ReportsCenter",
-              active: pathname.includes("/Lms/ReportsCenter/currency"),
-            },
-            hasAccess("REPORT_READ") && {
-              label: "Ledger & Journal",
-              Link: "ledger",
-              LinkLable: "/Lms/ReportsCenter",
-              active: pathname.includes("/Lms/ReportsCenter/ledger"),
-            },
-            hasAccess("REPORT_READ") && {
-              label: "Lending",
-              Link: "lending",
-              LinkLable: "/Lms/ReportsCenter",
-              active: pathname.includes("/Lms/ReportsCenter/lending"),
-            },
-            hasAccess("REPORT_READ") && {
-              label: "Collections & Risk",
-              Link: "collections",
-              LinkLable: "/Lms/ReportsCenter",
-              active: pathname.includes("/Lms/ReportsCenter/collections"),
-            },
-            hasAccess("REPORT_READ") && {
-              label: "Profitability & Regulatory",
-              Link: "profitability",
-              LinkLable: "/Lms/ReportsCenter",
-              active: pathname.includes("/Lms/ReportsCenter/profitability"),
-            },
-          ].filter(Boolean),
-        },
-        hasAccess("LEDGER") && {
-          // GL enquiry, the failed-posting queue and the daily reconciliation.
-          // Grouped next to the chart of accounts because they are read from
-          // the same desk.
-          label: "General Ledger",
-          Link: "LedgerGl/Entries",
-          img: Images.accountCharts,
-          active: pathname.split("/").includes("LedgerGl"),
-          submenu: [
-            hasAccess("GL_ENTRY_READ") && {
-              label: "GL Entries",
-              Link: "Entries",
-              LinkLable: "/Lms/LedgerGl",
-              active: pathname.includes("/Lms/LedgerGl/Entries"),
-            },
-            hasAccess("GL_ENTRY_READ") && {
-              label: "Failed Entries",
-              Link: "Failed",
-              LinkLable: "/Lms/LedgerGl",
-              active: pathname.includes("/Lms/LedgerGl/Failed"),
-            },
-            hasAccess("GL_RECONCILIATION_READ") && {
-              label: "Reconciliation",
-              Link: "Reconciliation",
-              LinkLable: "/Lms/LedgerGl",
-              active: pathname.includes("/Lms/LedgerGl/Reconciliation"),
-            },
-          ].filter(Boolean),
-        },
-        hasAccess("LEDGER") && {
-          label: "Chart of account",
-          Link: "ChartOfAccount",
-          active: pathname.split("/").includes("ChartOfAccount"),
-          img: Images.accountCharts,
-          submenu: [
-            // hasAccess("chart_of_account_module") &&
-            hasAccess("COA_READ") && {
-              label: "Accounts",
-              Link: "ChartOfAccount",
-              LinkLable: "/Lms/ChartOfAccount",
-              active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
-            },
-            //hasAccess("coa_configuration_module") &&
-            hasAccess("COA_CONFIG_READ") && {
-              label: "COA Configuration",
-              Link: "CoaConfiguration",
-              LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
-            },
-            hasAccess("COA_FIELD_READ") && {
-              label: "Chart of accounts field",
-              Link: "ChartOfAccountFields",
-              LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccountFields"),
-            },
-            {
-              // Which account each wallet rail posts to. It picks accounts, so
-              // it belongs beside the chart of accounts rather than beside the
-              // GL enquiry screens that read entries.
-              label: "Wallet GL Accounts",
-              Link: "WalletAccounts",
-              LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/WalletAccounts"),
-            },
-          ].filter(Boolean),
-        },
+        // All Reports / General Ledger / Chart of account used to live here.
+        // They are accounting desks in their own right, not lending screens, so
+        // they now sit at the top level of the sidebar under Accounts Limit
+        // Setting (see `accountingItems` below). Their routes are unchanged.
 
         hasAccess("COLLECTIONS_READ") && {
           label: "Collections",
@@ -2282,6 +2182,130 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const lmsModule = sidebarItems.find((x: any) => x && x.label === "LMS");
   const connectorModule = sidebarItems.find((x: any) => x && x.label === "Connector Management");
 
+  // Accounting desks lifted out of Financing → LMS to the sidebar's top level.
+  // Children keep their absolute `LinkLable` + `Link`, so every route, active
+  // rule and permission gate behaves as it did nested inside LMS.
+  // Ordered the way the work flows: define the accounts, then read what posted
+  // to them, then report on it.
+  const accountingItems = [
+    hasAccess("LEDGER") && {
+      label: "Chart of account",
+      Link: "/Lms/ChartOfAccount/ChartOfAccount",
+      img: Images.accountCharts,
+      active: pathname.split("/").includes("ChartOfAccount"),
+      menu: [
+        hasAccess("COA_READ") && {
+          label: "Accounts",
+          Link: "ChartOfAccount",
+          LinkLable: "/Lms/ChartOfAccount",
+          active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
+        },
+        hasAccess("COA_CONFIG_READ") && {
+          label: "COA Configuration",
+          Link: "CoaConfiguration",
+          LinkLable: "/Lms/ChartOfAccount",
+          active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
+        },
+        hasAccess("COA_FIELD_READ") && {
+          label: "Chart of accounts field",
+          Link: "ChartOfAccountFields",
+          LinkLable: "/Lms/ChartOfAccount",
+          active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccountFields"),
+        },
+        {
+          // Which account each wallet rail posts to. It picks accounts, so it
+          // belongs beside the chart of accounts rather than beside the GL
+          // enquiry screens that read entries.
+          label: "Wallet GL Accounts",
+          Link: "WalletAccounts",
+          LinkLable: "/Lms/ChartOfAccount",
+          active: pathname.includes("/Lms/ChartOfAccount/WalletAccounts"),
+        },
+      ].filter(Boolean),
+    },
+    hasAccess("LEDGER") && {
+      // GL enquiry, the failed-posting queue and the daily reconciliation.
+      // Grouped next to the chart of accounts because they are read from the
+      // same desk.
+      label: "General Ledger",
+      Link: "/Lms/LedgerGl/Entries",
+      img: Images.accountCharts,
+      active: pathname.split("/").includes("LedgerGl"),
+      menu: [
+        hasAccess("GL_ENTRY_READ") && {
+          label: "GL Entries",
+          Link: "Entries",
+          LinkLable: "/Lms/LedgerGl",
+          active: pathname.includes("/Lms/LedgerGl/Entries"),
+        },
+        hasAccess("GL_ENTRY_READ") && {
+          label: "Failed Entries",
+          Link: "Failed",
+          LinkLable: "/Lms/LedgerGl",
+          active: pathname.includes("/Lms/LedgerGl/Failed"),
+        },
+        hasAccess("GL_RECONCILIATION_READ") && {
+          label: "Reconciliation",
+          Link: "Reconciliation",
+          LinkLable: "/Lms/LedgerGl",
+          active: pathname.includes("/Lms/LedgerGl/Reconciliation"),
+        },
+      ].filter(Boolean),
+    },
+    hasAccess("REPORT_READ") && {
+      // Every report the ledger exposes, grouped the way the API groups them.
+      // Each child opens the hub for that category, where the individual report
+      // is picked — a flat list of 27 would be unusable.
+      label: "All Reports",
+      Link: "/Lms/ReportsCenter/currency",
+      img: Images.reportsIconDark,
+      active:
+        pathname.split("/").includes("ReportsCenter") ||
+        pathname.includes("/LOS/WalletLedger/Transactions"),
+      menu: [
+        hasAccess(["LEDGER", "WALLET"]) && {
+          // The wallet-side view of the same postings. It is a standalone page
+          // rather than a ReportsCenter category, so it keeps its own absolute
+          // route — only its home in the sidebar changed.
+          label: "Transactions",
+          Link: "Transactions",
+          LinkLable: "/LOS/WalletLedger",
+          active: pathname.includes("/LOS/WalletLedger/Transactions"),
+        },
+        hasAccess("REPORT_READ") && {
+          label: "Currency Reports",
+          Link: "currency",
+          LinkLable: "/Lms/ReportsCenter",
+          active: pathname.includes("/Lms/ReportsCenter/currency"),
+        },
+        hasAccess("REPORT_READ") && {
+          label: "Ledger & Journal",
+          Link: "ledger",
+          LinkLable: "/Lms/ReportsCenter",
+          active: pathname.includes("/Lms/ReportsCenter/ledger"),
+        },
+        hasAccess("REPORT_READ") && {
+          label: "Lending",
+          Link: "lending",
+          LinkLable: "/Lms/ReportsCenter",
+          active: pathname.includes("/Lms/ReportsCenter/lending"),
+        },
+        hasAccess("REPORT_READ") && {
+          label: "Collections & Risk",
+          Link: "collections",
+          LinkLable: "/Lms/ReportsCenter",
+          active: pathname.includes("/Lms/ReportsCenter/collections"),
+        },
+        hasAccess("REPORT_READ") && {
+          label: "Profitability & Regulatory",
+          Link: "profitability",
+          LinkLable: "/Lms/ReportsCenter",
+          active: pathname.includes("/Lms/ReportsCenter/profitability"),
+        },
+      ].filter(Boolean),
+    },
+  ].filter(Boolean);
+
   const walletItems: any[] = [
     hasAccess("DASHBOARD") && {
       label: "Dashboard",
@@ -2513,27 +2537,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
     },
-    // hasAccess(["LEDGER", "WALLET"]) && {
-    //   label: "Wallet Ledger",
-    //   Link: "/LOS/WalletLedger/Transactions",
-    //   img: Images.reportsIconDark,
-    //   imgActive: Images.reportsIconDark,
-    //   active: pathname.includes("/LOS/WalletLedger"),
-    //   menu: [
-    //     {
-    //       label: "Transactions",
-    //       Link: "Transactions",
-    //       LinkLable: "/LOS/WalletLedger",
-    //       active: pathname.includes("/LOS/WalletLedger/Transactions"),
-    //     },
-    //     {
-    //       label: "Account Statements",
-    //       Link: "Accounts",
-    //       LinkLable: "/LOS/WalletLedger",
-    //       active: pathname.includes("/LOS/WalletLedger/Accounts"),
-    //     },
-    //   ].filter(Boolean),
-    // },
     hasAccess("BNPL") && {
       // Two screens that only make sense together: a category cannot exist in a
       // currency that has no limit, so they share one parent rather than
@@ -2645,6 +2648,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         pathname.includes("/Lms/Setting/GeneralCreditScoring") &&
         location.search.includes("accounts-limit-setting"),
     },
+    // ===== Accounting desks =====
+    // Moved out of Financing → LMS: these read the ledger rather than drive a
+    // loan, so they sit here as their own top-level groups. Routes, permission
+    // gates and active-state rules are exactly what they were inside LMS —
+    // only `submenu` became `menu`, which is what the top level renders from.
+    ...accountingItems,
     hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK"]) && {
       label: "Financing",
       Link: "/LOS/Dashboard",
