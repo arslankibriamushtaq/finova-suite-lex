@@ -2,7 +2,7 @@
 
 > ## ✅ Historical — the frontend side of this is done (2026-08-17)
 >
-> This document records the audit that produced [PERMISSIONS_TO_ADD.md](PERMISSIONS_TO_ADD.md). Every gap it describes has since been closed in the frontend:
+> This document records the audit that produced [BACKEND_PERMISSIONS_REQUEST.md](BACKEND_PERMISSIONS_REQUEST.md). Every gap it describes has since been closed in the frontend:
 >
 > - `hasAccess()` now matches `permissionCode`, not just module code/name — the enabler the rest depended on.
 > - §3.1's dead legacy gates (`block_code_module`, `reports_module`, `accounting_financing_module`) are replaced with real codes.
@@ -10,7 +10,7 @@
 > - §4's ungated pages are gated, and the four pages that lacked one now carry a `PermissionDenied` route guard.
 > - §5's name-matched gates all use codes.
 >
-> **For the current state, read [SIDEBAR_ACTIVE_PAGES.md](SIDEBAR_ACTIVE_PAGES.md)** — it lists every page with the gate now in force. **For what the backend still owes, read [PERMISSIONS_TO_ADD.md](PERMISSIONS_TO_ADD.md)** and [PERMISSIONS_TO_ADD_WALLET_GL.md](PERMISSIONS_TO_ADD_WALLET_GL.md).
+> **For the current state, read [SIDEBAR_ACTIVE_PAGES.md](SIDEBAR_ACTIVE_PAGES.md)** — it lists every page with the gate now in force. **For what the backend still owes, read [BACKEND_PERMISSIONS_REQUEST.md](BACKEND_PERMISSIONS_REQUEST.md)**.
 >
 > Line references below point at the sidebar as it was in early August; it has since been restructured (accounting desks moved to the top level, SullisCash and Crypto grouped), so treat them as historical.
 

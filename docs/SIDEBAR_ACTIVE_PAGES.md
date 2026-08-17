@@ -144,8 +144,8 @@ Everything above resolves against the identity-service catalog **except** these.
 
 | Code | Page | Tracked in |
 |---|---|---|
-| `WALLET_GL_ACCOUNT_READ` / `_WRITE` | Wallet GL Accounts | [PERMISSIONS_TO_ADD_WALLET_GL.md](PERMISSIONS_TO_ADD_WALLET_GL.md) |
-| `CRYPTO`, `CRYPTO_TREASURY_READ`, `CRYPTO_TRANSFER_READ` | Crypto Treasury, Crypto Transfers | not yet written up — the feature is still landing |
+| `WALLET_GL_ACCOUNT_READ` / `_WRITE` | Wallet GL Accounts | [BACKEND_PERMISSIONS_REQUEST.md](BACKEND_PERMISSIONS_REQUEST.md) §A4 |
+| `CRYPTO`, `CRYPTO_TREASURY_*`, `CRYPTO_TRANSFER_*` | Crypto Treasury, Crypto Transfers | [BACKEND_PERMISSIONS_REQUEST.md](BACKEND_PERMISSIONS_REQUEST.md) §A11 |
 
 ---
 
