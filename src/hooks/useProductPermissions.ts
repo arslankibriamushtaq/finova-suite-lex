@@ -769,8 +769,13 @@ export const BLOCK_CODE_PERMISSIONS = {
 export const LENDING_PERMISSIONS = {
   MODULE: "LENDING",
   READ: "LENDING_READ",
-  DASHBOARD_READ: "LENDING_DASHBOARD_READ",
+  // No DASHBOARD_READ: the delivery note listed LENDING_DASHBOARD_READ but it
+  // was never registered — verified against the live catalog 2026-08-18. The
+  // LMS dashboard is gated on LENDING_READ instead.
   APPLICATION_LIST: "LENDING_APPLICATION_READ",
+  /** Manual-approval task endpoints back the approve/reject pair. */
+  MANUAL_APPROVAL_READ: "LENDING_MANUAL_APPROVAL_READ",
+  MANUAL_APPROVAL_ACTION: "LENDING_MANUAL_APPROVAL_ACTION",
   /** Backed by the manual-approval task endpoints, not by loan-applications. */
   APPLICATION_APPROVE: "LENDING_APPLICATION_APPROVE",
   APPLICATION_REJECT: "LENDING_APPLICATION_REJECT",
