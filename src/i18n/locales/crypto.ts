@@ -89,6 +89,7 @@ const crypto: ModuleLocale = {
     "trf.col.action": "Action",
     "trf.action.reconcile": "Reconcile now",
     "trf.action.abandon": "Mark dead",
+    "trf.action.explorer": "View on explorer",
     "trf.noHash": "Not broadcast",
     // Detail
     "trf.detail.title": "Transfer {{id}}",
@@ -211,6 +212,7 @@ const crypto: ModuleLocale = {
     "trf.col.action": "Action",
     "trf.action.reconcile": "Rapprocher maintenant",
     "trf.action.abandon": "Marquer comme mort",
+    "trf.action.explorer": "Voir sur l'explorateur",
     "trf.noHash": "Non diffusé",
     "trf.detail.title": "Transfert {{id}}",
     "trf.detail.amount": "Montant",
@@ -329,6 +331,7 @@ const crypto: ModuleLocale = {
     "trf.col.action": "الإجراء",
     "trf.action.reconcile": "تسوية الآن",
     "trf.action.abandon": "اعتباره منتهيًا",
+    "trf.action.explorer": "عرض في مستكشف الشبكة",
     "trf.noHash": "لم يُبثّ",
     "trf.detail.title": "التحويل {{id}}",
     "trf.detail.amount": "المبلغ",

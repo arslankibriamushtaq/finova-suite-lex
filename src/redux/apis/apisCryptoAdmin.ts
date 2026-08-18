@@ -319,6 +319,27 @@ export const formatCryptoAmount = (value: number | string | null | undefined, as
 };
 
 /**
+ * Where a transaction hash can be looked at on the chain itself.
+ *
+ * Per asset, because each chain has its own explorer and a hash from one is
+ * meaningless on the other. These are TESTNET explorers — UAT runs Ethereum
+ * Sepolia — so a mainnet deployment changes the base here and nowhere else.
+ *
+ * An asset with no entry simply gets no link: a wrong explorer is worse than
+ * none, since it renders a real hash as "not found" and reads as a lost
+ * transaction.
+ */
+const EXPLORER_TX_BASE: Record<string, string> = {
+  ETH: "https://sepolia.etherscan.io/tx/",
+};
+
+export const explorerTxUrl = (asset?: string, txHash?: string | null): string | undefined => {
+  if (!asset || !txHash) return undefined;
+  const base = EXPLORER_TX_BASE[asset.trim().toUpperCase()];
+  return base ? `${base}${txHash}` : undefined;
+};
+
+/**
  * An address or hash, head and tail only. Full values are 42 (address) or 66
  * (hash) characters and would push every other column off a table; the middle
  * is the part nobody reads. The full value stays available on hover and in the
