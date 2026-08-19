@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
  
  
 const axiosProductManagement = Axios.create({
@@ -29,12 +29,8 @@ axiosProductManagement.interceptors.response.use(
  
   async function (error) {
     if (error?.response?.status === 401) {
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
       
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
       
       // Redirect to login page
       window.location.href = "/login";

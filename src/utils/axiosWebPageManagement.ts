@@ -2,7 +2,7 @@
 import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
 
 const axios = Axios.create({
@@ -44,17 +44,12 @@ axios.interceptors.response.use(
     const status = error?.response?.status;
     const data = error?.response?.data;
 
-
     if (status === 401) {
       console.warn("Unauthorized, redirecting to login...");
       toast.error("Session expired, please login again.");
       
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
       
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
       
       window.location.href = "/login";
     }

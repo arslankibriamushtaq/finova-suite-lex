@@ -5,11 +5,10 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaCog, FaSignOutAlt } from "react-icons/fa";
 import { RiArrowDropDownFill } from "react-icons/ri";
-import { useDispatch } from "react-redux";
-import { setToken } from "../../redux/apis/apisSlice";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { logOutApi } from "../../redux/apis/apisCrud";
+import { clearAdminSession } from "../../utils/adminSession";
 
 const PartnerHeader = () => {
   const { t } = useTranslation("partner");
@@ -19,7 +18,6 @@ const PartnerHeader = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   // Toggle Profile Menu
   const toggleMenu = () => {
@@ -34,10 +32,9 @@ const PartnerHeader = () => {
         {
           loading: t("toast.loggingOut"),
           success: (res) => {
-            dispatch(setToken({ token: "" }));
-            localStorage.removeItem("token");
-            localStorage.removeItem("userData");
-            localStorage.removeItem("permissions");
+            // Clearing only `token` left `refreshToken`, permissions and
+            // applicant PII in the store and in the persisted session.
+            void clearAdminSession();
             navigate("/login");
             return res?.data?.message || t("toast.loggedOut");
           },

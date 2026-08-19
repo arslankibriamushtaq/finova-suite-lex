@@ -1,6 +1,6 @@
 
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
 import Axios from "axios";
 
@@ -31,12 +31,8 @@ axios.interceptors.response.use(
     if (status === 401) {
       toast.error("Session expired, please login again.");
       
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
       
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
       
       // Redirect to login page
       window.location.href = "/login";

@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
 const axiosFactoring = Axios.create({
@@ -66,12 +66,8 @@ axiosFactoring.interceptors.response.use(
   async function (error) {
     // console.log(error)
     if (error?.response?.status === 401) {
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
 
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
       
       // Redirect to login page
       if(window.location.pathname !== "/login"){

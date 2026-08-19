@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
 
 const axiosCustomerService = Axios.create({
@@ -27,9 +27,7 @@ axiosCustomerService.interceptors.response.use(
     const data = error?.response?.data;
 
     if (status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
       window.location.href = "/login";
     }
 

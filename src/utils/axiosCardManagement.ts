@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
 
 const axiosCardManagement = Axios.create({
@@ -28,10 +28,7 @@ axiosCardManagement.interceptors.response.use(
 
     if (status === 401) {
       toast.error("Session expired, please login again.");
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      localStorage.removeItem("persist:root");
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
       window.location.href = "/login";
     }
     // Business-rule / validation / conflict errors surface the API message.

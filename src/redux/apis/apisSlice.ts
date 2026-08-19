@@ -202,6 +202,13 @@ export const authSlice = createSlice({
   setSelectedPromiseApplication: (state, action: PayloadAction<any | null>) => {
     state.selectedPromiseApplication = action.payload;
   },
+  // Wipe the slice back to its initial values. Logout used to only clear a
+  // few ad-hoc localStorage keys, leaving tokens, permissions and applicant
+  // PII (nid, dob, crNumber, businessDetails) live in the store and in the
+  // persisted session — readable by the next person on a shared machine.
+  // Prefer `clearSession()` in src/utils/session.ts over dispatching this
+  // directly; it also purges the persisted copy.
+  resetSession: () => initialState,
   },
 });
 
@@ -242,6 +249,7 @@ export const {
   setPermissions,
   setSelectedPromiseApplication,
   setCollapsed,
+  resetSession,
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -3,6 +3,7 @@ import { FaBars } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { createGlobalStyle } from "styled-components";
 import { authSlice } from "../../redux/apis/apisSlice";
+import { clearAdminSession } from "../../utils/adminSession";
 import type { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
 import SuperAdmin from "./SuperAdmin";
@@ -30,12 +31,12 @@ const DashboardHeaderLms = () => {
   `;
 
   const backgroundColorClass = themeStyle?.headerColor?.backgroundColor;
-  const handleUserAction = (value: string) => {
+  const handleUserAction = async (value: string) => {
     if (value === "logout") {
-      localStorage.removeItem("awn-token");
-      localStorage.removeItem("awn-los-data");
-      localStorage.removeItem("awn-role-permissions");
-      // navigate("/login");
+      // Clears the Redux store and its persisted copy as well as the ad-hoc
+      // storage keys — removing the `awn-*` keys alone left tokens and
+      // applicant PII behind for the next user of the browser.
+      await clearAdminSession();
       window.location.replace(`${import.meta.env.VITE_REACT_APP_API_BASE_URL}/dashboard`)
     }
   };

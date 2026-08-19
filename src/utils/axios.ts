@@ -1,7 +1,7 @@
 // src/utils/axios.js
 import Axios from "axios";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearAdminSession } from "./adminSession";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import toast from "react-hot-toast";
 
@@ -30,20 +30,11 @@ axios.interceptors.response.use(
     const status = error?.response?.status;
     const data = error?.response?.data;
 
-
     if (status === 401) {
       console.warn("Unauthorized, redirecting to login...");
       toast.error("Session expired, please login again.");
 
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-
-      // Clear redux-persist persisted state so PublicRoute won't redirect back
-      localStorage.removeItem("persist:root");
-
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
+      void clearAdminSession();
 
       window.location.href = "/login";
     }
