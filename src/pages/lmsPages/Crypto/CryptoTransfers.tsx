@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   CheckCircle2,
   ChevronDown,
+  ExternalLink,
   Eye,
   RefreshCw,
   SlidersHorizontal,
@@ -49,6 +50,7 @@ import {
   CRYPTO_TRANSFER_STATUSES,
   abandonCryptoTransfer,
   cryptoErrorMessage,
+  explorerTxUrl,
   formatCryptoAmount,
   getCryptoTransfer,
   getCryptoTransfers,
@@ -371,6 +373,9 @@ const CryptoTransfers = () => {
 
   const isStuck = detail?.status === "BROADCAST" && !detail?.confirmations;
 
+  /** Absent until the transfer has a hash, and on any chain with no explorer mapped. */
+  const explorerUrl = explorerTxUrl(detail?.assetCode, detail?.txHash);
+
   return (
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
@@ -631,6 +636,18 @@ const CryptoTransfers = () => {
           )}
 
           <DialogFooter className="gap-2 sm:justify-end">
+            {/* An anchor rather than window.open: it middle-clicks, it shows its
+                target on hover, and screen readers announce it as a link.
+                `noopener` because the explorer is a third-party origin and must
+                not get a handle on this window. */}
+            {explorerUrl && (
+              <Button asChild variant="outline" className="gap-2">
+                <a href={explorerUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  {t("trf.action.explorer")}
+                </a>
+              </Button>
+            )}
             {canUpdate && detail && !isTerminalTransferStatus(detail.status) && (
               <Button
                 variant="outline"
