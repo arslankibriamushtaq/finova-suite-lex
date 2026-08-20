@@ -22,7 +22,7 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
-import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils";
+import { TONES, formatDateTime, formatMoney } from "../../../components/shared/detailKitUtils";
 import { LexNotice, LexPageHeader, LexSearch } from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
@@ -62,6 +62,57 @@ const STATE_STYLE: Record<string, string> = {
   UNREADABLE: TONES.sky,
   WRONG_TYPE: TONES.sky,
   ANALYSIS_UNAVAILABLE: TONES.sky,
+};
+
+/**
+ * The check tally as it stands on the list row, before the full `checks` array
+ * is fetched. "15/15" reads as done; a non-zero failed/flagged/not-run count is
+ * surfaced beside it so a halted or adverse sequence is visible without opening
+ * the row. When no checks have run at all the endpoint sends zeros — shown as a
+ * dash rather than a misleading "0/0".
+ */
+const ChecksSummary = ({
+  row,
+  t,
+}: {
+  row: LexAnalysis;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+}) => {
+  const total = row.checksTotal ?? 0;
+  if (!total) return <span className="text-muted-foreground">—</span>;
+
+  const passed = row.checksPassed ?? 0;
+  const failed = row.checksFailed ?? 0;
+  const flagged = row.checksFlagged ?? 0;
+  const notRun = row.checksNotRun ?? 0;
+  const allPassed = passed === total;
+
+  return (
+    <div className="flex flex-col gap-1">
+      <span className={`text-sm font-medium ${allPassed ? "text-emerald-600" : "text-foreground"}`}>
+        {t("ana.checksSummary", { passed, total })}
+      </span>
+      {(failed > 0 || flagged > 0 || notRun > 0) && (
+        <div className="flex flex-wrap gap-1">
+          {failed > 0 && (
+            <Badge variant="outline" className={`border text-[10px] ${TONES.red}`}>
+              {t("ana.checksFailed", { count: failed })}
+            </Badge>
+          )}
+          {flagged > 0 && (
+            <Badge variant="outline" className={`border text-[10px] ${TONES.amber}`}>
+              {t("ana.checksFlagged", { count: flagged })}
+            </Badge>
+          )}
+          {notRun > 0 && (
+            <Badge variant="outline" className={`border text-[10px] ${TONES.slate}`}>
+              {t("ana.checksNotRun", { count: notRun })}
+            </Badge>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const LexAnalyses = () => {
@@ -119,14 +170,35 @@ const LexAnalyses = () => {
     {
       name: t("ana.col.application"),
       cell: (row: LexAnalysis) => (
-        <span className="font-mono text-xs">{row.applicationId}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="font-medium text-foreground">
+            {row.application?.applicantName || t("ana.unknownApplicant")}
+          </span>
+          <span className="font-mono text-[11px] text-muted-foreground">
+            {row.application?.applicationNumber || row.applicationId}
+          </span>
+        </div>
       ),
-      width: "200px",
+      width: "220px",
+    },
+    {
+      name: t("ana.col.product"),
+      cell: (row: LexAnalysis) => (
+        <div className="flex flex-col gap-0.5">
+          <span>{row.application?.productName || "—"}</span>
+          {typeof row.application?.requestedAmount === "number" && (
+            <span className="text-[11px] text-muted-foreground">
+              {formatMoney(row.application.requestedAmount)}
+            </span>
+          )}
+        </div>
+      ),
+      width: "180px",
     },
     {
       name: t("ana.col.documentType"),
       cell: (row: LexAnalysis) => <span>{row.documentKind || "—"}</span>,
-      width: "180px",
+      width: "160px",
     },
     {
       name: t("ana.col.state"),
@@ -146,12 +218,26 @@ const LexAnalyses = () => {
           )}
         </div>
       ),
-      width: "230px",
+      width: "180px",
+    },
+    {
+      name: t("ana.col.checks"),
+      cell: (row: LexAnalysis) => <ChecksSummary row={row} t={t} />,
+      width: "170px",
+    },
+    {
+      name: t("ana.col.confidence"),
+      cell: (row: LexAnalysis) => (
+        <span>
+          {typeof row.confidenceScore === "number" ? `${row.confidenceScore.toFixed(1)}%` : "—"}
+        </span>
+      ),
+      width: "110px",
     },
     {
       name: t("ana.col.analysedAt"),
       cell: (row: LexAnalysis) => <span>{formatDateTime(row.analysedAt) || "—"}</span>,
-      width: "180px",
+      width: "170px",
     },
     {
       name: t("common:actions"),
@@ -218,7 +304,10 @@ const LexAnalyses = () => {
           <DialogHeader className="text-start">
             <DialogTitle>{t("ana.detail.title")}</DialogTitle>
             <DialogDescription>
-              {selected?.applicationId} · {formatDateTime(selected?.analysedAt) || "—"}
+              {selected?.application?.applicantName ||
+                selected?.application?.applicationNumber ||
+                selected?.applicationId}{" "}
+              · {formatDateTime(selected?.analysedAt) || "—"}
             </DialogDescription>
           </DialogHeader>
 
