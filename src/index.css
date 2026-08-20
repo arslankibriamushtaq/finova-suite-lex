@@ -435,6 +435,28 @@ body,
 }
 
 /* ---------------------------------------------------------------------------
+   Content cards that hold a form. The filter-bar rules above only size controls
+   inside `.pro-card.p-3`, so a `p-4` content card ends up with 34px selects and
+   buttons sitting next to 40px/14px inputs. Add `pro-form` to the card to bring
+   inputs, textareas and labels onto the same 34px/12px scale — placeholders
+   inherit the field's size, so they match without a rule of their own.
+--------------------------------------------------------------------------- */
+.pro-form [data-slot="input"]:not([type="checkbox"]):not([type="radio"]) {
+  height: 34px !important;
+  min-height: 34px !important;
+}
+.pro-form [data-slot="input"],
+.pro-form [data-slot="input"]::placeholder,
+.pro-form [data-slot="textarea"],
+.pro-form [data-slot="textarea"]::placeholder,
+.pro-form [data-slot="label"] {
+  font-size: 12px !important;
+}
+.pro-form [data-slot="textarea"] {
+  min-height: 58px;
+}
+
+/* ---------------------------------------------------------------------------
    Compact read-only tile for a label + value pair inside a `.pro-card`, where
    the full `.stat-card` KPI treatment (150px tall, gradient, 40px icon badge)
    is too heavy. Same emerald tint and 2px corner as the card it sits in, so a
@@ -651,6 +673,20 @@ label:has(> [data-slot="checkbox"]) {
    Add `pro-dialog` to a shadcn DialogContent to apply it. */
 .pro-dialog [data-slot="dialog-title"] {
   font-size: 15px !important;
+}
+/* The close button is pinned to the inline-end corner, so reserve that much
+   room on the header or a long title runs underneath it — which is what a
+   right-aligned Arabic title did before the button flipped sides. */
+[data-slot="dialog-content"]:has([data-slot="dialog-close"]) [data-slot="dialog-header"] {
+  padding-inline-end: 2rem;
+}
+
+/* The base DialogHeader ships `text-center sm:text-left`; pin the whole header
+   to the reading direction so the title lines up with its description. */
+.pro-dialog [data-slot="dialog-header"],
+.pro-dialog [data-slot="dialog-title"],
+.pro-dialog [data-slot="dialog-description"] {
+  text-align: start !important;
 }
 .pro-dialog [data-slot="dialog-description"] {
   font-size: 12px !important;

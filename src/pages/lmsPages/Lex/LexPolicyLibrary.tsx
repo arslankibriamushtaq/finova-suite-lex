@@ -1,9 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Archive, BookOpen, FilePlus2, History, Pencil, RefreshCw, Upload } from "lucide-react";
+import {
+  Archive,
+  BookOpen,
+  ChevronDown,
+  FilePlus2,
+  History,
+  Pencil,
+  RefreshCw,
+  Upload,
+} from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -61,6 +76,9 @@ import {
  *   readable backwards, and afterwards the read endpoint answers 422
  *   NO_LIVE_VERSION rather than 404.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexPolicyLibrary = () => {
   const { t } = useTranslation("lex");
   // Ungated while the LEX permission codes are unregistered — see useLexAccess.
@@ -285,38 +303,59 @@ const LexPolicyLibrary = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexPolicyDocument) => (
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            title={t("kb.versions")}
-            onClick={() => openVersions(row)}
-          >
-            <History className="h-4 w-4" />
-          </Button>
-          {canWrite && (
-            <Button variant="ghost" size="icon" title={t("kb.revise")} onClick={() => openRevise(row)}>
-              <Pencil className="h-4 w-4" />
-            </Button>
-          )}
-          {canRetire && row.lifecycle === "ACTIVE" && (
-            <Button
-              variant="ghost"
-              size="icon"
-              title={t("kb.retire")}
-              onClick={() => {
-                setRetireTarget(row);
-                setRetireReason("");
-                setRetireOpen(true);
-              }}
-            >
-              <Archive className="h-4 w-4" />
-            </Button>
-          )}
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openVersions(row);
+                }}
+              >
+                <History className="h-4 w-4" />
+                {t("kb.versions")}
+              </DropdownMenuItem>
+              {canWrite && (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    openRevise(row);
+                  }}
+                >
+                  <Pencil className="h-4 w-4" />
+                  {t("kb.revise")}
+                </DropdownMenuItem>
+              )}
+              {canRetire && row.lifecycle === "ACTIVE" && (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setRetireTarget(row);
+                    setRetireReason("");
+                    setRetireOpen(true);
+                  }}
+                >
+                  <Archive className="h-4 w-4" />
+                  {t("kb.retire")}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
-      width: "160px",
+      width: "120px",
     },
   ];
 
@@ -329,35 +368,47 @@ const LexPolicyLibrary = () => {
 
   return (
     <div className="service">
-      <LexPageHeader icon={BookOpen} title={t("kb.title")} subtitle={t("kb.subtitle")}>
-        <LexSearch value={query} onChange={setQuery} placeholder={t("kb.searchPlaceholder")} />
-        <Select value={category} onValueChange={(v) => { setCategory(v); setPage(1); }}>
-          <SelectTrigger className="w-44 bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("kb.allCategories")}</SelectItem>
-            {DOCUMENT_CATEGORIES.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-        {canWrite && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={() => setUploadOpen(true)}>
-            <Upload className="h-4 w-4" />
-            {t("kb.upload")}
-          </Button>
-        )}
-      </LexPageHeader>
+      <LexPageHeader icon={BookOpen} title={t("kb.title")} subtitle={t("kb.subtitle")} />
 
-      {searchHits && <LexNotice tone="slate">{t("kb.searchScopeNote")}</LexNotice>}
-
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="kb-search"
+            className="flex-1"
+            value={query}
+            onChange={setQuery}
+            placeholder={t("kb.searchPlaceholder")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Label htmlFor="kb-category" className="sr-only">
+              {t("kb.col.category")}
+            </Label>
+            <Select value={category} onValueChange={(v) => { setCategory(v); setPage(1); }}>
+              <SelectTrigger id="kb-category" className="w-44 bg-card">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{t("kb.allCategories")}</SelectItem>
+                {DOCUMENT_CATEGORIES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+            {canWrite && (
+              <Button className="wallet-brand-btn gap-2" onClick={() => setUploadOpen(true)}>
+                <Upload className="h-4 w-4" />
+                {t("kb.upload")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
       {noLiveVersion && (
         <LexNotice tone="slate" icon={Archive}>
           {t("kb.noLiveVersionNote", { key: noLiveVersion })}
@@ -411,9 +462,6 @@ const LexPolicyLibrary = () => {
                   value={documentKey}
                   onChange={(e) => setDocumentKey(e.target.value)}
                 />
-                <p className="m-0 font-mono text-xs text-muted-foreground">
-                  {t("kb.field.keyNormalized", { key: normalizedKey || "—" })}
-                </p>
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="kb-title">{t("kb.field.title")}</Label>
@@ -440,7 +488,6 @@ const LexPolicyLibrary = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="m-0 text-xs text-muted-foreground">{t("kb.field.categoryHint")}</p>
             </div>
 
             <div className="flex flex-col gap-1.5">

@@ -2,9 +2,24 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { HelpCircle, Inbox, PauseCircle, RefreshCw } from "lucide-react";
+import {
+  ChevronDown,
+  Eye,
+  HelpCircle,
+  Inbox,
+  PauseCircle,
+  RefreshCw,
+  SlidersHorizontal,
+} from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
+import { FilterField } from "../../../components/shared/filterKit";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import {
@@ -17,7 +32,6 @@ import {
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, formatMoney } from "../../../components/shared/detailKitUtils";
 import { LexPageHeader, LexSearch, LexStatusBadge, LexTile } from "../../../components/shared/lexKit";
-import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { emptyPage, lexErrorMessage, logForbidden, type LexPage } from "../../../redux/apis/apisLexCore";
@@ -60,6 +74,9 @@ const SLA_TONE: Record<string, string> = {
  * last. An untracked case is not the most urgent thing on the screen just
  * because it has no deadline.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexCases = () => {
   const { t } = useTranslation("lex");
   const navigate = useNavigate();
@@ -75,10 +92,18 @@ const LexCases = () => {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<LexCaseTab>("ALL");
   const [sort, setSort] = useState<string>(CASE_SORTS[0]);
+  const [showFilters, setShowFilters] = useState(false);
   const [routingType, setRoutingType] = useState("ALL");
 
   const errorsByCode = useMemo(
-    () => ({ "COMMON.AUTH.ACCESS_DENIED": t("err.accessDenied") }),
+    () => ({
+      "COMMON.AUTH.ACCESS_DENIED": t("err.accessDenied"),
+      // The service answers a plain list GET with 409 CONFLICT and the generic
+      // "conflict with the current state" body. That sentence describes a write
+      // that lost a race, so on a page load it tells the reader nothing true.
+      // Show the load failure instead until the endpoint is fixed server-side.
+      "COMMON.RESOURCE.CONFLICT": t("case.toast.loadFailed"),
+    }),
     [t]
   );
 
@@ -271,14 +296,41 @@ const LexCases = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexCaseSummary) => (
-        <Button variant="outline" size="sm" onClick={() => navigate(`/LOS/Lex/Cases/${row.id}`)}>
-          {t("open")}
-        </Button>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate(`/LOS/Lex/Cases/${row.id}`);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "110px",
+      width: "120px",
     },
   ];
+
+  // Sort is a view preference rather than a filter, so only a deliberate
+  // narrowing of the routing type shows on the badge.
+  const activeFilterCount = routingType !== "ALL" ? 1 : 0;
 
   if (!canRead) return <PermissionDenied />;
 
@@ -288,70 +340,106 @@ const LexCases = () => {
 
   return (
     <div className="service">
-      <LexPageHeader icon={Inbox} title={t("case.title")} subtitle={t("case.subtitle")}>
-        <LexSearch
-          value={search}
-          onChange={(next) => {
-            setSearch(next);
-            setPage(1);
-          }}
-          placeholder={t("case.search")}
-        />
-        <Select value={routingType} onValueChange={(v) => { setRoutingType(v); setPage(1); }}>
-          <SelectTrigger className="w-48 bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("case.filter.allRouting")}</SelectItem>
-            <SelectItem value="DELEGATION">DELEGATION</SelectItem>
-            <SelectItem value="SUPERVISOR">SUPERVISOR</SelectItem>
-            <SelectItem value="APPLICATION_SOURCE">APPLICATION_SOURCE</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
-          <SelectTrigger className="w-52 bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {CASE_SORTS.map((value) => (
-              <SelectItem key={value} value={value}>
-                {t(`case.sort.${value.split(",")[0]}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button variant="outline" className="h-10 gap-2" onClick={refresh} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-      </LexPageHeader>
+      <LexPageHeader icon={Inbox} title={t("case.title")} subtitle={t("case.subtitle")} />
 
-      {/* Tabs, counted in one call. */}
-      <div className="mb-3 flex flex-wrap items-center gap-2">
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="case-search"
+            className="flex-1"
+            value={search}
+            onChange={(next) => {
+              setSearch(next);
+              setPage(1);
+            }}
+            placeholder={t("case.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              className="gap-2"
+              aria-expanded={showFilters}
+              aria-controls="case-filters"
+              onClick={() => setShowFilters((open) => !open)}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {t("common:filters")}
+              {activeFilterCount > 0 && (
+                <Badge variant="outline" className={`border font-medium ${TONES.emerald}`}>
+                  {activeFilterCount}
+                </Badge>
+              )}
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
+              />
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={refresh} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+          </div>
+        </div>
+
+        {showFilters && (
+          <div id="case-filters" className="mt-3 border-t pt-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <FilterField label={t("case.col.routing")} htmlFor="case-routing">
+                <Select value={routingType} onValueChange={(v) => { setRoutingType(v); setPage(1); }}>
+                  <SelectTrigger id="case-routing" className="w-full bg-card">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">{t("case.filter.allRouting")}</SelectItem>
+                    <SelectItem value="DELEGATION">DELEGATION</SelectItem>
+                    <SelectItem value="SUPERVISOR">SUPERVISOR</SelectItem>
+                    <SelectItem value="APPLICATION_SOURCE">APPLICATION_SOURCE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FilterField>
+
+              <FilterField label={t("case.filter.sort")} htmlFor="case-sort">
+                <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
+                  <SelectTrigger id="case-sort" className="w-full bg-card">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CASE_SORTS.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {t(`case.sort.${value.split(",")[0]}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterField>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Counted in one call. Uses the app's own tab strip (.report-switch)
+          rather than hand-rolled pills, so a LEX queue tab looks like every
+          other tab in the product. */}
+      <div className="report-switch" role="tablist" aria-label={t("case.title")}>
         {CASE_TABS.map((entry) => (
           <button
             key={entry.key}
             type="button"
+            role="tab"
+            aria-selected={tab === entry.key}
+            className="report-switch__item"
             onClick={() => {
               setTab(entry.key);
               setPage(1);
             }}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-xs transition-colors",
-              tab === entry.key
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
-                : "border-border text-muted-foreground hover:bg-muted/40"
-            )}
           >
             {t(`case.tab.${entry.key}`)}
             {counts && (
-              <span className="ms-1.5 font-semibold">
+              <span className="ms-1.5 font-bold">
                 {counts[entry.countKey as keyof LexCaseCounts]}
               </span>
             )}
           </button>
-        ))}
-      </div>
+        ))}      </div>
 
       {/* The figures a supervisor acts on, beside the queue rather than on a
           separate board: breach counts here exclude stopped clocks and

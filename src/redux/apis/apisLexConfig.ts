@@ -568,7 +568,12 @@ export const resolveThresholds = (
 
 /** Hours in the form, minutes on the wire — and the minutes stay on screen. */
 export const minutesToHours = (minutes?: number) =>
-  minutes === undefined || minutes === null ? "" : String(Number(minutes) / 60);
+  // Four decimals still round-trips a whole minute through hoursToMinutes
+  // (2 min -> 0.0333 -> 1.998 -> 2) and Number() drops the trailing zeros, so
+  // 120 stays "2" rather than becoming "2.0000".
+  minutes === undefined || minutes === null
+    ? ""
+    : String(Number((Number(minutes) / 60).toFixed(4)));
 
 export const hoursToMinutes = (hours: string | number) => Math.round(Number(hours) * 60);
 

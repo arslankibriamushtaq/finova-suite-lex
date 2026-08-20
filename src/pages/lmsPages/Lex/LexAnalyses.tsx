@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
+  ChevronDown,
   CircleSlash,
+  Eye,
   FileSearch,
   FileWarning,
   RefreshCw,
@@ -15,6 +17,12 @@ import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -23,6 +31,7 @@ import {
 } from "../../../components/ui/dialog";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils";
+import { cn } from "../../../lib/utils";
 import { LexNotice, LexPageHeader, LexSearch } from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
@@ -43,11 +52,16 @@ import {
  * look like a clean one, which is the single easiest way to approve a document
  * nobody finished reading.
  */
-const OUTCOME_STYLE: Record<string, { tone: string; icon: typeof ShieldCheck }> = {
-  PASS: { tone: TONES.emerald, icon: ShieldCheck },
-  FAIL: { tone: TONES.red, icon: ShieldAlert },
-  FLAGGED: { tone: TONES.amber, icon: FileWarning },
-  NOT_RUN: { tone: TONES.slate, icon: CircleSlash },
+/** `rung` is the solid marker on the sequence rail; `tone` is the badge. */
+const OUTCOME_STYLE: Record<string, { tone: string; rung: string; icon: typeof ShieldCheck }> = {
+  PASS: { tone: TONES.emerald, rung: "bg-emerald-500 text-white", icon: ShieldCheck },
+  FAIL: { tone: TONES.red, rung: "bg-red-500 text-white", icon: ShieldAlert },
+  FLAGGED: { tone: TONES.amber, rung: "bg-amber-500 text-white", icon: FileWarning },
+  NOT_RUN: {
+    tone: TONES.slate,
+    rung: "bg-muted text-muted-foreground ring-1 ring-border",
+    icon: CircleSlash,
+  },
 };
 
 /**
@@ -63,6 +77,9 @@ const STATE_STYLE: Record<string, string> = {
   WRONG_TYPE: TONES.sky,
   ANALYSIS_UNAVAILABLE: TONES.sky,
 };
+
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 const LexAnalyses = () => {
   const { t } = useTranslation("lex");
@@ -155,12 +172,35 @@ const LexAnalyses = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexAnalysis) => (
-        <Button variant="outline" size="sm" onClick={() => openAnalysis(row)}>
-          {t("open")}
-        </Button>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openAnalysis(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "110px",
+      width: "120px",
     },
   ];
 
@@ -175,20 +215,26 @@ const LexAnalyses = () => {
 
   return (
     <div className="service">
-      <LexPageHeader icon={ScanEye} title={t("ana.title")} subtitle={t("ana.subtitle")}>
-        <LexSearch
-          value={applicationId}
-          onChange={(next) => {
-            setApplicationId(next);
-            setPage(1);
-          }}
-          placeholder={t("ana.filterApplication")}
-        />
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-      </LexPageHeader>
+      <LexPageHeader icon={ScanEye} title={t("ana.title")} subtitle={t("ana.subtitle")} />
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="ana-search"
+            className="flex-1"
+            value={applicationId}
+            onChange={(next) => {
+              setApplicationId(next);
+              setPage(1);
+            }}
+            placeholder={t("ana.filterApplication")}
+          />
+          <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            {t("common:refresh")}
+          </Button>
+        </div>
+      </div>
 
       <div className="pro-card">
         {!isLoading && totalRows === 0 ? (
@@ -249,48 +295,77 @@ const LexAnalyses = () => {
                 </LexNotice>
               )}
 
-              <div className="max-h-[50vh] overflow-y-auto">
-                {rows.length === 0 ? (
-                  <p className="m-0 py-6 text-center text-sm text-muted-foreground">
-                    {t("ana.detail.noRows")}
-                  </p>
-                ) : (
-                  rows.map((row, index) => {
+              {rows.length === 0 ? (
+                <p className="m-0 py-6 text-center text-sm text-muted-foreground">
+                  {t("ana.detail.noRows")}
+                </p>
+              ) : (
+                <ol className="m-0 -mb-2 list-none p-0">
+                  {rows.map((row, index) => {
                     const style = OUTCOME_STYLE[String(row.outcome)] || OUTCOME_STYLE.NOT_RUN;
                     const Icon = style.icon;
                     return (
-                      <div
+                      <li
                         key={`${row.checkCode}-${index}`}
-                        className="flex items-start gap-3 border-b border-border/60 py-2.5 last:border-b-0"
+                        className="relative flex items-center gap-3"
                       >
-                        <span className="w-6 shrink-0 pt-1 text-center text-xs text-muted-foreground">
+                        {index > 0 && (
+                          <span
+                            aria-hidden
+                            className="absolute start-3.5 top-0 h-1/2 w-px bg-border"
+                          />
+                        )}
+                        {index < rows.length - 1 && (
+                          <span
+                            aria-hidden
+                            className="absolute start-3.5 top-1/2 bottom-0 w-px bg-border"
+                          />
+                        )}
+                        {/* The rung carries the outcome, so where the sequence
+                            stopped is visible without reading every badge. */}
+                        <span
+                          className={cn(
+                            "relative z-[1] flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
+                            style.rung
+                          )}
+                        >
                           {row.ordinal ?? index + 1}
                         </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="m-0 text-sm font-medium text-foreground">
-                            {row.displayName || row.checkCode}
-                          </p>
-                          {row.detail && (
-                            <p className="m-0 mt-0.5 text-xs text-muted-foreground">{row.detail}</p>
+
+                        <div
+                          className={cn(
+                            "pro-tile mb-2 flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2",
+                            row.outcome === "NOT_RUN" && "opacity-60"
                           )}
-                          {row.reasonCode && (
-                            <p className="m-0 mt-0.5 font-mono text-[11px] text-muted-foreground">
-                              {row.reasonCode}
-                            </p>
-                          )}
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className={`border shrink-0 gap-1 font-medium ${style.tone}`}
                         >
-                          <Icon className="h-3 w-3" />
-                          {t(`ana.outcome.${row.outcome}`)}
-                        </Badge>
-                      </div>
+                          <div className="min-w-0 flex-1 basis-48">
+                            <p className="m-0 text-sm font-medium text-foreground">
+                              {row.displayName || row.checkCode}
+                            </p>
+                            {row.detail && (
+                              <p className="m-0 mt-0.5 text-xs text-muted-foreground">
+                                {row.detail}
+                              </p>
+                            )}
+                            {row.reasonCode && (
+                              <p className="m-0 mt-0.5 font-mono text-[11px] text-muted-foreground">
+                                {row.reasonCode}
+                              </p>
+                            )}
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className={`border shrink-0 gap-1 font-medium ${style.tone}`}
+                          >
+                            <Icon className="h-3 w-3" />
+                            {t(`ana.outcome.${row.outcome}`)}
+                          </Badge>
+                        </div>
+                      </li>
                     );
-                  })
-                )}
-              </div>
+                  })}
+                </ol>
+              )}
             </>
           )}
         </DialogContent>

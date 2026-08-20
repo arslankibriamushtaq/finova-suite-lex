@@ -55,7 +55,13 @@ function Switch({
         className={cn(
           "pointer-events-none block size-5 shrink-0 bg-white shadow-md ring-0",
           "transition-transform duration-200 ease-in-out",
-          "data-[state=unchecked]:translate-x-0.5 data-[state=checked]:translate-x-5"
+          // translate-x is physical, and the track is a flex row: in RTL the
+          // thumb starts at the right edge, so translating it further right
+          // pushed it out of the track and overflow:hidden clipped it away —
+          // the switch rendered as a plain pill with no knob. The two variants
+          // are mutually exclusive, so neither can win over the other.
+          "ltr:data-[state=unchecked]:translate-x-0.5 ltr:data-[state=checked]:translate-x-5",
+          "rtl:data-[state=unchecked]:-translate-x-0.5 rtl:data-[state=checked]:-translate-x-5"
         )}
       />
     </SwitchPrimitive.Root>

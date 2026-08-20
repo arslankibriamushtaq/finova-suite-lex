@@ -5,11 +5,14 @@ import toast from "react-hot-toast";
 import {
   Archive,
   ArrowLeft,
+  CalendarClock,
   ChevronDown,
   ChevronUp,
   Copy,
+  FileText,
+  GitBranch,
   History,
-  Info,
+  ListOrdered,
   Lock,
   Plus,
   Save,
@@ -17,6 +20,7 @@ import {
   Trash2,
   Workflow,
   X,
+  Zap,
 } from "lucide-react";
 
 import { Badge } from "../../../components/ui/badge";
@@ -179,6 +183,8 @@ const LexProcessDetail = () => {
 
   // `editable` comes from the server and already encodes the lifecycle rule.
   const editable = isNew || isEditable(process ?? undefined);
+  // Lineage covers any saved process; a brand-new one only has Save.
+  const hasActions = (!isNew && !!process) || (editable && canWrite);
   const readOnly = !editable || !canWrite;
 
   const needsPolicyParameter = requiresPolicyParameter(routingType);
@@ -344,7 +350,7 @@ const LexProcessDetail = () => {
       key={verb}
       variant="outline"
       className={`border gap-1 font-medium ${
-        forbiddenVerb(routingType, verb) ? TONES.red : TONES.sky
+        forbiddenVerb(routingType, verb) ? TONES.red : TONES.emerald
       }`}
     >
       {verb}
@@ -369,53 +375,59 @@ const LexProcessDetail = () => {
       <LexPageHeader
         icon={Workflow}
         title={isNew ? t("proc.newTitle") : process?.title || t("proc.title")}
-        subtitle={
-          isNew
-            ? t("proc.newSubtitle")
-            : `${process?.referenceCode || ""} · v${process?.version ?? "—"}`
-        }
+        subtitle={isNew ? t("proc.newSubtitle") : undefined}
       >
-        <Button variant="ghost" className="h-10 gap-2" onClick={() => navigate("/LOS/Lex/Processes")}>
+        <Button variant="outline" className="gap-2" onClick={() => navigate("/LOS/Lex/Processes")}>
           <ArrowLeft className="h-4 w-4" />
-          {t("common:back")}
+          {t("proc.backToList")}
         </Button>
-        {!isNew && process && (
-          <Button variant="outline" className="h-10 gap-2" onClick={openLineage}>
-            <History className="h-4 w-4" />
-            {t("proc.lineage")}
-          </Button>
-        )}
-        {!isNew && process && !editable && canWrite && process.status === "PUBLISHED" && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={onClone} disabled={busy}>
-            <Copy className="h-4 w-4" />
-            {t("proc.clone")}
-          </Button>
-        )}
-        {editable && canWrite && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={onSave} disabled={busy}>
-            <Save className="h-4 w-4" />
-            {t("common:save")}
-          </Button>
-        )}
-        {!isNew && editable && canPublish && (
-          <Button variant="outline" className="h-10 gap-2" onClick={() => setPublishOpen(true)}>
-            <Send className="h-4 w-4" />
-            {t("proc.publish")}
-          </Button>
-        )}
-        {!isNew && process?.status === "PUBLISHED" && canWrite && (
-          <Button variant="outline" className="h-10 gap-2" onClick={onArchive} disabled={busy}>
-            <Archive className="h-4 w-4" />
-            {t("proc.archive")}
-          </Button>
-        )}
-        {!isNew && editable && canWrite && (
-          <Button variant="ghost" className="h-10 gap-2" onClick={() => setDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4" />
-            {t("proc.deleteDraft")}
-          </Button>
-        )}
       </LexPageHeader>
+
+      {/* Every action on one bar, inside a card so the buttons pick up the
+          same 34px/12px sizing as the rest of the app's controls. Skipped
+          entirely when nothing is actionable, rather than leaving a strip. */}
+      {hasActions && (
+        <div className="pro-card p-3 mb-3">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {!isNew && process && (
+              <Button variant="outline" className="gap-2" onClick={openLineage}>
+                <History className="h-4 w-4" />
+                {t("proc.lineage")}
+              </Button>
+            )}
+            {!isNew && process && !editable && canWrite && process.status === "PUBLISHED" && (
+              <Button className="wallet-brand-btn gap-2" onClick={onClone} disabled={busy}>
+                <Copy className="h-4 w-4" />
+                {t("proc.clone")}
+              </Button>
+            )}
+            {editable && canWrite && (
+              <Button className="wallet-brand-btn gap-2" onClick={onSave} disabled={busy}>
+                <Save className="h-4 w-4" />
+                {t("common:save")}
+              </Button>
+            )}
+            {!isNew && editable && canPublish && (
+              <Button variant="outline" className="gap-2" onClick={() => setPublishOpen(true)}>
+                <Send className="h-4 w-4" />
+                {t("proc.publish")}
+              </Button>
+            )}
+            {!isNew && process?.status === "PUBLISHED" && canWrite && (
+              <Button variant="outline" className="gap-2" onClick={onArchive} disabled={busy}>
+                <Archive className="h-4 w-4" />
+                {t("proc.archive")}
+              </Button>
+            )}
+            {!isNew && editable && canWrite && (
+              <Button variant="ghost" className="gap-2" onClick={() => setDeleteOpen(true)}>
+                <Trash2 className="h-4 w-4" />
+                {t("proc.deleteDraft")}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       {!isNew && process && !editable && (
         <LexNotice tone="slate" icon={Lock}>
@@ -436,14 +448,24 @@ const LexProcessDetail = () => {
         </LexNotice>
       )}
 
-      <div className="pro-card mb-3 p-4">
-        <div className="mb-3 flex items-center gap-2">
-          <LexStatusBadge status={isNew ? "DRAFT" : process?.status} />
-          {process?.publishedAt && (
-            <span className="text-xs text-muted-foreground">
-              {t("proc.publishedAt", { at: formatDateTime(process.publishedAt) })}
+      <div className="pro-form pro-card mb-3 p-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="pro-head-badge">
+              <FileText className="h-4 w-4" />
             </span>
-          )}
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t("proc.section.identity")}
+            </h4>
+          </div>
+          <div className="flex items-center gap-2">
+            <LexStatusBadge status={isNew ? "DRAFT" : process?.status} />
+            {process?.publishedAt && (
+              <span className="text-xs text-muted-foreground">
+                {t("proc.publishedAt", { at: formatDateTime(process.publishedAt) })}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -458,13 +480,6 @@ const LexProcessDetail = () => {
               disabled={readOnly || !isNew}
               onChange={(e) => setReferenceCode(e.target.value)}
             />
-            <p className="m-0 text-xs text-muted-foreground">
-              {isNew
-                ? t("proc.field.referenceCodeNormalized", {
-                    code: referenceCode.trim().toUpperCase() || "—",
-                  })
-                : t("proc.field.referenceCodeLocked")}
-            </p>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -477,7 +492,20 @@ const LexProcessDetail = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
+        </div>
+      </div>
 
+      <div className="pro-form pro-card mb-3 p-4">
+        <div className="mb-3 flex items-center gap-2.5">
+          <span className="pro-head-badge">
+            <GitBranch className="h-4 w-4" />
+          </span>
+          <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            {t("proc.section.routing")}
+          </h4>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="lex-severity">{t("proc.field.severity")}</Label>
             <Select value={severity} onValueChange={setSeverity} disabled={readOnly}>
@@ -492,9 +520,6 @@ const LexProcessDetail = () => {
                 ))}
               </SelectContent>
             </Select>
-            {/* Admins assume a lower-severity code was discarded. It is not —
-                it stays on the case as secondary context. */}
-            <p className="m-0 text-xs text-muted-foreground">{t("proc.field.severityHint")}</p>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -511,7 +536,6 @@ const LexProcessDetail = () => {
                 ))}
               </SelectContent>
             </Select>
-            <p className="m-0 text-xs text-muted-foreground">{t(`proc.routing.${routingType}`)}</p>
           </div>
 
           {/* Shown only where the server requires it. */}
@@ -534,9 +558,6 @@ const LexProcessDetail = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="m-0 text-xs text-muted-foreground">
-                {t("proc.field.policyParameterHint")}
-              </p>
             </div>
           )}
 
@@ -556,16 +577,23 @@ const LexProcessDetail = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="m-0 text-xs text-muted-foreground">{t("proc.field.evidenceHint")}</p>
             </div>
           )}
 
-          {noEvidence && (
-            <div className="flex flex-col justify-end">
-              <p className="m-0 text-xs text-muted-foreground">{t("proc.field.noEvidenceHint")}</p>
-            </div>
-          )}
+        </div>
+      </div>
 
+      <div className="pro-form pro-card mb-3 p-4">
+        <div className="mb-3 flex items-center gap-2.5">
+          <span className="pro-head-badge">
+            <CalendarClock className="h-4 w-4" />
+          </span>
+          <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            {t("proc.section.applicability")}
+          </h4>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="lex-effective">{t("proc.field.effectiveDate")}</Label>
             <Input
@@ -580,7 +608,7 @@ const LexProcessDetail = () => {
 
           <div className="flex flex-col gap-1.5">
             <Label>{t("proc.field.scope")}</Label>
-            <div className="flex h-10 items-center rounded-lg border border-border bg-muted/30 px-3 text-sm">
+            <div className="flex h-10 items-center rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground">
               {/* The server built this label; assembling one from two nulls
                   risks disagreeing with what resolution actually used. */}
               {process?.scopes?.[0]?.describe ||
@@ -588,8 +616,6 @@ const LexProcessDetail = () => {
                   process?.sectorName || t("scope.allSectors")
                 }`}
             </div>
-            {/* Naming a Product always beats naming only a Sector. */}
-            <p className="m-0 text-xs text-muted-foreground">{t("proc.field.scopeHint")}</p>
           </div>
 
           <div className="flex flex-col gap-1.5 sm:col-span-2">
@@ -617,11 +643,16 @@ const LexProcessDetail = () => {
       </div>
 
       {/* Execution steps — ordered, reorderable, renumbered on save. */}
-      <div className="pro-card mb-3 p-4">
+      <div className="pro-form pro-card mb-3 p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-            {t("proc.steps.title")}
-          </h4>
+          <div className="flex items-center gap-2.5">
+            <span className="pro-head-badge">
+              <ListOrdered className="h-4 w-4" />
+            </span>
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t("proc.steps.title")}
+            </h4>
+          </div>
           {!readOnly && (
             <Button
               variant="outline"
@@ -640,9 +671,9 @@ const LexProcessDetail = () => {
         ) : (
           <div className="flex flex-col gap-2">
             {steps.map((step, index) => (
-              <div key={index} className="rounded-lg border border-border bg-card p-3">
-                <div className="flex items-start gap-3">
-                  <span className="mt-2 w-6 shrink-0 text-center text-xs font-semibold text-muted-foreground">
+              <div key={index} className="pro-tile">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-[2px] bg-muted text-xs font-semibold text-muted-foreground">
                     {index + 1}
                   </span>
                   <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-[2fr_1fr]">
@@ -680,7 +711,7 @@ const LexProcessDetail = () => {
                     </Select>
                   </div>
                   {!readOnly && (
-                    <div className="flex shrink-0 flex-col gap-1">
+                    <div className="flex shrink-0 items-center gap-0.5">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -719,10 +750,15 @@ const LexProcessDetail = () => {
       {/* Actions. Free-form by design — nothing validates these against a
           catalogue, so a typo becomes a button label. Previously-used verbs are
           offered alongside free entry for exactly that reason. */}
-      <div className="pro-card p-4">
-        <h4 className="m-0 mb-3 text-sm font-semibold tracking-tight text-foreground">
-          {t("proc.actions.title")}
-        </h4>
+      <div className="pro-form pro-card p-4">
+        <div className="mb-3 flex items-center gap-2.5">
+          <span className="pro-head-badge">
+            <Zap className="h-4 w-4" />
+          </span>
+          <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            {t("proc.actions.title")}
+          </h4>
+        </div>
 
         {offendingVerbs.length > 0 && (
           <LexNotice tone="red">
@@ -730,68 +766,87 @@ const LexProcessDetail = () => {
           </LexNotice>
         )}
 
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <Label className="w-28">{t("proc.actions.primary")}</Label>
-          {primaryActions.map((verb) => verbChip(verb, false))}
-          {primaryActions.length === 0 && (
-            <span className="text-xs text-muted-foreground">{t("proc.actions.none")}</span>
-          )}
-        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="pro-tile">
+            <span className="pro-tile__label">{t("proc.actions.primary")}</span>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {primaryActions.length > 0 ? (
+                primaryActions.map((verb) => verbChip(verb, false))
+              ) : (
+                <span className="text-xs text-muted-foreground">{t("proc.actions.none")}</span>
+              )}
+            </div>
+          </div>
 
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <Label className="w-28">{t("proc.actions.additional")}</Label>
-          {additionalActions.map((verb) => verbChip(verb, true))}
-          {additionalActions.length === 0 && (
-            <span className="text-xs text-muted-foreground">{t("proc.actions.none")}</span>
-          )}
+          <div className="pro-tile">
+            <span className="pro-tile__label">{t("proc.actions.additional")}</span>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {additionalActions.length > 0 ? (
+                additionalActions.map((verb) => verbChip(verb, true))
+              ) : (
+                <span className="text-xs text-muted-foreground">{t("proc.actions.none")}</span>
+              )}
+            </div>
+          </div>
         </div>
 
         {!readOnly && (
           <>
-            <div className="flex flex-wrap items-end gap-2">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="lex-verb">{t("proc.actions.add")}</Label>
+            <div className="pro-tile mt-3">
+              <span className="pro-tile__label">{t("proc.actions.add")}</span>
+
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Input
                   id="lex-verb"
-                  className="h-9 w-56"
+                  className="w-48"
+                  placeholder={t("proc.actions.addPlaceholder")}
                   value={verbDraft}
                   onChange={(e) => setVerbDraft(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addVerb(verbDraft)}
                 />
+                <Button
+                  className="wallet-brand-btn gap-2"
+                  disabled={!verbDraft.trim()}
+                  onClick={() => addVerb(verbDraft)}
+                >
+                  <Plus className="h-4 w-4" />
+                  {t("proc.actions.addPrimary")}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  disabled={!verbDraft.trim()}
+                  onClick={() => addVerb(verbDraft, true)}
+                >
+                  {t("proc.actions.addAdditional")}
+                </Button>
               </div>
-              <Button variant="outline" size="sm" onClick={() => addVerb(verbDraft)}>
-                {t("proc.actions.addPrimary")}
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => addVerb(verbDraft, true)}>
-                {t("proc.actions.addAdditional")}
-              </Button>
+
+              {suggestedVerbs.length > 0 && (
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-2.5">
+                  <span className="me-1 text-xs text-muted-foreground">
+                    {t("proc.actions.suggested")}
+                  </span>
+                  {suggestedVerbs.map((verb) => (
+                    <button
+                      key={verb}
+                      type="button"
+                      className={`inline-flex items-center gap-1 rounded-[2px] border px-2 py-0.5 text-xs font-medium opacity-80 transition-opacity hover:opacity-100 ${TONES.emerald}`}
+                      onClick={() => addVerb(verb)}
+                    >
+                      <Plus className="h-3 w-3" />
+                      {verb}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {suggestedVerbs.length > 0 && (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-xs text-muted-foreground">{t("proc.actions.suggested")}</span>
-                {suggestedVerbs.map((verb) => (
-                  <button
-                    key={verb}
-                    type="button"
-                    className="rounded-full border border-border px-2.5 py-1 text-xs hover:bg-muted/40"
-                    onClick={() => addVerb(verb)}
-                  >
-                    {verb}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <LexNotice tone="slate" icon={Info} className="mt-3">
-              {t("proc.actions.freeFormNote")}
-            </LexNotice>
           </>
         )}
       </div>
 
       <Dialog open={publishOpen} onOpenChange={setPublishOpen}>
-        <DialogContent className="pro-dialog sm:max-w-md">
+        <DialogContent className="pro-dialog confirm-dialog sm:max-w-md">
           <DialogHeader className="text-start">
             <DialogTitle>{t("proc.publishConfirm.title")}</DialogTitle>
             {/* The point of no return, stated plainly. */}
@@ -809,7 +864,7 @@ const LexProcessDetail = () => {
       </Dialog>
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="pro-dialog sm:max-w-md">
+        <DialogContent className="pro-dialog confirm-dialog sm:max-w-md">
           <DialogHeader className="text-start">
             <DialogTitle>{t("proc.deleteConfirm.title")}</DialogTitle>
             <DialogDescription>{t("proc.deleteConfirm.body")}</DialogDescription>

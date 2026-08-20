@@ -3,8 +3,11 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   Archive,
+  ChevronDown,
   Copy,
+  Eye,
   History,
+  ListOrdered,
   Lock,
   Plus,
   RefreshCw,
@@ -27,6 +30,12 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -39,6 +48,7 @@ import { formatDateTime } from "../../../components/shared/detailKitUtils";
 import {
   LexNotice,
   LexPageHeader,
+  LexSearch,
   LexScope,
   LexStatusBadge,
   LexVersionTimeline,
@@ -125,6 +135,9 @@ const ThresholdScale = ({
  * stored minutes stay visible next to every input: minutes are what the SLA
  * board reports, and a mismatch between the two screens is what confuses people.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexSlaPolicies = () => {
   const { t } = useTranslation("lex");
   // Ungated while the LEX permission codes are unregistered — see useLexAccess.
@@ -140,6 +153,7 @@ const LexSlaPolicies = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [status, setStatus] = useState("ALL");
+  const [search, setSearch] = useState("");
 
   const [editing, setEditing] = useState<LexSlaPolicy | null>(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -266,6 +280,42 @@ const LexSlaPolicies = () => {
     }
   };
 
+  /**
+   * Cloning exists so the published version can be edited, so the editable copy
+   * replaces it in the open dialog rather than dropping the user back on the
+   * list to find it. The generic runAction closes the dialog, which is why this
+   * does not use it.
+   */
+  const onClone = async () => {
+    if (!editing) return;
+    setBusy(true);
+    try {
+      const draft = await cloneSlaPolicy(editing.id);
+      toast.success(t("sla.toast.cloned"));
+      await openPolicy(draft);
+      load();
+    } catch (error) {
+      // One open draft per lineage. Point at the existing one — the bare error
+      // leaves the user with nothing to act on.
+      if (lexErrorCode(error) === "LEX.SLA.OPEN_DRAFT_EXISTS" && editing.lineageId) {
+        try {
+          const versions = await getSlaLineage(editing.lineageId);
+          const draft = versions.find((v) => v.status === "DRAFT");
+          if (draft) {
+            toast.error(t("sla.err.draftExists"));
+            await openPolicy(draft);
+            return;
+          }
+        } catch {
+          /* fall through to the generic message */
+        }
+      }
+      toast.error(lexErrorMessage(error, t("sla.toast.cloneFailed"), errorsByCode));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openLineage = async () => {
     if (!editing?.lineageId) return;
     try {
@@ -323,50 +373,100 @@ const LexSlaPolicies = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexSlaPolicy) => (
-        <Button variant="outline" size="sm" onClick={() => openPolicy(row)}>
-          {t("open")}
-        </Button>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openPolicy(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "110px",
+      width: "120px",
     },
   ];
 
   if (!canRead) return <PermissionDenied />;
 
-  const totalRows = result.pagination?.totalElements ?? result.content.length;
-  const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, totalRows);
+  // The endpoint takes status and nothing else, so this narrows the rows
+  // already fetched. While it is active the counts describe the filtered set,
+  // so the footer never claims more rows than are on screen.
+  const needle = search.trim().toLowerCase();
+  const rows = needle
+    ? result.content.filter((p) =>
+        [p.policyName, p.scopeDescription, p.productName, p.sectorName, p.status]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(needle))
+      )
+    : result.content;
+
+  const totalRows = needle
+    ? rows.length
+    : result.pagination?.totalElements ?? result.content.length;
+  const from = totalRows === 0 ? 0 : needle ? 1 : (page - 1) * pageSize + 1;
+  const to = needle ? rows.length : Math.min(page * pageSize, totalRows);
+  const totalPage = needle ? 1 : result.pagination?.totalPages || 1;
 
   return (
     <div className="service">
-      <LexPageHeader icon={Timer} title={t("sla.title")} subtitle={t("sla.subtitle")}>
-        <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
-          <SelectTrigger className="w-44 bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("filter.allStatuses")}</SelectItem>
-            <SelectItem value="DRAFT">DRAFT</SelectItem>
-            <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
-            <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-        {canWrite && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={openNew}>
-            <Plus className="h-4 w-4" />
-            {t("sla.new")}
-          </Button>
-        )}
-      </LexPageHeader>
+      <LexPageHeader icon={Timer} title={t("sla.title")} subtitle={t("sla.subtitle")} />
 
-      {/* Said here because it is the consequence of an unpublished policy, and
-          the board is where it surfaces — as "not tracked", not as compliant. */}
-      <LexNotice tone="slate">{t("sla.notTrackedNote")}</LexNotice>
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="sla-search"
+            className="flex-1"
+            value={search}
+            onChange={setSearch}
+            placeholder={t("sla.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Label htmlFor="sla-status" className="sr-only">
+              {t("sla.col.status")}
+            </Label>
+            <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+              <SelectTrigger id="sla-status" className="w-44 bg-card">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{t("filter.allStatuses")}</SelectItem>
+                <SelectItem value="DRAFT">DRAFT</SelectItem>
+                <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
+                <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+            {canWrite && (
+              <Button className="wallet-brand-btn gap-2" onClick={openNew}>
+                <Plus className="h-4 w-4" />
+                {t("sla.new")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="pro-card">
         {!isLoading && totalRows === 0 ? (
@@ -374,13 +474,13 @@ const LexSlaPolicies = () => {
         ) : (
           <TableView
             header={headers}
-            data={result.content}
+            data={rows}
             totalRows={totalRows}
             isLoading={isLoading}
             from={from}
             to={to}
             page={page}
-            totalPage={result.pagination?.totalPages || 1}
+            totalPage={totalPage}
             setPage={setPage}
             pageSize={pageSize}
             setPageSize={(size: number) => {
@@ -461,7 +561,14 @@ const LexSlaPolicies = () => {
           )}
 
           <div className="flex items-center justify-between">
-            <h4 className="m-0 text-sm font-semibold">{t("sla.stages.title")}</h4>
+            <div className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <ListOrdered className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t("sla.stages.title")}
+              </h4>
+            </div>
             {!readOnly && (
               <Button
                 variant="outline"
@@ -485,14 +592,14 @@ const LexSlaPolicies = () => {
             )}
           </div>
 
-          <div className="max-h-[45vh] overflow-y-auto">
+          <div>
             {stages.length === 0 ? (
               <p className="m-0 py-6 text-center text-sm text-muted-foreground">
                 {t("sla.stages.empty")}
               </p>
             ) : (
               stages.map((stage, index) => (
-                <div key={index} className="mb-2 rounded-lg border border-border bg-card p-3">
+                <div key={index} className="pro-tile mb-2">
                   <div className="grid grid-cols-1 items-end gap-2 sm:grid-cols-[1.2fr_1.2fr_1fr_auto]">
                     <div className="flex flex-col gap-1.5">
                       <Label>{t("sla.field.stage")}</Label>
@@ -576,14 +683,7 @@ const LexSlaPolicies = () => {
             )}
             {editing && editing.status === "PUBLISHED" && canWrite && (
               <>
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  disabled={busy}
-                  onClick={() =>
-                    runAction(() => cloneSlaPolicy(editing.id), "sla.toast.cloned", "sla.toast.cloneFailed")
-                  }
-                >
+                <Button variant="outline" className="gap-2" onClick={onClone} disabled={busy}>
                   <Copy className="h-4 w-4" />
                   {t("sla.clone")}
                 </Button>

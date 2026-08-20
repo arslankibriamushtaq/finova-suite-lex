@@ -110,3 +110,15 @@ html[dir="rtl"] .ps-submenu-expand-icon {
   text-align: right;
 }
 /* Keep flex/utility rows readable — do not force-reverse; dir handles order. */
+
+/* --- Bootstrap modal close button ---
+   Bootstrap 5 pushes .btn-close to the right with `margin-left: auto` (part of
+   its `margin: -.5rem -.5rem -.5rem auto` shorthand). That is a physical edge,
+   so in RTL the button stayed on the right and collided with the right-aligned
+   title. Flip the auto margin to the other side.
+   The shadcn Dialog/Sheet/Toast closes use logical `end-*` utilities and need
+   no override; antd v5 flips its own via ConfigProvider direction. */
+[dir="rtl"] .modal-header .btn-close {
+  margin-left: -0.5rem;
+  margin-right: auto;
+}

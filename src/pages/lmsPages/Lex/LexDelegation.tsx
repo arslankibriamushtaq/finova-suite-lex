@@ -3,8 +3,11 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   Archive,
+  ChevronDown,
   Copy,
+  Eye,
   History,
+  Layers,
   Lock,
   Plus,
   RefreshCw,
@@ -27,6 +30,12 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -39,6 +48,7 @@ import { formatDateTime } from "../../../components/shared/detailKitUtils";
 import {
   LexNotice,
   LexPageHeader,
+  LexSearch,
   LexScope,
   LexStatusBadge,
   LexVersionTimeline,
@@ -94,6 +104,9 @@ import {
  * level and flags `beyondDelegation`. That is a handled case, not an
  * escalation into a level nobody switched on.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexDelegation = () => {
   const { t } = useTranslation("lex");
   // Ungated while the LEX permission codes are unregistered — see useLexAccess.
@@ -109,6 +122,7 @@ const LexDelegation = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [status, setStatus] = useState("ALL");
+  const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
 
   const [editing, setEditing] = useState<LexDelegationMatrix | null>(null);
@@ -243,9 +257,10 @@ const LexDelegation = () => {
     try {
       const draft = await cloneDelegationMatrix(editing.id);
       toast.success(t("doa.toast.cloned"));
-      setFormOpen(false);
+      // Swap the dialog's contents for the new draft rather than closing and
+      // reopening it, which flashed the overlay.
+      await openMatrix(draft);
       load();
-      openMatrix(draft);
     } catch (error) {
       if (lexErrorCode(error) === "LEX.DELEGATION.OPEN_DRAFT_EXISTS" && editing.lineageId) {
         try {
@@ -330,48 +345,101 @@ const LexDelegation = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexDelegationMatrix) => (
-        <Button variant="outline" size="sm" onClick={() => openMatrix(row)}>
-          {t("open")}
-        </Button>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openMatrix(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "110px",
+      width: "120px",
     },
   ];
 
   if (!canRead) return <PermissionDenied />;
 
-  const totalRows = result.pagination?.totalElements ?? result.content.length;
-  const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, totalRows);
+  // The endpoint takes status and policyParameter and nothing else, so this
+  // narrows the rows already fetched rather than pretending to be a server
+  // search. While it is active the counts describe the filtered set, so the
+  // footer never claims more rows than are on screen.
+  const needle = search.trim().toLowerCase();
+  const rows = needle
+    ? result.content.filter((m) =>
+        [m.policyParameter, m.scopeDescription, m.productName, m.sectorName, m.status]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(needle))
+      )
+    : result.content;
+
+  const totalRows = needle
+    ? rows.length
+    : result.pagination?.totalElements ?? result.content.length;
+  const from = totalRows === 0 ? 0 : needle ? 1 : (page - 1) * pageSize + 1;
+  const to = needle ? rows.length : Math.min(page * pageSize, totalRows);
+  const totalPage = needle ? 1 : result.pagination?.totalPages || 1;
 
   return (
     <div className="service">
-      <LexPageHeader icon={Scale} title={t("doa.title")} subtitle={t("doa.subtitle")}>
-        <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
-          <SelectTrigger className="w-44 bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("filter.allStatuses")}</SelectItem>
-            <SelectItem value="DRAFT">DRAFT</SelectItem>
-            <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
-            <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-        {canWrite && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={openNew}>
-            <Plus className="h-4 w-4" />
-            {t("doa.new")}
-          </Button>
-        )}
-      </LexPageHeader>
+      <LexPageHeader icon={Scale} title={t("doa.title")} subtitle={t("doa.subtitle")} />
 
-      <LexNotice tone="slate">{t("doa.beyondDelegationNote")}</LexNotice>
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="doa-search"
+            className="flex-1"
+            value={search}
+            onChange={setSearch}
+            placeholder={t("doa.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Label htmlFor="doa-status" className="sr-only">
+              {t("doa.col.status")}
+            </Label>
+            <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
+              <SelectTrigger id="doa-status" className="w-44 bg-card">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{t("filter.allStatuses")}</SelectItem>
+                <SelectItem value="DRAFT">DRAFT</SelectItem>
+                <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
+                <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+            {canWrite && (
+              <Button className="wallet-brand-btn gap-2" onClick={openNew}>
+                <Plus className="h-4 w-4" />
+                {t("doa.new")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="pro-card">
         {!isLoading && totalRows === 0 ? (
@@ -379,13 +447,13 @@ const LexDelegation = () => {
         ) : (
           <TableView
             header={headers}
-            data={result.content}
+            data={rows}
             totalRows={totalRows}
             isLoading={isLoading}
             from={from}
             to={to}
             page={page}
-            totalPage={result.pagination?.totalPages || 1}
+            totalPage={totalPage}
             setPage={setPage}
             pageSize={pageSize}
             setPageSize={(size: number) => {
@@ -443,15 +511,16 @@ const LexDelegation = () => {
                   onChange={(e) => setEffectiveDate(e.target.value)}
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1.5 sm:col-span-2">
                 <Label>{t("doa.field.scope")}</Label>
-                <div className="flex h-10 items-center rounded-lg border border-border bg-muted/30 px-3 text-sm">
+                {/* Read-only, but it holds a real value — tint it like the
+                    other filled fields rather than like an empty input. */}
+                <div className="pro-tile flex h-10 items-center px-3 text-sm font-medium text-foreground">
                   {editing?.scopeDescription ||
                     `${editing?.productName || t("scope.allProducts")} / ${
                       editing?.sectorName || t("scope.allSectors")
                     }`}
                 </div>
-                <p className="m-0 text-xs text-muted-foreground">{t("doa.field.scopeHint")}</p>
               </div>
             </div>
 
@@ -479,11 +548,15 @@ const LexDelegation = () => {
               </LexNotice>
             )}
 
-            {/* The first question every admin asks. */}
-            <LexNotice tone="slate">{t("doa.inclusiveNote")}</LexNotice>
-
             <div className="flex items-center justify-between">
-              <h4 className="m-0 text-sm font-semibold">{t("doa.bands.title")}</h4>
+              <div className="flex items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <Layers className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t("doa.bands.title")}
+                </h4>
+              </div>
               {!readOnly && (
                 <Button
                   variant="outline"
@@ -506,7 +579,7 @@ const LexDelegation = () => {
               )}
             </div>
 
-            <div className="max-h-[40vh] overflow-y-auto">
+            <div>
               {bands.length === 0 ? (
                 <p className="m-0 py-6 text-center text-sm text-muted-foreground">
                   {t("doa.bands.empty")}
@@ -515,7 +588,7 @@ const LexDelegation = () => {
                 bands.map((band, index) => (
                   <div
                     key={band.id || index}
-                    className="mb-2 grid grid-cols-1 items-end gap-2 rounded-lg border border-border bg-card p-3 sm:grid-cols-[1fr_auto_auto_auto]"
+                    className="pro-tile mb-2 grid grid-cols-1 items-end gap-2 sm:grid-cols-[minmax(0,1fr)_7rem_7rem_auto]"
                   >
                     <div className="flex flex-col gap-1.5">
                       <Label>{t("doa.bands.level")}</Label>
@@ -534,7 +607,9 @@ const LexDelegation = () => {
                         <SelectContent>
                           {levels.map((level) => (
                             <SelectItem key={level.id} value={level.id}>
-                              {level.displayName} ({level.code})
+                              {level.displayName.includes(level.code)
+                                ? level.displayName
+                                : `${level.displayName} (${level.code})`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -544,7 +619,7 @@ const LexDelegation = () => {
                       <Label>{t("doa.bands.from")}</Label>
                       <Input
                         type="number"
-                        className="h-9 w-32"
+                        className="h-9 w-full"
                         value={band.minValue}
                         disabled={readOnly}
                         onChange={(e) => {
@@ -558,7 +633,7 @@ const LexDelegation = () => {
                       <Label>{t("doa.bands.to")}</Label>
                       <Input
                         type="number"
-                        className="h-9 w-32"
+                        className="h-9 w-full"
                         value={band.maxValue}
                         disabled={readOnly}
                         onChange={(e) => {
@@ -648,6 +723,9 @@ const LexDelegation = () => {
                 {t("doa.publish")}
               </Button>
             )}
+            <Button variant="ghost" onClick={() => setFormOpen(false)} disabled={busy}>
+              {t("common:cancel")}
+            </Button>
             {!readOnly && (
               <Button className="wallet-brand-btn gap-2" onClick={onSave} disabled={busy}>
                 <Save className="h-4 w-4" />

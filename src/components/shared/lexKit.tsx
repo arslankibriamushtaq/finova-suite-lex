@@ -1,7 +1,8 @@
 import React from "react";
-import { AlertTriangle, Info, Search, type LucideIcon } from "lucide-react";
+import { AlertTriangle, Info, type LucideIcon } from "lucide-react";
 
 import { Badge } from "../ui/badge";
+import { SearchField } from "./filterKit";
 import { cn } from "../../lib/utils";
 import { TONES, formatDateTime } from "./detailKitUtils";
 
@@ -83,11 +84,15 @@ export const LexSearch = ({
   onChange,
   placeholder,
   delay = 350,
+  id,
+  className,
 }: {
   value: string;
   onChange: (next: string) => void;
   placeholder: string;
   delay?: number;
+  id?: string;
+  className?: string;
 }) => {
   const [draft, setDraft] = React.useState(value);
 
@@ -100,17 +105,16 @@ export const LexSearch = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft, delay]);
 
+  // Presentation is the shared SearchField, so a LEX list searches and clears
+  // exactly like every other list page; only the debounce is LEX's own.
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3">
-      <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-      <input
-        type="text"
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        placeholder={placeholder}
-        className="h-9 w-56 border-0 bg-transparent text-sm outline-none"
-      />
-    </div>
+    <SearchField
+      id={id}
+      value={draft}
+      onChange={setDraft}
+      placeholder={placeholder}
+      className={className ?? "w-64"}
+    />
   );
 };
 
@@ -159,7 +163,7 @@ export const LexTile = ({
   tone?: string;
   loading?: boolean;
 }) => (
-  <div className="pro-tile" title={hint}>
+  <div className={cn("pro-tile", hint && "cursor-help")} title={hint}>
     <span className="pro-tile__label">{label}</span>
     {loading ? (
       <span className="mt-1.5 block h-[18px] w-16 animate-pulse rounded-[2px] bg-muted-foreground/20" />
@@ -168,7 +172,6 @@ export const LexTile = ({
         {value}
       </span>
     )}
-    {hint && <span className="mt-1 block text-[11px] leading-snug text-muted-foreground">{hint}</span>}
   </div>
 );
 
@@ -189,6 +192,13 @@ export interface LexTimelineEntry {
  * How an auditor answers "what did this rule say in March?". Newest first, and
  * every version is listed — archived and superseded ones are the point.
  */
+/**
+ * `publishedBy` comes back as a user id, not a name. A raw UUID on an audit
+ * screen reads as noise — it is not something a person can act on — so a
+ * uuid-shaped value is dropped rather than printed.
+ */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const LexVersionTimeline = ({
   entries,
   currentId,
@@ -208,27 +218,39 @@ export const LexVersionTimeline = ({
     <ol className="m-0 list-none p-0">
       {entries.map((entry) => {
         const isCurrent = entry.id === currentId;
+        const at = formatDateTime(entry.at);
+        const by = entry.by && !UUID_RE.test(entry.by) ? entry.by : null;
         return (
-          <li
-            key={entry.id}
-            className={cn(
-              "relative flex gap-3 border-s border-border ps-4 pb-4 last:pb-0",
-              onSelect && "cursor-pointer"
-            )}
-            onClick={() => onSelect?.(entry.id)}
-          >
+          <li key={entry.id} className="relative flex border-s border-border ps-4 pb-2 last:pb-0">
             <span
               className={cn(
-                "absolute -start-[5px] top-1.5 size-2.5 rounded-full ring-2 ring-background",
+                "absolute -start-[5px] top-3 size-2.5 rounded-full ring-2 ring-background",
                 isCurrent ? "bg-emerald-500" : "bg-muted-foreground/40"
               )}
             />
-            <div className="min-w-0 flex-1">
+            <div
+              role={onSelect ? "button" : undefined}
+              tabIndex={onSelect ? 0 : undefined}
+              onClick={() => onSelect?.(entry.id)}
+              onKeyDown={(e) => {
+                if (!onSelect) return;
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(entry.id);
+                }
+              }}
+              className={cn(
+                "min-w-0 flex-1 rounded-[2px] border px-3 py-2 transition-colors",
+                isCurrent ? "pro-tile" : "border-transparent",
+                onSelect && !isCurrent && "cursor-pointer hover:border-border hover:bg-muted/40",
+                onSelect && isCurrent && "cursor-pointer"
+              )}
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-medium text-foreground">v{entry.version ?? "—"}</span>
                 <LexStatusBadge status={entry.status} />
-                <span className="text-xs text-muted-foreground">{formatDateTime(entry.at) || "—"}</span>
-                {entry.by && <span className="text-xs text-muted-foreground">· {entry.by}</span>}
+                {at && <span className="text-xs text-muted-foreground">{at}</span>}
+                {by && <span className="text-xs text-muted-foreground">· {by}</span>}
               </div>
               {entry.note && (
                 <p className="m-0 mt-1 text-xs text-muted-foreground">{entry.note}</p>
