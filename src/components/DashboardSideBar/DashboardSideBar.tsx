@@ -2282,6 +2282,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       },
       hasAccess("LEX_CONFIG_READ") &&
       {
+        label: "Sectors",
+        Link: "Sectors",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Sectors",
+      },
+      hasAccess("LEX_CONFIG_READ") &&
+      {
         label: "SLA Policies",
         Link: "SlaPolicies",
         LinkLable: "/LOS/Lex",

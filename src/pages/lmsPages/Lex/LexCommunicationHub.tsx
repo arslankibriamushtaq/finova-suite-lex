@@ -25,6 +25,7 @@ import {
 import { EmptyState, Field, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, formatDateTime, formatMoney } from "../../../components/shared/detailKitUtils";
 import {
+  LexEmployerBadge,
   LexNotice,
   LexPageHeader,
   LexSearch,
@@ -379,13 +380,22 @@ const LexCommunicationHub = () => {
                 </h4>
                 <Field label={t("case.field.applicant")} value={info?.applicantName} />
                 <Field label={t("case.field.product")} value={info?.productName} />
+                <Field label={t("dash.field.employerName")} value={info?.employerName} />
+                {/* UNKNOWN is styled apart from NOT_WHITELISTED: one says the
+                    check found no listing, the other says it never ran. */}
+                <div className="mb-2">
+                  <p className="m-0 text-xs text-muted-foreground">
+                    {t("dash.field.employerCategory")}
+                  </p>
+                  <LexEmployerBadge category={info?.employerCategory} t={t} className="mt-0.5" />
+                </div>
                 <Field
                   label={t("case.field.requestedAmount")}
                   value={info?.requestedAmount != null ? formatMoney(info.requestedAmount) : undefined}
                 />
-                {/* Only verified salary and the bureau score are real here.
-                    Employer, declared income, Nafath status and a SIMAH summary
-                    line are on the mockup and in no contract. */}
+                {/* Declared income, Nafath status and a SIMAH summary line are
+                    on the mockup and in no contract — verified salary and the
+                    bureau score are the real figures. */}
                 <Field
                   label={t("case.field.verifiedSalary")}
                   value={info?.verifiedSalary != null ? formatMoney(info.verifiedSalary) : undefined}

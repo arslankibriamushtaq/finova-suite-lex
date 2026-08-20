@@ -50,8 +50,20 @@ import {
   Field,
   PermissionDenied,
 } from "../../../components/shared/detailKit";
-import { TONES, formatDate, formatDateTime, formatMoney } from "../../../components/shared/detailKitUtils";
-import { LexNotice, LexPageHeader, LexStatusBadge, LexTile } from "../../../components/shared/lexKit";
+import {
+  TONES,
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
+import {
+  LexEmployerBadge,
+  LexNotice,
+  LexPageHeader,
+  LexStatusBadge,
+  LexTile,
+} from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { useLexAuthority } from "../../../hooks/useLexAuthority";
@@ -400,15 +412,22 @@ const LexCaseDetail = () => {
 
         <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border/60 pt-4 sm:grid-cols-4 lg:grid-cols-7">
           <HeroField label={t("ws.field.applicationId")} value={info?.applicationNumber} />
-          {/* Case open time, not application submission time — lending does not
-              send the submission date. */}
+          {/* The real submission time. `openedAt` is when LEX received the
+              referral and is always later — labelling one as the other
+              misstates how long the applicant has been waiting. */}
           <HeroField
-            label={t("ws.field.openedAt")}
-            value={formatDate(record?.openedAt)}
-            hint={t("ws.field.openedAtHint")}
+            label={t("ws.field.applicationDate")}
+            value={formatDate(info?.applicationSubmittedAt || record?.openedAt)}
+            hint={
+              info?.applicationSubmittedAt ? undefined : t("ws.field.openedAtFallbackHint")
+            }
           />
           <HeroField label={t("case.field.product")} value={info?.productName} />
-          <HeroField label={t("ws.field.sourcingChannel")} value={info?.sourceChannel} />
+          <HeroField
+            label={t("ws.field.sourcingChannel")}
+            value={info?.sourceChannel ? humanizeCode(info.sourceChannel) : undefined}
+            hint={t("ws.field.channelHint")}
+          />
           <HeroField label={t("case.col.status")} value={record ? t(`case.chip.${chip}`) : undefined} accent />
           <HeroField
             label={t("ws.field.statusDate")}
@@ -420,11 +439,31 @@ const LexCaseDetail = () => {
         <div className="mt-4 grid grid-cols-1 gap-4 border-t border-border/60 pt-4 lg:grid-cols-2">
           <div>
             <p className="m-0 mb-2 text-sm font-semibold text-foreground">{t("ws.employment")}</p>
-            {/* Income sector, employer name and employer category are on the
-                mockup and in no contract. lending passes sector as a literal
-                null, and the employer registry is not linked to a case. Said
-                once, rather than as three empty fields. */}
-            <p className="m-0 text-xs text-muted-foreground">{t("dash.employmentGap")}</p>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <HeroField
+                label={t("dash.field.incomeSector")}
+                value={info?.incomeSector ? humanizeCode(info.incomeSector) : undefined}
+              />
+              <HeroField label={t("dash.field.employerName")} value={info?.employerName} />
+              <div className="min-w-0">
+                <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+                  {t("dash.field.employerCategory")}
+                </span>
+                {/* Resolved by LEX against the Approved Employer List, not sent
+                    by lending. UNKNOWN means the check never ran and is styled
+                    apart from NOT_WHITELISTED — only the latter is grounds for
+                    declining. */}
+                <LexEmployerBadge category={info?.employerCategory} t={t} className="mt-0.5" />
+              </div>
+              <HeroField
+                label={t("dash.field.employmentVintage")}
+                value={
+                  info?.employmentDurationMonths != null
+                    ? t("dash.months", { count: info.employmentDurationMonths })
+                    : undefined
+                }
+              />
+            </div>
           </div>
           <div>
             <p className="m-0 mb-2 text-sm font-semibold text-foreground">{t("ws.financing")}</p>

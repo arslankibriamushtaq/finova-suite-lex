@@ -24,6 +24,49 @@ const lex: ModuleLocale = {
     "err.accessDenied": "Your role does not permit this action.",
     "err.validation": "Some of the values sent were not accepted.",
 
+    // --- Sectors (the other half of every scope)
+    //
+    // "All Sectors" is the wildcard (sectorId: null), never a row. Product
+    // comes from LOS; sector is governed here, and like the authority ladder
+    // the list is data — nothing in the UI may hardcode a sector.
+    "sector.title": "Sectors",
+    "sector.subtitle":
+      "The Sector half of every scope. Product comes from the LOS catalogue; sectors are governed here.",
+    "sector.wildcardNote":
+      "“All Sectors” is not a row in this list — it is the wildcard the scope pickers add themselves, and it is what a scope means when no sector is named.",
+    "sector.empty": "No sectors yet.",
+    "sector.bootstrap": "Add the standard sectors",
+    "sector.bootstrapExplain":
+      "Copies the platform catalogue — Public Sector, Private Sector, Pensioners, Self Employed, House Wife, Student — into this company. Safe to run again: it adds only what is missing.",
+    "sector.add": "Add sector",
+    "sector.addTitle": "Add a sector",
+    "sector.editTitle": "Edit sector",
+    "sector.editExplain":
+      "The code is identity and cannot change once created. Deactivate rather than delete — published scopes that already name this sector must stay readable.",
+    "sector.col.ordinal": "Order",
+    "sector.col.code": "Code",
+    "sector.col.name": "Display name",
+    "sector.col.nameAr": "Arabic name",
+    "sector.col.active": "Active",
+    "sector.active": "Active",
+    "sector.inactive": "Deactivated",
+    "sector.field.codeHint": "Upper-cased and spaces become underscores, as shown.",
+    "sector.field.codeLocked": "The code is identity and cannot be changed.",
+    "sector.field.ordinalHint": "Where this sector sits in the scope pickers.",
+    "sector.valid.code": "A code is required.",
+    "sector.valid.displayName": "A display name is required.",
+    "sector.err.duplicateCode": "This company already has a sector with that code.",
+    "sector.err.notFound": "This sector no longer exists.",
+    "sector.err.unknownScope":
+      "That scope names a sector this company does not have, or one that has been deactivated. Reload the sector list and pick again.",
+    "sector.toast.loadFailed": "The sectors could not be loaded.",
+    "sector.toast.saved": "Sector saved.",
+    "sector.toast.saveFailed": "The sector could not be saved.",
+    "sector.toast.activated": "Sector activated.",
+    "sector.toast.deactivated": "Sector deactivated. Published scopes that name it are unaffected.",
+    "sector.toast.bootstrapped": "{{created}} sectors added, {{skipped}} already present.",
+    "sector.toast.bootstrapFailed": "The catalogue could not be copied in.",
+
     // ---------------------------------------------------------------- processes
 
 
@@ -64,9 +107,30 @@ const lex: ModuleLocale = {
     "dash.field.incomeAndDbr": "Instalment & DBR",
     "dash.field.creditScore": "SIMAH credit score",
     "dash.field.referralReason": "Referral reason",
-    "dash.employmentGap":
-      "Income sector, employer name and employer category are not sent to LEX — the employer registry exists but is not linked to a case yet.",
+    "dash.field.incomeSector": "Income sector",
+    "dash.field.employerName": "Employer name",
+    "dash.field.employerCategory": "Employer category",
+    "dash.field.employmentVintage": "Employment vintage",
+    "dash.months": "{{count}} months",
+    // Null salesId is the true answer for a self-service application, not an
+    // absent value — so it says so rather than printing a dash.
+    "dash.selfService": "Self-service",
+    "dash.selfServiceHint": "No sales agent — the customer applied directly.",
     "dash.showing": "Showing {{from}}–{{to}} of {{total}}",
+
+    // --- Approved Employer List verdict
+    //
+    // UNKNOWN and NOT_WHITELISTED are different claims and must never read
+    // alike: one says the check found no active listing, the other says the
+    // check never ran. Only the first is grounds for declining.
+    "employer.whitelisted": "Whitelisted",
+    "employer.whitelistedHint": "An active listing carries this employer name.",
+    "employer.notWhitelisted": "Not whitelisted",
+    "employer.notWhitelistedHint":
+      "The Approved Employer List was checked and no active listing was found. The lookup is an exact name match, so a spelling variant lands here too — worth confirming before it counts against the application.",
+    "employer.unknown": "Not verified",
+    "employer.unknownHint":
+      "Nobody ran this check — there was no employer name, or the Approved Employer List could not be reached. This is not a finding against the employer.",
 
     // --- Application Review Workspace
     //
@@ -78,10 +142,12 @@ const lex: ModuleLocale = {
     "ws.title": "Application review workspace",
     "ws.applicationInformation": "Application information",
     "ws.field.applicationId": "Application ID",
-    "ws.field.openedAt": "Case opened",
-    "ws.field.openedAtHint":
-      "When LEX opened the case, not when the customer submitted — lending does not send the submission date.",
+    "ws.field.applicationDate": "Application date",
+    "ws.field.openedAtFallbackHint":
+      "Showing when LEX opened the case: this application predates the submission date being sent, so the real submission time is not on record here.",
     "ws.field.sourcingChannel": "Sourcing channel",
+    "ws.field.channelHint":
+      "Derived from the OAuth client that presented the token, so it cannot be misreported. Blank means the client was not recognised — which is a true answer, not a default.",
     "ws.field.statusDate": "Status date",
     "ws.field.bureauScore": "Bureau score",
     "ws.employment": "Employment",
@@ -497,8 +563,12 @@ const lex: ModuleLocale = {
       "Bands are checked as you type: overlapping bands are ambiguous, and a gap leaves values that reach no level at all.",
     "doa.field.parameter": "Policy parameter",
     "doa.field.scope": "Scope",
+    "doa.field.product": "Product",
+    "doa.field.sector": "Sector",
+    // Naming a product always beats naming only a sector — stated because it is
+    // not obvious, and it decides which of two overlapping matrices wins.
     "doa.field.scopeHint":
-      "Resolution order: product + sector, then product + all, then all + sector, then all + all.",
+      "“All” is the widest scope and what everything falls back to. The most specific match wins: product + sector, then product + all sectors, then all products + sector, then all + all — so naming a product always beats naming only a sector.",
     "doa.bands.title": "Bands",
     "doa.bands.add": "Add band",
     "doa.bands.empty": "No bands yet.",

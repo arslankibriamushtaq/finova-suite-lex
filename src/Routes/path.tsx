@@ -257,6 +257,7 @@ import LexCaseDetail from "../pages/lmsPages/Lex/LexCaseDetail";
 import LexProcessDetail from "../pages/lmsPages/Lex/LexProcessDetail";
 import LexDelegation from "../pages/lmsPages/Lex/LexDelegation";
 import LexAuthorityLevels from "../pages/lmsPages/Lex/LexAuthorityLevels";
+import LexSectors from "../pages/lmsPages/Lex/LexSectors";
 import LexSlaPolicies from "../pages/lmsPages/Lex/LexSlaPolicies";
 import LexChecks from "../pages/lmsPages/Lex/LexChecks";
 import LexAnalyses from "../pages/lmsPages/Lex/LexAnalyses";
@@ -993,6 +994,9 @@ export const router = createBrowserRouter(
             { path: "/LOS/Lex/Processes/:id", element: <LexProcessDetail /> },
             { path: "/LOS/Lex/Delegation", element: <LexDelegation /> },
             { path: "/LOS/Lex/AuthorityLevels", element: <LexAuthorityLevels /> },
+            // The other half of every scope. Product comes from LOS; sector is
+            // governed here, and like the ladder it is data, not an enum.
+            { path: "/LOS/Lex/Sectors", element: <LexSectors /> },
             { path: "/LOS/Lex/SlaPolicies", element: <LexSlaPolicies /> },
             { path: "/LOS/Lex/Checks", element: <LexChecks /> },
             { path: "/LOS/Lex/Analyses", element: <LexAnalyses /> },

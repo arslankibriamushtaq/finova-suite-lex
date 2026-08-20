@@ -958,6 +958,14 @@ export const LEX_PERMISSIONS = {
   LEVEL_READ: "LEX_CONFIG_READ",
   LEVEL_WRITE: "LEX_CONFIG_MANAGE",
 
+  /**
+   * `lex.config.sectors` — the other half of every scope. Product comes from
+   * LOS; sector is governed in LEX, and like the ladder it is data rather than
+   * an enum, so read is granted wherever a scope picker renders.
+   */
+  SECTOR_READ: "LEX_CONFIG_READ",
+  SECTOR_WRITE: "LEX_CONFIG_MANAGE",
+
   SLA_CONFIG_READ: "LEX_CONFIG_READ",
   SLA_CONFIG_WRITE: "LEX_CONFIG_MANAGE",
   SLA_CONFIG_PUBLISH: "LEX_CONFIG_MANAGE",

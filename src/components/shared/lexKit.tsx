@@ -2,8 +2,16 @@ import React from "react";
 import { AlertTriangle, Ban, Info, Search, type LucideIcon } from "lucide-react";
 
 import { Badge } from "../ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { cn } from "../../lib/utils";
 import { TONES, TONE_HEX, formatDateTime } from "./detailKitUtils";
+import { employerCategoryOf } from "../../redux/apis/apisLexCases";
 
 /**
  * The presentation pieces every LEX screen shares.
@@ -166,6 +174,39 @@ export const LexStatusBadge = ({
     {label || status || "—"}
   </Badge>
 );
+
+/**
+ * The Approved Employer List verdict.
+ *
+ * One component for all three values so they cannot drift apart on one screen
+ * and merge on another. **`UNKNOWN` is styled apart from `NOT_WHITELISTED` on
+ * purpose**: the first says nobody ran the check — no employer name, or the
+ * list was unreachable — and the second says the check ran and found no active
+ * listing. Only the second is grounds for declining, so collapsing them would
+ * manufacture an adverse finding out of a lookup that never happened.
+ */
+export const LexEmployerBadge = ({
+  category,
+  t,
+  className,
+}: {
+  category?: string | null;
+  t: (key: string) => string;
+  className?: string;
+}) => {
+  const resolved = employerCategoryOf(category);
+  if (!resolved) return <span className={cn("text-sm", className)}>—</span>;
+
+  return (
+    <Badge
+      variant="outline"
+      className={cn("border font-medium", TONES[resolved.tone], className)}
+      title={t(resolved.hintKey)}
+    >
+      {t(resolved.labelKey)}
+    </Badge>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /* Tiles                                                               */
@@ -350,6 +391,120 @@ export const LexVersionTimeline = ({
  * Scope is never blank. A null product or sector means "all", and a blank cell
  * reads as missing configuration when it is in fact the widest possible one.
  */
+/**
+ * The Product half of a scope, read from the LOS catalogue.
+ *
+ * "All Products" is the wildcard (`productId: null`), added by the picker just
+ * as "All Sectors" is. **LEX does not validate product ids** — the catalogue
+ * belongs to `product-service` and this service deliberately does not reach
+ * into it — so a typo here saves cleanly and then matches nothing at
+ * resolution time. That is exactly why this is a picker and not a text field.
+ */
+export const LexProductSelect = ({
+  value,
+  onChange,
+  products,
+  allProductsLabel,
+  disabled,
+  className,
+}: {
+  /** `null` means All Products. */
+  value: string | null;
+  onChange: (next: string | null) => void;
+  products: { id: string; name: string }[];
+  allProductsLabel: string;
+  disabled?: boolean;
+  className?: string;
+}) => {
+  const ALL = "__ALL__";
+  /**
+   * A scope may already name a product this catalogue no longer returns.
+   * Keeping it as an option stops the next save silently widening the scope to
+   * All Products.
+   */
+  const options = products.some((p) => p.id === value)
+    ? products
+    : value
+      ? [{ id: value, name: value }, ...products]
+      : products;
+
+  return (
+    <Select
+      value={value ?? ALL}
+      disabled={disabled}
+      onValueChange={(next) => onChange(next === ALL ? null : next)}
+    >
+      <SelectTrigger className={cn("h-10 bg-card", className)}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={ALL}>{allProductsLabel}</SelectItem>
+        {options.map((product) => (
+          <SelectItem key={product.id} value={product.id}>
+            {product.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+};
+
+/**
+ * The Sector half of a scope.
+ *
+ * **"All Sectors" is the wildcard, not a row.** It is `sectorId: null`, so the
+ * picker adds the option itself and maps it back to null on the way out —
+ * sending a literal id for it would name a sector the company does not have,
+ * which the server refuses with `LEX.SECTOR.UNKNOWN_SCOPE`.
+ *
+ * The options come from `GET /config/sectors`; nothing here is hardcoded,
+ * because the list is data and a company can add a segment at any time.
+ */
+export const LexSectorSelect = ({
+  value,
+  onChange,
+  sectors,
+  allSectorsLabel,
+  disabled,
+  className,
+}: {
+  /** `null` means All Sectors. */
+  value: string | null;
+  onChange: (next: string | null) => void;
+  sectors: { id: string; displayName: string; active?: boolean }[];
+  allSectorsLabel: string;
+  disabled?: boolean;
+  className?: string;
+}) => {
+  const ALL = "__ALL__";
+  /**
+   * A deactivated sector still named by this scope stays in the list, marked.
+   * Dropping it would silently rewrite the scope to All Sectors on the next
+   * save — a much wider rule than anybody chose.
+   */
+  const options = sectors.filter((s) => s.active !== false || s.id === value);
+
+  return (
+    <Select
+      value={value ?? ALL}
+      disabled={disabled}
+      onValueChange={(next) => onChange(next === ALL ? null : next)}
+    >
+      <SelectTrigger className={cn("h-10 bg-card", className)}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={ALL}>{allSectorsLabel}</SelectItem>
+        {options.map((sector) => (
+          <SelectItem key={sector.id} value={sector.id}>
+            {sector.displayName}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+};
+
 export const LexScope = ({
   productName,
   sectorName,

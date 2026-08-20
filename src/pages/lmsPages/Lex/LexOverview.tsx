@@ -22,8 +22,14 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
-import { TONES, formatDate, formatMoney } from "../../../components/shared/detailKitUtils";
 import {
+  TONES,
+  formatDate,
+  formatMoney,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
+import {
+  LexEmployerBadge,
   LexMetricTile,
   LexNotice,
   LexPageHeader,
@@ -321,18 +327,19 @@ const LexOverview = () => {
                         <td className="py-2.5 pe-3 font-mono text-xs">
                           {row.applicationNumber || row.applicationId}
                         </td>
-                        {/* Blank on cases opened during the identity-service
-                            outage — the case package is append-only, so those
-                            stay blank. Never a placeholder name. */}
+                        {/* Blank only on cases opened before the field
+                            flowed — the package is append-only, so those keep
+                            their blanks. Never a placeholder name. */}
                         <td className="py-2.5 pe-3">{row.applicantName || "—"}</td>
                         <td className="py-2.5 pe-3">{row.productName || "—"}</td>
-                        {/* Always the constant "loan-origination": mobile and
-                            web are indistinguishable to lending. Showing "App"
-                            or "Branch" would be fabricated. */}
+                        {/* Derived from the token's OAuth client, so a caller
+                            cannot misreport it. Null when the client is
+                            unrecognised — "unknown" is a true answer and a
+                            default would not be. */}
                         <td className="py-2.5 pe-3">
                           {row.sourceChannel ? (
                             <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
-                              {row.sourceChannel}
+                              {humanizeCode(row.sourceChannel)}
                             </Badge>
                           ) : (
                             "—"
@@ -341,9 +348,15 @@ const LexOverview = () => {
                         <td className="py-2.5 pe-3">
                           <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />
                         </td>
-                        {/* lending never sends salesId — it is not one of the
-                            nineteen fields on the evaluation contract. */}
-                        <td className="py-2.5 pe-3">{row.salesId || "—"}</td>
+                        {/* Null is the true answer for a self-service
+                            application, not a missing value. */}
+                        <td className="py-2.5 pe-3">
+                          {row.salesId || (
+                            <span className="text-muted-foreground" title={t("dash.selfServiceHint")}>
+                              {t("dash.selfService")}
+                            </span>
+                          )}
+                        </td>
                         <td className="py-2.5 pe-3">
                           <div className="flex flex-col gap-1">
                             <Badge
@@ -445,13 +458,40 @@ const LexOverview = () => {
                                 </div>
                               </div>
                             </div>
-                            {/* Income sector, employer name and employer
-                                category are on the mockup and in no contract.
-                                Said once, here, rather than as three empty
-                                fields that look like a loading failure. */}
-                            <p className="m-0 mt-3 text-xs text-muted-foreground">
-                              {t("dash.employmentGap")}
-                            </p>
+
+                            {/* Employment. Resolved end to end now: name,
+                                sector and vintage come from customer-service
+                                via lending; the category is LEX's own lookup
+                                against the Approved Employer List. */}
+                            <div className="mt-3 grid grid-cols-1 gap-4 border-t border-border/60 pt-3 sm:grid-cols-2 lg:grid-cols-4">
+                              <ExpandedField
+                                label={t("dash.field.incomeSector")}
+                                value={
+                                  row.incomeSector ? humanizeCode(row.incomeSector) : undefined
+                                }
+                              />
+                              <ExpandedField
+                                label={t("dash.field.employerName")}
+                                value={row.employerName}
+                              />
+                              <div className="min-w-0">
+                                <span className="mb-1 block text-xs text-muted-foreground">
+                                  {t("dash.field.employerCategory")}
+                                </span>
+                                {/* UNKNOWN means nobody ran the check. It is
+                                    never rendered as "Non-Whitelisted" — only a
+                                    failed check is grounds for declining. */}
+                                <LexEmployerBadge category={row.employerCategory} t={t} />
+                              </div>
+                              <ExpandedField
+                                label={t("dash.field.employmentVintage")}
+                                value={
+                                  row.employmentDurationMonths != null
+                                    ? t("dash.months", { count: row.employmentDurationMonths })
+                                    : undefined
+                                }
+                              />
+                            </div>
                           </td>
                         </tr>
                       )}
