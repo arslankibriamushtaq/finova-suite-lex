@@ -40,6 +40,7 @@ import {
   ScanLine,
   Coins,
   Bitcoin,
+  BrainCircuit,
   type LucideIcon,
 } from "lucide-react";
 
@@ -90,6 +91,9 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   bnpl: { Icon: ShoppingBag, color: "#a855f7" },
   sulliscash: { Icon: Coins, color: "#f59e0b" },
   crypto: { Icon: Bitcoin, color: "#f97316" },
+  // The agentic decisioning layer. Group-level entry only, so its children
+  // render as the plain iconless list the other configurator groups use.
+  lex: { Icon: BrainCircuit, color: "#6366f1" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
@@ -153,6 +157,20 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   SullisCash: "sullisCash",
   "SullisCash Settings": "sullisCashSettings",
   "SullisCash Loans": "sullisCashLoans",
+  LEX: "lex",
+  "Reason Code Processes": "lexProcesses",
+  "Review Cases": "lexCases",
+  "Delegation Matrices": "lexDelegation",
+  "Authority Levels": "lexAuthorityLevels",
+  "SLA Policies": "lexSlaPolicies",
+  "Verification Sequence": "lexChecks",
+  "Document Analyses": "lexAnalyses",
+  "SLA Board": "lexSlaBoard",
+  "Policy Library": "lexPolicyLibrary",
+  "Approved Employers": "lexEmployers",
+  "Governance Mirror": "lexGovernance",
+  "LEX Reports": "lexReports",
+  "Scheduled Exports": "lexSchedules",
   Crypto: "crypto",
   "Crypto Treasury": "cryptoTreasury",
   "Crypto Transfers": "cryptoTransfers",
@@ -2191,6 +2209,126 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const lmsModule = sidebarItems.find((x: any) => x && x.label === "LMS");
   const connectorModule = sidebarItems.find((x: any) => x && x.label === "Connector Management");
 
+  /**
+   * LEX — the agentic decisioning layer, a sibling of LOS and LMS under
+   * Financing.
+   *
+   * One entry per Casbin object rather than one per service — the objects are
+   * what the policy grants, so a role that may read the SLA board without
+   * touching the configurator will see exactly one of those two rows. The three
+   * read-only screens (analyses, the board, the mirror) sit beside the
+   * configurators rather than in a separate "reports" group, because they are
+   * where the configured rules are observed.
+   *
+   * **Ungated for now.** The `LEX_*` codes are not registered in
+   * identity-service yet, so gating on them would hide the whole module from
+   * everyone. Each row keeps its check commented above it rather than deleted:
+   * that is the mapping from menu row to Casbin object, and reconstructing it
+   * later from twelve screen files is the expensive way to do this. Turning
+   * gating on means uncommenting these twelve lines and flipping
+   * `LEX_PERMISSIONS_ENFORCED` in `hooks/useLexAccess.ts`.
+   */
+  const lexModule = {
+    label: "LEX",
+    Link: "/LOS/Lex/Processes",
+    img: Images.ApiManagementIcon,
+    imgActive: Images.ApiManagementIconDark,
+    active: pathname.includes("/LOS/Lex"),
+    menu: [
+      // hasAccess("LEX_PROCESS_READ") &&
+      {
+        label: "Reason Code Processes",
+        Link: "Processes",
+        LinkLable: "/LOS/Lex",
+        active: pathname.startsWith("/LOS/Lex/Processes"),
+      },
+      // hasAccess("LEX_DELEGATION_READ") &&
+      {
+        label: "Delegation Matrices",
+        Link: "Delegation",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Delegation",
+      },
+      // hasAccess("LEX_AUTHORITY_LEVEL_READ") &&
+      {
+        label: "Authority Levels",
+        Link: "AuthorityLevels",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/AuthorityLevels",
+      },
+      // hasAccess("LEX_SLA_POLICY_READ") &&
+      {
+        label: "SLA Policies",
+        Link: "SlaPolicies",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/SlaPolicies",
+      },
+      // hasAccess("LEX_DOCUMENT_CHECK_READ") &&
+      {
+        label: "Verification Sequence",
+        Link: "Checks",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Checks",
+      },
+      // hasAccess("LEX_DOCUMENT_ANALYSIS_READ") &&
+      {
+        label: "Document Analyses",
+        Link: "Analyses",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Analyses",
+      },
+      // hasAccess("LEX_CASE_READ") &&
+      {
+        label: "Review Cases",
+        Link: "Cases",
+        LinkLable: "/LOS/Lex",
+        active: pathname.startsWith("/LOS/Lex/Cases"),
+      },
+      // hasAccess("LEX_SLA_BOARD_READ") &&
+      {
+        label: "SLA Board",
+        Link: "SlaBoard",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/SlaBoard",
+      },
+      // hasAccess("LEX_KNOWLEDGE_DOCUMENT_READ") &&
+      {
+        label: "Policy Library",
+        Link: "PolicyLibrary",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/PolicyLibrary",
+      },
+      // hasAccess("LEX_EMPLOYER_READ") &&
+      {
+        label: "Approved Employers",
+        Link: "Employers",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Employers",
+      },
+      // hasAccess("LEX_GOVERNANCE_READ") &&
+      {
+        label: "Governance Mirror",
+        Link: "Governance",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Governance",
+      },
+      // hasAccess("LEX_BI_REPORT_READ") &&
+      {
+        label: "LEX Reports",
+        Link: "Bi",
+        LinkLable: "/LOS/Lex",
+        active: pathname.startsWith("/LOS/Lex/Bi") && !pathname.includes("/Schedules"),
+      },
+      // hasAccess("LEX_BI_SCHEDULE_READ") &&
+      {
+        label: "Scheduled Exports",
+        Link: "Schedules",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Schedules",
+      },
+    ].filter(Boolean),
+  };
+
   // Accounting desks lifted out of Financing → LMS to the sidebar's top level.
   // Children keep their absolute `LinkLable` + `Link`, so every route, active
   // rule and permission gate behaves as it did nested inside LMS.
@@ -2687,7 +2825,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // gates and active-state rules are exactly what they were inside LMS —
     // only `submenu` became `menu`, which is what the top level renders from.
     ...accountingItems,
-    hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK"]) && {
+    // hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK", "LEX"]) && 
+    {
       label: "Financing",
       Link: "/LOS/Dashboard",
       img: Images.ApiManagementIcon,
@@ -2812,6 +2951,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           ].filter(Boolean),
         },
         hasAccess(["LENDING", "COLLECTIONS", "LEDGER", "RISK", "PRODUCT", "POLICY"]) && lmsModule,
+        lexModule,
       ].filter(Boolean),
     },
     hasAccess("MIDDLEWARE") && connectorModule,

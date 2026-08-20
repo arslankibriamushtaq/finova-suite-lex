@@ -245,6 +245,27 @@ import SullisCashConfig from "../pages/lmsPages/SullisCash/SullisCashConfig";
 import SullisCashLoans from "../pages/lmsPages/SullisCash/SullisCashLoans";
 import CryptoTreasury from "../pages/lmsPages/Crypto/CryptoTreasury";
 import CryptoTransfers from "../pages/lmsPages/Crypto/CryptoTransfers";
+// LEX — the agentic decisioning layer. One route per screen, and per Casbin
+// object: a role that may read the SLA board without the configurator lands on
+// exactly the screens its policy allows, and each page re-checks rather than
+// trusting the route.
+import LexProcesses from "../pages/lmsPages/Lex/LexProcesses";
+import LexCases from "../pages/lmsPages/Lex/LexCases";
+import LexCaseDetail from "../pages/lmsPages/Lex/LexCaseDetail";
+import LexProcessDetail from "../pages/lmsPages/Lex/LexProcessDetail";
+import LexDelegation from "../pages/lmsPages/Lex/LexDelegation";
+import LexAuthorityLevels from "../pages/lmsPages/Lex/LexAuthorityLevels";
+import LexSlaPolicies from "../pages/lmsPages/Lex/LexSlaPolicies";
+import LexChecks from "../pages/lmsPages/Lex/LexChecks";
+import LexAnalyses from "../pages/lmsPages/Lex/LexAnalyses";
+import LexSlaBoard from "../pages/lmsPages/Lex/LexSlaBoard";
+import LexPolicyLibrary from "../pages/lmsPages/Lex/LexPolicyLibrary";
+import LexEmployers from "../pages/lmsPages/Lex/LexEmployers";
+import LexGovernance from "../pages/lmsPages/Lex/LexGovernance";
+import LexBiGallery from "../pages/lmsPages/Lex/LexBiGallery";
+import LexBiReport from "../pages/lmsPages/Lex/LexBiReport";
+import LexBiBuilder from "../pages/lmsPages/Lex/LexBiBuilder";
+import LexBiSchedules from "../pages/lmsPages/Lex/LexBiSchedules";
 import WalletLedgerTransactions from "../pages/lmsPages/WalletLedger/WalletLedgerTransactions";
 import WalletLedgerAccounts from "../pages/lmsPages/WalletLedger/WalletLedgerAccounts";
 import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
@@ -963,6 +984,31 @@ export const router = createBrowserRouter(
               path: "/LOS/Crypto/Transfers",
               element: <CryptoTransfers />,
             },
+            // LEX. `Processes/:id` doubles as the create screen with id "new" —
+            // one form either way, since a new process IS a draft and the draft
+            // editor is the only editable state that exists.
+            { path: "/LOS/Lex/Processes", element: <LexProcesses /> },
+            { path: "/LOS/Lex/Processes/:id", element: <LexProcessDetail /> },
+            { path: "/LOS/Lex/Delegation", element: <LexDelegation /> },
+            { path: "/LOS/Lex/AuthorityLevels", element: <LexAuthorityLevels /> },
+            { path: "/LOS/Lex/SlaPolicies", element: <LexSlaPolicies /> },
+            { path: "/LOS/Lex/Checks", element: <LexChecks /> },
+            { path: "/LOS/Lex/Analyses", element: <LexAnalyses /> },
+            // The review queue and one case. `lex.cases.messages` and
+            // `lex.cases.decision` are separate objects, gated inside the page.
+            { path: "/LOS/Lex/Cases", element: <LexCases /> },
+            { path: "/LOS/Lex/Cases/:caseId", element: <LexCaseDetail /> },
+            { path: "/LOS/Lex/SlaBoard", element: <LexSlaBoard /> },
+            { path: "/LOS/Lex/PolicyLibrary", element: <LexPolicyLibrary /> },
+            { path: "/LOS/Lex/Employers", element: <LexEmployers /> },
+            { path: "/LOS/Lex/Governance", element: <LexGovernance /> },
+            { path: "/LOS/Lex/Bi", element: <LexBiGallery /> },
+            { path: "/LOS/Lex/Bi/Builder", element: <LexBiBuilder /> },
+            // Standard and saved reports render through the same component —
+            // the payload is identical, so two renderers would only drift.
+            { path: "/LOS/Lex/Bi/Standard/:reportKey", element: <LexBiReport kind="standard" /> },
+            { path: "/LOS/Lex/Bi/Report/:id", element: <LexBiReport kind="saved" /> },
+            { path: "/LOS/Lex/Schedules", element: <LexBiSchedules /> },
             {
               path: "/LOS/Exchange/Providers",
               element: <ExchangeProviders />,

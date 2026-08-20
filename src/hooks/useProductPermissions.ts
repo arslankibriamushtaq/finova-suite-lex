@@ -907,6 +907,95 @@ export const CRYPTO_PERMISSIONS = {
 };
 
 // ============================================
+// LEX — the agentic decisioning layer
+// ============================================
+
+/**
+ * LEX authorization is Casbin, object + act, checked server-side on every
+ * endpoint. The UI reads the same policy to decide what to *show* and lets the
+ * server decide what to *allow*.
+ *
+ * The codes below are the identity-service registrations for those Casbin
+ * pairs — the catalog cannot express `lex.config.processes:read`, so each pair
+ * is registered as a flat code. The Casbin object each one mirrors is named in
+ * the comment, because that is what a 403 in the network tab will say.
+ *
+ * Hiding a button the server would refuse is good UX. Showing one it would
+ * refuse is a bug — and showing one it would *allow* but that we hid is worse,
+ * because the feature is invisible and nobody files a ticket.
+ */
+export const LEX_PERMISSIONS = {
+  MODULE: "LEX",
+
+  /** `lex.config.processes` — the Reason Code rule library. Writes are draft-only. */
+  PROCESS_READ: "LEX_PROCESS_READ",
+  PROCESS_WRITE: "LEX_PROCESS_WRITE",
+  PROCESS_PUBLISH: "LEX_PROCESS_PUBLISH",
+
+  /** `lex.config.delegation` — the delegation of authority matrices. */
+  DELEGATION_READ: "LEX_DELEGATION_READ",
+  DELEGATION_WRITE: "LEX_DELEGATION_WRITE",
+  DELEGATION_PUBLISH: "LEX_DELEGATION_PUBLISH",
+
+  /** `lex.config.levels` — authority levels. Data, not an enum. */
+  LEVEL_READ: "LEX_AUTHORITY_LEVEL_READ",
+  LEVEL_WRITE: "LEX_AUTHORITY_LEVEL_WRITE",
+
+  /** `lex.config.sla` — stage targets. */
+  SLA_CONFIG_READ: "LEX_SLA_POLICY_READ",
+  SLA_CONFIG_WRITE: "LEX_SLA_POLICY_WRITE",
+  SLA_CONFIG_PUBLISH: "LEX_SLA_POLICY_PUBLISH",
+
+  /** `lex.documents.checks` — the verification sequence. */
+  CHECK_READ: "LEX_DOCUMENT_CHECK_READ",
+  CHECK_WRITE: "LEX_DOCUMENT_CHECK_WRITE",
+
+  /** `lex.documents.analyses` — read-only, no write act exists. */
+  ANALYSIS_READ: "LEX_DOCUMENT_ANALYSIS_READ",
+
+  /**
+   * `lex.cases` — the review queue and one case.
+   *
+   * Messages and decisions are **separate Casbin objects**, not actions on
+   * `lex.cases`: granting only the case object produces a screen where
+   * everything loads and the decide button 403s.
+   */
+  CASE_READ: "LEX_CASE_READ",
+  CASE_UPDATE: "LEX_CASE_UPDATE",
+  CASE_ESCALATE: "LEX_CASE_ESCALATE",
+  /** `lex.cases.messages` / `create`. */
+  CASE_MESSAGE_CREATE: "LEX_CASE_MESSAGE_CREATE",
+  /** `lex.cases.decision` / `create`. */
+  CASE_DECISION_CREATE: "LEX_CASE_DECISION_CREATE",
+
+  /** `lex.sla` — the operations board. Read-only: there is no endpoint that writes a target. */
+  SLA_BOARD_READ: "LEX_SLA_BOARD_READ",
+
+  /** `lex.knowledge.documents` — policy library. New versions only; no delete. */
+  KNOWLEDGE_DOC_READ: "LEX_KNOWLEDGE_DOCUMENT_READ",
+  KNOWLEDGE_DOC_WRITE: "LEX_KNOWLEDGE_DOCUMENT_WRITE",
+  KNOWLEDGE_DOC_RETIRE: "LEX_KNOWLEDGE_DOCUMENT_RETIRE",
+
+  /**
+   * `lex.knowledge.employers` — the Approved Employer List. There is no create
+   * and no update act: employers are listed by the agent through an internal
+   * route, and delist is the only write a person gets.
+   */
+  EMPLOYER_READ: "LEX_EMPLOYER_READ",
+  EMPLOYER_DELIST: "LEX_EMPLOYER_DELIST",
+
+  /** `lex.knowledge.governance` — the mirror. Read, plus a refresh that re-projects. */
+  GOVERNANCE_READ: "LEX_GOVERNANCE_READ",
+  GOVERNANCE_REFRESH: "LEX_GOVERNANCE_REFRESH",
+
+  /** `lex.bi.reports` and `lex.bi.schedules`. */
+  BI_READ: "LEX_BI_REPORT_READ",
+  BI_WRITE: "LEX_BI_REPORT_WRITE",
+  SCHEDULE_READ: "LEX_BI_SCHEDULE_READ",
+  SCHEDULE_WRITE: "LEX_BI_SCHEDULE_WRITE",
+};
+
+// ============================================
 // KYC — identity-service KYC_*
 // ============================================
 export const KYC_PERMISSIONS = {
