@@ -14,6 +14,7 @@ import {
 
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
+import { Label } from "../../../components/ui/label";
 import { Textarea } from "../../../components/ui/textarea";
 import {
   Select,
@@ -190,24 +191,39 @@ const LexCommunicationHub = () => {
 
   return (
     <div className="service">
-      <LexPageHeader icon={MessagesSquare} title={t("hub.title")} subtitle={t("hub.subtitle")}>
-        <LexSearch value={search} onChange={setSearch} placeholder={t("case.search")} />
-        <Select value={routingType} onValueChange={setRoutingType}>
-          <SelectTrigger className="w-48 bg-card">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("case.filter.allRouting")}</SelectItem>
-            <SelectItem value="DELEGATION">DELEGATION</SelectItem>
-            <SelectItem value="SUPERVISOR">SUPERVISOR</SelectItem>
-            <SelectItem value="APPLICATION_SOURCE">APPLICATION_SOURCE</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button variant="outline" className="h-10 gap-2" onClick={loadRooms} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-      </LexPageHeader>
+      <LexPageHeader icon={MessagesSquare} title={t("hub.title")} subtitle={t("hub.subtitle")} />
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="hub-search"
+            className="flex-1"
+            value={search}
+            onChange={setSearch}
+            placeholder={t("case.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Label htmlFor="hub-routing" className="sr-only">
+              {t("case.col.routing")}
+            </Label>
+            <Select value={routingType} onValueChange={setRoutingType}>
+              <SelectTrigger id="hub-routing" className="w-48 bg-card">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{t("case.filter.allRouting")}</SelectItem>
+                <SelectItem value="DELEGATION">DELEGATION</SelectItem>
+                <SelectItem value="SUPERVISOR">SUPERVISOR</SelectItem>
+                <SelectItem value="APPLICATION_SOURCE">APPLICATION_SOURCE</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" className="gap-2" onClick={loadRooms} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
         {/* Room list */}
@@ -405,7 +421,7 @@ const LexCommunicationHub = () => {
                   <p className="m-0 text-sm text-muted-foreground">{t("case.noCodes")}</p>
                 ) : (
                   (record.attachedCodes || []).map((code) => (
-                    <div key={code.referenceCode} className="border-b border-border/60 py-2 last:border-b-0">
+                    <div key={code.referenceCode} className="pro-tile mb-2 last:mb-0">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="font-mono text-xs">{code.referenceCode}</span>
                         {code.severity && (
@@ -485,7 +501,7 @@ const LexCommunicationHub = () => {
                   <p className="m-0 text-sm text-muted-foreground">{t("case.noAudit")}</p>
                 ) : (
                   (record.auditTrail || []).map((entry) => (
-                    <div key={entry.id} className="border-b border-border/60 py-2 last:border-b-0">
+                    <div key={entry.id} className="pro-tile mb-2 last:mb-0">
                       <div className="flex items-baseline justify-between gap-2">
                         <span className="font-mono text-[11px]">{entry.action}</span>
                         <span className="text-[11px] text-muted-foreground">

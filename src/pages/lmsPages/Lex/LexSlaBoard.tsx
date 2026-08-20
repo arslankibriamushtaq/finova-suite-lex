@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Gauge, RefreshCw } from "lucide-react";
+import { AlertTriangle, Gauge, GitBranch, ListOrdered, RefreshCw } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
+import { Label } from "../../../components/ui/label";
 import {
   Select,
   SelectContent,
@@ -180,12 +181,28 @@ const LexSlaBoard = () => {
 
   return (
     <div className="service">
-      <LexPageHeader icon={Gauge} title={t("board.title")} subtitle={t("board.subtitle")}>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-      </LexPageHeader>
+      <LexPageHeader icon={Gauge} title={t("board.title")} subtitle={t("board.subtitle")} />
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Label htmlFor="board-minimum" className="sr-only">
+            {t("board.col.breach")}
+          </Label>
+          <Select value={minimum} onValueChange={(v) => setMinimum(v as LexBreachLevel)}>
+            <SelectTrigger id="board-minimum" className="w-52 bg-card">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="NEAR_BREACH">{t("board.min.near")}</SelectItem>
+              <SelectItem value="CRITICAL_BREACH">{t("board.min.critical")}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            {t("common:refresh")}
+          </Button>
+        </div>
+      </div>
 
       {/* Six tiles, and `notTracked` is one of them — never folded into "within
           SLA". Those cases have no published policy for their product and
@@ -251,16 +268,21 @@ const LexSlaBoard = () => {
       {byStage.length > 0 && (
         <div className="pro-card mb-3 p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-              {t("board.pipeline")}
-            </h4>
+            <div className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <ListOrdered className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t("board.pipeline")}
+              </h4>
+            </div>
             <Badge variant="outline" className={`border font-medium ${TONES.sky}`}>
               {t("board.pipelineActive")}
             </Badge>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {byStage.map(([stage, count], index) => (
-              <div key={stage} className="rounded-lg border border-border bg-muted/30 p-3">
+              <div key={stage} className="pro-tile">
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-sm font-semibold text-foreground">
                     {index + 1}. {humanizeCode(stage)}
@@ -284,9 +306,14 @@ const LexSlaBoard = () => {
           paths, not only the underwriter queue. */}
       {byRouting.length > 0 && (
         <div className="pro-card mb-3 p-4">
-          <h4 className="m-0 mb-3 text-sm font-semibold tracking-tight text-foreground">
-            {t("board.byRouting")}
-          </h4>
+          <div className="mb-3 flex items-center gap-2.5">
+            <span className="pro-head-badge">
+              <GitBranch className="h-4 w-4" />
+            </span>
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t("board.byRouting")}
+            </h4>
+          </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {byRouting.map(([routing, count]) => (
               <LexTile key={routing} label={routing} value={count} />
@@ -296,25 +323,22 @@ const LexSlaBoard = () => {
       )}
 
       <div className="pro-card">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2 p-3 pb-0">
-          <div className="min-w-0">
-            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-              {t("board.breaching")}
-            </h4>
-            {/* The breaching endpoint does not carry the applicant name — the
-                mockup's column would need a join or a wider contract. Open the
-                case for it rather than showing an empty column. */}
-            <p className="m-0 text-xs text-muted-foreground">{t("board.nameGap")}</p>
-          </div>
-          <Select value={minimum} onValueChange={(v) => setMinimum(v as LexBreachLevel)}>
-            <SelectTrigger className="w-52 bg-card">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="NEAR_BREACH">{t("board.min.near")}</SelectItem>
-              <SelectItem value="CRITICAL_BREACH">{t("board.min.critical")}</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-wrap items-center gap-2.5 p-3 pb-2">
+          <span className="pro-head-badge">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            {t("board.breaching")}
+          </h4>
+          {totalRows > 0 && (
+            <Badge variant="outline" className={`border font-medium ${TONES.red}`}>
+              {totalRows}
+            </Badge>
+          )}
+          {/* The breaching endpoint does not carry the applicant name — the
+              mockup's column would need a join or a wider contract. Open the
+              case for it rather than showing an empty column. */}
+          <p className="m-0 basis-full text-xs text-muted-foreground">{t("board.nameGap")}</p>
         </div>
 
         {!isLoading && totalRows === 0 ? (

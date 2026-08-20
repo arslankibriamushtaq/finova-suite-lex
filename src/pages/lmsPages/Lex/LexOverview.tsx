@@ -138,25 +138,29 @@ const LexOverview = () => {
         icon={LayoutDashboard}
         title={t("dash.title")}
         subtitle={t("dash.subtitle")}
-      >
-        {/* No product catalogue endpoint exists in LEX — products arrive on
-            cases as strings from lending — and /counts takes no date range.
-            Both controls are shown disabled rather than wired to nothing. */}
-        <LexUnavailableFilter label={t("dash.filter.allProducts")} title={t("dash.filter.productGap")} />
-        <LexUnavailableFilter label={t("dash.filter.allTime")} title={t("dash.filter.dateGap")} />
-        <Button
-          variant="outline"
-          className="h-10 gap-2"
-          onClick={() => {
-            load();
-            loadCounts();
-          }}
-          disabled={isLoading}
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-      </LexPageHeader>
+      />
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {/* No product catalogue endpoint exists in LEX — products arrive on
+              cases as strings from lending — and /counts takes no date range.
+              Both controls are shown disabled rather than wired to nothing. */}
+          <LexUnavailableFilter label={t("dash.filter.allProducts")} title={t("dash.filter.productGap")} />
+          <LexUnavailableFilter label={t("dash.filter.allTime")} title={t("dash.filter.dateGap")} />
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => {
+              load();
+              loadCounts();
+            }}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            {t("common:refresh")}
+          </Button>
+        </div>
+      </div>
 
       <LexNotice tone="sky">{t("case.referralScopeNote")}</LexNotice>
 

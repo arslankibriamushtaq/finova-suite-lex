@@ -8,12 +8,14 @@ import {
   Bot,
   CheckCircle2,
   FileText,
+  Gauge,
   Gavel,
   HelpCircle,
   History,
   Inbox,
   Lock,
   MapPin,
+  MessagesSquare,
   Send,
   SendHorizontal,
   Settings2,
@@ -303,6 +305,10 @@ const LexCaseDetail = () => {
   if (!canRead) return <PermissionDenied />;
 
   const readOnly = !!record?.readOnly;
+  const hasCaseActions =
+    (!readOnly && canUpdate && !record?.assigneeUserId) ||
+    canOfferEscalate ||
+    (!readOnly && canDecide && resolvingActions.length > 0);
   const hasAuthority = canDecideLevel(record?.assignedLevelCode);
   const resolvingActions = actions?.resolvingActions || [];
   /**
@@ -343,46 +349,56 @@ const LexCaseDetail = () => {
         title={t("ws.title")}
         subtitle={info?.applicantName || record?.applicationId || undefined}
       >
-        <Button variant="ghost" className="h-10 gap-2" onClick={() => navigate("/LOS/Lex/Cases")}>
+        <Button variant="outline" className="gap-2" onClick={() => navigate("/LOS/Lex/Cases")}>
           <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
-          {t("common:back")}
+          {t("case.backToList")}
         </Button>
-        {!readOnly && canUpdate && !record?.assigneeUserId && (
-          <Button
-            variant="outline"
-            className="h-10 gap-2"
-            disabled={busy}
-            onClick={() => run(() => claimCase(String(caseId)), "case.toast.claimed", "case.toast.claimFailed")}
-          >
-            <UserCheck className="h-4 w-4" />
-            {t("case.claim")}
-          </Button>
-        )}
-        {canOfferEscalate && (
-          <Button
-            variant="outline"
-            className="h-10 gap-2"
-            disabled={busy}
-            onClick={() =>
-              run(() => escalateCase(String(caseId)), "case.toast.escalated", "case.toast.escalateFailed")
-            }
-          >
-            <ArrowUpCircle className="h-4 w-4" />
-            {t("case.escalate")}
-          </Button>
-        )}
-        {!readOnly && canDecide && resolvingActions.length > 0 && (
-          <Button
-            className="wallet-brand-btn h-10 gap-2"
-            disabled={!hasAuthority}
-            title={hasAuthority ? undefined : t("case.err.insufficientAuthority")}
-            onClick={openDecision}
-          >
-            <CheckCircle2 className="h-4 w-4" />
-            {t("case.decide")}
-          </Button>
-        )}
       </LexPageHeader>
+
+      {/* Record-changing actions on one bar, inside a card so they pick up
+          the same sizing as the rest of the app's controls. Skipped when
+          nothing applies, rather than leaving an empty strip. */}
+      {hasCaseActions && (
+        <div className="pro-card p-3 mb-3">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+          {!readOnly && canUpdate && !record?.assigneeUserId && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              disabled={busy}
+              onClick={() => run(() => claimCase(String(caseId)), "case.toast.claimed", "case.toast.claimFailed")}
+            >
+              <UserCheck className="h-4 w-4" />
+              {t("case.claim")}
+            </Button>
+          )}
+          {canOfferEscalate && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              disabled={busy}
+              onClick={() =>
+                run(() => escalateCase(String(caseId)), "case.toast.escalated", "case.toast.escalateFailed")
+              }
+            >
+              <ArrowUpCircle className="h-4 w-4" />
+              {t("case.escalate")}
+            </Button>
+          )}
+          {!readOnly && canDecide && resolvingActions.length > 0 && (
+            <Button
+              className="wallet-brand-btn gap-2"
+              disabled={!hasAuthority}
+              title={hasAuthority ? undefined : t("case.err.insufficientAuthority")}
+              onClick={openDecision}
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              {t("case.decide")}
+            </Button>
+          )}
+          </div>
+        </div>
+      )}
 
       {/* ---------------------------------------------------------------- */}
       {/* Application header                                                */}
@@ -470,9 +486,14 @@ const LexCaseDetail = () => {
       <div className="pro-card mb-3 p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
-            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-              {t("ws.lexOutput")}
-            </h4>
+            <div className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Bot className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t("ws.lexOutput")}
+              </h4>
+            </div>
             <p className="m-0 text-xs text-muted-foreground">{t("ws.lexOutputSub")}</p>
           </div>
           {record?.beyondDelegation && (
@@ -578,7 +599,7 @@ const LexCaseDetail = () => {
               (record?.attachedCodes || []).map((code) => (
                 <div
                   key={code.referenceCode}
-                  className="flex flex-wrap items-center gap-2 border-b border-border/60 py-2 last:border-b-0"
+                  className="pro-tile mb-2 flex flex-wrap items-center gap-2 last:mb-0"
                 >
                   <span className="font-mono text-xs">{code.referenceCode}</span>
                   {code.title && <span className="text-sm">{code.title}</span>}
@@ -612,9 +633,14 @@ const LexCaseDetail = () => {
               entries with no result stored against a case. */}
           <div className="pro-card p-4">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-                {t("ws.documents")}
-              </h4>
+              <div className="flex items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <FileText className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t("ws.documents")}
+                </h4>
+              </div>
               {analyses.some(isStubReader) && (
                 <Badge variant="outline" className={`border font-medium ${TONES.amber}`}>
                   {t("ws.stubReader")}
@@ -626,7 +652,7 @@ const LexCaseDetail = () => {
               <EmptyState icon={FileText} text={t("ws.noDocuments")} />
             ) : (
               analyses.map((analysis) => (
-                <div key={analysis.id} className="border-b border-border/60 py-3 last:border-b-0">
+                <div key={analysis.id} className="pro-tile mb-2 last:mb-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">{analysis.documentKind || "—"}</span>
@@ -812,9 +838,14 @@ const LexCaseDetail = () => {
               {/* The decision, once made. */}
               {record?.decision && (
                 <div className="mt-4 border-t border-border/60 pt-3">
-                  <h4 className="m-0 mb-3 text-sm font-semibold tracking-tight text-foreground">
-                    {t("case.decision")}
-                  </h4>
+                  <div className="flex mb-3 items-center gap-2.5">
+                    <span className="pro-head-badge">
+                      <Gavel className="h-4 w-4" />
+                    </span>
+                    <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                      {t("case.decision")}
+                    </h4>
+                  </div>
                   <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
                     <Field label={t("case.field.action")} value={record.decision.action} />
                     <Field label={t("case.field.decidedBy")} value={record.decision.actorName} />
@@ -838,14 +869,19 @@ const LexCaseDetail = () => {
 
               {/* Human thread. */}
               <div className="mt-4 border-t border-border/60 pt-3">
-                <h4 className="m-0 mb-3 text-sm font-semibold tracking-tight text-foreground">
-                  {t("case.messages")}
-                </h4>
+                <div className="flex mb-3 items-center gap-2.5">
+                  <span className="pro-head-badge">
+                    <MessagesSquare className="h-4 w-4" />
+                  </span>
+                  <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                    {t("case.messages")}
+                  </h4>
+                </div>
                 {humanMessages.length === 0 ? (
                   <p className="m-0 text-sm text-muted-foreground">{t("case.noMessages")}</p>
                 ) : (
                   humanMessages.map((message) => (
-                    <div key={message.id} className="border-b border-border/60 py-2.5 last:border-b-0">
+                    <div key={message.id} className="pro-tile mb-2 last:mb-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-medium">
                           {message.authorName || t("case.systemAuthor")}
@@ -884,9 +920,14 @@ const LexCaseDetail = () => {
 
             {/* SLA rail */}
             <div className="pro-card p-4">
-              <h4 className="m-0 mb-3 text-sm font-semibold tracking-tight text-foreground">
-                {t("hub.sla")}
-              </h4>
+              <div className="flex mb-3 items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <Gauge className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t("hub.sla")}
+                </h4>
+              </div>
               {/* Null means no published policy covers this case's product and
                   sector. A case with no target silently never breaches, so it is
                   not tracked rather than compliant. */}
@@ -942,7 +983,7 @@ const LexCaseDetail = () => {
               (record?.auditTrail || []).map((entry) => (
                 <div
                   key={entry.id}
-                  className="flex flex-wrap items-baseline gap-2 border-b border-border/60 py-2.5 last:border-b-0"
+                  className="pro-tile mb-2 flex flex-wrap items-baseline gap-2 last:mb-0"
                 >
                   <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
                     {entry.action}
