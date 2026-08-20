@@ -27,9 +27,112 @@ const lex: ModuleLocale = {
     // ---------------------------------------------------------------- processes
 
 
+    // --- Overview dashboard
+    //
+    // The tiles count referrals. TOTAL APPLICATIONS and DECIDED AUTONOMOUSLY are
+    // not here because LEX cannot answer them: it is called once, on
+    // MANUAL_REVIEW, and never sees an application that decided itself.
+    "dash.title": "Dashboard",
+    "dash.subtitle": "How the portfolio is doing right now, and a way into any single application.",
+    "dash.filter.allProducts": "All products",
+    "dash.filter.productGap":
+      "There is no product catalogue endpoint in LEX — products arrive on cases as names from lending, so there is no list to filter by yet.",
+    "dash.filter.allTime": "All time",
+    "dash.filter.dateGap": "The counts endpoint takes no date range yet, so this window cannot be applied.",
+    "dash.tile.referred": "Referred to LEX",
+    "dash.tile.referredHint": "Cases opened, not applications received.",
+    "dash.tile.approved": "Approved",
+    "dash.tile.declined": "Declined",
+    "dash.tile.humanReview": "Human review",
+    "dash.tile.customerSupport": "With customer support",
+    "dash.tile.customerSupportHint": "Returned to the application source to fix.",
+    "dash.tile.nearBreach": "Near breach",
+    "dash.tile.criticalBreach": "Critical breach",
+    "dash.tile.unrecognized": "Unrecognized codes",
+    "dash.tile.unrecognizedHint": "No process is configured for these — each one falls to a supervisor.",
+    "dash.activity": "LEX activity",
+    "dash.col.date": "Date",
+    "dash.col.appId": "App. ID",
+    "dash.col.name": "Name",
+    "dash.col.product": "Product",
+    "dash.col.channel": "Channel",
+    "dash.col.status": "Status",
+    "dash.col.salesId": "Sales ID",
+    "dash.col.sla": "SLA status",
+    "dash.expand": "Show details",
+    "dash.collapse": "Hide details",
+    "dash.field.incomeAndDbr": "Instalment & DBR",
+    "dash.field.creditScore": "SIMAH credit score",
+    "dash.field.referralReason": "Referral reason",
+    "dash.employmentGap":
+      "Income sector, employer name and employer category are not sent to LEX — the employer registry exists but is not linked to a case yet.",
+    "dash.showing": "Showing {{from}}–{{to}} of {{total}}",
+
+    // --- Application Review Workspace
+    //
+    // Three tabs, not five. Data & Policy Checks (Campaign References, Traffic
+    // Light, RAC) and Risk & Portfolio Context (Portfolio Statistics, LEX
+    // Analysis scores, Reporting Module, AI Guardrails) have no service, and
+    // neither does the Stage 1 LightGBM panel. A hidden panel is honest; one
+    // full of placeholder numbers beside a real credit decision is not.
+    "ws.title": "Application review workspace",
+    "ws.applicationInformation": "Application information",
+    "ws.field.applicationId": "Application ID",
+    "ws.field.openedAt": "Case opened",
+    "ws.field.openedAtHint":
+      "When LEX opened the case, not when the customer submitted — lending does not send the submission date.",
+    "ws.field.sourcingChannel": "Sourcing channel",
+    "ws.field.statusDate": "Status date",
+    "ws.field.bureauScore": "Bureau score",
+    "ws.employment": "Employment",
+    "ws.financing": "Financing details",
+    "ws.lexOutput": "LEX output — case status and underwriting summary",
+    "ws.lexOutputSub": "Applicant portfolio profile",
+    "ws.elevated": "Elevated",
+    "ws.finalOutput": "Final LEX output",
+    "ws.assignment": "Assignment",
+    "ws.routing.DELEGATION": "A level on the delegation ladder must decide this.",
+    "ws.routing.SUPERVISOR": "Above the ladder, or the reason code was unrecognized.",
+    "ws.routing.APPLICATION_SOURCE":
+      "A data or document problem — the source channel must fix it. Credit actions are refused here.",
+    "ws.routing.AUTO_RESOLVE": "LEX cleared this without a human.",
+    "ws.analyticsGap":
+      "Decision rationale prose, risk classification, a SAMA compliance verdict and an ML risk score are not shown: no service produces them yet. They are specified, not built.",
+    "ws.tab.actions": "LEX actions",
+    "ws.tab.hitl": "Human-in-the-loop",
+    "ws.tab.audit": "Audit trail",
+    "ws.documents": "Documents viewed",
+    "ws.noDocuments": "No document analyses for this application.",
+    "ws.stubReader":
+      "Stub reader — findings derive from the document id, not the file",
+    "ws.expectedKind": "Expected {{kind}}",
+    "ws.confidence": "{{value}}% confidence",
+    "ws.dataProblem":
+      "The submission could not be read. This says nothing about the applicant — it is a document problem for the source channel to fix.",
+    "ws.derivedCodes": "Derived reason codes: {{codes}}",
+    "ws.commitDecision": "Commit a decision",
+    "ws.actorNote":
+      "The decision is recorded against you, the signed-in user. There is no reviewer switcher — impersonation has no place on a credit decision.",
+    "ws.buttonsGap":
+      "Approve Reduced Limit and Refer to Credit Risk Committee are not available: LEX records an action, not an amended amount, and no committee routing exists. Amending an offer belongs to lending.",
+    "ws.teamGap":
+      "Assigned team, current owner and escalation trigger are not modelled — no LEX service has a team model. The assignee and authority level above are the equivalents.",
+    "ws.auditNote": "Append-only. Nothing edits or removes an entry.",
+
+    // --- Communication Hub
+    "hub.title": "Communication Hub",
+    "hub.subtitle":
+      "A room is created for every referral and every LEX account is a member. The assignee tracks who must act; visibility is intentionally unrestricted.",
+    "hub.noRooms": "No rooms match.",
+    "hub.pickRoom": "Pick a room to read its thread.",
+    "hub.noName": "Name not captured",
+    "hub.openWorkspace": "Open workspace",
+    "hub.sla": "SLA",
+    "hub.remainingBuffer": "Remaining buffer",
+
     // --- Review cases (lex-case-service)
     "case.col.amount": "Requested",
-    "case.tab.ALL": "All ingested",
+    "case.tab.ALL": "All referrals",
     "case.tab.HUMAN_REVIEW": "Human review",
     "case.tab.APPROVED": "Approved",
     "case.tab.DECLINED": "Declined",
@@ -90,6 +193,12 @@ const lex: ModuleLocale = {
     "case.decideExplain":
       "The action must be one this process defines. A decision closes the case to further edits.",
     "case.readOnlyNote": "This case has been decided and is read-only.",
+    "case.authorityNote":
+      "This case is routed to {{level}} and you sign at {{yours}}. Authority runs upward — a higher level may decide a lower case, never the reverse. Escalate it: that is the action for a case above your level.",
+    "case.err.insufficientAuthority":
+      "This case is routed to a higher authority level than yours. Escalate it instead of deciding it.",
+    "case.filter.allDecisions": "All decisions",
+    "case.myQueue": "My queue ({{level}} and below)",
     "case.beyondDelegationNote":
       "The value sits above every configured band, so the case opened at the highest active level and is flagged as beyond delegation. That is a handled case, not a misconfiguration.",
     "case.overrodeNote": "This decision overrode the delegated outcome.",
@@ -133,6 +242,41 @@ const lex: ModuleLocale = {
     "case.toast.messageFailed": "The message could not be posted.",
     "case.toast.decided": "Decision recorded. The case is now read-only.",
     "case.toast.decideFailed": "The decision was refused.",
+    "case.toast.sentForVerification": "Sent for physical verification.",
+    "case.toast.sendVerificationFailed": "The case could not be sent for verification.",
+    "case.toast.verificationCompleted": "Physical verification recorded as complete.",
+    "case.toast.verificationCompleteFailed": "The verification could not be closed.",
+
+    // LEX is called once, when lending's approval gate returns MANUAL_REVIEW.
+    // An application that decides itself never reaches LEX, so these counts are
+    // referrals — calling them applications would overstate the automation rate.
+    "case.referralScopeNote":
+      "LEX only sees applications referred for human review. Applications approved or declined automatically never open a case here, so these counts are referrals, not the whole portfolio.",
+
+    // The chip is status and decisionAction together — RESOLVED alone would read
+    // the same on an approval and a decline.
+    "case.chip.OPEN": "Awaiting pickup",
+    "case.chip.IN_REVIEW": "In review",
+    "case.chip.AWAITING_SOURCE": "With customer support",
+    "case.chip.AWAITING_PHYSICAL_VERIFICATION": "Field verification",
+    "case.chip.ESCALATED": "Escalated",
+    "case.chip.APPROVED": "Approved",
+    "case.chip.DECLINED": "Declined",
+    "case.chip.RESOLVED": "Resolved",
+    "case.chip.CLOSED": "Closed",
+
+    "case.sendForVerification": "Send for verification",
+    "case.completeVerification": "Verification complete",
+    "case.field.actionPlaceholder": "Choose an action",
+    "case.field.overrode": "This decision overrides the delegated outcome",
+    "case.field.overrodeHint":
+      "Recorded on the decision, and a written reason becomes mandatory.",
+    "case.field.evidenceTyped": "Evidence reference ({{type}})",
+    "case.valid.evidence": "This decision needs an evidence reference ({{type}}).",
+    "case.err.atHighestLevel":
+      "This case is already at the highest authority level — there is nowhere above it to escalate to. It has to be decided here.",
+    "case.unconfiguredProcessNote":
+      "No published process covers reason code {{code}}, so these actions are routing defaults rather than policy. Configure a process for this code in Settings to give it its own vocabulary.",
 
     // --- Reason Code processes
     "proc.col.severity": "Severity",
@@ -345,7 +489,6 @@ const lex: ModuleLocale = {
     "doa.valid.level": "Every band must name an authority level.",
     "doa.valid.range": "A band cannot end below where it starts.",
     "doa.valid.overlap": "Two bands overlap — a value in the overlap reaches two levels.",
-    "doa.valid.gap": "There is a gap between bands. A value inside it reaches no level at all.",
     "doa.toast.loadFailed": "The matrices could not be loaded.",
     "doa.toast.saved": "Draft saved.",
     "doa.toast.saveFailed": "The draft could not be saved.",
@@ -465,9 +608,17 @@ const lex: ModuleLocale = {
     "ana.filterApplication": "Filter by application id",
     "ana.empty": "No analyses match.",
     "ana.col.application": "Application",
+    "ana.col.product": "Product",
     "ana.col.documentType": "Document type",
     "ana.col.state": "Outcome",
+    "ana.col.checks": "Checks",
+    "ana.col.confidence": "Confidence",
     "ana.col.analysedAt": "Analysed",
+    "ana.unknownApplicant": "Unnamed applicant",
+    "ana.checksSummary": "{{passed}}/{{total}} passed",
+    "ana.checksFailed": "{{count}} failed",
+    "ana.checksFlagged": "{{count}} flagged",
+    "ana.checksNotRun": "{{count}} not run",
     "ana.detail.title": "Analysis",
     "ana.detail.noRows": "This analysis recorded no rows.",
     "ana.dataProblemShort": "A problem with the submission, not the applicant.",
@@ -476,6 +627,10 @@ const lex: ModuleLocale = {
     "ana.adverseExplain": "This is a finding about the applicant.",
     "ana.notRunSummary":
       "{{count}} checks were not run: the sequence halted before reaching them. They are not passes.",
+    "ana.stubReaderNote":
+      "The document reader on this environment is a deterministic stand-in. Its findings derive from the document id and say nothing about the actual file — do not read these results as verification.",
+    "ana.stubReaderDetail":
+      "Produced by {{reader}}, a deterministic stand-in for the real reader. Every outcome below derives from the document id, not from the document.",
     "ana.state.VERIFIED": "Verified",
     "ana.state.ADVERSE_FINDINGS": "Adverse findings",
     "ana.state.UNREADABLE": "The document could not be read",
@@ -515,6 +670,18 @@ const lex: ModuleLocale = {
     "board.col.breach": "Breach",
     "board.col.onClock": "Time on the clock",
     "board.col.target": "Target",
+    "board.col.remaining": "Remaining",
+    "board.tile.withinSlaHint": "Of {{inFlight}} cases on the clock.",
+    "board.pipeline": "Queue pipeline journey",
+    "board.pipelineActive": "Live counts",
+    "board.inQueue": "{{count}} in queue",
+    // Stages carry a code and a target. There is no owning team on them, and no
+    // LEX service has a team model, so the mockup's "Responsible:" line and the
+    // whole Organizational Map tab are not built.
+    "board.pipelineTeamGap":
+      "Stages carry a code and a target, not an owning team — no LEX service models teams or queue ownership, so responsibility is not shown.",
+    "board.nameGap":
+      "This list does not carry the applicant name. Open a case to see it.",
     "board.toast.loadFailed": "The SLA board could not be loaded.",
 
     // ---------------------------------------------------------------- knowledge

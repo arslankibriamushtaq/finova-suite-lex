@@ -10,6 +10,7 @@ import {
   PauseCircle,
   RefreshCw,
   SlidersHorizontal,
+  UserCheck,
 } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
@@ -31,14 +32,23 @@ import {
 } from "../../../components/ui/select";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, formatMoney } from "../../../components/shared/detailKitUtils";
-import { LexPageHeader, LexSearch, LexStatusBadge, LexTile } from "../../../components/shared/lexKit";
+import {
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+  LexStatusBadge,
+  LexTile,
+} from "../../../components/shared/lexKit";
+import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
+import { useLexAuthority } from "../../../hooks/useLexAuthority";
 import { emptyPage, lexErrorMessage, logForbidden, type LexPage } from "../../../redux/apis/apisLexCore";
 import { formatMinutes } from "../../../redux/apis/apisLexConfig";
 import {
   CASE_SORTS,
   CASE_TABS,
+  caseChip,
   getCaseCounts,
   getCases,
   slaChip,
@@ -94,6 +104,21 @@ const LexCases = () => {
   const [sort, setSort] = useState<string>(CASE_SORTS[0]);
   const [showFilters, setShowFilters] = useState(false);
   const [routingType, setRoutingType] = useState("ALL");
+  /**
+   * Only offered on the tabs that do not already constrain it: the Approved and
+   * Declined tabs *are* a `decisionAction` filter, and two of them AND together
+   * into an empty list.
+   */
+  const [decisionAction, setDecisionAction] = useState("ALL");
+  const decisionFilterable = tab === "ALL" || tab === "HUMAN_REVIEW";
+  /**
+   * `scope=mine`: still-open cases at or below the caller's rung, resolved
+   * server-side. Offered to underwriters only — an admin is not on the ladder,
+   * so "mine" would return the whole queue and the toggle would do nothing
+   * visible except imply it had.
+   */
+  const { levelCode } = useLexAuthority();
+  const [myQueue, setMyQueue] = useState(false);
 
   const errorsByCode = useMemo(
     () => ({
@@ -114,7 +139,13 @@ const LexCases = () => {
       const tabFilter = CASE_TABS.find((entry) => entry.key === tab)?.filter;
       // Two filter expressions are joined with a semicolon; the routing filter
       // is only added when the user picked one.
-      const filter = [tabFilter, routingType === "ALL" ? undefined : `routingType:eq:${routingType}`]
+      const filter = [
+        tabFilter,
+        routingType === "ALL" ? undefined : `routingType:eq:${routingType}`,
+        decisionFilterable && decisionAction !== "ALL"
+          ? `decisionAction:eq:${decisionAction}`
+          : undefined,
+      ]
         .filter(Boolean)
         .join(";");
 
@@ -125,6 +156,7 @@ const LexCases = () => {
           search: search || undefined,
           filter: filter || undefined,
           sort,
+          scope: myQueue ? "mine" : undefined,
         })
       );
     } catch (error) {
@@ -150,7 +182,7 @@ const LexCases = () => {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize, search, tab, sort, routingType]);
+  }, [page, pageSize, search, tab, sort, routingType, decisionAction, myQueue]);
 
   useEffect(() => {
     loadCounts();
@@ -254,18 +286,23 @@ const LexCases = () => {
     },
     {
       name: t("case.col.status"),
-      cell: (row: LexCaseSummary) =>
-        row.decisionAction ? (
+      // Status is two fields, not one: `status` is the lifecycle and
+      // `decisionAction` is what a person chose. RESOLVED alone would print the
+      // same chip on an approval and a decline.
+      cell: (row: LexCaseSummary) => {
+        const chip = caseChip(row);
+        return row.decisionAction ? (
           <div className="flex flex-col gap-1">
-            <LexStatusBadge status={row.status} />
+            <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />
             <span className="text-xs text-muted-foreground">
               {row.decisionAction}
               {row.decisionLevelCode ? ` · ${row.decisionLevelCode}` : ""}
             </span>
           </div>
         ) : (
-          <LexStatusBadge status={row.status} />
-        ),
+          <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />
+        );
+      },
       width: "150px",
     },
     {
@@ -330,7 +367,8 @@ const LexCases = () => {
 
   // Sort is a view preference rather than a filter, so only a deliberate
   // narrowing of the routing type shows on the badge.
-  const activeFilterCount = routingType !== "ALL" ? 1 : 0;
+  const activeFilterCount =
+    (routingType !== "ALL" ? 1 : 0) + (decisionFilterable && decisionAction !== "ALL" ? 1 : 0);
 
   if (!canRead) return <PermissionDenied />;
 
@@ -355,6 +393,21 @@ const LexCases = () => {
             placeholder={t("case.search")}
           />
           <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {/* Scoping the list to your own level is a mode, not a filter, so
+                it stays on the bar rather than hiding in the panel. */}
+            {levelCode && (
+              <Button
+                variant={myQueue ? "default" : "outline"}
+                className={cn("gap-2", myQueue && "wallet-brand-btn")}
+                onClick={() => {
+                  setMyQueue((on) => !on);
+                  setPage(1);
+                }}
+              >
+                <UserCheck className="h-4 w-4" />
+                {t("case.myQueue", { level: levelCode })}
+              </Button>
+            )}
             <Button
               variant="outline"
               className="gap-2"
@@ -382,7 +435,7 @@ const LexCases = () => {
 
         {showFilters && (
           <div id="case-filters" className="mt-3 border-t pt-3">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <FilterField label={t("case.col.routing")} htmlFor="case-routing">
                 <Select value={routingType} onValueChange={(v) => { setRoutingType(v); setPage(1); }}>
                   <SelectTrigger id="case-routing" className="w-full bg-card">
@@ -396,6 +449,31 @@ const LexCases = () => {
                   </SelectContent>
                 </Select>
               </FilterField>
+
+              {/* Only the decided tabs can be narrowed by decision. */}
+              {decisionFilterable && (
+                <FilterField label={t("case.filter.allDecisions")} htmlFor="case-decision">
+                  <Select
+                    value={decisionAction}
+                    onValueChange={(v) => {
+                      setDecisionAction(v);
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger id="case-decision" className="w-full bg-card">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">{t("case.filter.allDecisions")}</SelectItem>
+                      {["APPROVE", "VERIFY", "OVERRULE", "REJECT", "DECLINE"].map((action) => (
+                        <SelectItem key={action} value={action}>
+                          {action}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FilterField>
+              )}
 
               <FilterField label={t("case.filter.sort")} htmlFor="case-sort">
                 <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
@@ -416,6 +494,12 @@ const LexCases = () => {
         )}
       </div>
 
+      {/* LEX is called once, when lending's approval gate returns MANUAL_REVIEW.
+          An application that auto-approves or auto-declines never reaches here.
+          The counts are therefore referrals, and labelling them "applications"
+          would misstate the automation rate by design. */}
+      <LexNotice tone="sky">{t("case.referralScopeNote")}</LexNotice>
+
       {/* Counted in one call. Uses the app's own tab strip (.report-switch)
           rather than hand-rolled pills, so a LEX queue tab looks like every
           other tab in the product. */}
@@ -433,7 +517,10 @@ const LexCases = () => {
             }}
           >
             {t(`case.tab.${entry.key}`)}
-            {counts && (
+            {/* The counts endpoint is tenant-wide. Printing them beside a
+                scoped list would label someone's own queue with everyone's
+                totals. */}
+            {counts && !myQueue && (
               <span className="ms-1.5 font-bold">
                 {counts[entry.countKey as keyof LexCaseCounts]}
               </span>

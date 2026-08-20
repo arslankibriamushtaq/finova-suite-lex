@@ -3,17 +3,17 @@ import { useProductPermissions } from "./useProductPermissions";
 /**
  * Whether LEX screens are gated on permissions.
  *
- * **Currently off.** The `LEX_*` codes are not registered in identity-service
- * yet, so every check would fail and the whole module would be invisible to
- * everyone except a super admin. Until they are registered, LEX renders for any
- * signed-in user and the server stays the real gate — a 403 from Casbin still
- * refuses anything the caller may not do, it simply is not predicted here.
+ * **On.** It was off because LEX had Casbin policy but no entry in the
+ * catalogue the frontend reads, so gating would have hidden the module from
+ * everyone. `V104__add_lex_module_permissions_and_roles.sql` registered the
+ * five LEX modules and their eleven permissions, and `/api/v1/permissions` now
+ * returns them — so a check finally means something.
  *
- * To turn gating on: flip this to `true`. Nothing else changes — every screen
- * already asks `can(LEX_PERMISSIONS.X)` for the right code, and the sidebar
- * already knows which entry each one belongs to.
+ * The server remains the real gate either way: Casbin refuses anything the
+ * caller may not do. What this adds is not security, it is not showing people
+ * buttons that would 403.
  */
-export const LEX_PERMISSIONS_ENFORCED = false;
+export const LEX_PERMISSIONS_ENFORCED = true;
 
 /**
  * The permission check every LEX screen uses.

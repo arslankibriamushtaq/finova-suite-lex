@@ -1,10 +1,10 @@
 import React from "react";
-import { AlertTriangle, Info, type LucideIcon } from "lucide-react";
+import { AlertTriangle, Ban, Info, type LucideIcon } from "lucide-react";
 
 import { Badge } from "../ui/badge";
 import { SearchField } from "./filterKit";
 import { cn } from "../../lib/utils";
-import { TONES, formatDateTime } from "./detailKitUtils";
+import { TONES, TONE_HEX, formatDateTime } from "./detailKitUtils";
 
 /**
  * The presentation pieces every LEX screen shares.
@@ -135,14 +135,39 @@ const LEX_STATUS_TONE: Record<string, string> = {
   RETIRED: "slate",
   ACTIVE: "emerald",
   INACTIVE: "slate",
+
+  // Case lifecycle. A case parked on the source or on a field visit is waiting,
+  // not failing, so it reads amber rather than red.
+  OPEN: "sky",
+  IN_REVIEW: "sky",
+  AWAITING_SOURCE: "amber",
+  AWAITING_PHYSICAL_VERIFICATION: "amber",
+  ESCALATED: "orange",
+  APPROVED: "emerald",
+  DECLINED: "red",
+  RESOLVED: "emerald",
+  CLOSED: "slate",
 };
 
-export const LexStatusBadge = ({ status, className }: { status?: string; className?: string }) => (
+/**
+ * `status` picks the tone; `label` overrides the words. A decided case takes its
+ * wording from the decision verb rather than from the lifecycle — `RESOLVED`
+ * alone would print the same chip on an approval and a decline.
+ */
+export const LexStatusBadge = ({
+  status,
+  label,
+  className,
+}: {
+  status?: string;
+  label?: string;
+  className?: string;
+}) => (
   <Badge
     variant="outline"
     className={cn("border font-medium", TONES[LEX_STATUS_TONE[String(status)] || "slate"], className)}
   >
-    {status || "—"}
+    {label || status || "—"}
   </Badge>
 );
 
@@ -173,6 +198,82 @@ export const LexTile = ({
       </span>
     )}
   </div>
+);
+
+/**
+ * A headline figure with its share of the whole.
+ *
+ * The share is the client's own arithmetic — the server sends counts and never
+ * percentages — so `denominator` is explicit rather than assumed. It is omitted
+ * entirely when there is no denominator this tile is honestly a share of.
+ */
+export const LexMetricTile = ({
+  label,
+  value,
+  denominator,
+  hint,
+  tone = "sky",
+  loading,
+}: {
+  label: string;
+  value?: number | null;
+  denominator?: number | null;
+  hint?: string;
+  tone?: keyof typeof TONE_HEX | string;
+  loading?: boolean;
+}) => {
+  const share =
+    value != null && denominator != null && denominator > 0 ? (value / denominator) * 100 : null;
+
+  return (
+    <div className="pro-card flex flex-col gap-2 p-4">
+      <span className="pro-tile__label">{label}</span>
+      {loading ? (
+        <span className="block h-7 w-20 animate-pulse rounded-[3px] bg-muted-foreground/20" />
+      ) : (
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold leading-none tracking-tight text-foreground">
+            {value ?? "—"}
+          </span>
+          {share !== null && (
+            <span className="text-xs text-muted-foreground">{share.toFixed(1)}%</span>
+          )}
+        </div>
+      )}
+      {/* No denominator means no bar. An empty track would read as 0%, which is
+          a different claim from "this is not a share of anything". */}
+      {share !== null && (
+        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full transition-[width]"
+            style={{
+              width: `${Math.min(100, share)}%`,
+              backgroundColor: TONE_HEX[tone as string] || TONE_HEX.sky,
+            }}
+          />
+        </div>
+      )}
+      {hint && <span className="text-[11px] leading-snug text-muted-foreground">{hint}</span>}
+    </div>
+  );
+};
+
+/**
+ * A control the mockup asks for that no endpoint can answer yet. Rendered
+ * disabled and labelled, rather than omitted: a filter that silently is not
+ * there reads as a screen someone forgot to finish, and one that is there but
+ * does nothing is worse.
+ */
+export const LexUnavailableFilter = ({ label, title }: { label: string; title: string }) => (
+  <button
+    type="button"
+    disabled
+    title={title}
+    className="flex h-10 cursor-not-allowed items-center gap-1.5 rounded-lg border border-dashed border-border bg-muted/30 px-3 text-sm text-muted-foreground"
+  >
+    <Ban className="h-3.5 w-3.5" />
+    {label}
+  </button>
 );
 
 /* ------------------------------------------------------------------ */

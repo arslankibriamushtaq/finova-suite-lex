@@ -119,9 +119,31 @@ export interface LexAnalysisRow {
   reasonCode?: string | null;
 }
 
+/**
+ * The application the analysis belongs to, denormalised onto each row by the
+ * list endpoint so the table can name the applicant without a second call.
+ * Every field is nullable: a stub reader, or an application still being keyed,
+ * leaves the numeric fields (installment, credit score) empty.
+ */
+export interface LexAnalysisApplication {
+  applicationNumber?: string | null;
+  customerId?: string | null;
+  applicantName?: string | null;
+  productId?: string | null;
+  productName?: string | null;
+  sectorName?: string | null;
+  salesId?: string | null;
+  sourceChannel?: string | null;
+  requestedAmount?: number | null;
+  requestedTenureMonths?: number | null;
+  monthlyInstallment?: number | null;
+  creditScore?: number | null;
+}
+
 export interface LexAnalysis {
   id: string;
   applicationId: string;
+  application?: LexAnalysisApplication | null;
   documentId?: string;
   documentKind?: string;
   expectedKind?: string;
@@ -136,6 +158,12 @@ export interface LexAnalysis {
   /** What could not be read. Populated when `dataProblem` is true. */
   analysisNote?: string | null;
   checks?: LexAnalysisRow[];
+  /** Per-outcome tallies from the list endpoint, present without the full `checks` array. */
+  checksTotal?: number;
+  checksPassed?: number;
+  checksFailed?: number;
+  checksFlagged?: number;
+  checksNotRun?: number;
   reasonCodes?: string[];
   /**
    * A hint only. The Agent Configurator entry for each reason code decides the

@@ -250,6 +250,8 @@ import CryptoTransfers from "../pages/lmsPages/Crypto/CryptoTransfers";
 // exactly the screens its policy allows, and each page re-checks rather than
 // trusting the route.
 import LexProcesses from "../pages/lmsPages/Lex/LexProcesses";
+import LexOverview from "../pages/lmsPages/Lex/LexOverview";
+import LexCommunicationHub from "../pages/lmsPages/Lex/LexCommunicationHub";
 import LexCases from "../pages/lmsPages/Lex/LexCases";
 import LexCaseDetail from "../pages/lmsPages/Lex/LexCaseDetail";
 import LexProcessDetail from "../pages/lmsPages/Lex/LexProcessDetail";
@@ -995,7 +997,9 @@ export const router = createBrowserRouter(
             { path: "/LOS/Lex/Checks", element: <LexChecks /> },
             { path: "/LOS/Lex/Analyses", element: <LexAnalyses /> },
             // The review queue and one case. `lex.cases.messages` and
-            // `lex.cases.decision` are separate objects, gated inside the page.
+            // `lex.cases.decision` are separate objects, gated in the page.
+            { path: "/LOS/Lex/Overview", element: <LexOverview /> },
+            { path: "/LOS/Lex/Hub", element: <LexCommunicationHub /> },
             { path: "/LOS/Lex/Cases", element: <LexCases /> },
             { path: "/LOS/Lex/Cases/:caseId", element: <LexCaseDetail /> },
             { path: "/LOS/Lex/SlaBoard", element: <LexSlaBoard /> },
@@ -1004,8 +1008,8 @@ export const router = createBrowserRouter(
             { path: "/LOS/Lex/Governance", element: <LexGovernance /> },
             { path: "/LOS/Lex/Bi", element: <LexBiGallery /> },
             { path: "/LOS/Lex/Bi/Builder", element: <LexBiBuilder /> },
-            // Standard and saved reports render through the same component —
-            // the payload is identical, so two renderers would only drift.
+            // Standard and saved reports render through the same component
+            // — the payload is identical, so two renderers would drift.
             { path: "/LOS/Lex/Bi/Standard/:reportKey", element: <LexBiReport kind="standard" /> },
             { path: "/LOS/Lex/Bi/Report/:id", element: <LexBiReport kind="saved" /> },
             { path: "/LOS/Lex/Schedules", element: <LexBiSchedules /> },

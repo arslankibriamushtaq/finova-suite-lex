@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
+import { getAllModulesFromPermissionData } from "../../hooks/useProductPermissions";
 import { themeStyle } from "../Config/Theme";
 import SubHeaderFlowLms from "../DashboardHeader/SubHeaderFlowLms";
 import { useTranslation } from "react-i18next";
@@ -426,7 +427,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   // Helper to check if user has access based on moduleCode, moduleName, subModule names, or permission names
   const hasAccess = (keys: string | string[]): boolean => {
     if (isSuperAdmin) return true; // super admin sees every module/page
-    if (!permissionData || !Array.isArray(permissionData) || permissionData.length === 0) {
+    // `/v1/permissions` answers as a bare array for some roles and as
+    // `{ los: [...] }` for others. Normalise through the same helper the
+    // permission hook uses: reading only one of the two shapes here hid every
+    // gated module for anyone served the other, which is indistinguishable
+    // from a role that genuinely has nothing.
+    const modules = getAllModulesFromPermissionData(permissionData);
+    if (modules.length === 0) {
       // A real user with no assigned permissions: hide gated modules/pages.
       return false;
     }
@@ -474,7 +481,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       }
       return false;
     };
-    return permissionData.some((module: any) => matchModule(module));
+    return modules.some((module: any) => matchModule(module));
   };
   const sidebarItems = [
     {
@@ -2220,106 +2227,123 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
    * configurators rather than in a separate "reports" group, because they are
    * where the configured rules are observed.
    *
-   * **Ungated for now.** The `LEX_*` codes are not registered in
-   * identity-service yet, so gating on them would hide the whole module from
-   * everyone. Each row keeps its check commented above it rather than deleted:
-   * that is the mapping from menu row to Casbin object, and reconstructing it
-   * later from twelve screen files is the expensive way to do this. Turning
-   * gating on means uncommenting these twelve lines and flipping
-   * `LEX_PERMISSIONS_ENFORCED` in `hooks/useLexAccess.ts`.
+   * **Gated.** The catalogue registers five LEX modules, not one per Casbin
+   * object, so several rows share a code: an underwriter holding
+   * `LEX_CONFIG_READ` sees all four configurators and may author none of them —
+   * the write gates inside each screen are what stop them, not this menu.
+   *
+   * The rows are still listed one per object because that is the mapping from
+   * menu row to what the server actually checks, and a finer catalogue entry
+   * later is then a one-word edit here.
    */
   const lexModule = {
     label: "LEX",
-    Link: "/LOS/Lex/Processes",
+    Link: "/LOS/Lex/Overview",
     img: Images.ApiManagementIcon,
     imgActive: Images.ApiManagementIconDark,
     active: pathname.includes("/LOS/Lex"),
     menu: [
-      // hasAccess("LEX_PROCESS_READ") &&
+      // The portfolio as it stands, and the way into any single application —
+      // so it is the landing item, not the configurator.
+      hasAccess("LEX_CASES_READ") &&
+      {
+        label: "Overview",
+        Link: "Overview",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Overview",
+      },
+      hasAccess("LEX_CASES_READ") &&
+      {
+        label: "Communication Hub",
+        Link: "Hub",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Hub",
+      },
+      hasAccess("LEX_CONFIG_READ") &&
       {
         label: "Reason Code Processes",
         Link: "Processes",
         LinkLable: "/LOS/Lex",
         active: pathname.startsWith("/LOS/Lex/Processes"),
       },
-      // hasAccess("LEX_DELEGATION_READ") &&
+      hasAccess("LEX_CONFIG_READ") &&
       {
         label: "Delegation Matrices",
         Link: "Delegation",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Delegation",
       },
-      // hasAccess("LEX_AUTHORITY_LEVEL_READ") &&
+      hasAccess("LEX_CONFIG_READ") &&
       {
         label: "Authority Levels",
         Link: "AuthorityLevels",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/AuthorityLevels",
       },
-      // hasAccess("LEX_SLA_POLICY_READ") &&
+      hasAccess("LEX_CONFIG_READ") &&
       {
         label: "SLA Policies",
         Link: "SlaPolicies",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/SlaPolicies",
       },
-      // hasAccess("LEX_DOCUMENT_CHECK_READ") &&
+      hasAccess("LEX_DOCUMENTS_READ") &&
       {
         label: "Verification Sequence",
         Link: "Checks",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Checks",
       },
-      // hasAccess("LEX_DOCUMENT_ANALYSIS_READ") &&
+      hasAccess("LEX_DOCUMENTS_READ") &&
       {
         label: "Document Analyses",
         Link: "Analyses",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Analyses",
       },
-      // hasAccess("LEX_CASE_READ") &&
+      hasAccess("LEX_CASES_READ") &&
       {
         label: "Review Cases",
         Link: "Cases",
         LinkLable: "/LOS/Lex",
         active: pathname.startsWith("/LOS/Lex/Cases"),
       },
-      // hasAccess("LEX_SLA_BOARD_READ") &&
+      hasAccess("LEX_CASES_READ") &&
       {
         label: "SLA Board",
         Link: "SlaBoard",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/SlaBoard",
       },
-      // hasAccess("LEX_KNOWLEDGE_DOCUMENT_READ") &&
+      hasAccess("LEX_KNOWLEDGE_READ") &&
       {
         label: "Policy Library",
         Link: "PolicyLibrary",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/PolicyLibrary",
       },
-      // hasAccess("LEX_EMPLOYER_READ") &&
+      hasAccess("LEX_KNOWLEDGE_READ") &&
       {
         label: "Approved Employers",
         Link: "Employers",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Employers",
       },
-      // hasAccess("LEX_GOVERNANCE_READ") &&
+      hasAccess("LEX_KNOWLEDGE_READ") &&
       {
         label: "Governance Mirror",
         Link: "Governance",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Governance",
       },
-      // hasAccess("LEX_BI_REPORT_READ") &&
+      hasAccess("LEX_BI_READ") &&
       {
         label: "LEX Reports",
         Link: "Bi",
         LinkLable: "/LOS/Lex",
         active: pathname.startsWith("/LOS/Lex/Bi") && !pathname.includes("/Schedules"),
       },
-      // hasAccess("LEX_BI_SCHEDULE_READ") &&
+      hasAccess("LEX_BI_READ") &&
       {
         label: "Scheduled Exports",
         Link: "Schedules",
@@ -2951,7 +2975,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           ].filter(Boolean),
         },
         hasAccess(["LENDING", "COLLECTIONS", "LEDGER", "RISK", "PRODUCT", "POLICY"]) && lmsModule,
-        lexModule,
+        // Every row inside LEX is gated, so a role with none of them would get
+        // an empty parent that opens onto nothing.
+        lexModule.menu.length > 0 && lexModule,
       ].filter(Boolean),
     },
     hasAccess("MIDDLEWARE") && connectorModule,

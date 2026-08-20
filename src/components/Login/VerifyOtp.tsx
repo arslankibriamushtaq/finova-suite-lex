@@ -10,6 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import Loader from "../Loader/Loader";
+import { getAllModulesFromPermissionData } from "../../hooks/useProductPermissions";
 
 // Function to decode JWT token
 const decodeJWT = (token: string) => {
@@ -183,8 +184,10 @@ const VerifyOtp: React.FC = () => {
           try {
             const permRes = await getPermissionsByRole(accessToken);
             if (permRes?.data?.success) {
-              const permissions = permRes?.data?.data;
-              if (Array.isArray(permissions)) {
+              // Both payload shapes — a bare array, or `{ los: [...] }`. Storing
+              // only the array left roles served the other with nothing.
+              const permissions = getAllModulesFromPermissionData(permRes?.data?.data);
+              if (permissions.length > 0) {
                 dispatch(setPermissions(permissions));
                 localStorage.setItem("permissions", JSON.stringify(permissions));
               }

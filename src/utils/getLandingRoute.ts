@@ -20,6 +20,11 @@ const LANDING_CANDIDATES: { code: string; route: string }[] = [
   { code: "EMPLOYEE", route: "/LOS/Setting/Employees" },
   { code: "ROLE", route: "/LOS/Setting/RoleList" },
   { code: "PERMISSION", route: "/LOS/Setting/AssignPermissions" },
+  // Last, because anyone who also holds a module above this one is an admin who
+  // expects to land there. For a LEX underwriter it is the only match — and
+  // their queue is the whole reason they signed in. Without it they landed on
+  // the wallet dashboard, which 403s.
+  { code: "LEX_CASES", route: "/LOS/Lex/Cases" },
 ];
 
 /**

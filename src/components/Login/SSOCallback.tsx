@@ -9,8 +9,10 @@ import {
   setPermissions,
 } from "../../redux/apis/apisSlice";
 import Loader from "../Loader/Loader";
-import { getPermissionByRole } from "../../redux/apis/apisCrudFactoring";
+import { getPermissionByRole, getPermissionsForCaller } from "../../redux/apis/apisCrudFactoring";
 import { getLandingRoute, isSuperAdminFromToken } from "../../utils/getLandingRoute";
+import { getAllModulesFromPermissionData } from "../../hooks/useProductPermissions";
+import { lexModulesForRoles } from "../../utils/lexRoleGrants";
 
 const decodeJWT = (token: string) => {
   try {
@@ -90,16 +92,48 @@ const SSOCallback: React.FC = () => {
           const roleId = userData?.roleId || decodedToken?.role || decodedToken?.roleId;
           if (roleId) {
             const permissionRes = await getPermissionByRole(roleId);
-            const permissions = permissionRes?.data?.data;
-            if (Array.isArray(permissions)) {
+            // `/v1/permissions` answers as a bare array for some roles and as
+            // `{ los: [...] }` for others. Only the array was being stored, so a
+            // role served the other shape landed with zero permissions and every
+            // gated module hidden — which reads as "nothing was granted".
+            const permissions = getAllModulesFromPermissionData(permissionRes?.data?.data);
+            if (permissions.length > 0) {
               loadedPermissions = permissions;
               dispatch(setPermissions(permissions));
               localStorage.setItem("permissions", JSON.stringify(permissions));
             }
-          } else {
-            // No roleId (e.g. super_admin) — clear permissions so sidebar shows all items
+          } else if (superAdmin) {
+            // Super admin has no role row by design and is granted everything
+            // from the realm role — clear permissions so the sidebar shows all.
             dispatch(setPermissions([]));
             localStorage.removeItem("permissions");
+          } else {
+            // A Keycloak-only account: real permissions, but `roleId: null`, so
+            // there is no id to ask `/permissions/role/{id}` about. Ask the
+            // server what *this caller* may do instead of clearing the store —
+            // clearing it hid every gated module and looked exactly like a user
+            // who had been granted nothing.
+            let permissions: any[] = [];
+            try {
+              const callerRes = await getPermissionsForCaller();
+              permissions = getAllModulesFromPermissionData(callerRes?.data?.data);
+            } catch {
+              // Falls through to the realm-role seed below.
+            }
+            if (permissions.length === 0) {
+              // Last resort, LEX only: mirror the grants the migration records
+              // for `lex_underwriter_*`. This restores the menu, never access —
+              // Casbin still refuses on the server for every call these screens
+              // make.
+              permissions = lexModulesForRoles(decodedToken?.realm_access?.roles);
+            }
+            loadedPermissions = permissions;
+            dispatch(setPermissions(permissions));
+            if (permissions.length > 0) {
+              localStorage.setItem("permissions", JSON.stringify(permissions));
+            } else {
+              localStorage.removeItem("permissions");
+            }
           }
         } catch {
           // Continue even if permissions fail

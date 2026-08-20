@@ -112,6 +112,17 @@ export function addRolePermissions(body: { role: string | number; permissions: (
 export function getPermissionByRole(id: any) {
   return axiosFactoring.get(`/identity-service/api/v1/permissions/role/${id}`);
 }
+/**
+ * The caller's own effective permissions, resolved from the bearer token.
+ *
+ * Needed because not every user has a LOS role row: a Keycloak-only account
+ * (the LEX underwriters) authenticates with `roleId: null`, and there is no id
+ * to ask `/permissions/role/{id}` about. The server can still answer "what may
+ * *you* do" from the token's realm roles.
+ */
+export function getPermissionsForCaller() {
+  return axiosFactoring.get(`/identity-service/api/v1/permissions`);
+}
 export function assignPermissionToRole(roleId: string, permissionId: string) {
   return axiosFactoring.post(`/identity-service/api/v1/permissions/role/${roleId}/assign/${permissionId}`);
 }
