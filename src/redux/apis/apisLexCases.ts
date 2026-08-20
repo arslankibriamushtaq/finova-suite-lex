@@ -12,13 +12,24 @@ import { clean, pageOf, toServerPage, unwrap, type LexPage, type LexPageQuery } 
 
 const CASES = "/api/v1/lex/cases";
 
+/**
+ * The lifecycle. `WITH_SOURCE` is the older spelling of `AWAITING_SOURCE` and is
+ * kept so a case created before the rename still renders — the server emits
+ * `AWAITING_*` now.
+ */
 export type LexCaseStatus =
   | "OPEN"
   | "IN_REVIEW"
+  | "AWAITING_SOURCE"
+  | "AWAITING_PHYSICAL_VERIFICATION"
   | "WITH_SOURCE"
   | "ESCALATED"
   | "RESOLVED"
   | "CLOSED";
+
+/** True for either spelling of "parked on the application source". */
+export const isWithSource = (status?: string) =>
+  status === "AWAITING_SOURCE" || status === "WITH_SOURCE";
 
 /**
  * One queue row.
@@ -181,6 +192,8 @@ export interface LexCaseMessage {
   /** Null on SYSTEM messages — the author is LEX, not an unknown user. */
   authorId?: string | null;
   authorName?: string | null;
+  /** "Underwriter L1", "Company Sys Admin (Supervisor)" — context on who spoke. */
+  authorRole?: string | null;
   body: string;
   metadata?: string | null;
   postedAt?: string;
@@ -230,16 +243,31 @@ export interface LexCase {
   applicationInfo?: LexApplicationInfo;
   attachedCodes?: LexAttachedCode[];
   messages?: LexCaseMessage[];
-  /** Null when no published SLA policy covers this case's scope. */
+  /**
+   * Null when no published SLA policy covers this case's scope — not tracked,
+   * which is a configuration gap and never a zero clock. `slaInfo` is the newer
+   * spelling; read it through `caseSla()` rather than either field directly.
+   */
   sla?: LexCaseSla | null;
+  slaInfo?: LexCaseSla | null;
   decision?: LexCaseDecision | null;
   auditTrail?: LexAuditEntry[];
   openedAt?: string;
   closedAt?: string | null;
 }
 
+/**
+ * `scope=mine` — cases still awaiting a person, at or **below** the caller's
+ * rung. At or below, because authority runs upward: an L2 underwriter can
+ * decide an L1 case, so hiding it would leave work nobody sees. An admin is not
+ * on the ladder and sees everything in flight.
+ *
+ * The server resolves the caller's rung itself — it already does so to decide
+ * whether they may approve. Asking the client to map role → level → ordinal a
+ * second time means two places have to agree about authority, and they drift.
+ */
 export const getCases = async (
-  query: LexPageQuery & { filter?: string; sort?: string } = {}
+  query: LexPageQuery & { filter?: string; sort?: string; scope?: "mine" } = {}
 ): Promise<LexPage<LexCaseSummary>> => {
   const { page = 1, size = 20, ...rest } = query;
   return pageOf(
@@ -266,24 +294,105 @@ export const slaChip = (
   return { kind: "remaining", minutes: row.slaRemainingMinutes };
 };
 
+/**
+ * The chip on the row, which is **two fields and not one**.
+ *
+ * `status` is the lifecycle; `decisionAction` is what a person chose. A resolved
+ * case reads "Approved" or "Declined" depending on the verb, and printing
+ * `status` alone would show every decided case as the same word.
+ */
+export const caseChip = (
+  row: Pick<LexCaseSummary, "status" | "decisionAction">
+):
+  | "OPEN"
+  | "IN_REVIEW"
+  | "AWAITING_SOURCE"
+  | "AWAITING_PHYSICAL_VERIFICATION"
+  | "ESCALATED"
+  | "APPROVED"
+  | "DECLINED"
+  | "RESOLVED"
+  | "CLOSED" => {
+  if (row.status === "RESOLVED") {
+    const action = canonicalAction(row.decisionAction);
+    if (["APPROVE", "VERIFY", "OVERRULE"].includes(action)) return "APPROVED";
+    if (["REJECT", "DECLINE"].includes(action)) return "DECLINED";
+    return "RESOLVED";
+  }
+  if (isWithSource(row.status)) return "AWAITING_SOURCE";
+  if (row.status === "AWAITING_PHYSICAL_VERIFICATION") return "AWAITING_PHYSICAL_VERIFICATION";
+  if (row.status === "CLOSED") return "CLOSED";
+  if (row.status === "ESCALATED") return "ESCALATED";
+  if (row.status === "IN_REVIEW") return "IN_REVIEW";
+  return "OPEN";
+};
+
 export const getCase = async (caseId: string): Promise<LexCase> =>
   unwrap(await lexCaseApi.get(`${CASES}/${caseId}`));
 
 export const claimCase = async (caseId: string): Promise<LexCase> =>
   unwrap(await lexCaseApi.post(`${CASES}/${caseId}/claim`, {}));
 
+/**
+ * What this case permits — **ask, never hardcode**.
+ *
+ * The vocabulary is defined per Reason Code process, so a fixed picker here
+ * would disagree with the configurator and a free text field lets anything
+ * through. Before the server enforced the list, a production case was closed
+ * with the action `JGY`: it counts as neither approved nor declined, and the
+ * loan behind it never resumes because every reader downstream filters on real
+ * verbs.
+ */
+export interface LexCaseActions {
+  /** **The dropdown.** Nothing outside this list is accepted. */
+  resolvingActions: string[];
+  /** Includes ESCALATE — which is a separate call, not a decision. */
+  primaryActions?: string[];
+  additionalActions?: string[];
+  /** Escalate is `POST /escalate`, never `/decision`. */
+  escalationAvailable?: boolean;
+  /** What `evidenceReference` must point at. Present ⇒ the field is required. */
+  evidenceType?: string | null;
+  /**
+   * False when no published process covers the driving code. The verbs are then
+   * routing defaults, and the honest thing is to say so and offer to configure
+   * the code rather than imply a policy decided this.
+   */
+  fromConfiguredProcess?: boolean;
+}
+
+export const getCaseActions = async (caseId: string): Promise<LexCaseActions> => {
+  const payload = unwrap<LexCaseActions>(await lexCaseApi.get(`${CASES}/${caseId}/actions`));
+  return { ...payload, resolvingActions: payload?.resolvingActions || [] };
+};
+
 /** `lex.cases.messages` / `create` — a different object from the case itself. */
 export const postCaseMessage = async (caseId: string, body: string): Promise<LexCaseMessage> =>
   unwrap(await lexCaseApi.post(`${CASES}/${caseId}/messages`, { body }));
 
-export const escalateCase = async (caseId: string, reason?: string): Promise<LexCase> =>
-  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/escalate`, clean({ reason })));
+/**
+ * Up one rung. `422 LEX.CASE.AT_HIGHEST_LEVEL` is a hard stop, not a jump into a
+ * level nobody switched on — the case has to be decided where it is.
+ */
+export const escalateCase = async (caseId: string, note?: string): Promise<LexCase> =>
+  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/escalate`, clean({ note })));
 
+/** Stops the SLA clock — which is why elapsed time can be smaller than wall time. */
 export const sendCaseToSource = async (caseId: string, note?: string): Promise<LexCase> =>
   unwrap(await lexCaseApi.post(`${CASES}/${caseId}/send-to-source`, clean({ note })));
 
 export const markSourceResponded = async (caseId: string): Promise<LexCase> =>
   unwrap(await lexCaseApi.post(`${CASES}/${caseId}/source-responded`, {}));
+
+/** Field verification. Stops the clock for the same reason sending to source does. */
+export const sendForPhysicalVerification = async (
+  caseId: string,
+  note?: string
+): Promise<LexCase> =>
+  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/physical-verification`, clean({ note })));
+
+export const completePhysicalVerification = async (caseId: string): Promise<LexCase> =>
+  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/physical-verification/complete`, {}));
 
 /**
  * `lex.cases.decision` / `create`.
@@ -294,13 +403,57 @@ export const markSourceResponded = async (caseId: string): Promise<LexCase> =>
  */
 export const decideCase = async (
   caseId: string,
-  body: { action: string; writtenReason?: string; evidenceReference?: string | null }
-): Promise<LexCase> => unwrap(await lexCaseApi.post(`${CASES}/${caseId}/decision`, body));
+  body: {
+    action: string;
+    writtenReason?: string;
+    evidenceReference?: string | null;
+    /** True ⇒ `writtenReason` is mandatory; the server refuses one without. */
+    overrode?: boolean;
+  }
+): Promise<LexCase> =>
+  unwrap(
+    await lexCaseApi.post(`${CASES}/${caseId}/decision`, {
+      ...body,
+      action: canonicalAction(body.action),
+    })
+  );
+
+/**
+ * The SLA block under either spelling. Null means no published policy covers
+ * this case's product and sector — the screen says "not tracked", because a case
+ * with no target silently never breaches and is not therefore compliant.
+ */
+export const caseSla = (caseRecord?: LexCase | null): LexCaseSla | null =>
+  caseRecord?.slaInfo ?? caseRecord?.sla ?? null;
 
 /** The routing explanation LEX wrote — it lives inside `messages`, not beside them. */
 export const systemMessage = (caseRecord?: LexCase): LexCaseMessage | undefined =>
   caseRecord?.messages?.find((m) => String(m.kind).startsWith("SYSTEM"));
 
+/**
+ * The canonical verb.
+ *
+ * Past-tense spellings are folded — `APPROVED`→`APPROVE`, and the same for
+ * VERIFIED / OVERRULED / REJECTED / DECLINED / ESCALATED — because the server
+ * accepts both and the two must not count as different outcomes on this side.
+ */
+export const canonicalAction = (action?: string | null): string => {
+  const normalized = String(action || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[\s-]+/g, "_");
+  return normalized.endsWith("D") && PAST_TENSE[normalized] ? PAST_TENSE[normalized] : normalized;
+};
+
+const PAST_TENSE: Record<string, string> = {
+  APPROVED: "APPROVE",
+  VERIFIED: "VERIFY",
+  OVERRULED: "OVERRULE",
+  REJECTED: "REJECT",
+  DECLINED: "DECLINE",
+  ESCALATED: "ESCALATE",
+};
+
 /** Overruling always needs a written reason; the server refuses one without. */
 export const isOverrideAction = (action: string) =>
-  ["OVERRULE", "OVERRIDE"].includes(action.trim().toUpperCase().replace(/[\s-]+/g, "_"));
+  ["OVERRULE", "OVERRIDE"].includes(canonicalAction(action));

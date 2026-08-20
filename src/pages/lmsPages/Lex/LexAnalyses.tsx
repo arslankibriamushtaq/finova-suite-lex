@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import {
   CircleSlash,
   FileSearch,
+  FlaskConical,
   FileWarning,
   RefreshCw,
   ScanEye,
@@ -31,6 +32,7 @@ import {
   getAnalyses,
   getAnalysis,
   isDataProblem,
+  isStubReader,
   type LexAnalysis,
   type LexAnalysisRow,
 } from "../../../redux/apis/apisLexDocuments";
@@ -276,6 +278,16 @@ const LexAnalyses = () => {
         </Button>
       </LexPageHeader>
 
+      {/* Said before any of the numbers are read. The reader on this build is a
+          deterministic stand-in whose findings derive from the document id — a
+          demo that looks like real forensics is how a stub ends up quoted in a
+          credit committee. */}
+      {result.content.some((row) => isStubReader(row)) && (
+        <LexNotice tone="amber" icon={FlaskConical}>
+          {t("ana.stubReaderNote")}
+        </LexNotice>
+      )}
+
       <div className="pro-card">
         {!isLoading && totalRows === 0 ? (
           <EmptyState icon={FileSearch} text={t("ana.empty")} />
@@ -329,6 +341,16 @@ const LexAnalyses = () => {
                   {selected.state === "ADVERSE_FINDINGS" && (
                     <p className="m-0 mt-1">{t("ana.adverseExplain")}</p>
                   )}
+                </LexNotice>
+              )}
+
+              {isStubReader(selected) && (
+                <LexNotice tone="amber" icon={FlaskConical}>
+                  {t("ana.stubReaderDetail", {
+                    reader: [selected.readerName, selected.readerVersion]
+                      .filter(Boolean)
+                      .join(" · "),
+                  })}
                 </LexNotice>
               )}
 

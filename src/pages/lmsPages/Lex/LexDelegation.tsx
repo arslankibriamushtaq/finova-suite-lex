@@ -43,6 +43,7 @@ import {
   LexStatusBadge,
   LexVersionTimeline,
 } from "../../../components/shared/lexKit";
+import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { emptyPage, isEditable, lexErrorCode, lexErrorMessage, logForbidden, type LexPage } from "../../../redux/apis/apisLexCore";
@@ -80,8 +81,9 @@ import {
  *
  * - every **active** level needs a row. A missing rung is not a blank cell — it
  *   is a value nobody is authorized to approve;
- * - no gaps between consecutive rungs. If L0 tops out at 40 and L1 starts at
- *   45, a DBR of 42 routes to no level at all and the case falls through;
+ * - no overlap between consecutive rungs — a value in the overlap reaches two
+ *   levels. (Gaps are the server's check, not this screen's: the boundary
+ *   convention was guessed here and rejected valid matrices.)
  * - min ≤ max, both non-negative;
  * - DBR is a percentage, so it caps at 100.
  *
@@ -212,7 +214,6 @@ const LexDelegation = () => {
     // the save is blocked here rather than round-tripping to learn that.
     if (problems.invalid.length) return toast.error(t("doa.valid.range"));
     if (problems.overlaps.length) return toast.error(t("doa.valid.overlap"));
-    if (problems.gaps.length) return toast.error(t("doa.valid.gap"));
     if (problems.missingLevelIds.length) return toast.error(t("doa.valid.missingLevel"));
     if (problems.overDbrCap) return toast.error(t("doa.valid.dbrCap"));
 
@@ -455,14 +456,14 @@ const LexDelegation = () => {
               </div>
             </div>
 
-            {/* Live band validation. An overlap is ambiguous; a gap is worse —
-                a value inside it reaches no level at all. Both are shown while
-                the admin types rather than saved and refused. */}
+            {/* Live band validation, shown while the admin types rather than
+                saved and refused. No gap check — see `validateBands`: the
+                boundary convention was a guess here and it rejected valid
+                matrices. The server checks the ladder on publish. */}
             {hasBandProblem(problems) && (
               <LexNotice tone="red">
                 {problems.invalid.length > 0 && <p className="m-0">{t("doa.valid.range")}</p>}
                 {problems.overlaps.length > 0 && <p className="m-0">{t("doa.valid.overlap")}</p>}
-                {problems.gaps.length > 0 && <p className="m-0">{t("doa.valid.gap")}</p>}
                 {problems.missingLevelIds.length > 0 && (
                   <p className="m-0">
                     {t("doa.valid.missingLevelNamed", {
@@ -492,10 +493,18 @@ const LexDelegation = () => {
                   onClick={() =>
                     setBands([
                       ...bands,
+                      // Start where the previous band leaves off — the value
+                      // AFTER its top, not on it. Seeding the same number put
+                      // that value in two bands, which is the overlap the
+                      // validator is there to catch.
                       {
                         authorityLevelId: levels[0]?.id || "",
-                        minValue: Number(bands[bands.length - 1]?.maxValue || 0),
-                        maxValue: Number(bands[bands.length - 1]?.maxValue || 0),
+                        minValue: bands.length
+                          ? Number(bands[bands.length - 1]?.maxValue || 0) + 1
+                          : 0,
+                        maxValue: bands.length
+                          ? Number(bands[bands.length - 1]?.maxValue || 0) + 1
+                          : 0,
                       },
                     ])
                   }
@@ -515,7 +524,15 @@ const LexDelegation = () => {
                 bands.map((band, index) => (
                   <div
                     key={band.id || index}
-                    className="mb-2 grid grid-cols-1 items-end gap-2 rounded-lg border border-border bg-card p-3 sm:grid-cols-[1fr_auto_auto_auto]"
+                    className={cn(
+                      "mb-2 grid grid-cols-1 items-end gap-2 rounded-lg border bg-card p-3 sm:grid-cols-[1fr_auto_auto_auto]",
+                      // The notice names the problem; this points at the row
+                      // that carries it, so a ten-band matrix does not have to
+                      // be re-read from the top.
+                      problems.invalid.includes(index) || problems.overlaps.includes(index)
+                        ? "border-red-500/50"
+                        : "border-border"
+                    )}
                   >
                     <div className="flex flex-col gap-1.5">
                       <Label>{t("doa.bands.level")}</Label>

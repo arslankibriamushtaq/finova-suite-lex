@@ -395,8 +395,6 @@ export const DBR_MAX = 100;
 export interface LexBandProblems {
   /** Bands whose max is below their min, or which are negative. */
   invalid: number[];
-  /** Bands that leave a gap after the previous rung — a value nobody can approve. */
-  gaps: number[];
   /** Bands that overlap the previous rung. */
   overlaps: number[];
   /** Active levels with no row at all. */
@@ -406,15 +404,20 @@ export interface LexBandProblems {
 }
 
 /**
- * The four rules the server checks, evaluated live while the admin types.
+ * The rules evaluated live while the admin types.
  *
- * The gap check is the one that matters most: if L0 tops out at 40 and L1
- * starts at 45, a DBR of 42 routes to no level at all and the case falls
- * through the ladder. A missing level row is the same failure by another route
- * — it is not a blank cell, it is a value nobody is authorized to approve.
+ * **No gap check.** Whether consecutive bands must touch (`0–40, 40–100`) or
+ * succeed each other (`0–40, 41–100`) depends on how the server reads the
+ * boundaries, and this file guessed. The guess rejected correctly-written
+ * matrices, so the check is gone — the server validates the ladder when the
+ * matrix is published and answers with `doa.err.invalid`. Do not restore it
+ * without confirming the convention against lex-config-service.
  *
- * A value *above the last band* is deliberately NOT reported here. It resolves
- * to empty, and LEX opens the case at the highest active level with
+ * A missing level row IS still reported: that is not a boundary convention, it
+ * is a rung nobody is authorized to approve at.
+ *
+ * A value *above the last band* is deliberately NOT reported. It resolves to
+ * empty, and LEX opens the case at the highest active level with
  * `beyondDelegation` set — a handled case, not a misconfiguration.
  */
 export const validateBands = (
@@ -425,7 +428,6 @@ export const validateBands = (
   const indexed = bands.map((b, i) => ({ ...b, i }));
   const ordered = [...indexed].sort((a, b) => Number(a.minValue) - Number(b.minValue));
   const invalid: number[] = [];
-  const gaps: number[] = [];
   const overlaps: number[] = [];
 
   ordered.forEach((band, idx) => {
@@ -435,7 +437,6 @@ export const validateBands = (
     const next = ordered[idx + 1];
     if (!next) return;
     if (Number(next.minValue) < Number(band.maxValue)) overlaps.push(next.i);
-    else if (Number(next.minValue) > Number(band.maxValue)) gaps.push(next.i);
   });
 
   const covered = new Set(bands.map((b) => b.authorityLevelId));
@@ -444,12 +445,11 @@ export const validateBands = (
   const overDbrCap =
     policyParameter === "DBR" && bands.some((b) => Number(b.maxValue) > DBR_MAX);
 
-  return { invalid, gaps, overlaps, missingLevelIds, overDbrCap };
+  return { invalid, overlaps, missingLevelIds, overDbrCap };
 };
 
 export const hasBandProblem = (problems: LexBandProblems): boolean =>
   problems.invalid.length > 0 ||
-  problems.gaps.length > 0 ||
   problems.overlaps.length > 0 ||
   problems.missingLevelIds.length > 0 ||
   problems.overDbrCap;

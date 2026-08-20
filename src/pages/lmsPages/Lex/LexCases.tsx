@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { HelpCircle, Inbox, PauseCircle, RefreshCw } from "lucide-react";
+import { HelpCircle, Inbox, PauseCircle, RefreshCw, UserCheck } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
@@ -16,15 +16,23 @@ import {
 } from "../../../components/ui/select";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, formatMoney } from "../../../components/shared/detailKitUtils";
-import { LexPageHeader, LexSearch, LexStatusBadge, LexTile } from "../../../components/shared/lexKit";
+import {
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+  LexStatusBadge,
+  LexTile,
+} from "../../../components/shared/lexKit";
 import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
+import { useLexAuthority } from "../../../hooks/useLexAuthority";
 import { emptyPage, lexErrorMessage, logForbidden, type LexPage } from "../../../redux/apis/apisLexCore";
 import { formatMinutes } from "../../../redux/apis/apisLexConfig";
 import {
   CASE_SORTS,
   CASE_TABS,
+  caseChip,
   getCaseCounts,
   getCases,
   slaChip,
@@ -76,6 +84,21 @@ const LexCases = () => {
   const [tab, setTab] = useState<LexCaseTab>("ALL");
   const [sort, setSort] = useState<string>(CASE_SORTS[0]);
   const [routingType, setRoutingType] = useState("ALL");
+  /**
+   * Only offered on the tabs that do not already constrain it: the Approved and
+   * Declined tabs *are* a `decisionAction` filter, and two of them AND together
+   * into an empty list.
+   */
+  const [decisionAction, setDecisionAction] = useState("ALL");
+  const decisionFilterable = tab === "ALL" || tab === "HUMAN_REVIEW";
+  /**
+   * `scope=mine`: still-open cases at or below the caller's rung, resolved
+   * server-side. Offered to underwriters only — an admin is not on the ladder,
+   * so "mine" would return the whole queue and the toggle would do nothing
+   * visible except imply it had.
+   */
+  const { levelCode } = useLexAuthority();
+  const [myQueue, setMyQueue] = useState(false);
 
   const errorsByCode = useMemo(
     () => ({ "COMMON.AUTH.ACCESS_DENIED": t("err.accessDenied") }),
@@ -89,7 +112,13 @@ const LexCases = () => {
       const tabFilter = CASE_TABS.find((entry) => entry.key === tab)?.filter;
       // Two filter expressions are joined with a semicolon; the routing filter
       // is only added when the user picked one.
-      const filter = [tabFilter, routingType === "ALL" ? undefined : `routingType:eq:${routingType}`]
+      const filter = [
+        tabFilter,
+        routingType === "ALL" ? undefined : `routingType:eq:${routingType}`,
+        decisionFilterable && decisionAction !== "ALL"
+          ? `decisionAction:eq:${decisionAction}`
+          : undefined,
+      ]
         .filter(Boolean)
         .join(";");
 
@@ -100,6 +129,7 @@ const LexCases = () => {
           search: search || undefined,
           filter: filter || undefined,
           sort,
+          scope: myQueue ? "mine" : undefined,
         })
       );
     } catch (error) {
@@ -125,7 +155,7 @@ const LexCases = () => {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize, search, tab, sort, routingType]);
+  }, [page, pageSize, search, tab, sort, routingType, decisionAction, myQueue]);
 
   useEffect(() => {
     loadCounts();
@@ -229,18 +259,23 @@ const LexCases = () => {
     },
     {
       name: t("case.col.status"),
-      cell: (row: LexCaseSummary) =>
-        row.decisionAction ? (
+      // Status is two fields, not one: `status` is the lifecycle and
+      // `decisionAction` is what a person chose. RESOLVED alone would print the
+      // same chip on an approval and a decline.
+      cell: (row: LexCaseSummary) => {
+        const chip = caseChip(row);
+        return row.decisionAction ? (
           <div className="flex flex-col gap-1">
-            <LexStatusBadge status={row.status} />
+            <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />
             <span className="text-xs text-muted-foreground">
               {row.decisionAction}
               {row.decisionLevelCode ? ` · ${row.decisionLevelCode}` : ""}
             </span>
           </div>
         ) : (
-          <LexStatusBadge status={row.status} />
-        ),
+          <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />
+        );
+      },
       width: "150px",
     },
     {
@@ -308,6 +343,27 @@ const LexCases = () => {
             <SelectItem value="APPLICATION_SOURCE">APPLICATION_SOURCE</SelectItem>
           </SelectContent>
         </Select>
+        {decisionFilterable && (
+          <Select
+            value={decisionAction}
+            onValueChange={(v) => {
+              setDecisionAction(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-44 bg-card">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">{t("case.filter.allDecisions")}</SelectItem>
+              {["APPROVE", "VERIFY", "OVERRULE", "REJECT", "DECLINE"].map((action) => (
+                <SelectItem key={action} value={action}>
+                  {action}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
           <SelectTrigger className="w-52 bg-card">
             <SelectValue />
@@ -320,11 +376,30 @@ const LexCases = () => {
             ))}
           </SelectContent>
         </Select>
+        {levelCode && (
+          <Button
+            variant={myQueue ? "default" : "outline"}
+            className={cn("h-10 gap-2", myQueue && "wallet-brand-btn")}
+            onClick={() => {
+              setMyQueue((on) => !on);
+              setPage(1);
+            }}
+          >
+            <UserCheck className="h-4 w-4" />
+            {t("case.myQueue", { level: levelCode })}
+          </Button>
+        )}
         <Button variant="outline" className="h-10 gap-2" onClick={refresh} disabled={isLoading}>
           <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           {t("common:refresh")}
         </Button>
       </LexPageHeader>
+
+      {/* LEX is called once, when lending's approval gate returns MANUAL_REVIEW.
+          An application that auto-approves or auto-declines never reaches here.
+          The counts are therefore referrals, and labelling them "applications"
+          would misstate the automation rate by design. */}
+      <LexNotice tone="sky">{t("case.referralScopeNote")}</LexNotice>
 
       {/* Tabs, counted in one call. */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -344,7 +419,10 @@ const LexCases = () => {
             )}
           >
             {t(`case.tab.${entry.key}`)}
-            {counts && (
+            {/* The counts endpoint is tenant-wide. Printing them beside a
+                scoped list would label someone's own queue with everyone's
+                totals. */}
+            {counts && !myQueue && (
               <span className="ms-1.5 font-semibold">
                 {counts[entry.countKey as keyof LexCaseCounts]}
               </span>

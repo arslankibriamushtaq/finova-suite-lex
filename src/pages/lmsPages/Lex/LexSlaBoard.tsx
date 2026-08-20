@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Gauge, RefreshCw } from "lucide-react";
 
@@ -14,8 +15,13 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
-import { TONES } from "../../../components/shared/detailKitUtils";
-import { LexNotice, LexPageHeader, LexTile } from "../../../components/shared/lexKit";
+import { TONES, humanizeCode } from "../../../components/shared/detailKitUtils";
+import {
+  LexMetricTile,
+  LexNotice,
+  LexPageHeader,
+  LexTile,
+} from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { lexErrorMessage, logForbidden } from "../../../redux/apis/apisLexCore";
@@ -37,6 +43,7 @@ import {
  */
 const LexSlaBoard = () => {
   const { t } = useTranslation("lex");
+  const navigate = useNavigate();
   // Ungated while the LEX permission codes are unregistered — see useLexAccess.
   const { can } = useLexAccess();
 
@@ -133,6 +140,32 @@ const LexSlaBoard = () => {
       cell: (row: LexBreachingCase) => <span>{formatMinutes(row.targetMinutes)}</span>,
       width: "140px",
     },
+    {
+      // Negative is the point of this board — how far past due, not a
+      // countdown. `formatMinutes` floors at zero, so the sign is applied here.
+      name: t("board.col.remaining"),
+      cell: (row: LexBreachingCase) => {
+        const remaining = (row.targetMinutes ?? 0) - (row.elapsedMinutes ?? 0);
+        if (row.targetMinutes == null || row.elapsedMinutes == null) return <span>—</span>;
+        return (
+          <span className={remaining < 0 ? "font-medium text-red-600 dark:text-red-400" : undefined}>
+            {remaining < 0
+              ? t("case.sla.overdue", { time: formatMinutes(-remaining) })
+              : t("case.sla.remaining", { time: formatMinutes(remaining) })}
+          </span>
+        );
+      },
+      width: "160px",
+    },
+    {
+      name: t("common:actions"),
+      cell: (row: LexBreachingCase) => (
+        <Button variant="outline" size="sm" onClick={() => navigate(`/LOS/Lex/Cases/${row.caseId}`)}>
+          {t("open")}
+        </Button>
+      ),
+      width: "110px",
+    },
   ];
 
   if (!canRead) return <PermissionDenied />;
@@ -143,6 +176,7 @@ const LexSlaBoard = () => {
   const pageRows = cases.slice((page - 1) * pageSize, page * pageSize);
 
   const byRouting = Object.entries(snapshot?.byRoutingType || {});
+  const byStage = Object.entries(snapshot?.byStage || {});
 
   return (
     <div className="service">
@@ -156,42 +190,89 @@ const LexSlaBoard = () => {
       {/* Six tiles, and `notTracked` is one of them — never folded into "within
           SLA". Those cases have no published policy for their product and
           sector; counting them as compliant would show an unconfigured tenant a
-          perfect figure. */}
-      <div className="mb-3 grid grid-cols-2 gap-3 lg:grid-cols-6">
-        <LexTile label={t("board.tile.inFlight")} value={snapshot?.inFlight ?? "—"} loading={isLoading} />
-        <LexTile
+          perfect figure.
+
+          The mockup's STRAIGHT-THROUGH RATE tile is not here: a straight-through
+          application never reaches LEX, so LEX cannot measure the rate at which
+          it happens. */}
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <LexMetricTile
           label={t("board.tile.withinSla")}
-          value={snapshot?.withinSla ?? "—"}
-          tone="accent"
+          value={snapshot?.withinSla}
+          denominator={snapshot?.inFlight}
+          tone="emerald"
+          hint={t("board.tile.withinSlaHint", { inFlight: snapshot?.inFlight ?? 0 })}
           loading={isLoading}
         />
-        <LexTile label={t("board.tile.nearBreach")} value={snapshot?.nearBreach ?? "—"} loading={isLoading} />
-        <LexTile
+        <LexMetricTile
           label={t("board.tile.criticalBreach")}
-          value={snapshot?.criticalBreach ?? "—"}
+          value={snapshot?.criticalBreach}
+          denominator={snapshot?.inFlight}
+          tone="red"
           loading={isLoading}
         />
-        <LexTile
+        <LexMetricTile
+          label={t("board.tile.nearBreach")}
+          value={snapshot?.nearBreach}
+          denominator={snapshot?.inFlight}
+          tone="amber"
+          loading={isLoading}
+        />
+        <LexMetricTile
           label={t("board.tile.stoppedClock")}
-          value={snapshot?.stoppedClock ?? "—"}
+          value={snapshot?.stoppedClock}
+          denominator={snapshot?.inFlight}
           hint={t("board.tile.stoppedClockHint")}
           loading={isLoading}
         />
-        <LexTile
+        <LexMetricTile
           label={t("board.tile.notTracked")}
-          value={snapshot?.notTracked ?? "—"}
+          value={snapshot?.notTracked}
+          denominator={snapshot?.inFlight}
+          tone="amber"
           hint={t("board.tile.notTrackedHint")}
+          loading={isLoading}
+        />
+        {/* Null when nothing is in flight — "—", never a zero that reads as
+            instant processing. */}
+        <LexTile
+          label={t("board.tile.averageInFlight")}
+          value={formatMinutes(snapshot?.averageMinutesInFlight)}
+          hint={t("board.onClockHint")}
           loading={isLoading}
         />
       </div>
 
-      {snapshot?.averageMinutesInFlight !== undefined && (
-        <div className="mb-3">
-          <LexTile
-            label={t("board.tile.averageInFlight")}
-            value={formatMinutes(snapshot.averageMinutesInFlight)}
-            hint={t("board.onClockHint")}
-          />
+      {/* Queue pipeline journey. Stage names and live counts come from
+          `byStage`; the target beside each comes from the published SLA policy.
+          The mockup's "Responsible: Digital Channels / Fraud Control / …" line
+          is not here — stages carry a code and a target, not an owning team,
+          and no LEX service models one. */}
+      {byStage.length > 0 && (
+        <div className="pro-card mb-3 p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t("board.pipeline")}
+            </h4>
+            <Badge variant="outline" className={`border font-medium ${TONES.sky}`}>
+              {t("board.pipelineActive")}
+            </Badge>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {byStage.map(([stage, count], index) => (
+              <div key={stage} className="rounded-lg border border-border bg-muted/30 p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-sm font-semibold text-foreground">
+                    {index + 1}. {humanizeCode(stage)}
+                  </span>
+                </div>
+                <p className="m-0 mt-2 text-xs text-muted-foreground">
+                  {t("board.inQueue", { count })}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="m-0 mt-3 text-xs text-muted-foreground">{t("board.pipelineTeamGap")}</p>
         </div>
       )}
 
@@ -216,9 +297,15 @@ const LexSlaBoard = () => {
 
       <div className="pro-card">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2 p-3 pb-0">
-          <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-            {t("board.breaching")}
-          </h4>
+          <div className="min-w-0">
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t("board.breaching")}
+            </h4>
+            {/* The breaching endpoint does not carry the applicant name — the
+                mockup's column would need a join or a wider contract. Open the
+                case for it rather than showing an empty column. */}
+            <p className="m-0 text-xs text-muted-foreground">{t("board.nameGap")}</p>
+          </div>
           <Select value={minimum} onValueChange={(v) => setMinimum(v as LexBreachLevel)}>
             <SelectTrigger className="w-52 bg-card">
               <SelectValue />
