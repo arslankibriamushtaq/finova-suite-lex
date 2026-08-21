@@ -218,6 +218,32 @@ const LexDelegation = () => {
     [bands, levels, policyParameter]
   );
 
+  // The list endpoint sends a scope's `productId`/`sectorId` but not always the
+  // matching names, so the column would otherwise print raw ids. These resolve
+  // an id to its label off the same catalogues the pickers use — products from
+  // LOS, sectors governed here — so the table reads the way the picker does.
+  const productNameById = useMemo(
+    () => new Map(products.map((p) => [p.id, p.name])),
+    [products]
+  );
+  const sectorNameById = useMemo(
+    () => new Map(sectors.map((s) => [s.id, s.displayName])),
+    [sectors]
+  );
+
+  // `null` product/sector is the "All" wildcard — return null so LexScope shows
+  // the "All …" label rather than a resolved name. A specific id resolves to
+  // its catalogue name, falling back to any name the row carried and, only if
+  // both are missing, the id itself so the cell is never blank.
+  const scopeProductName = (row: LexDelegationMatrix): string | null =>
+    row.productId
+      ? productNameById.get(row.productId) ?? row.productName ?? row.productId
+      : null;
+  const scopeSectorName = (row: LexDelegationMatrix): string | null =>
+    row.sectorId
+      ? sectorNameById.get(row.sectorId) ?? row.sectorName ?? row.sectorId
+      : null;
+
   const openMatrix = async (row: LexDelegationMatrix) => {
     try {
       const full = await getDelegationMatrix(row.id);
@@ -352,17 +378,14 @@ const LexDelegation = () => {
     },
     {
       name: t("doa.col.scope"),
-      cell: (row: LexDelegationMatrix) =>
-        row.scopeDescription ? (
-          <span className="text-sm">{row.scopeDescription}</span>
-        ) : (
-          <LexScope
-            productName={row.productName}
-            sectorName={row.sectorName}
-            allProductsLabel={t("scope.allProducts")}
-            allSectorsLabel={t("scope.allSectors")}
-          />
-        ),
+      cell: (row: LexDelegationMatrix) => (
+        <LexScope
+          productName={scopeProductName(row)}
+          sectorName={scopeSectorName(row)}
+          allProductsLabel={t("scope.allProducts")}
+          allSectorsLabel={t("scope.allSectors")}
+        />
+      ),
     },
     {
       name: t("doa.col.bands"),

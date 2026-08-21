@@ -3,10 +3,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowUpCircle,
   Bot,
   CheckCircle2,
+  MinusCircle,
+  XCircle,
   FileText,
   Gauge,
   Gavel,
@@ -74,12 +77,15 @@ import { useLexAuthority } from "../../../hooks/useLexAuthority";
 import { lexErrorMessage, logForbidden } from "../../../redux/apis/apisLexCore";
 import { formatMinutes } from "../../../redux/apis/apisLexConfig";
 import {
+  CHECK_GROUPS,
   getAnalyses,
   isDataProblem,
   isStubReader,
   type LexAnalysis,
+  type LexAnalysisRow,
 } from "../../../redux/apis/apisLexDocuments";
 import {
+  caseAnalyses,
   caseChip,
   caseSla,
   claimCase,
@@ -106,11 +112,45 @@ const SEVERITY_TONE: Record<string, string> = {
   LOW: TONES.slate,
 };
 
+/** The mark that carries the outcome, so the row need not print the word. */
+const OUTCOME_ICON: Record<string, typeof CheckCircle2> = {
+  PASS: CheckCircle2,
+  FAIL: XCircle,
+  FLAGGED: AlertTriangle,
+  NOT_RUN: MinusCircle,
+};
+
+const OUTCOME_ICON_TONE: Record<string, string> = {
+  PASS: "text-emerald-600 dark:text-emerald-400",
+  FAIL: "text-red-600 dark:text-red-400",
+  FLAGGED: "text-amber-600 dark:text-amber-400",
+  NOT_RUN: "text-muted-foreground",
+};
+
 const OUTCOME_TONE: Record<string, string> = {
   PASS: TONES.emerald,
   FAIL: TONES.red,
   FLAGGED: TONES.amber,
   NOT_RUN: TONES.slate,
+};
+
+/**
+ * Checks by group, in the sequence's own order.
+ *
+ * `CHECK_GROUPS` fixes the order of the four shipped groups; anything the
+ * catalogue grows beyond them follows, and a row with no group falls into
+ * "OTHER" rather than being dropped — an unshown check reads as one that
+ * never ran.
+ */
+const groupChecks = (checks: LexAnalysisRow[]): [string, LexAnalysisRow[]][] => {
+  const byGroup = new Map<string, LexAnalysisRow[]>();
+  for (const check of [...checks].sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0))) {
+    const key = String(check.group || "OTHER");
+    byGroup.set(key, [...(byGroup.get(key) || []), check]);
+  }
+  const known = CHECK_GROUPS.filter((g) => byGroup.has(g)) as string[];
+  const rest = [...byGroup.keys()].filter((g) => !known.includes(g));
+  return [...known, ...rest].map((g) => [g, byGroup.get(g) as LexAnalysisRow[]]);
 };
 
 /**
@@ -204,7 +244,10 @@ const LexCaseDetail = () => {
       setRecord(next);
       // A decided case has nothing left to permit, and asking would 422.
       setActions(next.readOnly ? null : await loadActions(caseId));
-      loadAnalyses(next.applicationId);
+      // The case package now carries its own document verification. Only reach
+      // for the documents service when it does not — a second call for a set
+      // already in hand is a round trip that can only disagree with it.
+      if (!next.documentVerification?.length) loadAnalyses(next.applicationId);
     } catch (error) {
       logForbidden(error, "GET /cases/{id}");
       toast.error(lexErrorMessage(error, t("case.toast.loadFailed"), errorsByCode));
@@ -350,6 +393,12 @@ const LexCaseDetail = () => {
   const humanMessages = (record?.messages || []).filter((m) => !String(m.kind).startsWith("SYSTEM"));
   const unrecognized = (record?.attachedCodes || []).some((c) => c.recognized === false);
   const drivingCode = (record?.attachedCodes || []).find((c) => c.driving);
+  /**
+   * Embedded first, fetched as the fallback. The embedded set needs no
+   * ANALYSIS_READ — it arrived inside a case the reader is already allowed to
+   * read — so it is not gated a second time here.
+   */
+  const documents = caseAnalyses(record, analyses);
 
   const openDecision = () => {
     setAction(resolvingActions.length === 1 ? resolvingActions[0] : "");
@@ -716,17 +765,17 @@ const LexCaseDetail = () => {
                   {t("ws.documents")}
                 </h4>
               </div>
-              {analyses.some(isStubReader) && (
+              {documents.some(isStubReader) && (
                 <Badge variant="outline" className={`border font-medium ${TONES.amber}`}>
                   {t("ws.stubReader")}
                 </Badge>
               )}
             </div>
 
-            {analyses.length === 0 ? (
+            {documents.length === 0 ? (
               <EmptyState icon={FileText} text={t("ws.noDocuments")} />
             ) : (
-              analyses.map((analysis) => (
+              documents.map((analysis) => (
                 <div key={analysis.id} className="pro-tile mb-2 last:mb-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
@@ -755,19 +804,35 @@ const LexCaseDetail = () => {
                     </LexNotice>
                   )}
 
+                  {/* Fifteen long names never fit on badges — they wrap into an
+                      unreadable stack. Each check is a row instead: outcome
+                      mark, name, and the detail the reader actually needs to
+                      judge it. Grouped, in ordinal order, which is the order
+                      the runner executed them in. */}
                   {!!analysis.checks?.length && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {analysis.checks.map((check) => (
-                        <Badge
-                          key={`${analysis.id}-${check.checkCode}`}
-                          variant="outline"
-                          className={`border font-medium ${OUTCOME_TONE[String(check.outcome)] || TONES.slate}`}
-                          title={check.detail || undefined}
-                        >
-                          {check.displayName || check.checkCode}
-                          {" · "}
-                          {check.outcome}
-                        </Badge>
+                    <div className="mt-3 overflow-hidden rounded-lg border border-border/60">
+                      {groupChecks(analysis.checks).map(([group, rows]) => (
+                        <div key={`${analysis.id}-${group}`}>
+                          <div className="flex items-center justify-between gap-2 border-b border-border/60 bg-muted/50 px-3 py-1.5">
+                            <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              {humanizeCode(group)}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              {rows.filter((r) => r.outcome === "PASS").length}/{rows.length}
+                            </span>
+                          </div>
+                          {rows.map((check) => (
+                            <CheckRow
+                              key={`${analysis.id}-${check.checkCode}`}
+                              check={check}
+                              confidenceLabel={
+                                check.confidence != null
+                                  ? t("ws.confidence", { value: check.confidence })
+                                  : undefined
+                              }
+                            />
+                          ))}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -1184,6 +1249,60 @@ const LexCaseDetail = () => {
       </Dialog>
 
       {isLoading && <p className="mt-3 text-sm text-muted-foreground">{t("common:loading")}</p>}
+    </div>
+  );
+};
+
+/**
+ * One check in the verification sequence.
+ *
+ * The mark carries the outcome, so the row does not spend width on the word
+ * "PASS" fifteen times — the eye scans a column of ticks and stops at the one
+ * that is not. `NOT_RUN` is drawn as its own mark and never as a neutral blank:
+ * a check the sequence never reached must not read as one that passed.
+ */
+const CheckRow = ({
+  check,
+  confidenceLabel,
+}: {
+  check: LexAnalysisRow;
+  confidenceLabel?: string;
+}) => {
+  const outcome = String(check.outcome);
+  const Icon = OUTCOME_ICON[outcome] || MinusCircle;
+  return (
+    <div className="flex items-start gap-2.5 border-b border-border/40 px-3 py-2 last:border-b-0">
+      <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", OUTCOME_ICON_TONE[outcome] || "text-muted-foreground")} />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-sm font-medium text-foreground">
+            {check.displayName || check.checkCode}
+          </span>
+          {/* Only worth saying when it is not a pass — every row is otherwise
+              the same word. */}
+          {outcome !== "PASS" && (
+            <Badge
+              variant="outline"
+              className={`border text-[10px] font-medium ${OUTCOME_TONE[outcome] || TONES.slate}`}
+            >
+              {outcome}
+            </Badge>
+          )}
+          {/* Present only on FAIL and FLAGGED — it is the code the referral was
+              raised under, so it belongs on the row, not in a tooltip. */}
+          {check.reasonCode && (
+            <span className="font-mono text-[11px] text-muted-foreground">{check.reasonCode}</span>
+          )}
+        </div>
+        {check.detail && (
+          <p className="m-0 mt-0.5 text-xs text-muted-foreground">{check.detail}</p>
+        )}
+      </div>
+      {confidenceLabel && (
+        <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+          {confidenceLabel}
+        </span>
+      )}
     </div>
   );
 };

@@ -27,3 +27,5 @@ yarn-error.log*
 
 # Postman
 *.postman_collection.json
+# Local Netlify folder
+.netlify

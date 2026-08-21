@@ -1,5 +1,6 @@
 import { lexCaseApi } from "../../utils/axiosLexService";
 import { clean, pageOf, toServerPage, unwrap, type LexPage, type LexPageQuery } from "./apisLexCore";
+import type { LexAnalysis } from "./apisLexDocuments";
 
 /**
  * lex-case-service (:8203), review cases — `lex.cases`.
@@ -314,6 +315,37 @@ export interface LexAuditEntry {
   occurredAt?: string;
 }
 
+/**
+ * One document's verification result as the case package carries it.
+ *
+ * `analysisId` is the wire name for what the documents service calls `id`;
+ * `normalizeCaseAnalysis` maps it so both sources render through one component.
+ */
+export interface LexCaseDocumentAnalysis extends Omit<LexAnalysis, "id"> {
+  analysisId: string;
+  id?: string;
+}
+
+/**
+ * The document analyses for this case, in one shape.
+ *
+ * Prefers the embedded `documentVerification` and falls back to whatever the
+ * documents-service fetch returned, so a build whose case service predates the
+ * embed still shows documents.
+ */
+export const caseAnalyses = (
+  record?: LexCase | null,
+  fetched: LexAnalysis[] = []
+): LexAnalysis[] => {
+  const embedded = record?.documentVerification || [];
+  if (!embedded.length) return fetched;
+  return embedded.map((entry) => ({
+    ...entry,
+    id: entry.id || entry.analysisId,
+    applicationId: entry.applicationId || record?.applicationId || "",
+  }));
+};
+
 export interface LexCase {
   id: string;
   applicationId: string;
@@ -336,6 +368,17 @@ export interface LexCase {
   sla?: LexCaseSla | null;
   slaInfo?: LexCaseSla | null;
   decision?: LexCaseDecision | null;
+  /**
+   * The document analyses for this application, embedded on the case package
+   * rather than fetched from lex-document-service. Same shape as `LexAnalysis`
+   * except the id arrives as `analysisId` — the field is the analysis' own id,
+   * not a link to something else.
+   *
+   * Read it in preference to `GET /documents/analyses`: it is the set the case
+   * was actually opened against, it needs no second permission, and it cannot
+   * drift from the reason codes attached above.
+   */
+  documentVerification?: LexCaseDocumentAnalysis[];
   auditTrail?: LexAuditEntry[];
   openedAt?: string;
   closedAt?: string | null;

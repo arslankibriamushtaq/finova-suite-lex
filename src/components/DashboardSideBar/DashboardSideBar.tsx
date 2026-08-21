@@ -132,7 +132,8 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Anti-Fraud": "antiFraud",
   Sanction: "sanction",
   "Access Control Management": "accessControlManagement",
-  Employees: "employees",
+  Employees: "employees",
+
   Departments: "departments",
   "Manage Roles": "manageRoles",
   "Manage Permissions": "managePermissions",
@@ -2253,13 +2254,20 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Overview",
       },
-      hasAccess("LEX_CASES_READ") &&
+        hasAccess("LEX_CASES_READ") &&
       {
-        label: "Communication Hub",
-        Link: "Hub",
+        label: "Review Cases",
+        Link: "Cases",
         LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/Hub",
+        active: pathname.startsWith("/LOS/Lex/Cases"),
       },
+      // hasAccess("LEX_CASES_READ") &&
+      // {
+      //   label: "Communication Hub",
+      //   Link: "Hub",
+      //   LinkLable: "/LOS/Lex",
+      //   active: pathname === "/LOS/Lex/Hub",
+      // },
       hasAccess("LEX_CONFIG_READ") &&
       {
         label: "Reason Code Processes",
@@ -2309,13 +2317,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Analyses",
       },
-      hasAccess("LEX_CASES_READ") &&
-      {
-        label: "Review Cases",
-        Link: "Cases",
-        LinkLable: "/LOS/Lex",
-        active: pathname.startsWith("/LOS/Lex/Cases"),
-      },
+    
       hasAccess("LEX_CASES_READ") &&
       {
         label: "SLA Board",
