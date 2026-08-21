@@ -236,6 +236,7 @@ import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScorin
 import WalletTransactionLimits from "../pages/lmsPages/CustomerManagement/WalletTransactionLimits";
 import OnboardingUsers from "../pages/lmsPages/CustomerManagement/OnboardingUsers";
 import OnboardingUserDetail from "../pages/lmsPages/CustomerManagement/OnboardingUserDetail";
+import OnboardingStepConfig from "../pages/lmsPages/CustomerManagement/OnboardingStepConfig";
 import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
@@ -917,6 +918,10 @@ export const router = createBrowserRouter(
             {
               path: "/LOS/CustomerManagement/OnboardingUsers/:workflowId",
               element: <OnboardingUserDetail />,
+            },
+            {
+              path: "/LOS/CustomerManagement/OnboardingSteps",
+              element: <OnboardingStepConfig />,
             },
             {
               path: "/LOS/CustomerManagement/WalletTransactionLimits",

@@ -262,6 +262,22 @@ export const ONBOARD_CUSTOMERS_PERMISSIONS = {
   RESEND_EMAIL: "ONBOARDING_WRITE",
 };
 
+/**
+ * Country onboarding step configuration (customer-service
+ * `/api/v1/admin/country-config`). Registered by identity-service
+ * `V106__country_onboarding_config_permissions.sql`.
+ *
+ * Two spellings each, checked as alternatives: the API contract names the
+ * Casbin objects in colon form, while the identity-service payload exposes
+ * permission *codes* in the platform's SCREAMING_SNAKE convention. Which of the
+ * two a given tenant's role payload carries is not something the screen can
+ * know, and gating on the wrong one hides the module from everybody.
+ */
+export const COUNTRY_CONFIG_PERMISSIONS = {
+  READ: ["country-config:read", "COUNTRY_CONFIG_READ"],
+  UPDATE: ["country-config:update", "COUNTRY_CONFIG_UPDATE"],
+};
+
 // ============================================
 // MODULE 10-22: Product Management (already defined above)
 // Additional sub-module permissions
