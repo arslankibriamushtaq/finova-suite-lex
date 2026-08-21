@@ -461,9 +461,6 @@ const RoleList = () => {
                     </Select.Option>
                   ))}
                 </Select>
-                <span className="text-muted" style={{ fontSize: 12 }}>
-                  {t("roles.hint.department")}
-                </span>
               </Form.Item>
               <Form.Item label={t("roles.field.roleCode")}>
                 <Input

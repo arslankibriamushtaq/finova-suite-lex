@@ -5,9 +5,14 @@ import { ShieldCheck, Layers } from "lucide-react";
 import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions } from "../../redux/apis/apisCrudFactoring";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
-import { usePermissions, PERMISSION_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { usePermissions, PERMISSION_PERMISSIONS, ROLE_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { moduleLabel, permissionLabel } from "../../utils/permissionLabels";
-import { getPermissionCatalog } from "../../redux/apis/apisDepartments";
+import {
+  getPermissionCatalog,
+  getDepartments,
+  setRoleDepartment,
+  clearRoleDepartment,
+} from "../../redux/apis/apisDepartments";
 
 
 const { Option } = Select;
@@ -32,6 +37,9 @@ const AssignPermissions: React.FC = () => {
    */
   const [inheritedIds, setInheritedIds] = useState<string[]>([]);
   const [departmentName, setDepartmentName] = useState<string | null>(null);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [departmentId, setDepartmentId] = useState<string | undefined>(undefined);
+  const [attaching, setAttaching] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { hasPermission } = usePermissions();
@@ -39,9 +47,18 @@ const AssignPermissions: React.FC = () => {
   // button to users who have PERMISSION_WRITE. View-only users (PERMISSION_READ) see
   // the page read-only.
   const canManagePermissions = hasPermission(PERMISSION_PERMISSIONS.EDIT);
+  // Attaching a department to a role is a role write, not a permission write:
+  // it changes which department the role inherits from, not the role's own set.
+  const canAttachDepartment = hasPermission(ROLE_PERMISSIONS.CREATE);
   useEffect(() => {
     getRoleData();
     getModulesAndPermissions();
+    getDepartments(0, 1000)
+      .then((res: any) => {
+        const rows = Array.isArray(res?.data?.data) ? res.data.data : [];
+        setDepartments(rows.filter((d: any) => d?.active !== false));
+      })
+      .catch(() => setDepartments([]));
   }, []);
 
   const handleRoleChange = (value: string) => {
@@ -58,6 +75,7 @@ const AssignPermissions: React.FC = () => {
   const loadInherited = async (roleId: string) => {
     const role = (Array.isArray(data) ? data : []).find((r: any) => r?.id === roleId);
     const departmentId = role?.departmentId;
+    setDepartmentId(departmentId || undefined);
     if (!departmentId) {
       setInheritedIds([]);
       setDepartmentName(null);
@@ -78,6 +96,50 @@ const AssignPermissions: React.FC = () => {
       // Annotation is additive: without it the screen still works, it just
       // cannot show which entries came from the department.
       setInheritedIds([]);
+    }
+  };
+
+  /**
+   * Move the selected role into a department, or out of one. Both recompute
+   * only this role, so the inherited set is re-read straight afterwards rather
+   * than waiting for a page reload to show what changed.
+   */
+  const handleDepartmentChange = async (value?: string) => {
+    if (!selectedRole) return;
+    setAttaching(true);
+    try {
+      if (value) {
+        await setRoleDepartment(selectedRole, value);
+        toast.success(t("assignPermissions.toast.departmentAttached"));
+      } else {
+        await clearRoleDepartment(selectedRole);
+        toast.success(t("assignPermissions.toast.departmentDetached"));
+      }
+      setDepartmentId(value);
+      // Re-read the roles so role.departmentId is current, then recompute
+      // which permissions are now inherited.
+      const res = await getRoles();
+      const roles = res?.data?.data || [];
+      setData(roles);
+      const role = roles.find((r: any) => r?.id === selectedRole);
+      setDepartmentName(role?.departmentName || null);
+      if (value) {
+        const cat = await getPermissionCatalog(value);
+        const mods = Array.isArray(cat?.data?.data) ? cat.data.data : [];
+        const ids: string[] = [];
+        mods.forEach((m: any) =>
+          (m.permissions || m.permissionsList || []).forEach((p: any) => {
+            if (p?.inheritedFromDepartment) ids.push(p.id);
+          })
+        );
+        setInheritedIds(ids);
+      } else {
+        setInheritedIds([]);
+      }
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || t("assignPermissions.toast.departmentFailed"));
+    } finally {
+      setAttaching(false);
     }
   };
 
@@ -337,6 +399,44 @@ const AssignPermissions: React.FC = () => {
             </Option>
           ))}
         </Select>
+
+        {/* The department the role inherits from. Editable here because this
+            is the screen where someone reasons about what a role can do, and
+            inheritance is most of that answer. */}
+        <Text
+          style={{
+            display: "block",
+            margin: "16px 0 8px",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "var(--foreground)",
+          }}
+        >
+          {t("roles.field.department")}
+        </Text>
+        <Select
+          showSearch
+          allowClear
+          optionFilterProp="children"
+          placeholder={t("roles.ph.department")}
+          style={{ width: "100%", maxWidth: "500px" }}
+          size="large"
+          value={departmentId}
+          loading={attaching}
+          disabled={!selectedRole || !canAttachDepartment || attaching}
+          onChange={(value?: string) => handleDepartmentChange(value || undefined)}
+        >
+          {departments.map((d: any) => (
+            <Option key={d.id} value={d.id}>
+              {d.departmentName} ({d.departmentCode})
+            </Option>
+          ))}
+        </Select>
+        {!selectedRole && (
+          <div className="text-muted" style={{ fontSize: 12, marginTop: 6 }}>
+            {t("assignPermissions.pickRoleFirst")}
+          </div>
+        )}
       </div>
 
       {inheritedIds.length > 0 && (
