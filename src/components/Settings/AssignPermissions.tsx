@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 import { usePermissions, PERMISSION_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { moduleLabel, permissionLabel } from "../../utils/permissionLabels";
+import { getPermissionCatalog } from "../../redux/apis/apisDepartments";
 
 
 const { Option } = Select;
@@ -24,6 +25,13 @@ const AssignPermissions: React.FC = () => {
   const [data, setData] = useState<any>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<any>([]);
   const [hasExistingPermissions, setHasExistingPermissions] = useState(false);
+  /**
+   * Permissions the selected role inherits from its department. They are shown
+   * checked and locked: they are real access, so hiding them would make the
+   * screen lie, but they cannot be edited here — the department owns them.
+   */
+  const [inheritedIds, setInheritedIds] = useState<string[]>([]);
+  const [departmentName, setDepartmentName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { hasPermission } = usePermissions();
@@ -39,6 +47,38 @@ const AssignPermissions: React.FC = () => {
   const handleRoleChange = (value: string) => {
     setSelectedRole(value);
     getPermissionDepartmentStatus(value);
+    loadInherited(value);
+  };
+
+  /**
+   * If the role belongs to a department, re-fetch the catalog annotated for it.
+   * The annotated response marks each permission `inheritedFromDepartment`, which
+   * is the only way to tell a granted permission from an inherited one.
+   */
+  const loadInherited = async (roleId: string) => {
+    const role = (Array.isArray(data) ? data : []).find((r: any) => r?.id === roleId);
+    const departmentId = role?.departmentId;
+    if (!departmentId) {
+      setInheritedIds([]);
+      setDepartmentName(null);
+      return;
+    }
+    setDepartmentName(role?.departmentName || null);
+    try {
+      const res = await getPermissionCatalog(departmentId);
+      const mods = Array.isArray(res?.data?.data) ? res.data.data : [];
+      const ids: string[] = [];
+      mods.forEach((m: any) =>
+        (m.permissions || m.permissionsList || []).forEach((p: any) => {
+          if (p?.inheritedFromDepartment) ids.push(p.id);
+        })
+      );
+      setInheritedIds(ids);
+    } catch {
+      // Annotation is additive: without it the screen still works, it just
+      // cannot show which entries came from the department.
+      setInheritedIds([]);
+    }
   };
 
   const getRoleData = async () => {
@@ -115,7 +155,10 @@ const AssignPermissions: React.FC = () => {
     }
     try {
       setSubmitting(true);
-      const response = await syncRolePermissions(selectedRole, selectedPermissions || []);
+      const ownOnly = (selectedPermissions || []).filter(
+        (id: string) => !inheritedIds.includes(id)
+      );
+      const response = await syncRolePermissions(selectedRole, ownOnly);
       if (response) {
         toast.success(response?.data?.message || t("assignPermissions.toast.updated"));
       }
@@ -136,7 +179,9 @@ const AssignPermissions: React.FC = () => {
 
   // Toggle all permissions for a module
   const toggleModulePermissions = (module: any, checked: boolean) => {
-    const permissionIds = module.permissions?.map((p: any) => p.id) || [];
+    const permissionIds = (module.permissions || [])
+      .map((p: any) => p.id)
+      .filter((id: string) => !inheritedIds.includes(id));
     
     if (checked) {
       // Add all permissions
@@ -154,8 +199,8 @@ const AssignPermissions: React.FC = () => {
   // Check if all permissions of a module are selected
   const isModuleFullySelected = (module: any) => {
     if (!module.permissions || module.permissions.length === 0) return false;
-    return module.permissions.every((p: any) =>
-      selectedPermissions.includes(p.id)
+    return module.permissions.every(
+      (p: any) => selectedPermissions.includes(p.id) || inheritedIds.includes(p.id)
     );
   };
 
@@ -165,7 +210,7 @@ const AssignPermissions: React.FC = () => {
     const isFullySelected = isModuleFullySelected(module);
     const moduleName = moduleLabel(t, module.code || module.name, module.name);
     const total = module.permissions?.length || 0;
-    const selectedCount = module.permissions?.filter((p: any) => selectedPermissions.includes(p.id)).length || 0;
+    const selectedCount = module.permissions?.filter((p: any) => selectedPermissions.includes(p.id) || inheritedIds.includes(p.id)).length || 0;
 
     return (
       <div key={module.id} className="pro-card" style={{ padding: 18 }}>
@@ -210,7 +255,8 @@ const AssignPermissions: React.FC = () => {
         {hasPermissions && (
           <div className="d-flex flex-column" style={{ gap: "4px" }}>
             {module.permissions.map((permission: any) => {
-              const isChecked = selectedPermissions.includes(permission.id);
+              const isInherited = inheritedIds.includes(permission.id);
+              const isChecked = selectedPermissions.includes(permission.id) || isInherited;
               const permissionName = permissionLabel(
                 t,
                 permission.permissionCode || permission.code || "",
@@ -226,13 +272,27 @@ const AssignPermissions: React.FC = () => {
                   <Switch
                     className="red-switch"
                     checked={isChecked}
-                    disabled={!canManagePermissions}
+                    disabled={!canManagePermissions || isInherited}
                     onChange={() => togglePermission(permission.id)}
                     size="small"
                   />
-                  <Text style={{ fontSize: "13.5px", color: "var(--foreground)", margin: 0 }}>
+                  <Text
+                    style={{
+                      fontSize: "13.5px",
+                      color: isInherited ? "var(--muted-foreground)" : "var(--foreground)",
+                      margin: 0,
+                    }}
+                  >
                     {permissionName}
                   </Text>
+                  {isInherited && (
+                    <span
+                      className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                      title={t("assignPermissions.inheritedHint")}
+                    >
+                      {t("assignPermissions.inherited")}
+                    </span>
+                  )}
                 </label>
               );
             })}
@@ -278,6 +338,17 @@ const AssignPermissions: React.FC = () => {
           ))}
         </Select>
       </div>
+
+      {inheritedIds.length > 0 && (
+        <div
+          className="mb-3 px-3 py-2 text-muted"
+          style={{ border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
+        >
+          {departmentName
+            ? t("assignPermissions.inheritedFrom", { name: departmentName })
+            : t("assignPermissions.inheritedHint")}
+        </div>
+      )}
 
       <h4 className="fw-bold text-dark" style={{ marginBottom: "16px", fontSize: "15px" }}>
         {t("assignPermissions.sectionTitle")}

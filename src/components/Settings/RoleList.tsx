@@ -10,6 +10,7 @@ import {
   Switch,
   Dropdown,
   Tooltip,
+  Select,
 } from "antd";
 import TableView from "../TableView/TableView";
 import { getRoles, saveRole, updateRole, deleteRole } from "../../redux/apis/apisCrudFactoring";
@@ -17,8 +18,13 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons"
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { usePermissions, ROLE_PERMISSIONS } from "../../hooks/useProductPermissions";
+import {
+  getDepartments,
+  setRoleDepartment,
+  clearRoleDepartment,
+} from "../../redux/apis/apisDepartments";
 
-const emptyForm = { roleCode: "", roleName: "", roleNameAr: "", description: "", status: false };
+const emptyForm = { roleCode: "", roleName: "", roleNameAr: "", description: "", status: false, departmentId: undefined as string | undefined };
 
 const RoleList = () => {
   const { t } = useTranslation("settings");
@@ -43,6 +49,9 @@ const RoleList = () => {
   const [currentRoleId, setCurrentRoleId] = useState<string | null>(null);
   const [formData, setFormData] = useState(emptyForm);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  // Departments are the tier above roles: picking one here makes the role
+  // inherit that department's whole permission set on top of its own.
+  const [departments, setDepartments] = useState<any[]>([]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const handleMenuClick = (key: string, row: any) => {
@@ -55,6 +64,7 @@ const RoleList = () => {
         roleNameAr: row.NameAr || "",
         description: row.Description || "",
         status: !!row.status,
+        departmentId: row.DepartmentId || undefined,
       });
       setShowModal(true);
     } else if (key === "delete") {
@@ -129,6 +139,15 @@ const RoleList = () => {
           {row.IsSystem ? t("common:yes") : t("common:no")}
         </div>
       ),
+    },
+    {
+      name: t("roles.col.department"),
+      cell: (row: any) =>
+        row.DepartmentName ? (
+          <span style={{ fontSize: 13 }}>{row.DepartmentName}</span>
+        ) : (
+          <span className="text-muted">—</span>
+        ),
     },
     {
       name: t("common:status"),
@@ -242,6 +261,15 @@ const RoleList = () => {
           active: formData.status,
         };
         const res = await updateRole(currentRoleId, body);
+        // UpdateRoleRequest treats null as "leave unchanged", so it cannot
+        // express a detach — the dedicated endpoints do, and each recomputes
+        // only this role.
+        const before = roleData.find((r: any) => r?.id === currentRoleId)?.departmentId;
+        if (formData.departmentId && formData.departmentId !== before) {
+          await setRoleDepartment(currentRoleId, formData.departmentId);
+        } else if (!formData.departmentId && before) {
+          await clearRoleDepartment(currentRoleId);
+        }
         if (res?.data?.success || res?.status === 200) {
           toast.success(res?.data?.message || t("roles.toast.updated"));
           setShowModal(false);
@@ -259,6 +287,9 @@ const RoleList = () => {
           roleName: formData.roleName,
           roleNameAr: formData.roleNameAr,
           description: formData.description,
+          // Accepted on create, so the role holds the department's grants
+          // immediately rather than waiting for a later permission sync.
+          ...(formData.departmentId ? { departmentId: formData.departmentId } : {}),
         };
         const res = await saveRole(body);
         if (res?.data?.success || res?.status === 200 || res?.status === 201) {
@@ -292,6 +323,16 @@ const RoleList = () => {
     getRoleData();
   }, [page, pageSize, debouncedSearch]);
 
+  // Fetched once: the picker needs every department, not a page of them.
+  useEffect(() => {
+    getDepartments(0, 1000)
+      .then((res: any) => {
+        const rows = Array.isArray(res?.data?.data) ? res.data.data : [];
+        setDepartments(rows.filter((d: any) => d?.active !== false));
+      })
+      .catch(() => setDepartments([]));
+  }, []);
+
   const mappedData =
     roleData &&
     roleData?.map((item: any, index: number) => ({
@@ -303,6 +344,8 @@ const RoleList = () => {
       Description: item?.description,
       IsSystem: item?.system,
       status: item?.active,
+      DepartmentId: item?.departmentId,
+      DepartmentName: item?.departmentName,
       actions: item?.actions || [],
     }));
 
@@ -438,6 +481,27 @@ const RoleList = () => {
                     setFormData((prev) => ({ ...prev, description: e.target.value }))
                   }
                 />
+              </Form.Item>
+              <Form.Item label={t("roles.field.department")}>
+                <Select
+                  showSearch
+                  allowClear
+                  optionFilterProp="children"
+                  placeholder={t("roles.ph.department")}
+                  value={formData.departmentId}
+                  onChange={(value?: string) =>
+                    setFormData((prev) => ({ ...prev, departmentId: value || undefined }))
+                  }
+                >
+                  {departments.map((d: any) => (
+                    <Select.Option key={d.id} value={d.id}>
+                      {d.departmentName} ({d.departmentCode})
+                    </Select.Option>
+                  ))}
+                </Select>
+                <span className="text-muted" style={{ fontSize: 12 }}>
+                  {t("roles.hint.department")}
+                </span>
               </Form.Item>
               {selectedItem === "edit" && (
                 <Form.Item label={t("common:status")}>

@@ -350,20 +350,23 @@ export const DEPARTMENT_PERMISSIONS_MODULE = {
   SHOW_ASSIGNED: "show_assigned_department_permissions",
 };
 
+/**
+ * Department administration — identity-service module DEPARTMENT (V103).
+ *
+ * A department sits above roles and every role inside it inherits its whole
+ * permission set, so CREATE deliberately also covers the department's permission
+ * sync: creating a department and deciding what its roles inherit are the same
+ * administrative act, and splitting them would leave a holder able to create
+ * departments that could never be given any permissions.
+ */
 export const DEPARTMENT_PERMISSIONS = {
-  CREATE: "create_department",
-  EDIT: "edit_department",
-  DELETE: "delete_department",
-  SHOW: "show_department",
-  LIST: "list_department",
-  UPDATE_STATUS: "update_department_status",
-  SET_DEFAULT: "set_default_department",
-  MAKER_SUBMIT: "department.maker.submit",
-  MAKER_RESUBMIT: "department.maker.resubmit",
-  CHECKER_VERIFY: "department.checker.verify",
-  CHECKER_REJECT: "department.checker.reject",
-  APPROVER_APPROVE: "department.approver.approve",
-  APPROVER_REJECT: "department.approver.reject",
+  MODULE: "DEPARTMENT",
+  LIST: "DEPARTMENT_READ",
+  CREATE: "DEPARTMENT_CREATE",
+  /** Also authorizes `departments.permissions:create` — the permission sync. */
+  SYNC_PERMISSIONS: "DEPARTMENT_CREATE",
+  EDIT: "DEPARTMENT_UPDATE",
+  DELETE: "DEPARTMENT_DELETE",
 };
 
 // ============================================

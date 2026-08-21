@@ -29,6 +29,14 @@
 > subjects (`business_customer`, `business_partner`, `csa`, `head_of_accounts`, `developer`, `manager_admin`)
 > have no row in `roles`, so the admin role picker cannot list or assign them.
 >
+> **Update — Departments (V102–V103, 2026-08-20).** identity-service added a `DEPARTMENT` module:
+> `DEPARTMENT_READ`, `DEPARTMENT_CREATE`, `DEPARTMENT_UPDATE`, `DEPARTMENT_DELETE`. A department sits
+> above roles and every role inside it inherits its whole permission set, so a role's effective
+> permissions are `department ∪ role`, resolved server-side. `DEPARTMENT_CREATE` also authorizes the
+> department permission sync — creating a department and deciding what its roles inherit are the same
+> administrative act. The frontend implements this under Access Control Management; no codes were
+> requested by us for it.
+>
 > The sections below are the original request, kept for the rationale behind each code.
 
 **One document. Everything the frontend needs from the identity-service permission catalog.**

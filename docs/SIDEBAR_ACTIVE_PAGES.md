@@ -3,7 +3,7 @@
 Every menu entry the sidebar can render, with the permission that gates it. Commented-out entries are excluded.
 
 **Source:** [DashboardSideBar.tsx](../src/components/DashboardSideBar/DashboardSideBar.tsx)
-**Last re-audited:** 2026-08-17
+**Last re-audited:** 2026-08-20
 
 **Totals:** 24 top-level entries · 84 navigable pages · every one of them gated.
 
@@ -65,8 +65,10 @@ Block Codes                                 [BLOCK_CODE]
 ├── AML                                     [BLOCK_CODE_READ]
 ├── Anti-Fraud                              [BLOCK_CODE_READ]
 └── Sanction                                [BLOCK_CODE_READ]
-Access Control Management                   [ROLE | PERMISSION | EMPLOYEE]
+Access Control Management        [ROLE | PERMISSION | EMPLOYEE | DEPARTMENT]
 ├── Employees                               [EMPLOYEE]
+├── Departments                             [DEPARTMENT_READ]
+│   └── (per department) Permissions        [DEPARTMENT_READ]
 ├── Manage Roles                            [ROLE]
 └── Manage Permissions                      [PERMISSION]
 Send Money                                  [WALLET]

@@ -120,6 +120,8 @@ import ApplicationActivityLogs from "../components/Dashboard/ApplicationActivity
 import Employees from "../components/Settings/Employees";
 import RoleList from "../components/Settings/RoleList";
 import AssignPermissions from "../components/Settings/AssignPermissions";
+import Departments from "../components/Settings/Departments";
+import DepartmentPermissions from "../components/Settings/DepartmentPermissions";
 import AwnInfo from "../components/Settings/AwnInfo";
 import ComplianceRequirement from "../components/Settings/ComplianceRequirement";
 import BlockHistory from "../components/Settings/BlockHistory";
@@ -1314,6 +1316,17 @@ export const router = createBrowserRouter(
             {
               path: "/LOS/Setting/AssignPermissions",
               element: <AssignPermissions />,
+            },
+            {
+              path: "/LOS/Setting/Departments",
+              element: <Departments />,
+            },
+            {
+              // A department's own permission set. Saving it cascades to every
+              // role inside the department, so it gets its own screen rather
+              // than hiding behind a row action.
+              path: "/LOS/Setting/Departments/:departmentId/Permissions",
+              element: <DepartmentPermissions />,
             },
             {
               path: "/LOS/Settings/AwnInfo",

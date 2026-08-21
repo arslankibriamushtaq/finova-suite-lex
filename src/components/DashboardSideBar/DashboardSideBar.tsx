@@ -132,7 +132,8 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Anti-Fraud": "antiFraud",
   Sanction: "sanction",
   "Access Control Management": "accessControlManagement",
-  Employees: "employees",
+  Employees: "employees",
+  Departments: "departments",
   "Manage Roles": "manageRoles",
   "Manage Permissions": "managePermissions",
   "Send Money": "sendMoney",
@@ -2642,7 +2643,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
-    hasAccess(["ROLE", "PERMISSION", "EMPLOYEE"]) && {
+    hasAccess(["ROLE", "PERMISSION", "EMPLOYEE", "DEPARTMENT"]) && {
       label: "Access Control Management",
       Link: "/LOS/Setting/Employees",
       img: Images.SettingsIcon,
@@ -2654,6 +2655,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "Employees",
           LinkLable: "/LOS/Setting",
           active: pathname.includes("/LOS/Setting/Employees"),
+        },
+        hasAccess("DEPARTMENT_READ") && {
+          label: "Departments",
+          Link: "Departments",
+          LinkLable: "/LOS/Setting",
+          active: pathname.includes("/LOS/Setting/Departments"),
         },
         hasAccess("ROLE") && {
           label: "Manage Roles",
