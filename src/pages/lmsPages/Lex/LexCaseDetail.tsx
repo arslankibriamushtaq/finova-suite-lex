@@ -53,8 +53,20 @@ import {
   Field,
   PermissionDenied,
 } from "../../../components/shared/detailKit";
-import { TONES, formatDate, formatDateTime, formatMoney } from "../../../components/shared/detailKitUtils";
-import { LexNotice, LexPageHeader, LexStatusBadge, LexTile } from "../../../components/shared/lexKit";
+import {
+  TONES,
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
+import {
+  LexEmployerBadge,
+  LexNotice,
+  LexPageHeader,
+  LexStatusBadge,
+  LexTile,
+} from "../../../components/shared/lexKit";
 import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
@@ -437,20 +449,59 @@ const LexCaseDetail = () => {
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border/60 pt-4 sm:grid-cols-3 lg:grid-cols-5">
-          {/* Case open time, not application submission time — lending does not
-              send the submission date. */}
+          {/* The real submission time. `openedAt` is when LEX received the
+              referral and is always later — labelling one as the other
+              misstates how long the applicant has been waiting. */}
           <HeroField
-            label={t("ws.field.openedAt")}
-            value={formatDate(record?.openedAt)}
-            hint={t("ws.field.openedAtHint")}
+            label={t("ws.field.applicationDate")}
+            value={formatDate(info?.applicationSubmittedAt || record?.openedAt)}
+            hint={info?.applicationSubmittedAt ? undefined : t("ws.field.openedAtFallbackHint")}
+          />
+          <HeroField
+            label={t("ws.field.applicationDate")}
+            value={formatDate(info?.applicationSubmittedAt || record?.openedAt)}
+            hint={
+              info?.applicationSubmittedAt ? undefined : t("ws.field.openedAtFallbackHint")
+            }
           />
           <HeroField label={t("case.field.product")} value={info?.productName} />
-          <HeroField label={t("ws.field.sourcingChannel")} value={info?.sourceChannel} />
+          <HeroField
+            label={t("ws.field.sourcingChannel")}
+            value={info?.sourceChannel ? humanizeCode(info.sourceChannel) : undefined}
+            hint={t("ws.field.channelHint")}
+          />
           <HeroField
             label={t("ws.field.statusDate")}
             value={formatDate(record?.decision?.decidedAt || record?.openedAt)}
           />
           <HeroField label={t("ws.field.bureauScore")} value={info?.creditScore} />
+        </div>
+
+        <div className="mt-4 border-t border-border/60 pt-4">
+          <p className="m-0 mb-2 text-sm font-semibold text-foreground">{t("ws.employment")}</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <HeroField
+              label={t("dash.field.incomeSector")}
+              value={info?.incomeSector ? humanizeCode(info.incomeSector) : undefined}
+            />
+            <HeroField label={t("dash.field.employerName")} value={info?.employerName} />
+            <div className="pro-tile min-w-0">
+              <span className="pro-tile__label">{t("dash.field.employerCategory")}</span>
+              {/* Resolved by LEX against the Approved Employer List, not sent
+                  by lending. UNKNOWN means the check never ran and is styled
+                  apart from NOT_WHITELISTED — only the latter is grounds for
+                  declining. */}
+              <LexEmployerBadge category={info?.employerCategory} t={t} className="mt-1.5" />
+            </div>
+            <HeroField
+              label={t("dash.field.employmentVintage")}
+              value={
+                info?.employmentDurationMonths != null
+                  ? t("dash.months", { count: info.employmentDurationMonths })
+                  : undefined
+              }
+            />
+          </div>
         </div>
 
         <div className="mt-4 border-t border-border/60 pt-4">

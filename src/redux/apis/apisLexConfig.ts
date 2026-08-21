@@ -1,4 +1,5 @@
 import { lexConfigApi } from "../../utils/axiosLexService";
+import { getProductsList } from "./apisCrudProductManagement";
 import {
   clean,
   pageOf,
@@ -86,6 +87,167 @@ export const setAuthorityLevelActive = async (
   id: string,
   active: boolean
 ): Promise<LexAuthorityLevel> => unwrap(await lexConfigApi.put(`${LEVELS}/${id}`, { active }));
+
+/* ------------------------------------------------------------------ */
+/* Products — the LOS half of every scope                              */
+/* ------------------------------------------------------------------ */
+
+/** Just enough of a LOS product to fill a scope picker. */
+export interface LexScopeProduct {
+  id: string;
+  name: string;
+}
+
+/**
+ * The Product half of a scope, read from LOS (`product-service`).
+ *
+ * **LEX does not validate product ids** — the catalogue belongs to another
+ * service and this one deliberately does not reach into it. So this list is
+ * only ever the picker's options; a scope carrying an id LEX has never seen is
+ * accepted, which is why the picker matters more here than for sectors.
+ *
+ * The response shape is normalised defensively because it comes from outside
+ * LEX and is not covered by the LEX response envelope.
+ */
+export const getScopeProducts = async (): Promise<LexScopeProduct[]> => {
+  const response = await getProductsList();
+  const rows = findRows(response?.data);
+  if (!rows.length) return [];
+
+  return rows
+    .map((row) => {
+      const item = row as Record<string, unknown>;
+      const id = item.id ?? item.productId ?? item.uuid;
+      if (!id) return null;
+
+      // `product-service` names the column `nameEn` (and `name_en` on some
+      // payloads); the generic `name` is the fallback, not the first guess.
+      // Getting this order wrong is why the picker showed raw UUIDs.
+      const name = firstText(
+        item.nameEn,
+        item.name_en,
+        item.name,
+        item.productName,
+        item.displayName,
+        item.title,
+        item.nameAr,
+        item.name_ar
+      );
+
+      // Falling back to the id keeps the option selectable — a scope that
+      // already names this product must not vanish just because the catalogue
+      // stopped labelling it.
+      return { id: String(id), name: name ?? String(id) };
+    })
+    .filter((item): item is LexScopeProduct => item !== null);
+};
+
+/**
+ * The row array inside a response this service does not own.
+ *
+ * `product-service` has been seen wrapping its list as `data`, `data.data`,
+ * `data.content` and `data.data.content` depending on the endpoint. Rather than
+ * encode one of those and break on the next, this walks a bounded number of
+ * levels down the usual keys and takes the first array it finds.
+ */
+const findRows = (body: unknown, depth = 0): Record<string, unknown>[] => {
+  if (Array.isArray(body)) return body as Record<string, unknown>[];
+  if (!body || typeof body !== "object" || depth > 3) return [];
+
+  const node = body as Record<string, unknown>;
+  for (const key of ["data", "content", "items", "results", "products"]) {
+    const found = findRows(node[key], depth + 1);
+    if (found.length) return found;
+  }
+  return [];
+};
+
+/** The first value that is actually a non-blank string. */
+const firstText = (...values: unknown[]): string | undefined => {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return undefined;
+};
+
+/* ------------------------------------------------------------------ */
+/* Sectors — the other half of every scope                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Every scope in LEX is *Product + Sector*. **Product comes from LOS**
+ * (`product-service`); **Sector is governed here.**
+ *
+ * Like the authority ladder, the list is data and not an enum — a company that
+ * needs a seventh segment adds a row rather than waiting for a release. So
+ * nothing in the UI may hardcode a sector.
+ */
+export interface LexSector {
+  id: string;
+  /** Identity. Upper-cased, spaces to underscores, unique per company, immutable. */
+  code: string;
+  displayName: string;
+  displayNameAr?: string | null;
+  /** Render position in the pickers. */
+  ordinal: number;
+  active: boolean;
+}
+
+const SECTORS = "/api/v1/lex/config/sectors";
+
+/**
+ * Ascending by ordinal — what the Sector picker renders.
+ *
+ * **"All Sectors" is not in this array.** It is the wildcard (`sectorId: null`)
+ * and the picker adds it itself, exactly as it does for "All Products". Sending
+ * a literal id for it would name a sector that does not exist.
+ */
+export const getSectors = async (
+  params: { activeOnly?: boolean } = {}
+): Promise<LexSector[]> => unwrapList(await lexConfigApi.get(SECTORS, { params: clean(params) }));
+
+export const getSector = async (id: string): Promise<LexSector> =>
+  unwrap(await lexConfigApi.get(`${SECTORS}/${id}`));
+
+/** The platform catalogue, previewable without writing anything. */
+export const getSectorTemplates = async (): Promise<LexSector[]> =>
+  unwrapList(await lexConfigApi.get(`${SECTORS}/templates`));
+
+/**
+ * Copies the platform catalogue into this company. **Idempotent by code**, so
+ * re-running after the catalogue grows adds only the missing rows — which is
+ * why it is safe to offer even when nobody remembers whether it has been run.
+ */
+export const bootstrapSectors = async (): Promise<LexBootstrapResult> =>
+  unwrap(await lexConfigApi.post(`${SECTORS}/bootstrap`, {}));
+
+export const createSector = async (body: {
+  code: string;
+  displayName: string;
+  displayNameAr?: string;
+  ordinal: number;
+}): Promise<LexSector> => unwrap(await lexConfigApi.post(SECTORS, clean(body)));
+
+/** `code` is identity and is not sent on update — the form disables it. */
+export const updateSector = async (
+  id: string,
+  body: { displayName?: string; displayNameAr?: string; ordinal?: number; active?: boolean }
+): Promise<LexSector> => unwrap(await lexConfigApi.put(`${SECTORS}/${id}`, clean(body)));
+
+/**
+ * Deactivate, never delete: this hides the sector from new configuration
+ * without breaking the published scopes that already name it. There is no
+ * delete endpoint.
+ */
+export const setSectorActive = async (id: string, active: boolean): Promise<LexSector> =>
+  unwrap(await lexConfigApi.put(`${SECTORS}/${id}`, { active }));
+
+/**
+ * The code is normalised server-side; showing it as the admin types stops the
+ * saved value being a surprise.
+ */
+export const normalizeSectorCode = (raw: string) =>
+  raw.trim().toUpperCase().replace(/[\s-]+/g, "_");
 
 /* ------------------------------------------------------------------ */
 /* Reason Code processes                                               */

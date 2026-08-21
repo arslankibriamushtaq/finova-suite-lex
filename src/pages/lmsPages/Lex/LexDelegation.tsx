@@ -48,8 +48,10 @@ import { formatDateTime } from "../../../components/shared/detailKitUtils";
 import {
   LexNotice,
   LexPageHeader,
+  LexProductSelect,
   LexSearch,
   LexScope,
+  LexSectorSelect,
   LexStatusBadge,
   LexVersionTimeline,
 } from "../../../components/shared/lexKit";
@@ -63,6 +65,8 @@ import {
   archiveDelegationMatrix,
   cloneDelegationMatrix,
   createDelegationMatrix,
+  getScopeProducts,
+  getSectors,
   deleteDelegationDraft,
   getAuthorityLevels,
   getDelegationLineage,
@@ -75,6 +79,8 @@ import {
   type LexAuthorityLevel,
   type LexDelegationBand,
   type LexDelegationMatrix,
+  type LexScopeProduct,
+  type LexSector,
 } from "../../../redux/apis/apisLexConfig";
 
 /**
@@ -128,6 +134,15 @@ const LexDelegation = () => {
   const [busy, setBusy] = useState(false);
 
   const [editing, setEditing] = useState<LexDelegationMatrix | null>(null);
+  /**
+   * Scope: `null` on either half means "All". The pickers hold null rather than
+   * a sentinel id, because null is literally what the API wants — a wildcard is
+   * the absence of a scope, not a row named "All".
+   */
+  const [productId, setProductId] = useState<string | null>(null);
+  const [sectorId, setSectorId] = useState<string | null>(null);
+  const [products, setProducts] = useState<LexScopeProduct[]>([]);
+  const [sectors, setSectors] = useState<LexSector[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [policyParameter, setPolicyParameter] = useState(POLICY_PARAMETERS[0]);
   const [bands, setBands] = useState<LexDelegationBand[]>([]);
@@ -146,6 +161,10 @@ const LexDelegation = () => {
       "LEX.DELEGATION.NOT_PUBLISHED": t("doa.err.notPublished"),
       "LEX.DELEGATION.NOT_FOUND": t("doa.err.notFound"),
       "LEX.DELEGATION.INVALID": t("doa.err.invalid"),
+      // Raised on save when a scope names a sector this company does not have
+      // or one since deactivated. Unreachable if the picker is fresh — seeing
+      // it means the sector list is stale.
+      "LEX.SECTOR.UNKNOWN_SCOPE": t("sector.err.unknownScope"),
     }),
     [t]
   );
@@ -181,6 +200,17 @@ const LexDelegation = () => {
     getAuthorityLevels({ activeOnly: true })
       .then(setLevels)
       .catch(() => setLevels([]));
+
+    // Both halves of the scope are data. Sectors are governed in LEX; products
+    // come from LOS and LEX never validates them, so an empty picker here would
+    // leave the admin typing ids by hand — which is how a scope that matches
+    // nothing gets saved.
+    getSectors()
+      .then(setSectors)
+      .catch(() => setSectors([]));
+    getScopeProducts()
+      .then(setProducts)
+      .catch(() => setProducts([]));
   }, [canRead]);
 
   const problems = useMemo(
@@ -194,6 +224,8 @@ const LexDelegation = () => {
       setEditing(full);
       setPolicyParameter(full.policyParameter);
       setEffectiveDate(full.effectiveDate || "");
+      setProductId(full.productId ?? null);
+      setSectorId(full.sectorId ?? null);
       setBands([...(full.bands || [])].sort((a, b) => Number(a.minValue) - Number(b.minValue)));
       setOpenDraftId(null);
       setFormOpen(true);
@@ -211,6 +243,10 @@ const LexDelegation = () => {
     setEditing(null);
     setPolicyParameter(POLICY_PARAMETERS[0]);
     setEffectiveDate("");
+    // The widest scope is the safe default: All Products / All Sectors is the
+    // tier everything falls back to, and narrowing it is a deliberate choice.
+    setProductId(null);
+    setSectorId(null);
     setBands(
       levels.map((level) => ({ authorityLevelId: level.id, minValue: 0, maxValue: 0 }))
     );
@@ -234,6 +270,10 @@ const LexDelegation = () => {
     setBusy(true);
     try {
       const body = {
+        // null is meaningful here — it is the "All" wildcard — so it is sent
+        // rather than stripped.
+        productId,
+        sectorId,
         policyParameter,
         bands,
         effectiveDate: effectiveDate || undefined,
@@ -512,16 +552,31 @@ const LexDelegation = () => {
                   onChange={(e) => setEffectiveDate(e.target.value)}
                 />
               </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="doa-product">{t("doa.field.product")}</Label>
+                <LexProductSelect
+                  value={productId}
+                  onChange={setProductId}
+                  products={products}
+                  allProductsLabel={t("scope.allProducts")}
+                  disabled={readOnly}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="doa-sector">{t("doa.field.sector")}</Label>
+                {/* Options come from GET /config/sectors — nothing is
+                    hardcoded, and "All Sectors" is the wildcard the picker adds
+                    rather than a row in that list. */}
+                <LexSectorSelect
+                  value={sectorId}
+                  onChange={setSectorId}
+                  sectors={sectors}
+                  allSectorsLabel={t("scope.allSectors")}
+                  disabled={readOnly}
+                />
+              </div>
               <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <Label>{t("doa.field.scope")}</Label>
-                {/* Read-only, but it holds a real value — tint it like the
-                    other filled fields rather than like an empty input. */}
-                <div className="pro-tile flex h-10 items-center px-3 text-sm font-medium text-foreground">
-                  {editing?.scopeDescription ||
-                    `${editing?.productName || t("scope.allProducts")} / ${
-                      editing?.sectorName || t("scope.allSectors")
-                    }`}
-                </div>
+                <p className="m-0 text-xs text-muted-foreground">{t("doa.field.scopeHint")}</p>
               </div>
             </div>
 

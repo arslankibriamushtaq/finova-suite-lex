@@ -12,6 +12,59 @@ import { clean, pageOf, toServerPage, unwrap, type LexPage, type LexPageQuery } 
 
 const CASES = "/api/v1/lex/cases";
 
+/** Derived from the token's `azp` claim. Null when the client is unrecognised. */
+export type LexSourceChannel = "MOBILE_APP" | "WEB" | "PARTNER" | "BRANCH";
+
+/**
+ * The Approved Employer List verdict, resolved by LEX when the case opens —
+ * never taken from the application, because lending does not hold the list and
+ * an employer is delisted without any application changing.
+ *
+ * **`UNKNOWN` and `NOT_WHITELISTED` are different claims and must never look
+ * alike on screen.** One says the employer failed a check; the other says no
+ * check happened — no employer name, or the list was unreachable. Only the
+ * first is grounds for declining, so rendering `UNKNOWN` as "Non-Whitelisted"
+ * manufactures an adverse finding out of a lookup that never ran.
+ */
+export type LexEmployerCategory = "WHITELISTED" | "NOT_WHITELISTED" | "UNKNOWN";
+
+/**
+ * How to render an employer verdict: a tone, and the i18n key for its wording.
+ * Centralised so the three values cannot drift apart on one screen and merge on
+ * another.
+ *
+ * The lookup behind them is an **exact** name match, case- and
+ * whitespace-insensitive but deliberately not fuzzy: a near-match that silently
+ * cleared an unlisted employer would be an approval nothing supports. A spelling
+ * variant therefore reads NOT_WHITELISTED and the underwriter — already looking
+ * at the case — checks it. That is the cheap direction to be wrong in.
+ */
+export const EMPLOYER_CATEGORY: Record<
+  LexEmployerCategory,
+  { tone: "emerald" | "amber" | "slate"; labelKey: string; hintKey: string }
+> = {
+  WHITELISTED: {
+    tone: "emerald",
+    labelKey: "employer.whitelisted",
+    hintKey: "employer.whitelistedHint",
+  },
+  NOT_WHITELISTED: {
+    tone: "amber",
+    labelKey: "employer.notWhitelisted",
+    hintKey: "employer.notWhitelistedHint",
+  },
+  UNKNOWN: {
+    tone: "slate",
+    labelKey: "employer.unknown",
+    hintKey: "employer.unknownHint",
+  },
+};
+
+export const employerCategoryOf = (value?: string | null) =>
+  value && value in EMPLOYER_CATEGORY
+    ? EMPLOYER_CATEGORY[value as LexEmployerCategory]
+    : undefined;
+
 /**
  * The lifecycle. `WITH_SOURCE` is the older spelling of `AWAITING_SOURCE` and is
  * kept so a case created before the rename still renders — the server emits
@@ -47,11 +100,32 @@ export interface LexCaseSummary {
 
   productId?: string | null;
   productName?: string | null;
+  /**
+   * Still null everywhere: sector does not exist in product-service, so there
+   * is nothing upstream to relay and every sector-scoped rule resolves at the
+   * "All Sectors" level. The one genuine gap left in this group.
+   */
   sectorId?: string | null;
   sectorName?: string | null;
-  /** The agent or channel partner that sourced it. */
+  /** The agent who sourced it. **Null means self-service**, not missing data. */
   salesId?: string | null;
-  sourceChannel?: string | null;
+  /**
+   * Derived from the token's `azp` claim — the OAuth client that presented it —
+   * because that is a fact the caller cannot misreport. An unrecognised client
+   * yields null, never a default: "unknown" is a true answer and "Web" would
+   * not be, and a source referral has to go back to the channel that can
+   * actually reach the customer.
+   */
+  sourceChannel?: LexSourceChannel | string | null;
+
+  /** From customer-service, relayed by lending. */
+  employerName?: string | null;
+  /** `employmentType` upstream — GOVERNMENT, PRIVATE, … */
+  incomeSector?: string | null;
+  /** The "employment vintage" figure. */
+  employmentDurationMonths?: number | null;
+  /** Resolved by LEX against the Approved Employer List — see `EMPLOYER_CATEGORY`. */
+  employerCategory?: LexEmployerCategory | string | null;
 
   requestedAmount?: number | null;
   requestedTenureMonths?: number | null;
@@ -156,9 +230,20 @@ export interface LexApplicationInfo {
   applicantName?: string;
   productId?: string | null;
   productName?: string | null;
+  /** Still null: sector does not exist upstream. See `LexCaseSummary.sectorId`. */
   sectorId?: string | null;
   sectorName?: string | null;
-  sourceChannel?: string;
+  sourceChannel?: LexSourceChannel | string | null;
+  /**
+   * When the customer actually submitted. **Distinct from the case's
+   * `openedAt`**, which is when LEX received the referral and is always later —
+   * labelling one as the other misstates how long the applicant has waited.
+   */
+  applicationSubmittedAt?: string | null;
+  employerName?: string | null;
+  incomeSector?: string | null;
+  employmentDurationMonths?: number | null;
+  employerCategory?: LexEmployerCategory | string | null;
   requestedAmount?: number | null;
   requestedTenureMonths?: number | null;
   monthlyInstallment?: number | null;

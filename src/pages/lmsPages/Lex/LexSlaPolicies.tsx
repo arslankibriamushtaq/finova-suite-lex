@@ -48,8 +48,10 @@ import { formatDateTime } from "../../../components/shared/detailKitUtils";
 import {
   LexNotice,
   LexPageHeader,
+  LexProductSelect,
   LexSearch,
   LexScope,
+  LexSectorSelect,
   LexStatusBadge,
   LexVersionTimeline,
 } from "../../../components/shared/lexKit";
@@ -65,6 +67,8 @@ import {
   formatMinutes,
   getSlaLineage,
   getSlaPolicies,
+  getScopeProducts,
+  getSectors,
   getSlaPolicy,
   hoursToMinutes,
   minutesToHours,
@@ -72,6 +76,8 @@ import {
   resolveThresholds,
   slaPercentProblem,
   updateSlaPolicy,
+  type LexScopeProduct,
+  type LexSector,
   type LexSlaPolicy,
   type LexSlaStage,
 } from "../../../redux/apis/apisLexConfig";
@@ -175,6 +181,10 @@ const LexSlaPolicies = () => {
       "LEX.SLA.NOT_PUBLISHED": t("sla.err.notPublished"),
       "LEX.SLA.NOT_FOUND": t("sla.err.notFound"),
       "LEX.SLA.INVALID": t("sla.err.invalid"),
+      // Raised on save when a scope names a sector this company does not have
+      // or one since deactivated. Unreachable if the picker is fresh — seeing
+      // it means the sector list is stale.
+      "LEX.SECTOR.UNKNOWN_SCOPE": t("sector.err.unknownScope"),
     }),
     [t]
   );
@@ -195,10 +205,28 @@ const LexSlaPolicies = () => {
     }
   };
 
+  /** Scope: `null` on either half is the "All" wildcard the API expects. */
+  const [productId, setProductId] = useState<string | null>(null);
+  const [sectorId, setSectorId] = useState<string | null>(null);
+  const [products, setProducts] = useState<LexScopeProduct[]>([]);
+  const [sectors, setSectors] = useState<LexSector[]>([]);
+
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, status]);
+
+  // Both halves of the scope are data: sectors are governed in LEX, products
+  // come from LOS. Neither may be hardcoded.
+  useEffect(() => {
+    if (!canRead) return;
+    getSectors()
+      .then(setSectors)
+      .catch(() => setSectors([]));
+    getScopeProducts()
+      .then(setProducts)
+      .catch(() => setProducts([]));
+  }, [canRead]);
 
   const editable = !editing || isEditable(editing);
   const readOnly = !editable || !canWrite;
@@ -208,6 +236,8 @@ const LexSlaPolicies = () => {
       const full = await getSlaPolicy(row.id);
       setEditing(full);
       setPolicyName(full.policyName || "");
+      setProductId(full.productId ?? null);
+      setSectorId(full.sectorId ?? null);
       setStages([...(full.stages || [])].sort((a, b) => a.ordinal - b.ordinal));
       setNearBreachPercent(full.nearBreachPercent ?? 75);
       setCriticalBreachPercent(full.criticalBreachPercent ?? 90);
@@ -221,6 +251,9 @@ const LexSlaPolicies = () => {
   const openNew = () => {
     setEditing(null);
     setPolicyName("");
+    // The widest scope is the safe default; narrowing it is a deliberate act.
+    setProductId(null);
+    setSectorId(null);
     setStages([]);
     setNearBreachPercent(75);
     setCriticalBreachPercent(90);
@@ -242,6 +275,9 @@ const LexSlaPolicies = () => {
     setBusy(true);
     try {
       const body = {
+        // null is meaningful — it is the "All" wildcard — so it is sent.
+        productId,
+        sectorId,
         policyName: policyName.trim(),
         // Ordinals are contiguous and reflect the order on screen.
         stages: stages.map((stage, index) => ({ ...stage, ordinal: index + 1 })),
@@ -518,6 +554,31 @@ const LexSlaPolicies = () => {
                 disabled={readOnly}
                 onChange={(e) => setPolicyName(e.target.value)}
               />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="sla-product">{t("doa.field.product")}</Label>
+              <LexProductSelect
+                value={productId}
+                onChange={setProductId}
+                products={products}
+                allProductsLabel={t("scope.allProducts")}
+                disabled={readOnly}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="sla-sector">{t("doa.field.sector")}</Label>
+              {/* Options come from GET /config/sectors; "All Sectors" is the
+                  wildcard the picker adds, never a row in that list. */}
+              <LexSectorSelect
+                value={sectorId}
+                onChange={setSectorId}
+                sectors={sectors}
+                allSectorsLabel={t("scope.allSectors")}
+                disabled={readOnly}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <p className="m-0 text-xs text-muted-foreground">{t("doa.field.scopeHint")}</p>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="sla-effective">{t("sla.field.effectiveDate")}</Label>

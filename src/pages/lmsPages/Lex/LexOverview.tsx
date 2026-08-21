@@ -31,8 +31,14 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
-import { TONES, formatDate, formatMoney } from "../../../components/shared/detailKitUtils";
 import {
+  TONES,
+  formatDate,
+  formatMoney,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
+import {
+  LexEmployerBadge,
   LexMetricTile,
   LexNotice,
   LexPageHeader,
@@ -126,9 +132,32 @@ const ExpandedRow = ({ data: row }: { data: LexCaseSummary }) => {
           )}
         </div>
       </div>
-      <p className="m-0 text-xs text-muted-foreground sm:col-span-2 lg:col-span-4">
-        {t("dash.employmentGap")}
-      </p>
+      {/* Employment. Resolved end to end now: name, sector and vintage come
+          from customer-service via lending; the category is LEX's own lookup
+          against the Approved Employer List. */}
+      <div className="grid grid-cols-1 gap-4 border-t border-border/60 pt-3 sm:col-span-2 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-4">
+        <ExpandedField
+          label={t("dash.field.incomeSector")}
+          value={row.incomeSector ? humanizeCode(row.incomeSector) : undefined}
+        />
+        <ExpandedField label={t("dash.field.employerName")} value={row.employerName} />
+        <div className="min-w-0">
+          <span className="mb-1 block text-xs text-muted-foreground">
+            {t("dash.field.employerCategory")}
+          </span>
+          {/* UNKNOWN means nobody ran the check. It is never rendered as
+              "Non-Whitelisted" — only a failed check is grounds for declining. */}
+          <LexEmployerBadge category={row.employerCategory} t={t} />
+        </div>
+        <ExpandedField
+          label={t("dash.field.employmentVintage")}
+          value={
+            row.employmentDurationMonths != null
+              ? t("dash.months", { count: row.employmentDurationMonths })
+              : undefined
+          }
+        />
+      </div>
     </div>
   );
 };
@@ -216,13 +245,14 @@ const LexOverview = () => {
       width: "150px",
     },
     {
-      // Always the constant "loan-origination": mobile and web are
-      // indistinguishable to lending. "App" or "Branch" would be fabricated.
+      // Derived from the token's OAuth client, so a caller cannot misreport
+      // it. Null when the client is unrecognised — "unknown" is a true
+      // answer and a default would not be.
       name: t("dash.col.channel"),
       cell: (row: LexCaseSummary) =>
         row.sourceChannel ? (
           <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
-            {row.sourceChannel}
+            {humanizeCode(row.sourceChannel)}
           </Badge>
         ) : (
           <span>—</span>
@@ -238,10 +268,17 @@ const LexOverview = () => {
       width: "150px",
     },
     {
-      // lending never sends salesId — it is not one of the nineteen fields on
-      // the evaluation contract.
+      // Null is the true answer for a self-service application, not a
+      // missing value.
       name: t("dash.col.salesId"),
-      cell: (row: LexCaseSummary) => <span>{row.salesId || "—"}</span>,
+      cell: (row: LexCaseSummary) =>
+        row.salesId ? (
+          <span>{row.salesId}</span>
+        ) : (
+          <span className="text-muted-foreground" title={t("dash.selfServiceHint")}>
+            {t("dash.selfService")}
+          </span>
+        ),
       width: "120px",
     },
     {
@@ -467,6 +504,7 @@ const LexOverview = () => {
             expandableRows
             expandableRowsComponent={ExpandedRow}
           />
+
         )}
       </div>
     </div>
