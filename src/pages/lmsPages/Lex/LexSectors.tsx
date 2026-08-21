@@ -1,13 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Layers, PackagePlus, Pencil, RefreshCw } from "lucide-react";
+import {
+  ChevronDown,
+  Layers,
+  PackagePlus,
+  Pencil,
+  RefreshCw,
+} from "lucide-react";
 
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Switch } from "../../../components/ui/switch";
+import TableView from "../../../components/TableView/TableView";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +31,7 @@ import {
 } from "../../../components/ui/dialog";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES } from "../../../components/shared/detailKitUtils";
-import { LexNotice, LexPageHeader } from "../../../components/shared/lexKit";
+import { LexNotice, LexPageHeader, LexSearch } from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { lexErrorMessage, logForbidden } from "../../../redux/apis/apisLexCore";
@@ -49,6 +62,9 @@ import {
  *   breaking the published scopes that already name it, and there is no delete
  *   endpoint to call.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexSectors = () => {
   const { t } = useTranslation("lex");
   const { can } = useLexAccess();
@@ -59,6 +75,9 @@ const LexSectors = () => {
   const [sectors, setSectors] = useState<LexSector[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<LexSector | null>(null);
@@ -184,20 +203,132 @@ const LexSectors = () => {
 
   if (!canRead) return <PermissionDenied />;
 
+  const headers = [
+    {
+      name: t("sector.col.ordinal"),
+      cell: (row: LexSector) => <span>{row.ordinal}</span>,
+      width: "100px",
+    },
+    {
+      name: t("sector.col.code"),
+      cell: (row: LexSector) => <span className="font-mono text-xs">{row.code}</span>,
+      width: "180px",
+    },
+    {
+      name: t("sector.col.name"),
+      cell: (row: LexSector) => <span>{row.displayName}</span>,
+    },
+    {
+      name: t("sector.col.nameAr"),
+      // Arabic regardless of the interface language: it is the Arabic name,
+      // not a translation of the row.
+      cell: (row: LexSector) => <span dir="rtl">{row.displayNameAr || "—"}</span>,
+      width: "200px",
+    },
+    {
+      // The switch is both the state and the control. A badge beside it would
+      // say the same thing twice.
+      name: t("sector.col.active"),
+      cell: (row: LexSector) =>
+        canWrite ? (
+          <Switch
+            checked={row.active}
+            disabled={busy}
+            onCheckedChange={() => onToggleActive(row)}
+            aria-label={t("sector.col.active")}
+          />
+        ) : (
+          <Badge
+            variant="outline"
+            className={`border font-medium ${row.active ? TONES.emerald : TONES.slate}`}
+          >
+            {t(row.active ? "sector.active" : "sector.inactive")}
+          </Badge>
+        ),
+      width: "120px",
+    },
+    ...(canWrite
+      ? [
+          {
+            name: t("common:actions"),
+            // Stops the row's own click handling from firing as the menu opens.
+            cell: (row: LexSector) => (
+              <div
+                className="relative inline-block"
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className={SELECT_TRIGGER_CLS}>
+                      {t("common:select")}
+                      <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        openEdit(row);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      {t("common:edit")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ),
+            width: "120px",
+          },
+        ]
+      : []),
+  ];
+
+  // Every sector arrives in one response, so this narrows the whole list.
+  const needle = search.trim().toLowerCase();
+  const filtered = needle
+    ? sectors.filter((row) =>
+        [row.code, row.displayName, row.displayNameAr]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(needle))
+      )
+    : sectors;
+
+  const totalRows = filtered.length;
+  const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, totalRows);
+  const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
   return (
     <div className="service">
-      <LexPageHeader icon={Layers} title={t("sector.title")} subtitle={t("sector.subtitle")}>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-        {canWrite && sectors.length > 0 && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={openCreate} disabled={busy}>
-            <PackagePlus className="h-4 w-4" />
-            {t("sector.add")}
-          </Button>
-        )}
-      </LexPageHeader>
+      <LexPageHeader icon={Layers} title={t("sector.title")} subtitle={t("sector.subtitle")} />
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="sector-search"
+            className="flex-1"
+            value={search}
+            onChange={(next) => {
+              setSearch(next);
+              setPage(1);
+            }}
+            placeholder={t("sector.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+            {canWrite && sectors.length > 0 && (
+              <Button className="wallet-brand-btn gap-2" onClick={openCreate} disabled={busy}>
+                <PackagePlus className="h-4 w-4" />
+                {t("sector.add")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* "All Sectors" is the wildcard, not a row. Said here because the first
           thing an admin looks for in this list is the option they see in the
@@ -220,67 +351,25 @@ const LexSectors = () => {
           )}
         </div>
       ) : (
-        <div className="pro-card overflow-x-auto">
-          <table className="w-full min-w-[720px] border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                {["sector.col.ordinal", "sector.col.code", "sector.col.name", "sector.col.nameAr", "sector.col.active"].map(
-                  (key) => (
-                    <th
-                      key={key}
-                      className="px-3 py-2 text-start text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
-                    >
-                      {t(key)}
-                    </th>
-                  )
-                )}
-                <th className="px-3 py-2 text-start text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  {t("common:actions")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sectors.map((sector) => (
-                <tr key={sector.id} className="border-b border-border/60 last:border-b-0">
-                  <td className="px-3 py-2.5">{sector.ordinal}</td>
-                  <td className="px-3 py-2.5 font-mono text-xs">{sector.code}</td>
-                  <td className="px-3 py-2.5">{sector.displayName}</td>
-                  <td className="px-3 py-2.5" dir="rtl">
-                    {sector.displayNameAr || "—"}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <Badge
-                      variant="outline"
-                      className={`border font-medium ${sector.active ? TONES.emerald : TONES.slate}`}
-                    >
-                      {t(sector.active ? "sector.active" : "sector.inactive")}
-                    </Badge>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    {canWrite && (
-                      <div className="flex items-center gap-3">
-                        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => openEdit(sector)}>
-                          <Pencil className="h-3.5 w-3.5" />
-                          {t("common:edit")}
-                        </Button>
-                        {/* Deactivate, never delete — published scopes still
-                            name this sector and must stay explainable. */}
-                        <Switch
-                          checked={sector.active}
-                          disabled={busy}
-                          onCheckedChange={() => onToggleActive(sector)}
-                          aria-label={t("sector.col.active")}
-                        />
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="pro-card">
+          <TableView
+            header={headers}
+            data={pageRows}
+            totalRows={totalRows}
+            isLoading={isLoading}
+            from={from}
+            to={to}
+            page={page}
+            totalPage={Math.ceil(totalRows / pageSize) || 1}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={(size: number) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
         </div>
       )}
-
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
         <DialogContent className="pro-dialog sm:max-w-lg">
           <DialogHeader className="text-start">
@@ -301,9 +390,6 @@ const LexSectors = () => {
                 disabled={!!editing}
                 onChange={(e) => setCode(e.target.value)}
               />
-              <p className="m-0 text-xs text-muted-foreground">
-                {t(editing ? "sector.field.codeLocked" : "sector.field.codeHint")}
-              </p>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -337,7 +423,6 @@ const LexSectors = () => {
                 value={ordinal}
                 onChange={(e) => setOrdinal(e.target.value)}
               />
-              <p className="m-0 text-xs text-muted-foreground">{t("sector.field.ordinalHint")}</p>
             </div>
           </div>
 
