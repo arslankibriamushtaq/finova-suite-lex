@@ -444,6 +444,27 @@ const RoleList = () => {
         >
           <div className="Ente-details">
             <Form layout="vertical">
+              <Form.Item label={t("roles.field.department")}>
+                <Select
+                  showSearch
+                  allowClear
+                  optionFilterProp="children"
+                  placeholder={t("roles.ph.department")}
+                  value={formData.departmentId}
+                  onChange={(value?: string) =>
+                    setFormData((prev) => ({ ...prev, departmentId: value || undefined }))
+                  }
+                >
+                  {departments.map((d: any) => (
+                    <Select.Option key={d.id} value={d.id}>
+                      {d.departmentName} ({d.departmentCode})
+                    </Select.Option>
+                  ))}
+                </Select>
+                <span className="text-muted" style={{ fontSize: 12 }}>
+                  {t("roles.hint.department")}
+                </span>
+              </Form.Item>
               <Form.Item label={t("roles.field.roleCode")}>
                 <Input
                   placeholder={t("roles.ph.roleCode")}
@@ -481,27 +502,6 @@ const RoleList = () => {
                     setFormData((prev) => ({ ...prev, description: e.target.value }))
                   }
                 />
-              </Form.Item>
-              <Form.Item label={t("roles.field.department")}>
-                <Select
-                  showSearch
-                  allowClear
-                  optionFilterProp="children"
-                  placeholder={t("roles.ph.department")}
-                  value={formData.departmentId}
-                  onChange={(value?: string) =>
-                    setFormData((prev) => ({ ...prev, departmentId: value || undefined }))
-                  }
-                >
-                  {departments.map((d: any) => (
-                    <Select.Option key={d.id} value={d.id}>
-                      {d.departmentName} ({d.departmentCode})
-                    </Select.Option>
-                  ))}
-                </Select>
-                <span className="text-muted" style={{ fontSize: 12 }}>
-                  {t("roles.hint.department")}
-                </span>
               </Form.Item>
               {selectedItem === "edit" && (
                 <Form.Item label={t("common:status")}>
