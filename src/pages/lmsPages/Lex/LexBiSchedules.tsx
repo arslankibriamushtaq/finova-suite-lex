@@ -1,9 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { CalendarClock, Pause, Play, Plus, RefreshCw, Send, Trash2 } from "lucide-react";
+import {
+  CalendarClock,
+  ChevronDown,
+  Pause,
+  Play,
+  Plus,
+  RefreshCw,
+  Send,
+  Trash2,
+} from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -25,7 +40,12 @@ import {
 } from "../../../components/ui/dialog";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils";
-import { LexNotice, LexPageHeader, LexStatusBadge } from "../../../components/shared/lexKit";
+import {
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+  LexStatusBadge,
+} from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { lexErrorMessage, logForbidden } from "../../../redux/apis/apisLexCore";
@@ -58,6 +78,9 @@ const DAYS_OF_WEEK = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "S
  *   February entirely, and a monthly report that silently misses a month is
  *   worse than one that runs three days early.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexBiSchedules = () => {
   const { t } = useTranslation("lex");
   // Ungated while the LEX permission codes are unregistered — see useLexAccess.
@@ -71,6 +94,8 @@ const LexBiSchedules = () => {
   const [busy, setBusy] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState("");
+  const [pendingDelete, setPendingDelete] = useState<LexSchedule | null>(null);
 
   const [formOpen, setFormOpen] = useState(false);
   const [targetKind, setTargetKind] = useState<"STANDARD" | "SAVED">("STANDARD");
@@ -192,11 +217,14 @@ const LexBiSchedules = () => {
     }
   };
 
+  // A schedule is not recoverable once removed, and the trigger used to be an
+  // unlabelled glyph, so this asks first.
   const onDelete = async (schedule: LexSchedule) => {
     setBusy(true);
     try {
       await deleteSchedule(schedule.id);
       toast.success(t("sch.toast.deleted"));
+      setPendingDelete(null);
       load();
     } catch (error) {
       toast.error(lexErrorMessage(error, t("sch.toast.deleteFailed"), errorsByCode));
@@ -279,37 +307,53 @@ const LexBiSchedules = () => {
       ? [
           {
             name: t("common:actions"),
+            // Stops the row's own click handling from firing as the menu opens.
             cell: (row: LexSchedule) => (
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  title={row.active ? t("sch.pause") : t("sch.resume")}
-                  onClick={() => onToggle(row)}
-                >
-                  {row.active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  title={t("sch.runNow")}
-                  disabled={busy}
-                  onClick={() => onRunNow(row)}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  title={t("common:delete")}
-                  disabled={busy}
-                  onClick={() => onDelete(row)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <div
+                className="relative inline-block"
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className={SELECT_TRIGGER_CLS}>
+                      {t("common:select")}
+                      <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        onToggle(row);
+                      }}
+                    >
+                      {row.active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {row.active ? t("sch.pause") : t("sch.resume")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        onRunNow(row);
+                      }}
+                    >
+                      <Send className="h-4 w-4" />
+                      {t("sch.runNow")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setPendingDelete(row);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {t("common:delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ),
-            width: "150px",
+            width: "120px",
           },
         ]
       : []),
@@ -317,27 +361,54 @@ const LexBiSchedules = () => {
 
   if (!canRead) return <PermissionDenied />;
 
-  const totalRows = schedules.length;
+  // The endpoint returns every schedule in one response, so this narrows the
+  // whole set rather than the page on screen.
+  const needle = search.trim().toLowerCase();
+  const filtered = needle
+    ? schedules.filter((row) =>
+        [row.reportName, row.reportKey, row.frequency, row.format, ...(row.recipients || [])]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(needle))
+      )
+    : schedules;
+
+  const totalRows = filtered.length;
   const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalRows);
-  const pageRows = schedules.slice((page - 1) * pageSize, page * pageSize);
+  const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   const targetOptions = targetKind === "STANDARD" ? standardKeys : savedReports;
 
   return (
     <div className="service">
-      <LexPageHeader icon={CalendarClock} title={t("sch.title")} subtitle={t("sch.subtitle")}>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
+      <LexPageHeader icon={CalendarClock} title={t("sch.title")} subtitle={t("sch.subtitle")} />
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="sch-search"
+            className="flex-1"
+            value={search}
+            onChange={(next) => {
+              setSearch(next);
+              setPage(1);
+            }}
+            placeholder={t("sch.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
           <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
           {t("common:refresh")}
         </Button>
         {canWrite && (
-          <Button className="wallet-brand-btn h-10 gap-2" onClick={() => setFormOpen(true)}>
+          <Button className="wallet-brand-btn gap-2" onClick={() => setFormOpen(true)}>
             <Plus className="h-4 w-4" />
             {t("sch.new")}
           </Button>
         )}
-      </LexPageHeader>
+          </div>
+        </div>
+      </div>
 
       {schedules.some((s) => s.lastRunStatus === "FAILED") && (
         <LexNotice tone="amber">{t("sch.failedNote")}</LexNotice>
@@ -366,6 +437,30 @@ const LexBiSchedules = () => {
         )}
       </div>
 
+      <Dialog open={!!pendingDelete} onOpenChange={(open) => !open && setPendingDelete(null)}>
+        <DialogContent className="pro-dialog confirm-dialog sm:max-w-md">
+          <DialogHeader className="text-start">
+            <DialogTitle>{t("sch.deleteConfirm.title")}</DialogTitle>
+            <DialogDescription>
+              {t("sch.deleteConfirm.body", {
+                name: pendingDelete?.reportName || pendingDelete?.reportKey || "",
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-end">
+            <Button variant="ghost" onClick={() => setPendingDelete(null)} disabled={busy}>
+              {t("common:cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={busy}
+              onClick={() => pendingDelete && onDelete(pendingDelete)}
+            >
+              {t("common:delete")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="pro-dialog sm:max-w-lg">
           <DialogHeader className="text-start">

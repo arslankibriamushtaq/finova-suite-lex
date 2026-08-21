@@ -9,6 +9,7 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { PermissionDenied } from "../../../components/shared/detailKit";
 import { LexNotice, LexPageHeader } from "../../../components/shared/lexKit";
+import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { lexErrorMessage, logForbidden } from "../../../redux/apis/apisLexCore";
@@ -49,9 +50,13 @@ const OptionGrid = ({
           type="button"
           disabled={disabled}
           onClick={() => onSelect(option)}
-          className={`rounded-lg border p-3 text-start transition-colors ${
-            value === option ? "border-emerald-500 bg-emerald-500/5" : "border-border bg-card"
-          } ${disabled ? "cursor-not-allowed opacity-60" : "hover:bg-muted/40"}`}
+          className={cn(
+            "pro-tile text-start transition-colors",
+            value === option
+              ? "border-emerald-500 ring-1 ring-emerald-500/30"
+              : "hover:border-emerald-500/40",
+            disabled && "cursor-not-allowed opacity-60"
+          )}
         >
           <span className="flex items-center gap-2 text-sm font-medium text-foreground">
             {disabled && <Ban className="h-3.5 w-3.5" />}
@@ -83,9 +88,13 @@ const DataSourceGrid = ({
         type="button"
         disabled={!option.available}
         onClick={() => onSelect(option.value)}
-        className={`rounded-lg border p-3 text-start transition-colors ${
-          value === option.value ? "border-emerald-500 bg-emerald-500/5" : "border-border bg-card"
-        } ${option.available ? "hover:bg-muted/40" : "cursor-not-allowed opacity-60"}`}
+        className={cn(
+          "pro-tile text-start transition-colors",
+          value === option.value
+            ? "border-emerald-500 ring-1 ring-emerald-500/30"
+            : "hover:border-emerald-500/40",
+          !option.available && "cursor-not-allowed opacity-60"
+        )}
       >
         <span className="flex items-center gap-2 text-sm font-medium text-foreground">
           {!option.available && <Ban className="h-3.5 w-3.5" />}
@@ -229,30 +238,51 @@ const LexBiBuilder = () => {
   return (
     <div className="service">
       <LexPageHeader icon={Wand2} title={t("bi.builderTitle")} subtitle={t("bi.builderSubtitle")}>
-        <Button variant="ghost" className="h-10 gap-2" onClick={() => navigate("/LOS/Lex/Bi")}>
-          <ArrowLeft className="h-4 w-4" />
-          {t("common:back")}
+        <Button variant="outline" className="gap-2" onClick={() => navigate("/LOS/Lex/Bi")}>
+          <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+          {t("bi.backToGallery")}
         </Button>
       </LexPageHeader>
 
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        {STEPS.map((label, index) => (
-          <button
-            key={label}
-            type="button"
-            onClick={() => setStep(index + 1)}
-            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs ${
-              step === index + 1
-                ? "bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20"
-                : "text-muted-foreground"
-            }`}
-          >
-            <span className="font-semibold">{index + 1}</span>
-            {label}
-            {step > index + 1 && <Check className="h-3 w-3" />}
-          </button>
-        ))}
-      </div>
+      <ol className="pro-card mb-3 flex list-none items-center gap-2 p-3">
+        {STEPS.map((label, index) => {
+          const number = index + 1;
+          const done = step > number;
+          const current = step === number;
+          return (
+            <li key={label} className="flex min-w-0 flex-1 items-center gap-2 last:flex-none">
+              <button
+                type="button"
+                aria-current={current ? "step" : undefined}
+                onClick={() => setStep(number)}
+                className="flex min-w-0 items-center gap-2 rounded-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <span
+                  className={cn(
+                    "flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
+                    done || current
+                      ? "bg-emerald-500 text-white"
+                      : "bg-muted text-muted-foreground ring-1 ring-border"
+                  )}
+                >
+                  {done ? <Check className="h-3.5 w-3.5" /> : number}
+                </span>
+                <span
+                  className={cn(
+                    "truncate text-xs",
+                    current ? "font-semibold text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {label}
+                </span>
+              </button>
+              {number < STEPS.length && (
+                <span aria-hidden className="h-px min-w-4 flex-1 bg-border" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
 
       <div className="pro-card p-4">
         {step === 1 && (

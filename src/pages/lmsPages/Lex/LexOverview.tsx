@@ -3,8 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
+  Activity,
   ChevronDown,
-  ChevronRight,
+  Eye,
   HelpCircle,
   Inbox,
   LayoutDashboard,
@@ -12,8 +13,16 @@ import {
   RefreshCw,
 } from "lucide-react";
 
+import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Button } from "../../../components/ui/button";
+import { Label } from "../../../components/ui/label";
 import {
   Select,
   SelectContent,
@@ -31,7 +40,6 @@ import {
   LexStatusBadge,
   LexUnavailableFilter,
 } from "../../../components/shared/lexKit";
-import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { emptyPage, lexErrorMessage, logForbidden, type LexPage } from "../../../redux/apis/apisLexCore";
@@ -69,6 +77,61 @@ const SLA_TONE: Record<string, string> = {
  * read as measured, because it sits beside eight figures that are. The tiles
  * below are the eight `/counts` actually answers.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
+/**
+ * The row already carries every one of these, so expanding costs no second
+ * call. Rendered by DataTable beneath its row.
+ */
+const ExpandedRow = ({ data: row }: { data: LexCaseSummary }) => {
+  const { t } = useTranslation("lex");
+  return (
+    <div className="grid grid-cols-1 gap-4 px-4 py-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ExpandedField
+        label={t("case.field.requestedAmount")}
+        value={row.requestedAmount != null ? formatMoney(row.requestedAmount) : undefined}
+      />
+      <ExpandedField
+        label={t("dash.field.incomeAndDbr")}
+        value={
+          [
+            row.monthlyInstallment != null ? formatMoney(row.monthlyInstallment) : null,
+            row.dbr != null ? `DBR ${row.dbr}%` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ") || undefined
+        }
+      />
+      <ExpandedField label={t("dash.field.creditScore")} value={row.creditScore} />
+      <div className="min-w-0">
+        <span className="mb-1 block text-xs text-muted-foreground">
+          {t("dash.field.referralReason")}
+        </span>
+        {/* Title and severity are null when the code is unrecognized. Show the
+            code itself and mark the row as needing configuration — a blank
+            cell says nothing at all. */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge
+            variant="outline"
+            className={`border font-medium ${row.hasUnrecognizedCode ? TONES.amber : TONES.sky}`}
+          >
+            {row.drivingReasonTitle || row.drivingReasonCode || "—"}
+          </Badge>
+          {row.hasUnrecognizedCode && (
+            <Badge variant="outline" className={`border gap-1 font-medium ${TONES.amber}`}>
+              <HelpCircle className="h-3 w-3" />
+              {t("case.unrecognized")}
+            </Badge>
+          )}
+        </div>
+      </div>
+      <p className="m-0 text-xs text-muted-foreground sm:col-span-2 lg:col-span-4">
+        {t("dash.employmentGap")}
+      </p>
+    </div>
+  );
+};
 const LexOverview = () => {
   const { t } = useTranslation("lex");
   const navigate = useNavigate();
@@ -84,7 +147,6 @@ const LexOverview = () => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<string>(CASE_SORTS[0]);
   /** One row open at a time — the expansion is a detail, not a second list. */
-  const [expanded, setExpanded] = useState<string | null>(null);
 
   const errorsByCode = useMemo(
     () => ({ "COMMON.AUTH.ACCESS_DENIED": t("err.accessDenied") }),
@@ -126,6 +188,121 @@ const LexOverview = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canRead]);
 
+  const headers = [
+    {
+      name: t("dash.col.date"),
+      cell: (row: LexCaseSummary) => (
+        <span className="whitespace-nowrap">{formatDate(row.openedAt)}</span>
+      ),
+      width: "130px",
+    },
+    {
+      name: t("dash.col.appId"),
+      cell: (row: LexCaseSummary) => (
+        <span className="font-mono text-xs">{row.applicationNumber || row.applicationId}</span>
+      ),
+      width: "160px",
+    },
+    {
+      // Blank on cases opened during the identity-service outage — the case
+      // package is append-only, so those stay blank. Never a placeholder name.
+      name: t("dash.col.name"),
+      cell: (row: LexCaseSummary) => <span>{row.applicantName || "—"}</span>,
+      width: "170px",
+    },
+    {
+      name: t("dash.col.product"),
+      cell: (row: LexCaseSummary) => <span>{row.productName || "—"}</span>,
+      width: "150px",
+    },
+    {
+      // Always the constant "loan-origination": mobile and web are
+      // indistinguishable to lending. "App" or "Branch" would be fabricated.
+      name: t("dash.col.channel"),
+      cell: (row: LexCaseSummary) =>
+        row.sourceChannel ? (
+          <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
+            {row.sourceChannel}
+          </Badge>
+        ) : (
+          <span>—</span>
+        ),
+      width: "140px",
+    },
+    {
+      name: t("dash.col.status"),
+      cell: (row: LexCaseSummary) => {
+        const chip = caseChip(row);
+        return <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />;
+      },
+      width: "150px",
+    },
+    {
+      // lending never sends salesId — it is not one of the nineteen fields on
+      // the evaluation contract.
+      name: t("dash.col.salesId"),
+      cell: (row: LexCaseSummary) => <span>{row.salesId || "—"}</span>,
+      width: "120px",
+    },
+    {
+      name: t("dash.col.sla"),
+      cell: (row: LexCaseSummary) => {
+        const sla = slaChip(row);
+        return (
+          <div className="flex flex-col gap-1">
+            <Badge
+              variant="outline"
+              className={`border w-fit gap-1 font-medium ${SLA_TONE[String(row.slaStatus)] || TONES.slate}`}
+            >
+              {sla.kind === "stopped" && <PauseCircle className="h-3 w-3" />}
+              {row.slaStatus || t("case.sla.notTracked")}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              {sla.kind === "remaining" &&
+                t("case.sla.remaining", { time: formatMinutes(sla.minutes) })}
+              {sla.kind === "overdue" &&
+                t("case.sla.overdue", { time: formatMinutes(sla.minutes) })}
+              {sla.kind === "stopped" && t("case.sla.stopped")}
+              {sla.kind === "untracked" && t("case.sla.notTracked")}
+            </span>
+          </div>
+        );
+      },
+      width: "180px",
+    },
+    {
+      name: t("common:actions"),
+      // Stops the row expanding as the menu opens.
+      cell: (row: LexCaseSummary) => (
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate(`/LOS/Lex/Cases/${row.id}`);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+      width: "120px",
+    },
+  ];
   if (!canRead) return <PermissionDenied />;
 
   const total = counts?.allIngested ?? null;
@@ -141,12 +318,43 @@ const LexOverview = () => {
       />
 
       <div className="pro-card p-3 mb-3">
-        <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="dash-search"
+            className="flex-1"
+            value={search}
+            onChange={(next) => {
+              setSearch(next);
+              setPage(1);
+            }}
+            placeholder={t("case.search")}
+          />
           {/* No product catalogue endpoint exists in LEX — products arrive on
               cases as strings from lending — and /counts takes no date range.
               Both controls are shown disabled rather than wired to nothing. */}
           <LexUnavailableFilter label={t("dash.filter.allProducts")} title={t("dash.filter.productGap")} />
           <LexUnavailableFilter label={t("dash.filter.allTime")} title={t("dash.filter.dateGap")} />
+          <Label htmlFor="dash-sort" className="sr-only">
+            {t("case.filter.sort")}
+          </Label>
+          <Select
+            value={sort}
+            onValueChange={(v) => {
+              setSort(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger id="dash-sort" className="w-52 bg-card">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CASE_SORTS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {t(`case.sort.${value.split(",")[0]}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             className="gap-2"
@@ -229,292 +437,37 @@ const LexOverview = () => {
       </div>
 
       <div className="pro-card p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-3 flex items-center gap-2.5">
+          <span className="pro-head-badge">
+            <Activity className="h-4 w-4" />
+          </span>
           <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
             {t("dash.activity")}
           </h4>
-          <div className="flex flex-wrap items-center gap-2">
-            <LexSearch
-              value={search}
-              onChange={(next) => {
-                setSearch(next);
-                setPage(1);
-              }}
-              placeholder={t("case.search")}
-            />
-            <Select
-              value={sort}
-              onValueChange={(v) => {
-                setSort(v);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-52 bg-card">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CASE_SORTS.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {t(`case.sort.${value.split(",")[0]}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         {!isLoading && result.content.length === 0 ? (
           <EmptyState icon={Inbox} text={t("case.empty")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[960px] border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-border text-start">
-                  <th className="w-8 py-2" />
-                  {[
-                    "dash.col.date",
-                    "dash.col.appId",
-                    "dash.col.name",
-                    "dash.col.product",
-                    "dash.col.channel",
-                    "dash.col.status",
-                    "dash.col.salesId",
-                    "dash.col.sla",
-                  ].map((key) => (
-                    <th
-                      key={key}
-                      className="py-2 pe-3 text-start text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
-                    >
-                      {t(key)}
-                    </th>
-                  ))}
-                  <th className="py-2 text-start text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("common:actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.content.map((row) => {
-                  const chip = caseChip(row);
-                  const sla = slaChip(row);
-                  const isOpen = expanded === row.id;
-
-                  return (
-                    <React.Fragment key={row.id}>
-                      <tr
-                        className={cn(
-                          "border-b border-border/60 align-middle",
-                          isOpen && "bg-muted/30"
-                        )}
-                      >
-                        <td className="py-2.5">
-                          <button
-                            type="button"
-                            aria-label={t(isOpen ? "dash.collapse" : "dash.expand")}
-                            onClick={() => setExpanded(isOpen ? null : row.id)}
-                            className="rounded p-1 text-muted-foreground hover:bg-muted"
-                          >
-                            {isOpen ? (
-                              <ChevronDown className="h-4 w-4" />
-                            ) : (
-                              <ChevronRight className="h-4 w-4 rtl:rotate-180" />
-                            )}
-                          </button>
-                        </td>
-                        <td className="py-2.5 pe-3 whitespace-nowrap">{formatDate(row.openedAt)}</td>
-                        <td className="py-2.5 pe-3 font-mono text-xs">
-                          {row.applicationNumber || row.applicationId}
-                        </td>
-                        {/* Blank on cases opened during the identity-service
-                            outage — the case package is append-only, so those
-                            stay blank. Never a placeholder name. */}
-                        <td className="py-2.5 pe-3">{row.applicantName || "—"}</td>
-                        <td className="py-2.5 pe-3">{row.productName || "—"}</td>
-                        {/* Always the constant "loan-origination": mobile and
-                            web are indistinguishable to lending. Showing "App"
-                            or "Branch" would be fabricated. */}
-                        <td className="py-2.5 pe-3">
-                          {row.sourceChannel ? (
-                            <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
-                              {row.sourceChannel}
-                            </Badge>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                        <td className="py-2.5 pe-3">
-                          <LexStatusBadge status={chip} label={t(`case.chip.${chip}`)} />
-                        </td>
-                        {/* lending never sends salesId — it is not one of the
-                            nineteen fields on the evaluation contract. */}
-                        <td className="py-2.5 pe-3">{row.salesId || "—"}</td>
-                        <td className="py-2.5 pe-3">
-                          <div className="flex flex-col gap-1">
-                            <Badge
-                              variant="outline"
-                              className={`border w-fit gap-1 font-medium ${
-                                SLA_TONE[String(row.slaStatus)] || TONES.slate
-                              }`}
-                            >
-                              {sla.kind === "stopped" && <PauseCircle className="h-3 w-3" />}
-                              {row.slaStatus || t("case.sla.notTracked")}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {sla.kind === "remaining" &&
-                                t("case.sla.remaining", { time: formatMinutes(sla.minutes) })}
-                              {sla.kind === "overdue" &&
-                                t("case.sla.overdue", { time: formatMinutes(sla.minutes) })}
-                              {sla.kind === "stopped" && t("case.sla.stopped")}
-                              {sla.kind === "untracked" && t("case.sla.notTracked")}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-2.5">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/LOS/Lex/Cases/${row.id}`)}
-                          >
-                            {t("open")}
-                          </Button>
-                        </td>
-                      </tr>
-
-                      {/* Everything here is on the row already — expanding costs
-                          no second call. */}
-                      {isOpen && (
-                        <tr className="border-b border-border/60 bg-muted/20">
-                          <td />
-                          <td colSpan={9} className="py-3 pe-3">
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                              <ExpandedField
-                                label={t("case.field.requestedAmount")}
-                                value={
-                                  row.requestedAmount != null
-                                    ? formatMoney(row.requestedAmount)
-                                    : undefined
-                                }
-                              />
-                              <ExpandedField
-                                label={t("dash.field.incomeAndDbr")}
-                                value={
-                                  [
-                                    row.monthlyInstallment != null
-                                      ? formatMoney(row.monthlyInstallment)
-                                      : null,
-                                    row.dbr != null ? `DBR ${row.dbr}%` : null,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(" · ") || undefined
-                                }
-                              />
-                              <ExpandedField
-                                label={t("dash.field.creditScore")}
-                                value={row.creditScore}
-                              />
-                              <div className="min-w-0">
-                                <span className="mb-1 block text-xs text-muted-foreground">
-                                  {t("dash.field.referralReason")}
-                                </span>
-                                {/* Title and severity are null when the code is
-                                    unrecognized. Show the code itself and mark
-                                    the row as needing configuration — a blank
-                                    cell says nothing at all. */}
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                  <Badge
-                                    variant="outline"
-                                    className={`border font-medium ${
-                                      row.hasUnrecognizedCode ? TONES.amber : TONES.sky
-                                    }`}
-                                  >
-                                    {row.drivingReasonTitle || row.drivingReasonCode || "—"}
-                                  </Badge>
-                                  {!!row.secondaryCodeCount && (
-                                    <Badge
-                                      variant="outline"
-                                      className={`border font-medium ${TONES.slate}`}
-                                    >
-                                      +{row.secondaryCodeCount}
-                                    </Badge>
-                                  )}
-                                  {row.hasUnrecognizedCode && (
-                                    <Badge
-                                      variant="outline"
-                                      className={`border gap-1 font-medium ${TONES.amber}`}
-                                    >
-                                      <HelpCircle className="h-3 w-3" />
-                                      {t("case.unrecognized")}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            {/* Income sector, employer name and employer
-                                category are on the mockup and in no contract.
-                                Said once, here, rather than as three empty
-                                fields that look like a loading failure. */}
-                            <p className="m-0 mt-3 text-xs text-muted-foreground">
-                              {t("dash.employmentGap")}
-                            </p>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <TableView
+            header={headers}
+            data={result.content}
+            totalRows={totalRows}
+            isLoading={isLoading}
+            from={totalRows === 0 ? 0 : (page - 1) * pageSize + 1}
+            to={Math.min(page * pageSize, totalRows)}
+            page={page}
+            totalPage={totalPages}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={(size: number) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            expandableRows
+            expandableRowsComponent={ExpandedRow}
+          />
         )}
-
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-muted-foreground">
-            {t("dash.showing", {
-              from: totalRows === 0 ? 0 : (page - 1) * pageSize + 1,
-              to: Math.min(page * pageSize, totalRows),
-              total: totalRows,
-            })}
-          </span>
-          <div className="flex items-center gap-2">
-            <Select
-              value={String(pageSize)}
-              onValueChange={(v) => {
-                setPageSize(Number(v));
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="h-9 w-20 bg-card">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[10, 20, 50].map((size) => (
-                  <SelectItem key={size} value={String(size)}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1 || isLoading}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              {t("common:previous")}
-            </Button>
-            <span className="text-xs text-muted-foreground">
-              {page} / {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages || isLoading}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              {t("common:next")}
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );

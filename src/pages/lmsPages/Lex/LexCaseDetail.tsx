@@ -20,6 +20,7 @@ import {
   SendHorizontal,
   Settings2,
   ShieldAlert,
+  Tags,
   UserCheck,
 } from "lucide-react";
 
@@ -54,6 +55,7 @@ import {
 } from "../../../components/shared/detailKit";
 import { TONES, formatDate, formatDateTime, formatMoney } from "../../../components/shared/detailKitUtils";
 import { LexNotice, LexPageHeader, LexStatusBadge, LexTile } from "../../../components/shared/lexKit";
+import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { useLexAuthority } from "../../../hooks/useLexAuthority";
@@ -305,10 +307,6 @@ const LexCaseDetail = () => {
   if (!canRead) return <PermissionDenied />;
 
   const readOnly = !!record?.readOnly;
-  const hasCaseActions =
-    (!readOnly && canUpdate && !record?.assigneeUserId) ||
-    canOfferEscalate ||
-    (!readOnly && canDecide && resolvingActions.length > 0);
   const hasAuthority = canDecideLevel(record?.assignedLevelCode);
   const resolvingActions = actions?.resolvingActions || [];
   /**
@@ -322,6 +320,13 @@ const LexCaseDetail = () => {
    * on click and no way forward.
    */
   const canOfferEscalate = canEscalate && !readOnly && actions?.escalationAvailable !== false;
+  // Declared after its operands: canOfferEscalate and resolvingActions are
+  // both defined below readOnly, and reading them earlier is a TDZ error at
+  // render rather than a compile error.
+  const hasCaseActions =
+    (!readOnly && canUpdate && !record?.assigneeUserId) ||
+    canOfferEscalate ||
+    (!readOnly && canDecide && resolvingActions.length > 0);
   const chip = caseChip({ status: record?.status || "", decisionAction: record?.decision?.action });
   const withSource = isWithSource(record?.status);
   const inPhysicalVerification = record?.status === "AWAITING_PHYSICAL_VERIFICATION";
@@ -404,18 +409,34 @@ const LexCaseDetail = () => {
       {/* Application header                                                */}
       {/* ---------------------------------------------------------------- */}
       <div className="pro-card mb-3 p-5">
-        <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
-          {t("ws.applicationInformation")}
-        </Badge>
-        <p className="m-0 mt-2 text-xs text-muted-foreground">{t("case.field.applicant")}</p>
-        {/* Blank on cases opened during the identity-service outage. The case
-            package is append-only, so those stay blank — never a stand-in. */}
-        <h2 className="m-0 text-2xl font-bold tracking-tight text-foreground">
-          {info?.applicantName || t("hub.noName")}
-        </h2>
+        {/* Identity on one line: who, what state, which application. A bare
+            `h2` is centred by a global rule in custom.scss, so the alignment
+            is pinned here rather than inherited. */}
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="pro-head-badge">
+              <UserCheck className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <span className="block text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {t("case.field.applicant")}
+              </span>
+              {/* Blank on cases opened during the identity-service outage. The
+                  case package is append-only, so those stay blank. */}
+              <h2 className="m-0 truncate text-start text-2xl font-bold tracking-tight text-foreground">
+                {info?.applicantName || t("hub.noName")}
+              </h2>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {record && <LexStatusBadge status={record.status} />}
+            <Badge variant="outline" className={`border font-mono font-medium ${TONES.slate}`}>
+              {info?.applicationNumber || record?.applicationId || "—"}
+            </Badge>
+          </div>
+        </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border/60 pt-4 sm:grid-cols-4 lg:grid-cols-7">
-          <HeroField label={t("ws.field.applicationId")} value={info?.applicationNumber} />
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border/60 pt-4 sm:grid-cols-3 lg:grid-cols-5">
           {/* Case open time, not application submission time — lending does not
               send the submission date. */}
           <HeroField
@@ -425,7 +446,6 @@ const LexCaseDetail = () => {
           />
           <HeroField label={t("case.field.product")} value={info?.productName} />
           <HeroField label={t("ws.field.sourcingChannel")} value={info?.sourceChannel} />
-          <HeroField label={t("case.col.status")} value={record ? t(`case.chip.${chip}`) : undefined} accent />
           <HeroField
             label={t("ws.field.statusDate")}
             value={formatDate(record?.decision?.decidedAt || record?.openedAt)}
@@ -433,32 +453,31 @@ const LexCaseDetail = () => {
           <HeroField label={t("ws.field.bureauScore")} value={info?.creditScore} />
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 border-t border-border/60 pt-4 lg:grid-cols-2">
-          <div>
-            <p className="m-0 mb-2 text-sm font-semibold text-foreground">{t("ws.employment")}</p>
-            {/* Income sector, employer name and employer category are on the
-                mockup and in no contract. lending passes sector as a literal
-                null, and the employer registry is not linked to a case. Said
-                once, rather than as three empty fields. */}
-            <p className="m-0 text-xs text-muted-foreground">{t("dash.employmentGap")}</p>
-          </div>
-          <div>
-            <p className="m-0 mb-2 text-sm font-semibold text-foreground">{t("ws.financing")}</p>
-            <div className="grid grid-cols-3 gap-4">
-              <HeroField
-                label={t("case.field.requestedAmount")}
-                value={info?.requestedAmount != null ? formatMoney(info.requestedAmount) : undefined}
-              />
-              <HeroField
-                label={t("case.field.verifiedSalary")}
-                value={info?.verifiedSalary != null ? formatMoney(info.verifiedSalary) : undefined}
-              />
-              <HeroField label={t("case.field.dbr")} value={info?.dbr != null ? `${info.dbr}%` : undefined} />
-            </div>
+        <div className="mt-4 border-t border-border/60 pt-4">
+          <p className="m-0 mb-2 text-sm font-semibold text-foreground">{t("ws.financing")}</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <HeroField
+              label={t("case.field.requestedAmount")}
+              value={info?.requestedAmount != null ? formatMoney(info.requestedAmount) : undefined}
+              accent
+            />
+            <HeroField
+              label={t("case.field.verifiedSalary")}
+              value={info?.verifiedSalary != null ? formatMoney(info.verifiedSalary) : undefined}
+            />
+            <HeroField label={t("case.field.dbr")} value={info?.dbr != null ? `${info.dbr}%` : undefined} />
           </div>
         </div>
-      </div>
 
+        {/* Income sector, employer name and employer category are on the mockup
+            and in no contract: lending passes sector as a literal null and the
+            employer registry is not linked to a case. Said once, on its own
+            line, rather than as three empty fields or half an empty column. */}
+        <div className="mt-4 border-t border-border/60 pt-3">
+          <span className="text-sm font-semibold text-foreground">{t("ws.employment")}</span>
+          <span className="ms-2 text-xs text-muted-foreground">{t("dash.employmentGap")}</span>
+        </div>
+      </div>
       {readOnly && (
         <LexNotice tone="slate" icon={Lock}>
           {t("case.readOnlyNote")}
@@ -589,9 +608,14 @@ const LexCaseDetail = () => {
         {/* ------------------------------ LEX Actions ------------------- */}
         <TabsContent value="actions" className="mt-3">
           <div className="pro-card mb-3 p-4">
-            <h4 className="m-0 mb-1 text-sm font-semibold tracking-tight text-foreground">
-              {t("case.codes")}
-            </h4>
+            <div className="mb-1 flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Tags className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t("case.codes")}
+              </h4>
+            </div>
             <p className="m-0 mb-3 text-xs text-muted-foreground">{t("case.secondaryNote")}</p>
             {(record?.attachedCodes || []).length === 0 ? (
               <p className="m-0 text-sm text-muted-foreground">{t("case.noCodes")}</p>
@@ -712,9 +736,14 @@ const LexCaseDetail = () => {
         <TabsContent value="hitl" className="mt-3">
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
             <div className="pro-card p-4 lg:col-span-2">
-              <h4 className="m-0 mb-1 text-sm font-semibold tracking-tight text-foreground">
-                {t("ws.commitDecision")}
-              </h4>
+              <div className="mb-1 flex items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <Gavel className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t("ws.commitDecision")}
+                </h4>
+              </div>
               <p className="m-0 mb-3 text-xs text-muted-foreground">{t("case.decideExplain")}</p>
 
               {/* The actor is the JWT subject. The mockup's Salim/Daniel
@@ -1120,12 +1149,13 @@ const HeroField = ({
   hint?: string;
   accent?: boolean;
 }) => (
-  <div className="min-w-0" title={hint}>
-    <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
+  <div className={cn("pro-tile min-w-0", hint && "cursor-help")} title={hint}>
+    <span className="pro-tile__label">{label}</span>
     <span
-      className={`block truncate text-sm font-semibold ${
-        accent ? "text-amber-600 dark:text-amber-400" : "text-foreground"
-      }`}
+      className={cn(
+        "pro-tile__value truncate text-sm",
+        accent && "pro-tile__value--accent"
+      )}
     >
       {value === null || value === undefined || value === "" ? "—" : value}
     </span>

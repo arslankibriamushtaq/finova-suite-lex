@@ -35,6 +35,14 @@ const TableView = ({
   from,
   to,
   endpoint,
+  // Expandable rows. Undefined for every existing caller, so DataTable
+  // behaves exactly as it did — a page that needs a detail row no longer has
+  // to hand-roll a table and lose the shared header, striping and pager.
+  expandableRows,
+  expandableRowsComponent,
+  expandableRowExpanded,
+  onRowExpandToggled,
+  expandableRowsComponentProps,
 }: any) => {
   const { t } = useTranslation("common");
   const [table, setTable] = useState<any>();
@@ -514,6 +522,11 @@ const TableView = ({
               onChangeRowsPerPage={handlePerChange} // Update rows per page
               onChangePage={handlePage} // Update current page
               keyField="id"
+              expandableRows={expandableRows}
+              expandableRowsComponent={expandableRowsComponent}
+              expandableRowExpanded={expandableRowExpanded}
+              onRowExpandToggled={onRowExpandToggled}
+              expandableRowsComponentProps={expandableRowsComponentProps}
               noDataComponent={noDataComponent}
             // defaultSortFieldId={1}
             // sortIcon={<CustomSortIcon />}

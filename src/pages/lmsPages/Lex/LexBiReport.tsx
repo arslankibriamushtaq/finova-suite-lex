@@ -2,11 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, BarChart3, Download, EyeOff, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft,
+  BarChart3,
+  ChevronDown,
+  Download,
+  EyeOff,
+  RefreshCw,
+  SlidersHorizontal,
+} from "lucide-react";
 
+import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +29,9 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { PermissionDenied } from "../../../components/shared/detailKit";
+import { TONES } from "../../../components/shared/detailKitUtils";
 import { LexNotice, LexPageHeader } from "../../../components/shared/lexKit";
+import { FilterField } from "../../../components/shared/filterKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { lexErrorCode, lexErrorMessage, logForbidden } from "../../../redux/apis/apisLexCore";
@@ -66,6 +76,7 @@ const LexBiReport = ({ kind }: { kind: "standard" | "saved" }) => {
   /** A 422 that explains itself: not visible, or no projection behind it yet. */
   const [blockedReason, setBlockedReason] = useState<string | null>(null);
   const [filters, setFilters] = useState<LexReportFilters>({});
+  const [showFilters, setShowFilters] = useState(false);
 
   const [drill, setDrill] = useState<{ row: LexReportRow; rows: LexDrillRow[] } | null>(null);
 
@@ -134,6 +145,11 @@ const LexBiReport = ({ kind }: { kind: "standard" | "saved" }) => {
 
   if (!canRead) return <PermissionDenied />;
 
+  // A count on the button so a narrowed report never looks like the whole
+  // population just because the panel is shut.
+  const activeFilterCount = [filters.productId, filters.sectorId, filters.from, filters.to]
+    .filter((v) => !!v)
+    .length;
   return (
     <div className="service">
       <LexPageHeader
@@ -141,76 +157,93 @@ const LexBiReport = ({ kind }: { kind: "standard" | "saved" }) => {
         title={report?.title || t("bi.reportTitle")}
         subtitle={report?.summaryLabel}
       >
-        <Button variant="ghost" className="h-10 gap-2" onClick={() => navigate("/LOS/Lex/Bi")}>
-          <ArrowLeft className="h-4 w-4" />
-          {t("common:back")}
+        <Button variant="outline" className="gap-2" onClick={() => navigate("/LOS/Lex/Bi")}>
+          <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+          {t("bi.backToGallery")}
         </Button>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-10 gap-2" disabled={!report}>
-              <Download className="h-4 w-4" />
-              {t("bi.export")}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {EXPORT_FORMATS.map((format) => (
-              <DropdownMenuItem key={format} onSelect={() => onExport(format)}>
-                {format}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </LexPageHeader>
 
-      {/* Filters, on every report screen and adjustable in place. */}
-      <div className="pro-card mb-3 p-4">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="bi-product">{t("bi.filter.product")}</Label>
-            <Input
-              id="bi-product"
-              className="h-10"
-              value={filters.productId || ""}
-              onChange={(e) => setFilters({ ...filters, productId: e.target.value })}
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            aria-expanded={showFilters}
+            aria-controls="bi-report-filters"
+            onClick={() => setShowFilters((open) => !open)}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {t("common:filters")}
+            {activeFilterCount > 0 && (
+              <Badge variant="outline" className={`border font-medium ${TONES.emerald}`}>
+                {activeFilterCount}
+              </Badge>
+            )}
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="bi-sector">{t("bi.filter.sector")}</Label>
-            <Input
-              id="bi-sector"
-              className="h-10"
-              value={filters.sectorId || ""}
-              onChange={(e) => setFilters({ ...filters, sectorId: e.target.value })}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="bi-from">{t("bi.filter.from")}</Label>
-            <Input
-              id="bi-from"
-              type="date"
-              className="h-10"
-              value={filters.from || ""}
-              onChange={(e) => setFilters({ ...filters, from: e.target.value })}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="bi-to">{t("bi.filter.to")}</Label>
-            <Input
-              id="bi-to"
-              type="date"
-              className="h-10"
-              value={filters.to || ""}
-              onChange={(e) => setFilters({ ...filters, to: e.target.value })}
-            />
-          </div>
+          </Button>
+          <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            {t("common:refresh")}
+          </Button>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2" disabled={!report}>
+                <Download className="h-4 w-4" />
+                {t("bi.export")}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {EXPORT_FORMATS.map((format) => (
+                <DropdownMenuItem key={format} onSelect={() => onExport(format)}>
+                  {format}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <p className="m-0 mt-2 text-xs text-muted-foreground">{t("bi.exportFiltersNote")}</p>
-      </div>
 
+        {showFilters && (
+          <div id="bi-report-filters" className="mt-3 border-t pt-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <FilterField label={t("bi.filter.product")} htmlFor="bi-product">
+                <Input
+                  id="bi-product"
+                  value={filters.productId || ""}
+                  onChange={(e) => setFilters({ ...filters, productId: e.target.value })}
+                />
+              </FilterField>
+              <FilterField label={t("bi.filter.sector")} htmlFor="bi-sector">
+                <Input
+                  id="bi-sector"
+                  value={filters.sectorId || ""}
+                  onChange={(e) => setFilters({ ...filters, sectorId: e.target.value })}
+                />
+              </FilterField>
+              <FilterField label={t("bi.filter.from")} htmlFor="bi-from">
+                <Input
+                  id="bi-from"
+                  type="date"
+                  value={filters.from || ""}
+                  onChange={(e) => setFilters({ ...filters, from: e.target.value })}
+                />
+              </FilterField>
+              <FilterField label={t("bi.filter.to")} htmlFor="bi-to">
+                <Input
+                  id="bi-to"
+                  type="date"
+                  value={filters.to || ""}
+                  onChange={(e) => setFilters({ ...filters, to: e.target.value })}
+                />
+              </FilterField>
+            </div>
+            {/* The export carries these in a header block, so the file says
+                what it contains. */}
+            <p className="m-0 mt-3 text-xs text-muted-foreground">{t("bi.exportFiltersNote")}</p>
+          </div>
+        )}
+      </div>
       {blockedReason ? (
         <LexNotice tone="slate" icon={EyeOff}>
           {blockedReason}
@@ -234,7 +267,7 @@ const LexBiReport = ({ kind }: { kind: "standard" | "saved" }) => {
               drill?.rows.map((row, index) => (
                 <div
                   key={row.applicationId || row.id || index}
-                  className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 py-2 last:border-b-0"
+                  className="pro-tile mb-2 flex flex-wrap items-center justify-between gap-2 last:mb-0"
                 >
                   <span className="font-mono text-xs">
                     {row.applicationNumber || row.applicationId || row.id}

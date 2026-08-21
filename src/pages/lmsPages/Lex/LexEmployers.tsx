@@ -1,9 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Building2, History, Info, RefreshCw, Search, UserMinus } from "lucide-react";
+import {
+  Building2,
+  ChevronDown,
+  Eye,
+  History,
+  RefreshCw,
+  Search,
+  UserMinus,
+} from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
+import { SearchField } from "../../../components/shared/filterKit";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -18,8 +33,13 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { EmptyState, Field, PermissionDenied } from "../../../components/shared/detailKit";
-import { TONES, formatDate, formatDateTime } from "../../../components/shared/detailKitUtils";
-import { LexNotice, LexPageHeader, LexStatusBadge } from "../../../components/shared/lexKit";
+import {
+  TONES,
+  formatDate,
+  formatDateTime,
+  formatMoney,
+} from "../../../components/shared/detailKitUtils";
+import { LexPageHeader, LexStatusBadge } from "../../../components/shared/lexKit";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { useLexAccess } from "../../../hooks/useLexAccess";
 import { emptyPage, lexErrorMessage, lexErrorStatus, logForbidden, type LexPage } from "../../../redux/apis/apisLexCore";
@@ -47,6 +67,9 @@ import {
  * Delist is the only write a person gets, and it does not destroy the entry:
  * it moves to the history, which is linked from here so that is obvious.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexEmployers = () => {
   const { t } = useTranslation("lex");
   // Ungated while the LEX permission codes are unregistered — see useLexAccess.
@@ -198,22 +221,44 @@ const LexEmployers = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexEmployer) => (
-        <div className="flex items-center gap-1">
-          <Button variant="outline" size="sm" onClick={() => openDetail(row)}>
-            {t("open")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            title={t("emp.history")}
-            onClick={() => openHistory(row.commercialRegistration)}
-          >
-            <History className="h-4 w-4" />
-          </Button>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openDetail(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openHistory(row.commercialRegistration);
+                }}
+              >
+                <History className="h-4 w-4" />
+                {t("emp.history")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
-      width: "160px",
+      width: "120px",
     },
   ];
 
@@ -225,65 +270,57 @@ const LexEmployers = () => {
 
   return (
     <div className="service">
-      <LexPageHeader icon={Building2} title={t("emp.title")} subtitle={t("emp.subtitle")}>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="emp-active" className="text-xs text-muted-foreground">
-            {t("emp.activeOnly")}
-          </Label>
-          <Switch
-            id="emp-active"
-            checked={activeOnly}
-            onCheckedChange={(checked) => {
-              setActiveOnly(checked);
-              setPage(1);
-            }}
-          />
-        </div>
-        <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          {t("common:refresh")}
-        </Button>
-      </LexPageHeader>
+      <LexPageHeader icon={Building2} title={t("emp.title")} subtitle={t("emp.subtitle")} />
 
-      {/* There is no Add button, so the screen answers the question it creates. */}
-      <LexNotice tone="slate" icon={Info}>
-        {t("emp.noAddNote")}
-      </LexNotice>
-
-      {/* CR lookup. */}
-      <div className="pro-card mb-3 p-4">
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="emp-cr">{t("emp.lookup.label")}</Label>
-            <Input
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex-1" onKeyDown={(e) => e.key === "Enter" && onLookup()}>
+            <SearchField
               id="emp-cr"
-              className="h-10 w-64 font-mono text-xs"
-              placeholder={t("emp.lookup.placeholder")}
               value={cr}
-              onChange={(e) => setCr(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onLookup()}
+              onChange={setCr}
+              placeholder={t("emp.lookup.label")}
             />
           </div>
-          <Button variant="outline" className="h-10 gap-2" onClick={onLookup} disabled={busy}>
-            <Search className="h-4 w-4" />
-            {t("emp.lookup.action")}
-          </Button>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button variant="outline" className="gap-2" onClick={onLookup} disabled={busy}>
+              <Search className="h-4 w-4" />
+              {t("emp.lookup.action")}
+            </Button>
+            <div className="flex items-center gap-2 ps-1">
+              <Label htmlFor="emp-active" className="text-xs text-muted-foreground">
+                {t("emp.activeOnly")}
+              </Label>
+              <Switch
+                id="emp-active"
+                checked={activeOnly}
+                onCheckedChange={(checked) => {
+                  setActiveOnly(checked);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
+          </div>
         </div>
 
         {lookupMiss && (
           <p className="m-0 mt-3 text-sm text-muted-foreground">{t("emp.lookup.notApproved")}</p>
         )}
         {lookupResult && (
-          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/20 p-3">
+          <div className="pro-tile mt-3 flex flex-wrap items-center gap-3">
             <span className="font-medium">{lookupResult.employerName}</span>
             <LexStatusBadge status={lookupResult.active ? "ACTIVE" : "INACTIVE"} />
-            <Button variant="outline" size="sm" onClick={() => openDetail(lookupResult)}>
+            <Button variant="outline" className="gap-2" onClick={() => openDetail(lookupResult)}>
+              <Eye className="h-4 w-4" />
               {t("open")}
             </Button>
           </div>
         )}
       </div>
-
       <div className="pro-card">
         {!isLoading && totalRows === 0 ? (
           <EmptyState icon={Building2} text={t("emp.empty")} />
@@ -311,8 +348,13 @@ const LexEmployers = () => {
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent className="pro-dialog sm:max-w-lg">
           <DialogHeader className="text-start">
-            <DialogTitle>{detail?.employerName}</DialogTitle>
-            <DialogDescription>{detail?.commercialRegistration}</DialogDescription>
+            <DialogTitle className="flex flex-wrap items-center gap-2">
+              {detail?.employerName}
+              {detail && <LexStatusBadge status={detail.active ? "ACTIVE" : "INACTIVE"} />}
+            </DialogTitle>
+            <DialogDescription className="font-mono">
+              {detail?.commercialRegistration}
+            </DialogDescription>
           </DialogHeader>
 
           {detail && (
@@ -325,7 +367,10 @@ const LexEmployers = () => {
               <Field label={t("emp.field.zakatStatus")} value={detail.zakatStatus} />
               <Field label={t("emp.field.vatStatus")} value={detail.vatStatus} />
               <Field label={t("emp.field.incorporatedOn")} value={formatDate(detail.incorporatedOn)} />
-              <Field label={t("emp.field.paidUpCapital")} value={detail.paidUpCapital} />
+              <Field
+                label={t("emp.field.paidUpCapital")}
+                value={detail.paidUpCapital != null ? formatMoney(detail.paidUpCapital) : undefined}
+              />
               {/* Provenance: every listing names the application that produced
                   it, which is what makes the entry auditable. */}
               <Field
@@ -333,8 +378,14 @@ const LexEmployers = () => {
                 mono
                 value={
                   detail.originApplicationId ? (
-                    <a href={`/LOS/FinancingApplications/AllApplications/View/${detail.originApplicationId}`}>
-                      {detail.originApplicationId}
+                    <a
+                      href={`/LOS/FinancingApplications/AllApplications/View/${detail.originApplicationId}`}
+                      title={detail.originApplicationId}
+                      className="text-emerald-600 underline-offset-2 hover:underline dark:text-emerald-400"
+                    >
+                      <span className="inline-block max-w-[12rem] truncate align-bottom">
+                        {detail.originApplicationId}
+                      </span>
                     </a>
                   ) : (
                     "—"
@@ -348,8 +399,11 @@ const LexEmployers = () => {
           )}
 
           <DialogFooter className="gap-2 sm:justify-end">
+            <Button variant="ghost" onClick={() => setDetailOpen(false)}>
+              {t("common:close")}
+            </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               className="gap-2"
               onClick={() => detail && openHistory(detail.commercialRegistration)}
             >
@@ -416,7 +470,7 @@ const LexEmployers = () => {
               history.map((entry) => (
                 <div
                   key={entry.id}
-                  className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 py-2.5 last:border-b-0"
+                  className="pro-tile mb-2 flex flex-wrap items-center justify-between gap-2 last:mb-0"
                 >
                   <div className="min-w-0">
                     <p className="m-0 text-sm font-medium">{entry.employerName}</p>

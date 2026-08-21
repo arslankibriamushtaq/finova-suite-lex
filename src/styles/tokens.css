@@ -1487,19 +1487,22 @@ html.dark .rdt_TableCell .text-amber-600 {
    emerald, to match the .dropdown-toggle / .wallet-brand-btn select buttons
    used on other pages. Scoped via aria-haspopup so only menu triggers match. */
 .rdt_TableCell button[aria-haspopup="menu"],
-.no-table tbody td button[aria-haspopup="menu"] {
+.no-table tbody td button[aria-haspopup="menu"],
+.mini-table tbody td button[aria-haspopup="menu"] {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   border: 1px solid #059669 !important;
   color: #ffffff !important;
 }
 .rdt_TableCell button[aria-haspopup="menu"]:hover,
-.no-table tbody td button[aria-haspopup="menu"]:hover {
+.no-table tbody td button[aria-haspopup="menu"]:hover,
+.mini-table tbody td button[aria-haspopup="menu"]:hover {
   background: #047857 !important;
   border-color: #047857 !important;
   color: #ffffff !important;
 }
 .rdt_TableCell button[aria-haspopup="menu"] svg,
-.no-table tbody td button[aria-haspopup="menu"] svg {
+.no-table tbody td button[aria-haspopup="menu"] svg,
+.mini-table tbody td button[aria-haspopup="menu"] svg {
   color: #ffffff !important;
 }
 

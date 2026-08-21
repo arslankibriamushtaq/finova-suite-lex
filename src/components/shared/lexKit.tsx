@@ -226,13 +226,13 @@ export const LexMetricTile = ({
     value != null && denominator != null && denominator > 0 ? (value / denominator) * 100 : null;
 
   return (
-    <div className="pro-card flex flex-col gap-2 p-4">
+    <div className={cn("pro-tile flex flex-col gap-1.5", hint && "cursor-help")} title={hint}>
       <span className="pro-tile__label">{label}</span>
       {loading ? (
-        <span className="block h-7 w-20 animate-pulse rounded-[3px] bg-muted-foreground/20" />
+        <span className="block h-[18px] w-16 animate-pulse rounded-[2px] bg-muted-foreground/20" />
       ) : (
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold leading-none tracking-tight text-foreground">
+          <span className="text-lg font-bold leading-tight tabular-nums text-foreground">
             {value ?? "—"}
           </span>
           {share !== null && (
@@ -253,7 +253,6 @@ export const LexMetricTile = ({
           />
         </div>
       )}
-      {hint && <span className="text-[11px] leading-snug text-muted-foreground">{hint}</span>}
     </div>
   );
 };

@@ -2,10 +2,24 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AlertTriangle, Gauge, GitBranch, ListOrdered, RefreshCw } from "lucide-react";
+import {
+  AlertTriangle,
+  ChevronDown,
+  Eye,
+  Gauge,
+  GitBranch,
+  ListOrdered,
+  RefreshCw,
+} from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import {
@@ -42,6 +56,9 @@ import {
  * comes from the SLA Configurator and no endpoint here writes one — a control
  * that looked editable would be a promise the service cannot keep.
  */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 const LexSlaBoard = () => {
   const { t } = useTranslation("lex");
   const navigate = useNavigate();
@@ -160,12 +177,35 @@ const LexSlaBoard = () => {
     },
     {
       name: t("common:actions"),
+      // Stops the row's own click handling from firing as the menu opens.
       cell: (row: LexBreachingCase) => (
-        <Button variant="outline" size="sm" onClick={() => navigate(`/LOS/Lex/Cases/${row.caseId}`)}>
-          {t("open")}
-        </Button>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate(`/LOS/Lex/Cases/${row.caseId}`);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("open")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "110px",
+      width: "120px",
     },
   ];
 

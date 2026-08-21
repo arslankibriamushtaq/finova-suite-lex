@@ -505,6 +505,47 @@ html.dark .pro-tile__value--accent,
 }
 
 /* ---------------------------------------------------------------------------
+   Pager for a hand-rolled table, matching the one TableView draws: 35px
+   square buttons, 2px corners, emerald on the current page. TableView styles
+   its own inline, so this is the same spec expressed once as a class.
+--------------------------------------------------------------------------- */
+.pro-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pro-pager__btn {
+  min-width: 35px;
+  height: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border: 1px solid var(--surface-border);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.pro-pager__btn:hover:not(:disabled) {
+  border-color: #10b981;
+  color: #059669;
+}
+.pro-pager__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pro-pager__btn[aria-current="page"] {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
    Compact data table for places where the full DataTable (TableView) is too
    heavy — inside dialogs or nested in a card. Mirrors TableView's emerald head,
    striped rows and hover so nested tables read as the same component.
@@ -523,12 +564,12 @@ html.dark .pro-tile__value--accent,
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.2px;
-  padding: 8px 12px;
+  padding: 11px 16px;
   text-align: start;
   white-space: nowrap;
 }
 .mini-table tbody td {
-  padding: 8px 12px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--surface-border);
   vertical-align: middle;
 }
@@ -541,6 +582,26 @@ html.dark .pro-tile__value--accent,
 .mini-table tbody tr:last-child td {
   border-bottom: none;
 }
+/* Expandable variant: a detail row is part of the record above it, so the
+   stripe is decided by the data index rather than by DOM position. */
+.mini-table--expandable tbody tr:nth-child(even) {
+  background: transparent;
+}
+.mini-table--expandable tbody tr.is-alt {
+  background: var(--theme-table-row-alt);
+}
+.mini-table--expandable tbody tr.is-open,
+.mini-table--expandable tbody tr.is-detail {
+  background: var(--theme-table-row-hover);
+}
+/* The record and its detail read as one block: no rule between them. */
+.mini-table--expandable tbody tr.is-open > td {
+  border-bottom: 0;
+}
+.mini-table--expandable tbody tr.is-detail > td {
+  vertical-align: top;
+}
+
 .mini-table .num {
   text-align: end;
   white-space: nowrap;
