@@ -18,6 +18,15 @@ import {
 const { Option } = Select;
 const { Text } = Typography;
 
+/** Both pickers in the selector card use this, so their labels line up. */
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  marginBottom: "8px",
+  fontSize: "13px",
+  fontWeight: 600,
+  color: "var(--foreground)",
+};
+
 const AssignPermissions: React.FC = () => {
   // `permissions` carries the catalog vocabulary: the module and permission
   // names on this page are API data, so they are translated from their codes
@@ -383,60 +392,54 @@ const AssignPermissions: React.FC = () => {
 
       {/* Role selector card */}
       <div className="pro-card p-3 mb-4">
-        <Text style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>
-          {t("assignPermissions.role")}
-        </Text>
-        <Select
-          placeholder={t("assignPermissions.selectRolePlaceholder")}
-          style={{ width: "100%", maxWidth: "500px" }}
-          onChange={handleRoleChange}
-          value={selectedRole}
-          size="large"
-        >
-          {data?.map((dep: any) => (
-            <Option key={dep.id} value={dep.id}>
-              {dep.roleName}
-            </Option>
-          ))}
-        </Select>
-
-        {/* The department the role inherits from. Editable here because this
-            is the screen where someone reasons about what a role can do, and
-            inheritance is most of that answer. */}
-        <Text
-          style={{
-            display: "block",
-            margin: "16px 0 8px",
-            fontSize: "13px",
-            fontWeight: 600,
-            color: "var(--foreground)",
-          }}
-        >
-          {t("roles.field.department")}
-        </Text>
-        <Select
-          showSearch
-          allowClear
-          optionFilterProp="children"
-          placeholder={t("roles.ph.department")}
-          style={{ width: "100%", maxWidth: "500px" }}
-          size="large"
-          value={departmentId}
-          loading={attaching}
-          disabled={!selectedRole || !canAttachDepartment || attaching}
-          onChange={(value?: string) => handleDepartmentChange(value || undefined)}
-        >
-          {departments.map((d: any) => (
-            <Option key={d.id} value={d.id}>
-              {d.departmentName} ({d.departmentCode})
-            </Option>
-          ))}
-        </Select>
-        {!selectedRole && (
-          <div className="text-muted" style={{ fontSize: 12, marginTop: 6 }}>
-            {t("assignPermissions.pickRoleFirst")}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <Text style={labelStyle}>{t("assignPermissions.role")}</Text>
+            <Select
+              placeholder={t("assignPermissions.selectRolePlaceholder")}
+              style={{ width: "100%" }}
+              onChange={handleRoleChange}
+              value={selectedRole}
+              size="large"
+            >
+              {data?.map((dep: any) => (
+                <Option key={dep.id} value={dep.id}>
+                  {dep.roleName}
+                </Option>
+              ))}
+            </Select>
           </div>
-        )}
+
+          {/* The department the role inherits from. Editable here because this
+              is the screen where someone reasons about what a role can do, and
+              inheritance is most of that answer. */}
+          <div>
+            <Text style={labelStyle}>{t("roles.field.department")}</Text>
+            <Select
+              showSearch
+              allowClear
+              optionFilterProp="children"
+              placeholder={t("roles.ph.department")}
+              style={{ width: "100%" }}
+              size="large"
+              value={departmentId}
+              loading={attaching}
+              disabled={!selectedRole || !canAttachDepartment || attaching}
+              onChange={(value?: string) => handleDepartmentChange(value || undefined)}
+            >
+              {departments.map((d: any) => (
+                <Option key={d.id} value={d.id}>
+                  {d.departmentName} ({d.departmentCode})
+                </Option>
+              ))}
+            </Select>
+            {!selectedRole && (
+              <div className="text-muted" style={{ fontSize: 12, marginTop: 6 }}>
+                {t("assignPermissions.pickRoleFirst")}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {inheritedIds.length > 0 && (
