@@ -31,6 +31,7 @@ import system from "./locales/system";
 import landingUser from "./locales/landingUser";
 import webPages from "./locales/webPages";
 import notifications from "./locales/notifications";
+import onboardingSteps from "./locales/onboardingSteps";
 import allApplication from "./locales/allApplication";
 import accountingLoans from "./locales/accountingLoans";
 import adminMisc from "./locales/adminMisc";
@@ -71,6 +72,7 @@ const modules: ModuleLocale[] = [
   landingUser,
   webPages,
   notifications,
+  onboardingSteps,
   allApplication,
   accountingLoans,
   adminMisc,

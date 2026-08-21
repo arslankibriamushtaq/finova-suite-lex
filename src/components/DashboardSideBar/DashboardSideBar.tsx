@@ -113,6 +113,7 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Notification Orchestrator": "notificationOrchestrator",
   "Customer Management": "customerManagement",
   Users: "users",
+  "Onboarding Steps": "onboardingSteps",
   Customers: "customers",
   Business: "business",
   "Risk Management": "riskManagement",
@@ -2513,6 +2514,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "OnboardingUsers",
           LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/OnboardingUsers"),
+        },
+        // The onboarding journey itself — which steps the app shows for a
+        // country, in what order, and which screening gates run.
+        hasAccess(["country-config:read", "COUNTRY_CONFIG_READ"]) && {
+          label: "Onboarding Steps",
+          Link: "OnboardingSteps",
+          LinkLable: "/LOS/CustomerManagement",
+          active: pathname.includes("/OnboardingSteps"),
         },
         hasAccess("CUSTOMER_READ") && {
           label: "Individuals",
