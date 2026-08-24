@@ -206,10 +206,10 @@ const GateSwitch = ({
 }) => (
   <div
     className={cn(
-      "flex items-start justify-between gap-3 rounded-lg border p-3",
+      "flex items-start justify-between gap-3",
       tone === "amber"
-        ? "border-amber-300 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10"
-        : "border-border bg-muted/30"
+        ? "rounded-[2px] border border-amber-300 bg-amber-50/60 p-3 dark:border-amber-500/30 dark:bg-amber-500/10"
+        : "pro-tile"
     )}
   >
     <div className="min-w-0">
@@ -488,55 +488,60 @@ const OnboardingStepConfig = () => {
 
   return (
     <div className="service">
-      <PageHeader icon={ListOrdered} title={t("title")} subtitle={t("subtitle")}>
-        <Select value={countryCode} onValueChange={setCountryCode} disabled={isLoading || busy}>
-          <SelectTrigger
-            className="min-w-[190px] data-[size=default]:h-10"
-            aria-label={t("country")}
-          >
-            <SelectValue placeholder={t("countryPlaceholder")} />
-          </SelectTrigger>
-          <SelectContent>
-            {/* The selected country stays in the list even before the list
-                arrives, and even if reference data does not carry it — a Select
-                whose value is absent from its options renders blank. */}
-            {countryOptions.map((c) => (
-              <SelectItem key={c.countryCode} value={c.countryCode}>
-                {c.flagEmoji ? `${c.flagEmoji} ` : ""}
-                {c.countryName || c.countryCode}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <PageHeader icon={ListOrdered} title={t("title")} subtitle={t("subtitle")} />
 
-        <Button
-          variant="outline"
-          className="h-10 gap-2"
-          onClick={() => load(countryCode)}
-          disabled={isLoading || busy}
-        >
-          <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
-          {t("common:refresh")}
-        </Button>
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+          <Select value={countryCode} onValueChange={setCountryCode} disabled={isLoading || busy}>
+            <SelectTrigger
+              className="w-full shrink-0 bg-card sm:w-[220px]"
+              aria-label={t("country")}
+            >
+              <SelectValue placeholder={t("countryPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              {/* The selected country stays in the list even before the list
+                  arrives, and even if reference data does not carry it — a Select
+                  whose value is absent from its options renders blank. */}
+              {countryOptions.map((c) => (
+                <SelectItem key={c.countryCode} value={c.countryCode}>
+                  {c.countryName || c.countryCode}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {canWrite && dirty && (
-          <Button variant="ghost" className="h-10 gap-2" onClick={discard} disabled={busy}>
-            <Undo2 className="h-4 w-4" />
-            {t("discard")}
-          </Button>
-        )}
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => load(countryCode)}
+              disabled={isLoading || busy}
+            >
+              <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+              {t("common:refresh")}
+            </Button>
 
-        {canWrite && (
-          <Button
-            className="wallet-brand-btn h-10 gap-2"
-            onClick={save}
-            disabled={busy || isLoading || !dirty || countryMissing}
-          >
-            <Save className="h-4 w-4" />
-            {t("common:save")}
-          </Button>
-        )}
-      </PageHeader>
+            {canWrite && dirty && (
+              <Button variant="ghost" className="gap-2" onClick={discard} disabled={busy}>
+                <Undo2 className="h-4 w-4" />
+                {t("discard")}
+              </Button>
+            )}
+
+            {canWrite && (
+              <Button
+                className="wallet-brand-btn gap-2"
+                onClick={save}
+                disabled={busy || isLoading || !dirty || countryMissing}
+              >
+                <Save className="h-4 w-4" />
+                {t("common:save")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
       {countryMissing ? (
         <Notice tone="red" icon={AlertTriangle}>
@@ -544,9 +549,6 @@ const OnboardingStepConfig = () => {
         </Notice>
       ) : (
         <>
-          <Notice tone="slate">{t("note.reorder")}</Notice>
-          <Notice tone="amber">{t("note.replaceAll")}</Notice>
-
           <div className="mb-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span>{t("summary", { enabled: enabledCount, total: steps.length })}</span>
             {dirty && (
@@ -576,9 +578,7 @@ const OnboardingStepConfig = () => {
             {!isLoading && steps.length === 0 ? (
               <div className="py-8">
                 <EmptyState icon={ListOrdered} text={t("list.empty")} />
-                <p className="m-0 text-center text-xs text-muted-foreground">
-                  {t("list.emptyHint")}
-                </p>
+
                 {/* Gated on the catalogue: it is what says which of the eight
                     are mandatory, and seeding without it would leave those
                     rows unlocked until the next load. */}
@@ -622,12 +622,14 @@ const OnboardingStepConfig = () => {
                         setArmed(null);
                       }}
                       className={cn(
-                        "rounded-lg border-b border-border/60 last:border-b-0",
-                        dragOver === index && "bg-muted/50",
-                        !step.enabled && "opacity-70"
+                        "pro-tile mb-2 last:mb-0",
+                        // The row being dropped onto, in the app's accent
+                        // rather than a grey wash that reads as disabled.
+                        dragOver === index && "border-emerald-500 ring-1 ring-emerald-500/30",
+                        !step.enabled && "opacity-60"
                       )}
                     >
-                      <div className="flex flex-wrap items-center gap-2 py-3">
+                      <div className="flex flex-wrap items-center gap-2">
                         {canWrite && (
                           <button
                             type="button"
@@ -641,7 +643,7 @@ const OnboardingStepConfig = () => {
                           </button>
                         )}
 
-                        <span className="w-6 shrink-0 text-center text-sm font-semibold text-muted-foreground">
+                        <span className="flex size-6 shrink-0 items-center justify-center rounded-[2px] bg-muted text-xs font-semibold text-muted-foreground">
                           {index + 1}
                         </span>
 
@@ -711,46 +713,48 @@ const OnboardingStepConfig = () => {
                           title={step.mandatory ? t("badge.mandatoryHint") : undefined}
                         />
 
-                        {canWrite && (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label={t("list.moveUp")}
-                              title={t("list.moveUp")}
-                              disabled={index === 0}
-                              onClick={() => move(index, index - 1)}
-                            >
-                              <ArrowUp className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label={t("list.moveDown")}
-                              title={t("list.moveDown")}
-                              disabled={index === steps.length - 1}
-                              onClick={() => move(index, index + 1)}
-                            >
-                              <ArrowDown className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
+                        <div className="flex shrink-0 items-center gap-1">
+                          {canWrite && (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                aria-label={t("list.moveUp")}
+                                title={t("list.moveUp")}
+                                disabled={index === 0}
+                                onClick={() => move(index, index - 1)}
+                              >
+                                <ArrowUp className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                aria-label={t("list.moveDown")}
+                                title={t("list.moveDown")}
+                                disabled={index === steps.length - 1}
+                                onClick={() => move(index, index + 1)}
+                              >
+                                <ArrowDown className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
 
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={isOpen ? t("list.collapse") : t("list.expand")}
-                          title={isOpen ? t("list.collapse") : t("list.expand")}
-                          onClick={() => setExpanded(isOpen ? null : step.key)}
-                        >
-                          <ChevronDown
-                            className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
-                          />
-                        </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            aria-label={isOpen ? t("list.collapse") : t("list.expand")}
+                            title={isOpen ? t("list.collapse") : t("list.expand")}
+                            onClick={() => setExpanded(isOpen ? null : step.key)}
+                          >
+                            <ChevronDown
+                              className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+                            />
+                          </Button>
+                        </div>
                       </div>
 
                       {isOpen && (
-                        <div className="mb-3 flex flex-col gap-3 rounded-lg border border-border bg-muted/20 p-3">
+                        <div className="pro-tile mb-3 flex flex-col gap-3">
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <div className="flex flex-col gap-1.5">
                               <Label htmlFor={`${step.key}-label`}>{t("field.label")}</Label>
@@ -873,7 +877,7 @@ const OnboardingStepConfig = () => {
 
                           {/* Advanced: safe to leave alone, so it sits below
                               the labels and the gates rather than beside them. */}
-                          <details className="rounded-lg border border-border bg-background p-3">
+                          <details className="pro-tile">
                             <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               {t("field.advanced")}
                             </summary>

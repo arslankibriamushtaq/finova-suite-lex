@@ -29,10 +29,6 @@ const onboardingSteps: ModuleLocale = {
     discard: "Discard",
 
     // --- the things the API enforces, said where they apply
-    "note.reorder":
-      "Reordering changes what the customer sees — the progress display and the screens the app renders. It does not change the order the backend runs its checks in; that sequence is fixed.",
-    "note.replaceAll":
-      "Saving replaces the whole configuration for this country. A step you remove here is deleted.",
     "note.gateLatency":
       "Screening gate changes apply to new applications only. A customer already part-way through finishes on the settings that were in force when they started.",
     "note.stepLatency": "Step and label changes can take up to 5 minutes to reach the app.",
@@ -41,7 +37,6 @@ const onboardingSteps: ModuleLocale = {
 
     // --- list
     "list.empty": "This country has no configured steps.",
-    "list.emptyHint": "The app falls back to its built-in journey until steps are configured here.",
     "list.seed": "Seed the eight default steps",
     "list.moveUp": "Move up",
     "list.moveDown": "Move down",
