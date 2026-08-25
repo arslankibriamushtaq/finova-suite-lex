@@ -1,0 +1,34 @@
+# Netlify configuration for the Vite SPA.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# The backend is served over plain HTTP on a raw IP (148.251.185.111:8000) with
+# no TLS. A build served over HTTPS cannot call it directly — the browser blocks
+# it as mixed content. So on Netlify the app's API base is a same-origin path
+# (/backend), and the proxy rule below forwards it to the HTTP backend
+# server-side, where the mixed-content rule does not apply.
+#
+# Local dev is unaffected: it reads VITE_API_BASE_URL from .env and talks to the
+# backend directly over http://, which the browser permits from http://localhost.
+[build.environment]
+  VITE_API_BASE_URL = "/backend"
+
+# API proxy — MUST come before the SPA fallback below, because Netlify applies
+# the first matching rule. force = true so it wins even though the path does not
+# exist as a file. :splat carries the rest of the path through unchanged.
+[[redirects]]
+  from = "/backend/*"
+  to = "http://148.251.185.111:8000/:splat"
+  status = 200
+  force = true
+
+# Single-page-app fallback: this is a client-side-routed React Router app, so
+# every non-API path must serve index.html and let the router resolve it.
+# Without this, a refresh or a deep link (e.g. /LOS/Lex/Delegation) hits
+# Netlify's file server, finds no such file, and 404s. Status 200 rewrites — not
+# a 301/302 redirect — so the URL the user sees is preserved.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

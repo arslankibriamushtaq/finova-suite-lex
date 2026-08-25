@@ -263,6 +263,7 @@ import LexAuthorityLevels from "../pages/lmsPages/Lex/LexAuthorityLevels";
 import LexSectors from "../pages/lmsPages/Lex/LexSectors";
 import LexSlaPolicies from "../pages/lmsPages/Lex/LexSlaPolicies";
 import LexChecks from "../pages/lmsPages/Lex/LexChecks";
+import LexDocumentTypes from "../pages/lmsPages/Lex/LexDocumentTypes";
 import LexAnalyses from "../pages/lmsPages/Lex/LexAnalyses";
 import LexSlaBoard from "../pages/lmsPages/Lex/LexSlaBoard";
 import LexPolicyLibrary from "../pages/lmsPages/Lex/LexPolicyLibrary";
@@ -1006,6 +1007,9 @@ export const router = createBrowserRouter(
             { path: "/LOS/Lex/Sectors", element: <LexSectors /> },
             { path: "/LOS/Lex/SlaPolicies", element: <LexSlaPolicies /> },
             { path: "/LOS/Lex/Checks", element: <LexChecks /> },
+            // The checks library above; which of them run on which document
+            // type here. The type references the library, never copies it.
+            { path: "/LOS/Lex/DocumentTypes", element: <LexDocumentTypes /> },
             { path: "/LOS/Lex/Analyses", element: <LexAnalyses /> },
             // The review queue and one case. `lex.cases.messages` and
             // `lex.cases.decision` are separate objects, gated in the page.

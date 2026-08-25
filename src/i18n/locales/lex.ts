@@ -183,6 +183,26 @@ const lex: ModuleLocale = {
       "Assigned team, current owner and escalation trigger are not modelled — no LEX service has a team model. The assignee and authority level above are the equivalents.",
     "ws.auditNote": "Append-only. Nothing edits or removes an entry.",
 
+    // --- Document inventory (what the case has, as against what was concluded)
+    "inv.title": "Documents on this case",
+    "inv.subtitle":
+      "Everything the case holds — the original submission and anything the applicant sent back — newest first. The verification detail is in the panel below.",
+    "inv.loading": "Loading documents…",
+    "inv.empty": "No documents have been received on this case.",
+    "inv.unknownKind": "Unnamed document",
+    "inv.originalSubmission": "Part of the original submission",
+    "inv.notAnalysed": "Not analysed",
+    "inv.fromApplicant": "Sent by applicant",
+    "inv.dataProblem":
+      "The submission itself is at fault — unreadable or the wrong file. This is not a finding about the applicant.",
+    "inv.open": "Open",
+    "inv.download": "Download",
+    "inv.viewChecks": "View checks",
+    "inv.retry": "Try again",
+    "inv.openFailed": "The document could not be opened.",
+    "inv.err.notFound":
+      "That document is not on this case. Refresh the case rather than retrying — the id was checked before anything was fetched.",
+
     // --- Communication Hub
     "hub.title": "Communication Hub",
     "hub.subtitle":
@@ -252,6 +272,55 @@ const lex: ModuleLocale = {
     "case.escalate": "Escalate",
     "case.sendToSource": "Send to source",
     "case.sourceResponded": "Source responded",
+
+    // --- Handing the case back to the applicant -------------------------
+    "case.source.title": "Send to source",
+    "case.source.explain":
+      "The applicant is told what is needed and gets a one-time upload link. The SLA clock stops until they reply.",
+    "case.source.detail": "What is needed",
+    "case.source.detailPlaceholder": "Salary certificate is unreadable — please re-upload",
+    "case.source.detailHint":
+      "The applicant reads this, and it is written to the audit trail. Name the specific problem.",
+    "case.source.valid.detail": "Say what is needed — this is what the applicant will read.",
+    "case.source.channel": "How to tell them",
+    "case.source.valid.channel": "Choose the channel that reaches this applicant.",
+    "case.source.channel.PUSH": "Push",
+    "case.source.channel.EMAIL": "Email",
+    "case.source.channel.SMS": "SMS",
+    "case.source.channelHint.PUSH": "Notification in the mobile app",
+    "case.source.channelHint.EMAIL": "Email containing the upload link",
+    "case.source.channelHint.SMS": "Text message containing the upload link",
+    "case.source.documents": "Documents requested",
+    "case.source.addDocument": "Add document",
+    "case.source.removeDocument": "Remove this document",
+    "case.source.kindPlaceholder": "Choose a document type…",
+    "case.source.notePlaceholder": "Note, e.g. last six months",
+    "case.source.catalogueEmpty":
+      "No document types are configured — ask an administrator to add them. Documents cannot be requested until they exist, because a request the reader cannot match reaches the applicant with nothing to check it against.",
+    "case.source.catalogueUnavailable":
+      "The document catalogue could not be loaded, so no documents can be listed on this request. The rest of the hand-back still works.",
+    "case.err.unknownDocumentType":
+      "One of these document types is no longer available — an administrator retired it. The list has been refreshed; pick again.",
+    "case.source.noDocumentsWarning":
+      "No documents listed — the applicant will be asked to reply, and the case stays with them until someone sends it back.",
+    "case.source.due": "Deadline",
+    "case.source.hours": "{{hours}} hours",
+    "case.source.customHours": "Custom",
+    "case.source.dueHint": "Counted from now, on the server's clock.",
+    "case.source.noDeadlineHint": "No deadline. The upload link still expires on its own.",
+    "case.source.linkNote":
+      "The upload link is sent once and is never shown here. There is no resend — sending another means handing the case back again.",
+
+    // --- The case while it waits ----------------------------------------
+    "case.source.panelTitle": "Waiting on the applicant",
+    "case.source.sentVia": "Sent by {{channel}} · {{at}}",
+    "case.source.dueAt": "Due {{at}}",
+    "case.source.overdue": "Overdue — was due {{at}}",
+    "case.source.noDeadline": "No deadline",
+    "case.source.received": "Received",
+    "case.source.awaited": "Not yet received",
+    "case.source.noDocumentsNote":
+      "No documents were requested — this is a question. The case comes back when the applicant presses Send on their page, or when someone here marks the source as having responded.",
     "case.decide": "Decide",
     "case.decideTitle": "Record a decision",
     "case.decideExplain":
@@ -274,6 +343,8 @@ const lex: ModuleLocale = {
     "case.sla.notTrackedNote":
       "No published SLA policy covers this product and sector, so this case is not measured. Not tracked is not the same as within SLA.",
     "case.sla.stoppedNote": "The clock is stopped — this case is waiting on someone outside the queue.",
+    "case.sla.waitingOnApplicant":
+      "The clock is stopped while this case is with the applicant. Nothing is counting down and nothing is breaching.",
     "case.field.applicant": "Applicant",
     "case.field.product": "Product",
     "case.field.channel": "Channel",
@@ -293,6 +364,8 @@ const lex: ModuleLocale = {
     "case.err.invalidAction": "That action is not in this process's vocabulary.",
     "case.err.overrideReason": "Overruling requires a written reason.",
     "case.err.notFound": "This case no longer exists.",
+    "case.err.invalidState":
+      "The case has already moved on — someone else acted on it. It has been refreshed.",
     "case.toast.loadFailed": "The case could not be loaded.",
     "case.toast.claimed": "Case claimed.",
     "case.toast.claimFailed": "The case could not be claimed.",
@@ -417,6 +490,83 @@ const lex: ModuleLocale = {
     "chk.err.duplicateOrdinal": "Another check already holds that position.",
     "chk.err.notFound": "This check no longer exists.",
     "chk.err.noSequence": "No verification sequence is configured for this tenant yet.",
+
+    // --- Document types and their sequences
+    "dt.title": "Document Types",
+    "dt.subtitle":
+      "The document types this company verifies, and for each one the sequence of checks that runs on it. A salary certificate has no closing balance to reconcile, and a bank statement has no employer stamp to validate.",
+    "dt.listTitle": "Types",
+    "dt.new": "New type",
+    "dt.empty": "No document types yet.",
+    "dt.emptyExplain":
+      "Nothing breaks without them: a company with no types runs one sequence over every document, exactly as before. Creating a type is how a bank statement stops being judged on checks meant for a payslip.",
+    "dt.selectType": "Pick a type to see and edit its sequence.",
+    "dt.sequenceFor": "Sequence for {{name}}",
+    "dt.inactive": "Retired",
+    "dt.checkCount": "{{count}} checks run",
+    "dt.unassigned": "No sequence assigned",
+    "dt.fallbackBanner":
+      "No sequence assigned — this type falls back to the company-wide list of {{count}} checks. Nothing here is configured for this document yet.",
+    "dt.blockingWarning":
+      "A blocking check that fails halts the sequence, and every check after it is recorded NOT_RUN. The order is load-bearing: salary figures read off a document that failed tampering detection look authoritative and are worthless.",
+    "dt.misorderWarning":
+      "{{code}} is a financial check sitting above an authenticity one. Authenticity checks are meant to gate the financial ones — this is allowed, but check it is what you meant.",
+    "dt.stepCount": "{{count}} steps",
+    "dt.unsaved": "Unsaved",
+    "dt.skipped": "Skipped",
+    "dt.onFailure": "On failure",
+    "dt.haltsHint": "halts here — the {{count}} checks below would be recorded NOT_RUN",
+    "dt.allChecksUsed": "Every active check in the library is already in this sequence.",
+    "dt.noSteps": "No checks in this sequence.",
+    "dt.addCheck": "Add a check from the library",
+    "dt.pickCheck": "Choose a check…",
+    "dt.add": "Add",
+    "dt.libraryNote":
+      "Checks are referenced, not copied. Renaming or retiring one on the Verification Sequence screen changes it everywhere it is used; deactivating a step here affects this type only.",
+    "dt.saveSequence": "Save sequence",
+    "dt.discard": "Discard changes",
+    "dt.stepActive": "Run this step",
+    "dt.moveUp": "Move up",
+    "dt.moveDown": "Move down",
+    "dt.removeStep": "Remove from sequence",
+    "dt.blocking.inherit": "Inherit — {{resolved}}",
+    "dt.blocking.always": "Always halt",
+    "dt.blocking.never": "Never halt",
+    "dt.clear.title": "Clear this sequence?",
+    "dt.clear.explain":
+      "Saving an empty sequence does not mean no checks will run — the type falls back to the company-wide list instead.",
+    "dt.clear.confirm": "Clear and fall back",
+    "dt.form.newTitle": "New document type",
+    "dt.form.editTitle": "Edit document type",
+    "dt.form.explain":
+      "The code is the type's identity. Retire a type with the switch below — there is no delete, because analyses already filed under the code keep their meaning.",
+    "dt.field.code": "Type code",
+    "dt.field.codeHint":
+      "Stored upper-cased and matched case-insensitively — bank_statement and BANK_STATEMENT are the same type.",
+    "dt.field.codeLocked":
+      "The code cannot change: analyses are filed under it, and renaming would orphan them.",
+    "dt.field.name": "Display name",
+    "dt.field.description": "Description",
+    "dt.field.active": "Offered for new documents",
+    "dt.field.activeHint":
+      "Retiring a type stops it being offered. Analyses already recorded against it are untouched.",
+    "dt.valid.code": "A type code is required.",
+    "dt.valid.name": "A display name is required.",
+    "dt.toast.saved": "Document type saved.",
+    "dt.toast.saveFailed": "The document type could not be saved.",
+    "dt.toast.loadFailed": "The document types could not be loaded.",
+    "dt.toast.stepsFailed": "This type's sequence could not be loaded.",
+    "dt.toast.sequenceSaved": "Sequence saved.",
+    "dt.toast.sequenceFailed":
+      "The sequence was refused and nothing was written — correct the flagged row and save again.",
+    "dt.err.notFound": "This type no longer exists. Reload the list.",
+    "dt.err.duplicateCode":
+      "A type with this code already exists. Matching ignores case, so bank_statement collides with BANK_STATEMENT.",
+    "dt.err.invalid": "The type was refused.",
+    "dt.err.duplicateOrdinal":
+      "Two steps were given the same position. Reload the sequence and save again.",
+    "dt.err.checkUnknown": "This company's check library has no such check. Add it there first.",
+    "dt.err.duplicateCheck": "This check is already in the sequence.",
 
     // --- SLA board
     "board.tile.averageInFlight": "Average time on the clock",
@@ -1163,6 +1313,84 @@ const lex: ModuleLocale = {
     "chk.err.duplicateOrdinal": "Un autre contrôle occupe déjà cette position.",
     "chk.err.notFound": "Ce contrôle n'existe plus.",
     "chk.err.noSequence": "Aucune séquence de vérification n'est encore configurée pour ce locataire.",
+
+    // --- Types de documents et leurs séquences
+    "dt.title": "Types de documents",
+    "dt.subtitle":
+      "Les types de documents que cette société vérifie, et pour chacun la séquence de contrôles qui s'y applique. Une attestation de salaire n'a pas de solde de clôture à rapprocher, et un relevé bancaire n'a pas de cachet employeur à valider.",
+    "dt.listTitle": "Types",
+    "dt.new": "Nouveau type",
+    "dt.empty": "Aucun type de document pour l'instant.",
+    "dt.emptyExplain":
+      "Rien ne casse sans eux : une société sans types applique une seule séquence à tous les documents, comme auparavant. Créer un type, c'est cesser de juger un relevé bancaire sur des contrôles conçus pour un bulletin de paie.",
+    "dt.selectType": "Choisissez un type pour voir et modifier sa séquence.",
+    "dt.sequenceFor": "Séquence pour {{name}}",
+    "dt.inactive": "Retiré",
+    "dt.checkCount": "{{count}} contrôles exécutés",
+    "dt.unassigned": "Aucune séquence attribuée",
+    "dt.fallbackBanner":
+      "Aucune séquence attribuée — ce type retombe sur la liste applicable à toute la société, soit {{count}} contrôles. Rien ici n'est encore configuré pour ce document.",
+    "dt.blockingWarning":
+      "Un contrôle bloquant qui échoue arrête la séquence, et tous les contrôles suivants sont enregistrés comme non exécutés. L'ordre porte le sens : des chiffres de salaire lus sur un document ayant échoué à la détection de falsification paraissent fiables et ne valent rien.",
+    "dt.misorderWarning":
+      "{{code}} est un contrôle financier placé au-dessus d'un contrôle d'authenticité. Les contrôles d'authenticité sont censés conditionner les contrôles financiers — c'est permis, mais vérifiez que c'est voulu.",
+    "dt.stepCount": "{{count}} étapes",
+    "dt.unsaved": "Non enregistré",
+    "dt.skipped": "Ignoré",
+    "dt.onFailure": "En cas d'échec",
+    "dt.haltsHint": "s'arrête ici — les {{count}} contrôles suivants seraient enregistrés NOT_RUN",
+    "dt.allChecksUsed": "Tous les contrôles actifs de la bibliothèque sont déjà dans cette séquence.",
+    "dt.noSteps": "Aucun contrôle dans cette séquence.",
+    "dt.addCheck": "Ajouter un contrôle depuis la bibliothèque",
+    "dt.pickCheck": "Choisir un contrôle…",
+    "dt.add": "Ajouter",
+    "dt.libraryNote":
+      "Les contrôles sont référencés, non copiés. Les renommer ou les retirer sur l'écran Séquence de vérification les modifie partout où ils sont utilisés ; désactiver une étape ici n'affecte que ce type.",
+    "dt.saveSequence": "Enregistrer la séquence",
+    "dt.discard": "Annuler les modifications",
+    "dt.stepActive": "Exécuter cette étape",
+    "dt.moveUp": "Monter",
+    "dt.moveDown": "Descendre",
+    "dt.removeStep": "Retirer de la séquence",
+    "dt.blocking.inherit": "Hériter — {{resolved}}",
+    "dt.blocking.always": "Toujours arrêter",
+    "dt.blocking.never": "Ne jamais arrêter",
+    "dt.clear.title": "Vider cette séquence ?",
+    "dt.clear.explain":
+      "Enregistrer une séquence vide ne signifie pas qu'aucun contrôle ne s'exécutera : le type retombe sur la liste applicable à toute la société.",
+    "dt.clear.confirm": "Vider et revenir au défaut",
+    "dt.form.newTitle": "Nouveau type de document",
+    "dt.form.editTitle": "Modifier le type de document",
+    "dt.form.explain":
+      "Le code est l'identité du type. Retirez un type avec l'interrupteur ci-dessous — il n'y a pas de suppression, car les analyses déjà classées sous ce code gardent leur sens.",
+    "dt.field.code": "Code du type",
+    "dt.field.codeHint":
+      "Stocké en majuscules et comparé sans tenir compte de la casse — bank_statement et BANK_STATEMENT sont le même type.",
+    "dt.field.codeLocked":
+      "Le code ne peut pas changer : les analyses y sont rattachées, et le renommer les rendrait orphelines.",
+    "dt.field.name": "Nom affiché",
+    "dt.field.description": "Description",
+    "dt.field.active": "Proposé pour les nouveaux documents",
+    "dt.field.activeHint":
+      "Retirer un type cesse de le proposer. Les analyses déjà enregistrées à son nom ne changent pas.",
+    "dt.valid.code": "Un code de type est requis.",
+    "dt.valid.name": "Un nom affiché est requis.",
+    "dt.toast.saved": "Type de document enregistré.",
+    "dt.toast.saveFailed": "Le type de document n'a pas pu être enregistré.",
+    "dt.toast.loadFailed": "Les types de documents n'ont pas pu être chargés.",
+    "dt.toast.stepsFailed": "La séquence de ce type n'a pas pu être chargée.",
+    "dt.toast.sequenceSaved": "Séquence enregistrée.",
+    "dt.toast.sequenceFailed":
+      "La séquence a été refusée et rien n'a été écrit — corrigez la ligne signalée puis enregistrez de nouveau.",
+    "dt.err.notFound": "Ce type n'existe plus. Rechargez la liste.",
+    "dt.err.duplicateCode":
+      "Un type portant ce code existe déjà. La comparaison ignore la casse : bank_statement entre en conflit avec BANK_STATEMENT.",
+    "dt.err.invalid": "Le type a été refusé.",
+    "dt.err.duplicateOrdinal":
+      "Deux étapes ont reçu la même position. Rechargez la séquence puis enregistrez de nouveau.",
+    "dt.err.checkUnknown":
+      "La bibliothèque de contrôles de cette société ne contient pas ce contrôle. Ajoutez-le d'abord.",
+    "dt.err.duplicateCheck": "Ce contrôle figure déjà dans la séquence.",
     "board.tile.averageInFlight": "Temps moyen décompté",
     "board.onClockHint": "Exclut les périodes de chronomètre arrêté : ce n'est donc pas la durée d'ouverture.",
     "gov.configVersion": "Configurateur v{{version}}",
@@ -1719,6 +1947,26 @@ const lex: ModuleLocale = {
     "ws.buttonsGap": "« Approuver une limite réduite » et « Renvoyer au comité des risques de crédit » ne sont pas disponibles : LEX enregistre une action, non un montant modifié, et aucun acheminement vers un comité n'existe. Modifier une offre relève du crédit.",
     "ws.teamGap": "L'équipe affectée, le responsable actuel et le déclencheur d'escalade ne sont pas modélisés — aucun service LEX ne modélise les équipes. L'assigné et le niveau d'autorité ci-dessus en sont les équivalents.",
     "ws.auditNote": "En ajout seul. Rien ne modifie ni ne supprime une entrée.",
+
+    // --- Inventaire documentaire
+    "inv.title": "Documents de ce dossier",
+    "inv.subtitle":
+      "Tout ce que le dossier contient — le dépôt initial et ce que le demandeur a renvoyé — du plus récent au plus ancien. Le détail des vérifications figure dans le panneau ci-dessous.",
+    "inv.loading": "Chargement des documents…",
+    "inv.empty": "Aucun document n'a été reçu sur ce dossier.",
+    "inv.unknownKind": "Document sans nom",
+    "inv.originalSubmission": "Fait partie du dépôt initial",
+    "inv.notAnalysed": "Non analysé",
+    "inv.fromApplicant": "Envoyé par le demandeur",
+    "inv.dataProblem":
+      "Le dépôt lui-même est en cause — illisible ou fichier erroné. Ce n'est pas un constat sur le demandeur.",
+    "inv.open": "Ouvrir",
+    "inv.download": "Télécharger",
+    "inv.viewChecks": "Voir les contrôles",
+    "inv.retry": "Réessayer",
+    "inv.openFailed": "Le document n'a pas pu être ouvert.",
+    "inv.err.notFound":
+      "Ce document n'appartient pas à ce dossier. Actualisez le dossier plutôt que de réessayer — l'identifiant est vérifié avant toute lecture.",
     "hub.title": "Centre de communication",
     "hub.subtitle": "Un salon est créé pour chaque transmission et chaque compte LEX en est membre. L'assigné indique qui doit agir ; la visibilité est délibérément ouverte à tous.",
     "hub.noRooms": "Aucun salon ne correspond.",
@@ -1989,6 +2237,79 @@ const lex: ModuleLocale = {
     "chk.err.duplicateOrdinal": "يشغل فحص آخر هذا الترتيب بالفعل.",
     "chk.err.notFound": "لم يعد هذا الفحص موجودًا.",
     "chk.err.noSequence": "لا يوجد تسلسل تحقّق مُهيأ لهذا المستأجر بعد.",
+
+    // --- أنواع المستندات وتسلسل فحوصها
+    "dt.title": "أنواع المستندات",
+    "dt.subtitle":
+      "أنواع المستندات التي تتحقّق منها هذه الشركة، ولكل نوع تسلسل الفحوص الذي يُطبَّق عليه. فشهادة الراتب لا رصيد ختامي فيها لتتم مطابقته، وكشف الحساب لا ختم صاحب عمل فيه ليُتحقَّق منه.",
+    "dt.listTitle": "الأنواع",
+    "dt.new": "نوع جديد",
+    "dt.empty": "لا توجد أنواع مستندات بعد.",
+    "dt.emptyExplain":
+      "لا شيء يتعطّل بدونها: شركة بلا أنواع تُطبّق تسلسلًا واحدًا على كل مستند كما كان الحال. وإنشاء نوع هو ما يوقف الحكم على كشف حساب بفحوص وُضعت لقسيمة راتب.",
+    "dt.selectType": "اختر نوعًا لعرض تسلسله وتعديله.",
+    "dt.sequenceFor": "تسلسل {{name}}",
+    "dt.inactive": "مُتقاعد",
+    "dt.checkCount": "{{count}} فحوص تُنفَّذ",
+    "dt.unassigned": "لا تسلسل مُسنَد",
+    "dt.fallbackBanner":
+      "لا تسلسل مُسنَد — يعود هذا النوع إلى قائمة الشركة العامة البالغة {{count}} فحصًا. ولم يُهيَّأ هنا شيء لهذا المستند بعد.",
+    "dt.blockingWarning":
+      "الفحص المانع إذا أخفق أوقف التسلسل، وسُجِّل كل فحص بعده على أنه لم يُنفَّذ. والترتيب حامل للمعنى: أرقام راتب تُقرأ من مستند أخفق في كشف التلاعب تبدو موثوقة ولا قيمة لها.",
+    "dt.misorderWarning":
+      "{{code}} فحص مالي موضوع فوق فحص أصالة. ويُفترض أن تكون فحوص الأصالة بوابة للفحوص المالية — وهذا مسموح، لكن تأكّد أنه ما قصدته.",
+    "dt.stepCount": "{{count}} خطوات",
+    "dt.unsaved": "غير محفوظ",
+    "dt.skipped": "متجاوَز",
+    "dt.onFailure": "عند الإخفاق",
+    "dt.haltsHint": "يتوقّف هنا — وستُسجَّل الفحوص الـ {{count}} التالية على أنها لم تُنفَّذ",
+    "dt.allChecksUsed": "كل فحص فعّال في المكتبة موجود في هذا التسلسل بالفعل.",
+    "dt.noSteps": "لا فحوص في هذا التسلسل.",
+    "dt.addCheck": "أضف فحصًا من المكتبة",
+    "dt.pickCheck": "اختر فحصًا…",
+    "dt.add": "إضافة",
+    "dt.libraryNote":
+      "الفحوص مُشار إليها لا منسوخة. فإعادة تسمية فحص أو تقاعده في شاشة تسلسل التحقّق يغيّره أينما استُخدم؛ أما تعطيل خطوة هنا فيخصّ هذا النوع وحده.",
+    "dt.saveSequence": "حفظ التسلسل",
+    "dt.discard": "تجاهل التغييرات",
+    "dt.stepActive": "تنفيذ هذه الخطوة",
+    "dt.moveUp": "تحريك لأعلى",
+    "dt.moveDown": "تحريك لأسفل",
+    "dt.removeStep": "إزالة من التسلسل",
+    "dt.blocking.inherit": "موروث — {{resolved}}",
+    "dt.blocking.always": "يوقف دائمًا",
+    "dt.blocking.never": "لا يوقف أبدًا",
+    "dt.clear.title": "تفريغ هذا التسلسل؟",
+    "dt.clear.explain":
+      "حفظ تسلسل فارغ لا يعني أن لا فحوص ستُنفَّذ — بل يعود النوع إلى قائمة الشركة العامة.",
+    "dt.clear.confirm": "تفريغ والعودة للافتراضي",
+    "dt.form.newTitle": "نوع مستند جديد",
+    "dt.form.editTitle": "تعديل نوع المستند",
+    "dt.form.explain":
+      "الرمز هو هوية النوع. وتقاعده بالمفتاح أدناه — ولا حذف هنا، لأن التحليلات المحفوظة تحت الرمز تبقى ذات معنى.",
+    "dt.field.code": "رمز النوع",
+    "dt.field.codeHint":
+      "يُخزَّن بأحرف كبيرة ويُطابَق دون اعتبار لحالة الأحرف — فـ bank_statement و BANK_STATEMENT النوع نفسه.",
+    "dt.field.codeLocked": "لا يمكن تغيير الرمز: التحليلات محفوظة تحته، وتغييره ييتّمها.",
+    "dt.field.name": "الاسم المعروض",
+    "dt.field.description": "الوصف",
+    "dt.field.active": "معروض للمستندات الجديدة",
+    "dt.field.activeHint": "تقاعد النوع يوقف عرضه. أما التحليلات المسجّلة باسمه فلا تتأثر.",
+    "dt.valid.code": "رمز النوع مطلوب.",
+    "dt.valid.name": "الاسم المعروض مطلوب.",
+    "dt.toast.saved": "حُفظ نوع المستند.",
+    "dt.toast.saveFailed": "تعذّر حفظ نوع المستند.",
+    "dt.toast.loadFailed": "تعذّر تحميل أنواع المستندات.",
+    "dt.toast.stepsFailed": "تعذّر تحميل تسلسل هذا النوع.",
+    "dt.toast.sequenceSaved": "حُفظ التسلسل.",
+    "dt.toast.sequenceFailed": "رُفض التسلسل ولم يُكتب شيء — صحّح السطر المُعلَّم ثم احفظ مجددًا.",
+    "dt.err.notFound": "لم يعد هذا النوع موجودًا. أعد تحميل القائمة.",
+    "dt.err.duplicateCode":
+      "يوجد نوع بهذا الرمز بالفعل. والمطابقة تتجاهل حالة الأحرف، فـ bank_statement يتعارض مع BANK_STATEMENT.",
+    "dt.err.invalid": "رُفض النوع.",
+    "dt.err.duplicateOrdinal": "أُعطيت خطوتان الموضع نفسه. أعد تحميل التسلسل ثم احفظ مجددًا.",
+    "dt.err.checkUnknown": "مكتبة فحوص هذه الشركة لا تتضمّن هذا الفحص. أضِفه إليها أولًا.",
+    "dt.err.duplicateCheck": "هذا الفحص موجود في التسلسل بالفعل.",
     "board.tile.averageInFlight": "متوسط الوقت المحتسَب",
     "board.onClockHint": "لا يشمل فترات توقّف المؤقّت، فهو ليس مدة بقاء الحالة مفتوحة.",
     "gov.configVersion": "المُهيّئ الإصدار {{version}}",
@@ -2545,6 +2866,26 @@ const lex: ModuleLocale = {
     "ws.buttonsGap": "خيارا «اعتماد حد مخفّض» و«الإحالة إلى لجنة مخاطر الائتمان» غير متاحين: فـ LEX يسجّل إجراءً لا مبلغًا معدّلًا، ولا يوجد توجيه إلى لجنة. أما تعديل العرض فهو من اختصاص نظام التمويل.",
     "ws.teamGap": "الفريق المسند إليه والمالك الحالي ومحفّز التصعيد غير ممثّلة في النموذج — إذ لا توجد خدمة في LEX تنمذج الفرق. والمسؤول المُسنَد ومستوى الصلاحية أعلاه هما المكافئ لذلك.",
     "ws.auditNote": "للإضافة فقط. لا شيء يعدّل مدخلًا أو يحذفه.",
+
+    // --- جرد المستندات
+    "inv.title": "مستندات هذه الحالة",
+    "inv.subtitle":
+      "كل ما تحمله الحالة — التقديم الأصلي وما أعاد المتقدّم إرساله — من الأحدث إلى الأقدم. وتفاصيل التحقق في اللوحة أدناه.",
+    "inv.loading": "جارٍ تحميل المستندات…",
+    "inv.empty": "لم يُستلم أي مستند على هذه الحالة.",
+    "inv.unknownKind": "مستند بلا اسم",
+    "inv.originalSubmission": "ضمن التقديم الأصلي",
+    "inv.notAnalysed": "لم يُحلَّل",
+    "inv.fromApplicant": "أرسله المتقدّم",
+    "inv.dataProblem":
+      "الخلل في التقديم نفسه — غير مقروء أو ملف خاطئ. وليس هذا حكمًا على المتقدّم.",
+    "inv.open": "فتح",
+    "inv.download": "تنزيل",
+    "inv.viewChecks": "عرض الفحوصات",
+    "inv.retry": "إعادة المحاولة",
+    "inv.openFailed": "تعذّر فتح المستند.",
+    "inv.err.notFound":
+      "هذا المستند ليس على هذه الحالة. حدّث الحالة بدل إعادة المحاولة — فالمعرّف يُفحص قبل أي قراءة.",
     "hub.title": "مركز التواصل",
     "hub.subtitle": "تُنشأ غرفة لكل إحالة، وكل حساب في LEX عضو فيها. ويحدد المسؤول المُسنَد من عليه التصرف؛ أما الاطّلاع فمفتوح عن قصد.",
     "hub.noRooms": "لا توجد غرف مطابقة.",
