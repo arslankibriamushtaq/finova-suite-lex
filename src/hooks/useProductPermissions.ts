@@ -992,6 +992,14 @@ export const LEX_PERMISSIONS = {
   /** `LEX_DOCUMENTS` — the verification sequence and the analyses it produced. */
   CHECK_READ: "LEX_DOCUMENTS_READ",
   CHECK_WRITE: "LEX_DOCUMENTS_MANAGE",
+  /**
+   * `lex.documents.types` — the document types and each one's sequence. A
+   * separate Casbin object from `lex.documents.checks`, but the same catalogue
+   * permission: authoring a check and pointing a type at one are both
+   * document configuration.
+   */
+  DOC_TYPE_READ: "LEX_DOCUMENTS_READ",
+  DOC_TYPE_WRITE: "LEX_DOCUMENTS_MANAGE",
   /** Read-only in Casbin too: no act writes an analysis. */
   ANALYSIS_READ: "LEX_DOCUMENTS_READ",
 

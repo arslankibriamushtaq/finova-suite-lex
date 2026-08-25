@@ -1,5 +1,13 @@
 import { lexCaseApi } from "../../utils/axiosLexService";
-import { clean, pageOf, toServerPage, unwrap, type LexPage, type LexPageQuery } from "./apisLexCore";
+import {
+  clean,
+  pageOf,
+  toServerPage,
+  unwrap,
+  unwrapList,
+  type LexPage,
+  type LexPageQuery,
+} from "./apisLexCore";
 import type { LexAnalysis } from "./apisLexDocuments";
 
 /**
@@ -346,6 +354,184 @@ export const caseAnalyses = (
   }));
 };
 
+/**
+ * How the applicant is told the case is with them.
+ *
+ * **Nothing is preselected in the UI on purpose.** Which channel reaches a
+ * given applicant is something the underwriter knows and the platform does
+ * not — a branch-onboarded customer may have no app installed, and a push into
+ * an app nobody opens is a request that silently never arrives while the case's
+ * clock stays stopped.
+ */
+export type LexSourceRequestChannel = "PUSH" | "EMAIL" | "SMS";
+
+export const SOURCE_REQUEST_CHANNELS: LexSourceRequestChannel[] = ["PUSH", "EMAIL", "SMS"];
+
+/**
+ * One line of the request.
+ *
+ * **`kind` is a `typeCode` from the governed catalogue, not free text.** It used
+ * to be typed, and a typed code is now refused with
+ * `LEX.CASE.UNKNOWN_DOCUMENT_TYPE`. The catalogue lives in lex-document-service
+ * — `getDocumentTypeCatalogue()` — because that is the service that reads the
+ * files: the request and the analysis answering it have to name the same thing.
+ *
+ * Send the code, never the display name: the name is a label an admin can
+ * rename, the code is what the reader matches on.
+ *
+ * `note` is what turns a second rejected upload into a first accepted one:
+ * "last six months", "stamped by the employer", "the page showing the IBAN".
+ */
+export interface LexRequestedDocument {
+  kind: string;
+  note?: string;
+}
+
+export interface LexSendToSourceRequest {
+  /** Required. Shown to the applicant *and* written to the audit trail. */
+  detail: string;
+  /** Required, with no default — see `LexSourceRequestChannel`. */
+  channel: LexSourceRequestChannel | string;
+  /** Optional. Zero rows is valid and means "answer the question". */
+  requestedDocuments?: LexRequestedDocument[];
+  /** Optional duration in hours. Omit for no deadline. */
+  dueInHours?: number;
+}
+
+/**
+ * What the case is waiting on. **Null whenever nothing is outstanding**, which
+ * is how the panel knows to disappear — including when the applicant pressed
+ * Send and nobody on this side did anything. Nothing auto-submits: the upload
+ * that completes the checklist still answers `submitted: false`, so a wrong
+ * file can be replaced instead of leaving with the case.
+ */
+export interface LexOutstandingRequest {
+  channel?: LexSourceRequestChannel | string | null;
+  detail?: string | null;
+  documents?: LexRequestedDocument[];
+  /** Null means no deadline — which is "no deadline", never "overdue". */
+  dueAt?: string | null;
+  requestedAt?: string | null;
+  /**
+   * **Computed server-side.** Use it as given: comparing `dueAt` against the
+   * browser clock puts an overdue badge on a case whose owner's laptop is
+   * simply set wrong.
+   */
+  overdue?: boolean;
+}
+
+/**
+ * Which requested kinds have actually arrived.
+ *
+ * The request object does not say — it is the audit trail that does, through
+ * `DOCUMENT_UPLOADED` entries whose detail reads `Received BANK_STATEMENT
+ * (statement.pdf)`. Matching is case-insensitive because `Bank_Statement` and
+ * `BANK_STATEMENT` are the same document to the service that stores them.
+ */
+export const receivedDocumentKinds = (record?: LexCase | null): Set<string> => {
+  const kinds = new Set<string>();
+  for (const entry of record?.auditTrail || []) {
+    if (entry.action !== "DOCUMENT_UPLOADED") continue;
+    const match = /received\s+([A-Za-z0-9_\-.]+)/i.exec(entry.detail || "");
+    if (match) kinds.add(match[1].toLowerCase());
+  }
+  return kinds;
+};
+
+/**
+ * One row of the case's document **inventory** — what the underwriter has, not
+ * what the reader concluded about it.
+ *
+ * Two sources are merged on purpose: files the applicant sent back through a
+ * hand-back (`uploadedByApplicant`, with a `fileName`) and the files that came
+ * with the original submission. An underwriter asks "what have I got", not
+ * "which subsystem knows about it".
+ */
+export interface LexCaseDocument {
+  documentId: string;
+  kind?: string | null;
+  /** Null for the original submission — render nothing, not an empty slot. */
+  fileName?: string | null;
+  receivedAt?: string | null;
+  /**
+   * `VERIFIED` · `ADVERSE_FINDINGS` · `UNREADABLE` · `WRONG_TYPE` ·
+   * `ANALYSIS_UNAVAILABLE`. **Null means nothing has read it yet** — which must
+   * render as "Not analysed" and never as a blank cell, because a blank beside
+   * four verdicts reads as a pass.
+   */
+  verificationState?: string | null;
+  /** The submission is at fault, not the applicant. Style it apart. */
+  dataProblem?: boolean;
+  /** Null when unanalysed. Links to the check rows. */
+  analysisId?: string | null;
+  uploadedByApplicant?: boolean;
+  /**
+   * **Relative** (`documents/{id}/content`), because the caller reached this
+   * service through some gateway prefix and an absolute URL built server-side
+   * would be that gateway's guess. Join it to the case call's own base — which
+   * is what `getCaseDocumentBlob` does.
+   */
+  contentUrl?: string | null;
+}
+
+/**
+ * The inventory. Newest first: a case with three hand-backs carries three
+ * generations of the same `kind`, and the one that matters is the last.
+ *
+ * `documentVerification` on the case is unchanged and stays the source for the
+ * check-row panel. This list is the inventory; that one is the forensics.
+ */
+export const getCaseDocuments = async (caseId: string): Promise<LexCaseDocument[]> => {
+  // A bare array on this endpoint, an envelope on some deployments — read it
+  // through the list unwrapper so either shape renders.
+  const rows = unwrapList<LexCaseDocument>(await lexCaseApi.get(`${CASES}/${caseId}/documents`));
+  return [...rows].sort(
+    (a, b) => new Date(b.receivedAt || 0).getTime() - new Date(a.receivedAt || 0).getTime()
+  );
+};
+
+/**
+ * Fetch a document's bytes.
+ *
+ * The endpoint requires the Authorization header, so `<img src>` and
+ * `<a href>` cannot be used — the browser sends no token and the 401 renders as
+ * a broken image. This returns the blob; the caller makes an object URL from it
+ * and **must revoke it when the viewer closes**, because those leak until it
+ * does. The response is `Cache-Control: no-store` — it is somebody's payslip,
+ * so nothing here persists it.
+ */
+export const getCaseDocumentBlob = async (
+  caseId: string,
+  doc: Pick<LexCaseDocument, "documentId" | "contentUrl">
+): Promise<Blob> => {
+  // The server's own relative path when it gives one, so a future change to the
+  // route does not need a matching change here.
+  const path = doc.contentUrl || `documents/${doc.documentId}/content`;
+  try {
+    const response = await lexCaseApi.get(`${CASES}/${caseId}/${path}`, { responseType: "blob" });
+    return response.data as Blob;
+  } catch (error) {
+    // `responseType: blob` applies to the failure too, so the envelope arrives
+    // as a Blob and `lexErrorCode` would read undefined off it — every 422
+    // would then show the generic message instead of the one that says whether
+    // to offer a retry. Decode it back into the shape the error helpers expect.
+    throw await withDecodedErrorBody(error);
+  }
+};
+
+const withDecodedErrorBody = async (error: unknown): Promise<unknown> => {
+  const failure = error as { response?: { data?: unknown } };
+  const body = failure?.response?.data;
+  if (!(body instanceof Blob)) return error;
+  try {
+    failure.response!.data = JSON.parse(await body.text());
+  } catch {
+    // Not JSON — an infrastructure body. Leave it; the status still speaks.
+    failure.response!.data = undefined;
+  }
+  return error;
+};
+
 export interface LexCase {
   id: string;
   applicationId: string;
@@ -379,6 +565,8 @@ export interface LexCase {
    * drift from the reason codes attached above.
    */
   documentVerification?: LexCaseDocumentAnalysis[];
+  /** The open hand-back, or null when the case is waiting on nothing. */
+  outstandingRequest?: LexOutstandingRequest | null;
   auditTrail?: LexAuditEntry[];
   openedAt?: string;
   closedAt?: string | null;
@@ -505,12 +693,42 @@ export const postCaseMessage = async (caseId: string, body: string): Promise<Lex
 export const escalateCase = async (caseId: string, note?: string): Promise<LexCase> =>
   unwrap(await lexCaseApi.post(`${CASES}/${caseId}/escalate`, clean({ note })));
 
-/** Stops the SLA clock — which is why elapsed time can be smaller than wall time. */
-export const sendCaseToSource = async (caseId: string, note?: string): Promise<LexCase> =>
-  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/send-to-source`, clean({ note })));
+/**
+ * Hand the case back to the applicant.
+ *
+ * Stops the SLA clock — which is why elapsed time can be smaller than wall
+ * time — and mints a one-time upload link that is sent over the chosen channel.
+ * The link is never returned here and cannot be re-read: there is no resend
+ * endpoint, and re-sending means handing the case back again.
+ *
+ * `dueInHours` is a **duration**, not a timestamp: the deadline is computed
+ * server-side so it does not ride on the browser clock. Never send a date.
+ */
+export const sendCaseToSource = async (
+  caseId: string,
+  body: LexSendToSourceRequest
+): Promise<LexCase> =>
+  unwrap(
+    await lexCaseApi.post(
+      `${CASES}/${caseId}/send-to-source`,
+      clean({
+        detail: body.detail,
+        channel: body.channel,
+        // An empty list is meaningful — it is a question rather than a
+        // re-upload — but `clean` would drop it, so it is only sent when there
+        // is something in it.
+        requestedDocuments: body.requestedDocuments?.length ? body.requestedDocuments : undefined,
+        dueInHours: body.dueInHours,
+      })
+    )
+  );
 
-export const markSourceResponded = async (caseId: string): Promise<LexCase> =>
-  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/source-responded`, {}));
+/**
+ * The manual close of the loop, for when the applicant sent something by other
+ * means. The link path closes itself — see `outstandingRequest`.
+ */
+export const markSourceResponded = async (caseId: string, detail?: string): Promise<LexCase> =>
+  unwrap(await lexCaseApi.post(`${CASES}/${caseId}/source-responded`, clean({ detail })));
 
 /** Field verification. Stops the clock for the same reason sending to source does. */
 export const sendForPhysicalVerification = async (

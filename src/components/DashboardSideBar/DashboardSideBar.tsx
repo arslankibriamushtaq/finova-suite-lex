@@ -2276,20 +2276,21 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         LinkLable: "/LOS/Lex",
         active: pathname.startsWith("/LOS/Lex/Processes"),
       },
-      hasAccess("LEX_CONFIG_READ") &&
+       hasAccess("LEX_CONFIG_READ") &&
       {
-        label: "Delegation Matrices",
-        Link: "Delegation",
-        LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/Delegation",
-      },
-      hasAccess("LEX_CONFIG_READ") &&
-      {
-        label: "Authority Levels",
+        label: "Delegation Authority Levels",
         Link: "AuthorityLevels",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/AuthorityLevels",
       },
+      hasAccess("LEX_CONFIG_READ") &&
+      {
+        label: "Delegation of Authority",
+        Link: "Delegation",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/Delegation",
+      },
+     
       hasAccess("LEX_CONFIG_READ") &&
       {
         label: "Sectors",
@@ -2310,6 +2311,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         Link: "Checks",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Checks",
+      },
+      hasAccess("LEX_DOCUMENTS_READ") &&
+      {
+        label: "Document Types",
+        Link: "DocumentTypes",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/DocumentTypes",
       },
       hasAccess("LEX_DOCUMENTS_READ") &&
       {
@@ -2340,13 +2348,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Employers",
       },
-      hasAccess("LEX_KNOWLEDGE_READ") &&
-      {
-        label: "Governance Mirror",
-        Link: "Governance",
-        LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/Governance",
-      },
+      // hasAccess("LEX_KNOWLEDGE_READ") &&
+      // {
+      //   label: "Governance Mirror",
+      //   Link: "Governance",
+      //   LinkLable: "/LOS/Lex",
+      //   active: pathname === "/LOS/Lex/Governance",
+      // },
       hasAccess("LEX_BI_READ") &&
       {
         label: "LEX Reports",
