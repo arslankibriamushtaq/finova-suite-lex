@@ -416,10 +416,13 @@ export const LexVersionTimeline = ({
  * The Product half of a scope, read from the LOS catalogue.
  *
  * "All Products" is the wildcard (`productId: null`), added by the picker just
- * as "All Sectors" is. **LEX does not validate product ids** — the catalogue
- * belongs to `product-service` and this service deliberately does not reach
- * into it — so a typo here saves cleanly and then matches nothing at
- * resolution time. That is exactly why this is a picker and not a text field.
+ * as "All Sectors" is. The id must be one the LOS catalogue actually has: a
+ * scope naming an unknown product is refused with `LEX.PRODUCT.UNKNOWN_SCOPE`,
+ * so post ids that came from here rather than remembered or hand-typed ones.
+ *
+ * The validation is deliberately not a hard dependency — if `product-service`
+ * cannot be reached the scope saves unchecked, because refusing to save a
+ * configuration during an unrelated outage would strand authoring entirely.
  */
 export const LexProductSelect = ({
   value,

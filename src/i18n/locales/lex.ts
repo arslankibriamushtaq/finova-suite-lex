@@ -57,6 +57,8 @@ const lex: ModuleLocale = {
     "sector.err.notFound": "This sector no longer exists.",
     "sector.err.unknownScope":
       "That scope names a sector this company does not have, or one that has been deactivated. Reload the sector list and pick again.",
+    "product.err.unknownScope":
+      "That scope names a product the LOS catalogue does not have. Reload the product list and pick again — a remembered or hand-typed id will not resolve.",
     "sector.toast.loadFailed": "The sectors could not be loaded.",
     "sector.toast.saved": "Sector saved.",
     "sector.toast.saveFailed": "The sector could not be saved.",
@@ -2195,6 +2197,7 @@ const lex: ModuleLocale = {
     "sector.err.duplicateCode": "Cette société possède déjà un secteur portant ce code.",
     "sector.err.notFound": "Ce secteur n'existe plus.",
     "sector.err.unknownScope": "Cette portée nomme un secteur que cette société ne possède pas, ou qui a été désactivé. Rechargez la liste des secteurs et choisissez à nouveau.",
+    "product.err.unknownScope": "Cette portée nomme un produit absent du catalogue LOS. Rechargez la liste des produits et choisissez à nouveau — un identifiant mémorisé ou saisi à la main ne se résoudra pas.",
     "sector.toast.loadFailed": "Les secteurs n'ont pas pu être chargés.",
     "sector.toast.saved": "Secteur enregistré.",
     "sector.toast.saveFailed": "Le secteur n'a pas pu être enregistré.",
@@ -3183,6 +3186,7 @@ const lex: ModuleLocale = {
     "sector.err.duplicateCode": "لدى هذه الشركة قطاع بهذا الرمز بالفعل.",
     "sector.err.notFound": "لم يعد هذا القطاع موجودًا.",
     "sector.err.unknownScope": "يسمّي هذا النطاق قطاعًا لا تملكه هذه الشركة، أو قطاعًا جرى تعطيله. أعد تحميل قائمة القطاعات ثم اختر من جديد.",
+    "product.err.unknownScope": "يسمّي هذا النطاق منتجًا غير موجود في كتالوج نظام LOS. أعد تحميل قائمة المنتجات ثم اختر من جديد — فالمعرّف المحفوظ أو المكتوب يدويًا لن يُحَلّ.",
     "sector.toast.loadFailed": "تعذّر تحميل القطاعات.",
     "sector.toast.saved": "حُفظ القطاع.",
     "sector.toast.saveFailed": "تعذّر حفظ القطاع.",

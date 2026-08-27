@@ -143,6 +143,12 @@ const LexProcessDetail = () => {
       "LEX.PROCESS.NOT_PUBLISHED": t("proc.err.notPublished"),
       "LEX.PROCESS.NOT_FOUND": t("proc.err.notFound"),
       "LEX.PROCESS.INVALID": t("proc.err.invalid"),
+      // Both halves of a scope are validated on save now. Either code means the
+      // picker was stale — the id came from a copied configuration or a list
+      // fetched before someone deactivated the row. Unreachable if the pickers
+      // are fresh, which is why the message says to reload rather than retry.
+      "LEX.SECTOR.UNKNOWN_SCOPE": t("sector.err.unknownScope"),
+      "LEX.PRODUCT.UNKNOWN_SCOPE": t("product.err.unknownScope"),
     }),
     [t]
   );

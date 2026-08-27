@@ -185,6 +185,9 @@ const LexSlaPolicies = () => {
       // or one since deactivated. Unreachable if the picker is fresh — seeing
       // it means the sector list is stale.
       "LEX.SECTOR.UNKNOWN_SCOPE": t("sector.err.unknownScope"),
+      // The product half is validated too now. Same cause, different catalogue:
+      // the id names no product LOS has.
+      "LEX.PRODUCT.UNKNOWN_SCOPE": t("product.err.unknownScope"),
     }),
     [t]
   );
