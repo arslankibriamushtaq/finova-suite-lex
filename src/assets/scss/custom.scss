@@ -131,7 +131,7 @@ html, body {
 .header-footer-settings__language-icon {
   width: 16px;
   height: 16px;
-  background-color: #28a745;
+  background-color: #c00000;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1447,7 +1447,7 @@ h3.welcome-heading {
 
 .card-blocks.overview-two .row .col-md-3:first-child .card,
 .card-blocks.overview-two .row .col-md-3:nth-of-type(2) .card {
-  color: #00945e !important;
+  color: #c00000 !important;
   background-color: var(--theme-primary);
 }
 
@@ -2086,7 +2086,7 @@ body .flex.colTwo .ant-btn-default:hover {
 
 .dash-onboarding.cash-in-out.col-12.gap-3 span.on-view {
   color: #181818;
-  background-color: #98d2da;
+  background-color: #e8b4b4;
 }
 
 .dash-onboarding.cash-in-out label.lite-red,
@@ -3178,7 +3178,7 @@ a {
 }
 
 .jss274.passed {
-  background: green;
+  background: #c00000;
 }
 
 .jss278>div {
@@ -5369,7 +5369,7 @@ label.label-tag {
 }
 
 .service-tickets {
-  background-color: #d3e5e4;
+  background-color: #ecdada;
   border-radius: 2px;
 }
 
@@ -7216,7 +7216,7 @@ div.menu-items a.ps-menu-button>span img {
 .check-circle {
   width: 130px;
   height: 130px;
-  border: 3px solid #38a169;
+  border: 3px solid #c00000;
   /* green ring */
   border-radius: 50%;
   display: grid;
@@ -7226,7 +7226,7 @@ div.menu-items a.ps-menu-button>span img {
 .check-icon {
   width: 88px;
   height: 88px;
-  fill: #38a169;
+  fill: #c00000;
   /* green check */
 }
 
@@ -8535,7 +8535,7 @@ section {
 }
 
 .sidebar-tab.active {
-  background: #00FFC0;
+  background: #ff8a8a;
   color: var(--theme-primary);
   border-radius: 2px 2px 0 0;
 }
@@ -8939,7 +8939,7 @@ section {
 }
 
 .header-footer-settings__features-banner {
-  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #e0fffa 72.32%);
+  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #fff0f0 72.32%);
   padding: 30px 0;
   display: flex;
   justify-content: center;
@@ -9226,13 +9226,13 @@ section {
   }
   
   .header-footer-settings__landing-eligibility-criterion {
-    background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #b9fff3 121.98%);
+    background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #ffdada 121.98%);
     padding: 15px 20px;
     border-radius: 2px;
     display: flex;
     align-items: center;
     gap: 15px;
-    border: 1px solid #a5fff086;
+    border: 1px solid #ffdcdc86;
     box-shadow: 0 2px 8px rgba(10, 227, 190, 0.1);
     transition: all 0.3s ease;
     
@@ -9245,7 +9245,7 @@ section {
   .header-footer-settings__landing-eligibility-criterion-icon {
     width: 35px;
     height: 35px;
-    background: linear-gradient(135deg, var(--color-teal-accent), #00d4aa);
+    background: linear-gradient(135deg, var(--color-teal-accent), #ff4d4d);
     border-radius: 2px;
     display: flex;
     align-items: center;
@@ -10224,9 +10224,9 @@ header.rdt_TableHeadRow,
 .rdt_TableCell .status-pill.active,
 .rdt_TableCell .badge-status.active,
 .status-pill.active {
-  background: rgba(34, 197, 94, 0.12);
-  color: #15803d;
-  border: 1px solid rgba(34, 197, 94, 0.30);
+  background: rgba(230, 0, 0, 0.12);
+  color: #9e0000;
+  border: 1px solid rgba(230, 0, 0, 0.30);
 }
 .rdt_TableCell .status-pill.inactive,
 .rdt_TableCell .badge-status.inactive,
@@ -10239,7 +10239,7 @@ html.dark .rdt_TableCell .status-pill.active,
 html.dark .rdt_TableCell .badge-status.active,
 html.dark .status-pill.active {
   background: rgba(74, 222, 128, 0.14);
-  color: #4ade80;
+  color: #f04d4d;
   border-color: rgba(74, 222, 128, 0.40);
 }
 html.dark .rdt_TableCell .status-pill.inactive,
@@ -10263,16 +10263,16 @@ html.dark .status-pill.inactive {
   border: 1.5px solid #cbd5e1 !important;
 }
 [data-slot="switch"][data-state="checked"] {
-  background-color: #22c55e !important;
-  border-color: #22c55e !important;
+  background-color: #c00000 !important;
+  border-color: #c00000 !important;
 }
 html.dark [data-slot="switch"] {
   background-color: #475569 !important;
   border: 1.5px solid #ffffff !important;
 }
 html.dark [data-slot="switch"][data-state="checked"] {
-  background-color: #22c55e !important;
-  border-color: #22c55e !important;
+  background-color: #c00000 !important;
+  border-color: #c00000 !important;
 }
 [data-slot="switch-thumb"] {
   background-color: #ffffff !important;
@@ -10300,15 +10300,15 @@ html.dark [data-slot="switch"][data-state="checked"] {
   background-color: #cbd5e1 !important;
 }
 .ant-switch.ant-switch-checked {
-  background-color: #22c55e !important;
+  background-color: #c00000 !important;
 }
 html.dark .ant-switch {
   background-color: #475569 !important;
   border: 1.5px solid #ffffff !important;
 }
 html.dark .ant-switch.ant-switch-checked {
-  background-color: #22c55e !important;
-  border-color: #22c55e !important;
+  background-color: #c00000 !important;
+  border-color: #c00000 !important;
 }
 
 /* Ant Radio buttons — white border + dark fill in dark mode */

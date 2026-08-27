@@ -162,7 +162,7 @@ export default function CreateCategories() {
           {/* Step 1: Master Category Selection */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
+              <div className="w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-red-500/30">
                 1
               </div>
               <h2 className="text-base font-semibold m-0">{tp("createCategories.selectMaster")}</h2>
@@ -174,8 +174,8 @@ export default function CreateCategories() {
                 return (
                 <Card
                   key={category.id}
-                  className={`group relative cursor-pointer gap-0 overflow-hidden rounded-lg border py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-md ${
-                    isSelected ? "border-emerald-500 ring-1 ring-emerald-500 bg-emerald-500/[0.06]" : ""
+                  className={`group relative cursor-pointer gap-0 overflow-hidden rounded-lg border py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500/50 hover:shadow-md ${
+                    isSelected ? "border-red-500 ring-1 ring-red-500 bg-red-500/[0.06]" : ""
                   }`}
                   onClick={() => {
                     setSelectedMasterCategory(category.id)
@@ -183,12 +183,12 @@ export default function CreateCategories() {
                   }}
                 >
                   {isSelected && (
-                    <span className="absolute right-2.5 top-2.5 flex size-5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm">
+                    <span className="absolute right-2.5 top-2.5 flex size-5 items-center justify-center rounded-full bg-red-500 text-white shadow-sm">
                       <Check className="h-3 w-3" strokeWidth={3} />
                     </span>
                   )}
                   <CardContent className="flex items-start gap-3 p-3.5">
-                    <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-500/10 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/15">
+                    <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-red-500/10 text-sm font-semibold text-red-600 ring-1 ring-red-500/15">
                       {category.iconUrl ? (
                         <img src={category.iconUrl} alt="" className="h-5 w-5 object-contain" />
                       ) : (
@@ -221,7 +221,7 @@ export default function CreateCategories() {
               <div className="flex items-center gap-2.5 mb-4">
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
-                    selectedSubCategory ? "bg-emerald-500 text-white shadow-sm shadow-emerald-500/30" : "bg-muted text-muted-foreground"
+                    selectedSubCategory ? "bg-red-500 text-white shadow-sm shadow-red-500/30" : "bg-muted text-muted-foreground"
                   }`}
                 >
                   2
@@ -234,8 +234,8 @@ export default function CreateCategories() {
                   return (
                     <Card
                       key={subCategory.id}
-                      className={`cursor-pointer gap-0 rounded-lg border py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-md ${
-                        isSelected ? "border-emerald-500 ring-1 ring-emerald-500 bg-emerald-500/[0.06]" : ""
+                      className={`cursor-pointer gap-0 rounded-lg border py-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500/50 hover:shadow-md ${
+                        isSelected ? "border-red-500 ring-1 ring-red-500 bg-red-500/[0.06]" : ""
                       }`}
                       onClick={() => setSelectedSubCategory(subCategory.id)}
                     >
@@ -250,7 +250,7 @@ export default function CreateCategories() {
                             )}
                           </div>
                           {isSelected ? (
-                            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
                               <Check className="h-3.5 w-3.5" strokeWidth={3} />
                             </span>
                           ) : (

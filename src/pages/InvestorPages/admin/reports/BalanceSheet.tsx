@@ -231,7 +231,7 @@ export default function BalanceSheet() {
                     const change = getChange(balanceSheetData.assets.totalAssets, previousPeriod.totalAssets);
                     return (
                       <div className={`flex items-center justify-end ${
-                        change.type === 'positive' ? 'text-green-600' : 'text-red-600'
+                        change.type === 'positive' ? 'text-slate-500' : 'text-red-600'
                       }`}>
                         {change.type === 'positive' ? (
                           <TrendingUp className="w-4 h-4 me-1" />
@@ -256,7 +256,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(24200000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +5.7%
                 </td>
               </tr>
@@ -273,7 +273,7 @@ export default function BalanceSheet() {
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(19800000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       +7.3%
                     </td>
                   </tr>
@@ -287,7 +287,7 @@ export default function BalanceSheet() {
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(2950000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       +8.5%
                     </td>
                   </tr>
@@ -319,7 +319,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(251030000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +5.4%
                 </td>
               </tr>
@@ -336,7 +336,7 @@ export default function BalanceSheet() {
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(232500000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       +5.4%
                     </td>
                   </tr>
@@ -350,7 +350,7 @@ export default function BalanceSheet() {
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(14800000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       +5.4%
                     </td>
                   </tr>
@@ -364,7 +364,7 @@ export default function BalanceSheet() {
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(3730000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       +7.3%
                     </td>
                   </tr>
@@ -385,7 +385,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalLiabilities)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +3.0%
                 </td>
               </tr>
@@ -401,7 +401,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(9200000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +7.9%
                 </td>
               </tr>
@@ -417,26 +417,26 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(29750000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +1.5%
                 </td>
               </tr>
 
               {/* EQUITY */}
-              <tr className="bg-green-50">
+              <tr className="bg-red-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <Banknote className="w-5 h-5 text-green-600 me-2" />
-                    <span className="text-sm font-bold text-green-900">{t('bs.row.equity')}</span>
+                    <Banknote className="w-5 h-5 text-red-600 me-2" />
+                    <span className="text-sm font-bold text-red-900">{t('bs.row.equity')}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-green-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-red-900">
                   {formatCurrency(balanceSheetData.equity.totalEquity)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +5.8%
                 </td>
               </tr>
@@ -467,7 +467,7 @@ export default function BalanceSheet() {
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(81280000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       +16.9%
                     </td>
                   </tr>
@@ -499,7 +499,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalLiabilities + previousPeriod.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                   +5.4%
                 </td>
               </tr>

@@ -46,9 +46,9 @@ import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductP
 
 const STATUS_BADGE: Record<string, string> = {
   APPROVED:
-    "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300",
+    "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
   VERIFIED:
-    "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300",
+    "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
   QUOTED: "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
   PENDING:
     "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
@@ -300,7 +300,7 @@ const ExchangeVerificationDetail = () => {
           <Card className="pro-card-glow">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                   <BadgeCheck className="h-4 w-4" />
                 </span>
                 {t("vd.card.identity")}
@@ -636,7 +636,7 @@ const ImagePreview = ({
 };
 
 const ACCENT: Record<string, string> = {
-  emerald: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/15",
+  emerald: "bg-red-500/10 text-red-600 ring-red-500/15",
   orange: "bg-orange-500/10 text-orange-600 ring-orange-500/15",
   violet: "bg-violet-500/10 text-violet-600 ring-violet-500/15",
   sky: "bg-sky-500/10 text-sky-600 ring-sky-500/15",

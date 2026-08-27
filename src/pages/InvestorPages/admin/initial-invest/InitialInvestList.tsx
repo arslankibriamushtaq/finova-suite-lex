@@ -303,7 +303,7 @@ export default function InitialInvestList() {
                 {filteredInitialInvests.map((initialInvest) => (
                   <tr key={initialInvest.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="font-medium text-green-600">
+                      <span className="font-medium text-red-600">
                         {initialInvest.minimumAmount}
                       </span>
                     </td>
@@ -614,7 +614,7 @@ export default function InitialInvestList() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.minAmount')}</label>
-                <p className="text-lg font-semibold text-green-600">{selectedInitialInvest.minimumAmount}</p>
+                <p className="text-lg font-semibold text-red-600">{selectedInitialInvest.minimumAmount}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.maxAmount')}</label>

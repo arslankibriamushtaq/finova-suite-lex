@@ -108,7 +108,7 @@ const AllLogs = () => {
       case "error":
         return "red";
       case "debug":
-        return "green";
+        return "purple";
       default:
         return "default";
     }

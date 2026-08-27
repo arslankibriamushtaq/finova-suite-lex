@@ -33,7 +33,7 @@ import type { LexReportResult, LexReportRow } from "../../../redux/apis/apisLexB
  * - a row with a null `drillKey` has nothing behind it, so it is not a link.
  */
 
-const PALETTE = ["#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#f43f5e", "#14b8a6", "#6366f1"];
+const PALETTE = ["#e60000", "#3b82f6", "#f59e0b", "#8b5cf6", "#db2777", "#0ea5e9", "#6366f1"];
 
 const formatValue = (value: number | string | undefined, unit?: string): string => {
   if (value === null || value === undefined || value === "") return "—";

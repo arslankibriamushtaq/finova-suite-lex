@@ -209,11 +209,11 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
 
   return (
     <div className="relative overflow-hidden border-b">
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent" />
       <div className="relative flex flex-col gap-6 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         {/* Identity */}
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base font-semibold text-white ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/20 sm:size-14 sm:text-lg">
+          <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-base font-semibold text-white ring-2 ring-red-500/25 shadow-md shadow-red-500/20 sm:size-14 sm:text-lg">
             {customer.profilePicture ? (
               <img src={customer.profilePicture} alt={displayName} className="size-full object-cover" />
             ) : (
@@ -270,7 +270,7 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
             const Icon = d.icon;
             return (
               <div key={d.label} className="flex w-full min-w-0 items-center gap-2.5">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                   <Icon className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -344,7 +344,7 @@ const TransactionsTable = ({
                   <span
                     className={cn(
                       "inline-flex items-center gap-1 font-semibold",
-                      isCredit ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+                      isCredit ? "text-slate-500 dark:text-slate-400" : "text-red-600 dark:text-red-400"
                     )}
                   >
                     {isCredit ? <ArrowDownLeft className="size-3.5" /> : <ArrowUpRight className="size-3.5" />}
@@ -393,8 +393,8 @@ const WalletSelector = ({
             className={cn(
               "flex flex-col gap-2 rounded-xl border p-3 text-start transition-all duration-200 hover:shadow-md",
               active
-                ? "border-emerald-500/60 bg-emerald-500/[0.06] ring-1 ring-emerald-500/25"
-                : "border-border bg-muted/20 hover:border-emerald-500/30"
+                ? "border-red-500/60 bg-red-500/[0.06] ring-1 ring-red-500/25"
+                : "border-border bg-muted/20 hover:border-red-500/30"
             )}
           >
             <div className="flex items-start justify-between gap-2">
@@ -403,8 +403,8 @@ const WalletSelector = ({
                   className={cn(
                     "flex size-8 shrink-0 items-center justify-center rounded-lg",
                     active
-                      ? "bg-emerald-500 text-white"
-                      : "bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15"
+                      ? "bg-red-500 text-white"
+                      : "bg-red-500/10 text-red-600 ring-1 ring-red-500/15"
                   )}
                 >
                   <WalletIcon className="size-4" />
@@ -446,11 +446,11 @@ const WalletSelector = ({
 
 /** Gradient per card tier — falls back to the app's emerald for unknown tiers. */
 const CARD_THEME: Record<string, string> = {
-  INFINITE: "from-slate-900 via-slate-800 to-emerald-800",
+  INFINITE: "from-slate-900 via-slate-800 to-red-800",
   SIGNATURE: "from-slate-800 via-slate-700 to-sky-800",
   PLATINUM: "from-zinc-700 via-zinc-600 to-zinc-800",
   GOLD: "from-amber-600 via-amber-500 to-yellow-700",
-  CLASSIC: "from-emerald-700 via-emerald-600 to-teal-800",
+  CLASSIC: "from-red-700 via-red-600 to-red-800",
 };
 
 /** Credit-card-shaped visual for a single issued card. */
@@ -929,8 +929,8 @@ const Onboarding360 = () => {
                         formatter={(v: any) => formatMoney(v)}
                       />
                       <Legend wrapperStyle={{ fontSize: 12 }} />
-                      <Bar dataKey="in" name={t("onboarding360.chart.moneyIn")} fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={60} />
-                      <Bar dataKey="out" name={t("onboarding360.chart.moneyOut")} fill="#ef4444" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                      <Bar dataKey="in" name={t("onboarding360.chart.moneyIn")} fill="#e60000" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                      <Bar dataKey="out" name={t("onboarding360.chart.moneyOut")} fill="#7a0e0e" radius={[6, 6, 0, 0]} maxBarSize={60} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
@@ -1010,7 +1010,7 @@ const Onboarding360 = () => {
                       <div className="mt-4 grid grid-cols-2 gap-3">
                         <div className="rounded-lg border bg-muted/30 p-3">
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <span className="size-2 rounded-full bg-emerald-500" />
+                            <span className="size-2 rounded-full bg-red-500" />
                             {t("onboarding360.wallet.available")}
                           </div>
                           <div className="mt-1 text-sm font-semibold text-foreground">
@@ -1057,7 +1057,7 @@ const Onboarding360 = () => {
                         <ReTooltip contentStyle={chartTooltipStyle} cursor={{ fill: "var(--muted)" }} formatter={(v: any) => formatMoney(v, selectedCurrency)} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
                         <Bar dataKey="Limit" name={t("onboarding360.chart.limit")} fill="var(--muted-foreground)" radius={[5, 5, 0, 0]} maxBarSize={28} fillOpacity={0.35} />
-                        <Bar dataKey="Spent" name={t("onboarding360.chart.spent")} fill="#10b981" radius={[5, 5, 0, 0]} maxBarSize={28} />
+                        <Bar dataKey="Spent" name={t("onboarding360.chart.spent")} fill="#e60000" radius={[5, 5, 0, 0]} maxBarSize={28} />
                       </BarChart>
                     </ResponsiveContainer>
                   </Block>
@@ -1118,8 +1118,8 @@ const Onboarding360 = () => {
                             className={cn(
                               "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                               txnWalletFilter === opt.id
-                                ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                                : "border-border text-muted-foreground hover:border-emerald-500/30 hover:text-foreground"
+                                ? "border-red-500/60 bg-red-500/10 text-red-700 dark:text-red-300"
+                                : "border-border text-muted-foreground hover:border-red-500/30 hover:text-foreground"
                             )}
                           >
                             {opt.label}
@@ -1277,7 +1277,7 @@ const Onboarding360 = () => {
                         <XAxis dataKey="category" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} interval={0} angle={-15} textAnchor="end" height={50} />
                         <YAxis tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
                         <ReTooltip contentStyle={chartTooltipStyle} cursor={{ fill: "var(--muted)" }} />
-                        <Bar dataKey="scoreContribution" fill="var(--chart-2, #14b8a6)" radius={[5, 5, 0, 0]} />
+                        <Bar dataKey="scoreContribution" fill="var(--chart-2, #6366f1)" radius={[5, 5, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   )}
@@ -1401,7 +1401,7 @@ const Onboarding360 = () => {
                           {documents.map((doc, idx) => (
                             <div
                               key={doc.documentId ?? idx}
-                              className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                              className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md"
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
@@ -1435,7 +1435,7 @@ const Onboarding360 = () => {
                     <Block title={t("onboarding360.block.selfie")} icon={Camera}>
                       {selfie ? (
                         <div className="w-full">
-                          <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
+                          <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md">
                             <DocImage
                               cacheKey={`${customerId}:${selfie.imagePath}`}
                               label={t("onboarding360.doc.selfieLabel")}

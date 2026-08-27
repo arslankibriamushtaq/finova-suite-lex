@@ -208,7 +208,7 @@ export default function InvestorsList() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
+      case 'Active': return 'bg-red-100 text-red-800';
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
       case 'Suspended': return 'bg-red-100 text-red-800';
       case 'Inactive': return 'bg-gray-100 text-gray-800';
@@ -218,7 +218,7 @@ export default function InvestorsList() {
 
   const getKycStatusColor = (status: string) => {
     switch (status) {
-      case 'Verified': return 'bg-green-100 text-green-800';
+      case 'Verified': return 'bg-red-100 text-red-800';
       case 'Under Review': return 'bg-yellow-100 text-yellow-800';
       case 'Pending': return 'bg-gray-100 text-gray-900';
       case 'Rejected': return 'bg-red-100 text-red-800';
@@ -337,7 +337,7 @@ export default function InvestorsList() {
             <div>
               <p className="text-sm text-gray-600">{t('ilst.stat.totalInvestors')}</p>
               <p className="text-2xl font-bold text-gray-900">1,247</p>
-              <p className="text-xs text-green-600 mt-1">{t('ilst.stat.thisMonth')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('ilst.stat.thisMonth')}</p>
             </div>
             <UserCheck className="w-8 h-8 text-gray-700" />
           </div>
@@ -349,7 +349,7 @@ export default function InvestorsList() {
               <p className="text-2xl font-bold text-gray-900">1,189</p>
               <p className="text-xs text-gray-500 mt-1">{t('ilst.stat.ofTotal')}</p>
             </div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -357,7 +357,7 @@ export default function InvestorsList() {
             <div>
               <p className="text-sm text-gray-600">{t('ilst.stat.totalAum')}</p>
               <p className="text-2xl font-bold text-gray-900">$2.4B</p>
-              <p className="text-xs text-green-600 mt-1">{t('ilst.stat.thisQuarter')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('ilst.stat.thisQuarter')}</p>
             </div>
             <DollarSign className="w-8 h-8 text-purple-500" />
           </div>
@@ -501,8 +501,8 @@ export default function InvestorsList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <TrendingUp className="w-4 h-4 text-green-500 me-1" />
-                      <span className="text-sm font-medium text-green-600">
+                      <TrendingUp className="w-4 h-4 text-red-500 me-1" />
+                      <span className="text-sm font-medium text-red-600">
                         {formatCurrency(investor.unrealizedGains)}
                       </span>
                     </div>
@@ -512,7 +512,7 @@ export default function InvestorsList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                      investor.riskProfile.includes('Conservative') ? 'bg-green-100 text-green-800' :
+                      investor.riskProfile.includes('Conservative') ? 'bg-red-100 text-red-800' :
                       investor.riskProfile.includes('Moderate') ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     )}>
@@ -555,7 +555,7 @@ export default function InvestorsList() {
                       </button>
                       <button 
                         onClick={() => handleSendStatement(investor)}
-                        className="text-green-600 hover:text-green-900" 
+                        className="text-red-600 hover:text-red-900" 
                         title={t('ilst.action.sendStatement')}
                       >
                         <Send className="w-4 h-4" />
@@ -788,7 +788,7 @@ export default function InvestorsList() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.unrealizedGains')}</label>
-                  <p className="text-sm text-green-600">{formatCurrency(selectedInvestor.unrealizedGains)}</p>
+                  <p className="text-sm text-red-600">{formatCurrency(selectedInvestor.unrealizedGains)}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.onboardingDate')}</label>

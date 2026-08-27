@@ -366,7 +366,7 @@ export const LexVersionTimeline = ({
             <span
               className={cn(
                 "absolute -start-[5px] top-3 size-2.5 rounded-full ring-2 ring-background",
-                isCurrent ? "bg-emerald-500" : "bg-muted-foreground/40"
+                isCurrent ? "bg-red-500" : "bg-muted-foreground/40"
               )}
             />
             <div

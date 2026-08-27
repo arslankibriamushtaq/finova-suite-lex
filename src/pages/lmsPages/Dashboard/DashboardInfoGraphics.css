@@ -221,7 +221,7 @@ html.dark .lms-dashboard .chart-card {
 .lms-dashboard .kpi-card.trend .kpi-trend-pct {
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-success, #22c55e);
+  color: var(--color-success, #c00000);
   display: flex;
   align-items: center;
   gap: 4px;

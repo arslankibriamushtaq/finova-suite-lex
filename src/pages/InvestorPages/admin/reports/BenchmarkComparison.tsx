@@ -85,7 +85,7 @@ export default function BenchmarkComparison() {
   };
 
   const getPerformanceColor = (value: number) => {
-    return value >= 0 ? 'text-green-600' : 'text-red-600';
+    return value >= 0 ? 'text-slate-500' : 'text-red-600';
   };
 
   return (
@@ -192,7 +192,7 @@ export default function BenchmarkComparison() {
                   <span className="text-xs text-gray-500">{t('bc.outperformance')}</span>
                   <div className="flex items-center">
                     {benchmark.outperformance >= 0 ? (
-                      <TrendingUp className="w-3 h-3 text-green-500 me-1" />
+                      <TrendingUp className="w-3 h-3 text-red-500 me-1" />
                     ) : (
                       <TrendingDown className="w-3 h-3 text-red-500 me-1" />
                     )}
@@ -309,11 +309,11 @@ export default function BenchmarkComparison() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.technology')}</span>
-                <span className="text-sm font-medium text-green-600">+1.2%</span>
+                <span className="text-sm font-medium text-red-600">+1.2%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.healthcare')}</span>
-                <span className="text-sm font-medium text-green-600">+0.8%</span>
+                <span className="text-sm font-medium text-red-600">+0.8%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.energy')}</span>
@@ -321,7 +321,7 @@ export default function BenchmarkComparison() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.financials')}</span>
-                <span className="text-sm font-medium text-green-600">+0.5%</span>
+                <span className="text-sm font-medium text-red-600">+0.5%</span>
               </div>
             </div>
           </div>
@@ -331,15 +331,15 @@ export default function BenchmarkComparison() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.overweightEquities')}</span>
-                <span className="text-sm font-medium text-green-600">+0.6%</span>
+                <span className="text-sm font-medium text-red-600">+0.6%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.underweightBonds')}</span>
-                <span className="text-sm font-medium text-green-600">+0.4%</span>
+                <span className="text-sm font-medium text-red-600">+0.4%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.alternativeInvestments')}</span>
-                <span className="text-sm font-medium text-green-600">+0.2%</span>
+                <span className="text-sm font-medium text-red-600">+0.2%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.cashPosition')}</span>
@@ -353,11 +353,11 @@ export default function BenchmarkComparison() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.usMarkets')}</span>
-                <span className="text-sm font-medium text-green-600">+0.9%</span>
+                <span className="text-sm font-medium text-red-600">+0.9%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.internationalDeveloped')}</span>
-                <span className="text-sm font-medium text-green-600">+0.3%</span>
+                <span className="text-sm font-medium text-red-600">+0.3%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.emergingMarkets')}</span>
@@ -365,7 +365,7 @@ export default function BenchmarkComparison() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-600">{t('bc.attr.currencyEffects')}</span>
-                <span className="text-sm font-medium text-green-600">+0.1%</span>
+                <span className="text-sm font-medium text-red-600">+0.1%</span>
               </div>
             </div>
           </div>

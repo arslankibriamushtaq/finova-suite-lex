@@ -9,7 +9,7 @@ const data = [
   { name: "Workflow Studio", value: 100 },
 ];
 
-const COLORS = ["#BAEBFF", "#FEE6B5", "#86ECDB", "#F4C5FF", "#D2D2D2"];
+const COLORS = ["#BAEBFF", "#FEE6B5", "#ffc9c9", "#F4C5FF", "#D2D2D2"];
 
 const PieChartAdmin = () => {
   return (

@@ -341,7 +341,7 @@ const CreditScoringDefinitions = () => {
       name: t("common:status"),
       cell: (row: any) => (
         <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${row.active
-            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100"
+            ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
             : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
           }`}>
           {row.active ? t("common:active") : t("common:inactive")}

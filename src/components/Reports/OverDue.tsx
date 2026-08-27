@@ -293,7 +293,7 @@ const OverDue = () => {
             backgroundColor: /OVERDUE|DEFAULT|NPL/i.test(String(row.status))
               ? "#F85F54"
               : /ACTIVE|CURRENT|ON_TIME|PAID/i.test(String(row.status))
-                ? "#92BC83"
+                ? "#e08a8a"
                 : "#959595",
             color: "white",
             whiteSpace: "nowrap",

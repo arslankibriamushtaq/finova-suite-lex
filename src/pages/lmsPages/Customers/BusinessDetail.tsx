@@ -150,10 +150,10 @@ const BusinessHeaderBand = ({ business }: any) => {
 
   return (
     <div className="relative overflow-hidden border-b">
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent" />
       <div className="relative flex flex-col gap-6 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/20 sm:size-14">
+          <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-white ring-2 ring-red-500/25 shadow-md shadow-red-500/20 sm:size-14">
             <Building2 className="size-6" />
           </div>
 
@@ -203,7 +203,7 @@ const BusinessHeaderBand = ({ business }: any) => {
             const Icon = d.icon;
             return (
               <div key={d.label} className="flex w-full min-w-0 items-center gap-2.5">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                   <Icon className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -472,7 +472,7 @@ const BusinessDetail = () => {
               href={business.businessWebsite}
               target="_blank"
               rel="noreferrer"
-              className="text-emerald-600 hover:underline dark:text-emerald-400"
+              className="text-red-600 hover:underline dark:text-red-400"
             >
               {business.businessWebsite}
             </a>
@@ -630,7 +630,7 @@ const BusinessDetail = () => {
                           return (
                             <div
                               key={doc.documentId ?? idx}
-                              className="flex h-full flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                              className="flex h-full flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md"
                             >
                               {/* Fixed-height header keeps every tile's image, rows and
                                   buttons on the same baseline even when a doc kind is
@@ -682,7 +682,7 @@ const BusinessDetail = () => {
                                       variant="outline"
                                       disabled={isApproved || !doc.documentId}
                                       onClick={() => openReview(doc, "approve")}
-                                      className="h-7 flex-1 gap-1 px-2 text-[11px] border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
+                                      className="h-7 flex-1 gap-1 px-2 text-[11px] border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400"
                                     >
                                       <CheckCircle2 className="size-3" />
                                       {t("onboarding360.review.approve")}
@@ -715,7 +715,7 @@ const BusinessDetail = () => {
                         {ownerIdentityDocs.map((doc, idx) => (
                           <div
                             key={doc.documentId ?? idx}
-                            className="flex h-full flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                            className="flex h-full flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md"
                           >
                             <div className="flex min-h-9 items-start justify-between gap-2">
                               <Badge
@@ -786,10 +786,10 @@ const BusinessDetail = () => {
                         const mobile = pii.mobileNumber || pii.mobile || customer?.mobileNumber;
                         return (
                           <div className="onb-card relative overflow-hidden rounded-xl border p-4 md:p-5">
-                            <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+                            <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-red-500/[0.07] blur-2xl" />
                             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                               <div className="flex min-w-0 items-center gap-4">
-                                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-lg font-semibold text-white ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/20">
+                                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-lg font-semibold text-white ring-2 ring-red-500/25 shadow-md shadow-red-500/20">
                                   {initials || <UserCircle className="size-7" />}
                                 </div>
                                 <div className="flex min-w-0 flex-col gap-1.5">
@@ -874,7 +874,7 @@ const BusinessDetail = () => {
                             {ownerIdentityDocs.map((doc: any, idx: number) => (
                               <div
                                 key={doc.documentId ?? idx}
-                                className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                                className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md"
                               >
                                 <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
                                   {docKindLabel(doc.kind)}
@@ -905,7 +905,7 @@ const BusinessDetail = () => {
                             {(ownerData?.documents || []).map((doc: any, idx: number) => (
                               <div
                                 key={doc.documentId ?? idx}
-                                className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                                className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md"
                               >
                                 <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
                                   {docKindLabel(doc.kind)}
@@ -919,7 +919,7 @@ const BusinessDetail = () => {
                               </div>
                             ))}
                             {ownerData?.selfie && (
-                              <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
+                              <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md">
                                 <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
                                   {t("onboarding360.doc.selfieLabel")}
                                 </Badge>

@@ -97,7 +97,7 @@ export default function InvestorKyc() {
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-red-500" />;
       case 'rejected':
         return <XCircle className="w-4 h-4 text-red-500" />;
       case 'pending':
@@ -110,7 +110,7 @@ export default function InvestorKyc() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
-        return 'bg-green-100 text-green-800';
+        return 'bg-red-100 text-red-800';
       case 'rejected':
         return 'bg-red-100 text-red-800';
       case 'pending':

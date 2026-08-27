@@ -199,7 +199,7 @@ export default function AddInvestor() {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
                     step.id < currentStep
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-red-600 text-white'
                       : step.id === currentStep
                       ? 'bg-black text-white'
                       : 'bg-gray-200 text-gray-600'
@@ -221,7 +221,7 @@ export default function AddInvestor() {
                 </div>
                 {step.id < steps.length && (
                   <div className={`ms-6 w-16 h-0.5 ${
-                    step.id < currentStep ? 'bg-green-600' : 'bg-gray-200'
+                    step.id < currentStep ? 'bg-red-600' : 'bg-gray-200'
                   }`} />
                 )}
               </div>
@@ -714,7 +714,7 @@ export default function AddInvestor() {
                 <button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>

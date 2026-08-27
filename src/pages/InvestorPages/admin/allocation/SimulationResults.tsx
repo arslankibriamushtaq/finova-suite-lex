@@ -130,7 +130,7 @@ export default function SimulationResults() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'safe': return 'text-green-600';
+      case 'safe': return 'text-red-600';
       case 'warning': return 'text-yellow-600';
       case 'danger': return 'text-red-600';
       default: return 'text-gray-600';
@@ -188,7 +188,7 @@ export default function SimulationResults() {
               <button
                 onClick={handleCommitAllocation}
                 disabled={committing}
-                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
                 {committing ? (
                   <RefreshCw className="w-4 h-4 me-2 animate-spin" />
@@ -229,10 +229,10 @@ export default function SimulationResults() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('ad.totalAllocated')}</h3>
-            <DollarSign className="w-5 h-5 text-green-500" />
+            <DollarSign className="w-5 h-5 text-red-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(simulationResults.summary.totalAllocated)}</p>
+            <p className="text-2xl font-bold text-red-600">{formatCurrency(simulationResults.summary.totalAllocated)}</p>
             <p className="text-xs text-gray-500">
               {t('sr2.allocationSuccess', { value: simulationResults.summary.allocationSuccess })}
             </p>
@@ -316,7 +316,7 @@ export default function SimulationResults() {
               {[
                 { risk: 'sr2.riskBand.high', amount: 5000000, percentage: 35.1, color: 'bg-red-500' },
                 { risk: 'sr2.riskBand.medium', amount: 7500000, percentage: 52.6, color: 'bg-yellow-500' },
-                { risk: 'sr2.riskBand.low', amount: 1750000, percentage: 12.3, color: 'bg-green-500' }
+                { risk: 'sr2.riskBand.low', amount: 1750000, percentage: 12.3, color: 'bg-red-500' }
               ].map((item) => (
                 <div key={item.risk} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -410,12 +410,12 @@ export default function SimulationResults() {
                           <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                             allocation.riskTolerance === 'Aggressive' ? 'bg-red-100 text-red-800' :
                             allocation.riskTolerance === 'Balanced' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                            'bg-red-100 text-red-800'
                           }`}>
                             {tTol(allocation.riskTolerance)}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-end text-green-600 font-medium">{allocation.expectedReturn}%</td>
+                        <td className="px-4 py-3 text-sm text-end text-red-600 font-medium">{allocation.expectedReturn}%</td>
                       </tr>
                     ))}
                   </tbody>
@@ -463,7 +463,7 @@ export default function SimulationResults() {
                           className={`h-2 rounded-full ${
                             investor.newExposure / investor.limit > 0.9 ? 'bg-red-500' :
                             investor.newExposure / investor.limit > 0.75 ? 'bg-yellow-500' :
-                            'bg-green-500'
+                            'bg-red-500'
                           }`}
                           style={{ width: `${(investor.newExposure / investor.limit) * 100}%` }}
                         ></div>
@@ -474,7 +474,7 @@ export default function SimulationResults() {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        investor.status === 'safe' ? 'bg-green-100 text-green-800' :
+                        investor.status === 'safe' ? 'bg-red-100 text-red-800' :
                         investor.status === 'warning' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>
@@ -504,10 +504,10 @@ export default function SimulationResults() {
           ))}
           
           {simulationResults.warnings.length === 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
-              <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-4" />
-              <h4 className="text-sm font-medium text-green-900">{t('sr2.noWarnings')}</h4>
-              <p className="text-sm text-green-700 mt-1">{t('sr2.noWarningsDesc')}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+              <CheckCircle className="w-8 h-8 text-red-600 mx-auto mb-4" />
+              <h4 className="text-sm font-medium text-red-900">{t('sr2.noWarnings')}</h4>
+              <p className="text-sm text-red-700 mt-1">{t('sr2.noWarningsDesc')}</p>
             </div>
           )}
         </div>

@@ -141,7 +141,7 @@ const StepSequencer: React.FC<{ countryCode: string }> = ({ countryCode }) => {
                         className="text-2xl font-black text-slate-900 bg-transparent border-none focus:outline-none focus:ring-0 w-auto"
                        />
                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
-                         step.apiMethod === 'POST' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
+                         step.apiMethod === 'POST' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
                        }`}>
                          {step.apiMethod} Endpoint
                        </span>
@@ -187,7 +187,7 @@ const StepSequencer: React.FC<{ countryCode: string }> = ({ countryCode }) => {
                    </div>
                    <div className="p-5 bg-slate-50/50 rounded-2xl border border-slate-100/30 group-hover:bg-white group-hover:border-blue-50 transition-all">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Auto-Save</p>
-                      <p className="text-xs font-bold text-emerald-600">Sync Active</p>
+                      <p className="text-xs font-bold text-red-600">Sync Active</p>
                    </div>
                    <div className="p-5 bg-slate-50/50 rounded-2xl border border-slate-100/30 group-hover:bg-white group-hover:border-blue-50 transition-all flex items-center justify-between">
                       <div>
@@ -203,12 +203,12 @@ const StepSequencer: React.FC<{ countryCode: string }> = ({ countryCode }) => {
           
           {/* Termination Node */}
           <div className="flex items-center gap-12">
-             <div className="w-20 h-20 rounded-full bg-emerald-500 border-8 border-white shadow-xl flex items-center justify-center text-white relative z-10">
+             <div className="w-20 h-20 rounded-full bg-red-500 border-8 border-white shadow-xl flex items-center justify-center text-white relative z-10">
                 <Save className="w-8 h-8" />
              </div>
-             <div className="p-8 bg-emerald-50 rounded-[32px] border border-emerald-100">
-                <p className="text-emerald-900 font-black text-lg">Journey Finalization</p>
-                <p className="text-emerald-700/70 text-sm font-medium mt-1 italic">This node triggers the Core CIF creation pipeline once the user completes the flow.</p>
+             <div className="p-8 bg-red-50 rounded-[32px] border border-red-100">
+                <p className="text-red-900 font-black text-lg">Journey Finalization</p>
+                <p className="text-red-700/70 text-sm font-medium mt-1 italic">This node triggers the Core CIF creation pipeline once the user completes the flow.</p>
              </div>
           </div>
         </div>

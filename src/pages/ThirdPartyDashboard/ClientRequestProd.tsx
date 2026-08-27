@@ -260,7 +260,7 @@ const ClientRequestProd = () => {
           style={{
             display: "flex",
             borderBottom: "2px solid var(--color-border-subtle)",
-            background: themeStyle?.table.backgroundColor || "#EDFFFB",
+            background: themeStyle?.table.backgroundColor || "#fff3f3",
             borderRadius: "2px 2px 0 0",
           }}
         >

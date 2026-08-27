@@ -125,7 +125,7 @@ export default function InvestorManagement() {
               <p className="text-sm text-gray-600">Active Investors</p>
               <p className="text-2xl font-bold text-gray-900">1,189</p>
             </div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -237,7 +237,7 @@ export default function InvestorManagement() {
                     className={cn(
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                       investor.status === 'Active'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-red-100 text-red-800'
                         : investor.status === 'Pending'
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-red-100 text-red-800'
@@ -260,7 +260,7 @@ export default function InvestorManagement() {
                     className={cn(
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                       investor.kycStatus === 'Verified'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-red-100 text-red-800'
                         : 'bg-yellow-100 text-yellow-800'
                     )}
                   >

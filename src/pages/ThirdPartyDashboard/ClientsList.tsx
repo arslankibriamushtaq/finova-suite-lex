@@ -107,7 +107,7 @@ const ClientsList = () => {
         const status = row.status || "ACTIVE";
         const colorClass =
           status === "ACTIVE"
-            ? "text-green-600 font-medium"
+            ? "text-red-600 font-medium"
             : status === "INACTIVE"
             ? "text-yellow-600 font-medium"
             : "text-red-600 font-medium";

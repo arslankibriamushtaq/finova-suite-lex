@@ -141,7 +141,7 @@ const OUTCOME_ICON: Record<string, typeof CheckCircle2> = {
 };
 
 const OUTCOME_ICON_TONE: Record<string, string> = {
-  PASS: "text-emerald-600 dark:text-emerald-400",
+  PASS: "text-red-600 dark:text-red-400",
   FAIL: "text-red-600 dark:text-red-400",
   FLAGGED: "text-amber-600 dark:text-amber-400",
   NOT_RUN: "text-muted-foreground",
@@ -930,7 +930,7 @@ const LexCaseDetail = () => {
                     <Icon
                       className={cn(
                         "mt-0.5 h-4 w-4 shrink-0",
-                        received ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+                        received ? "text-red-600 dark:text-red-400" : "text-muted-foreground"
                       )}
                     />
                     <div className="min-w-0">

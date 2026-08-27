@@ -33,7 +33,7 @@ const newIdemKey = () => {
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  COMPLETED: "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300",
+  COMPLETED: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
   PROCESSING: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
   PENDING: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
   FAILED: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
@@ -282,7 +282,7 @@ const InternalTransfer = () => {
       <Card className="mb-4 pro-card-glow">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
               <ArrowRightLeft className="h-4 w-4" />
             </span>
             {t("internal.newTransfer")}
@@ -381,7 +381,7 @@ const InternalTransfer = () => {
         <CardHeader>
           <CardTitle className="text-base flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                 <History className="h-4 w-4" />
               </span>
               {t("internal.history.title")}

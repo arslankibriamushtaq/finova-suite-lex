@@ -135,7 +135,7 @@ html, body {
 .header-footer-settings__language-icon {
   width: 16px;
   height: 16px;
-  background-color: #28a745;
+  background-color: #c00000;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1439,7 +1439,7 @@ h3.welcome-heading {
 
 .card-blocks.overview-two .row .col-md-3:first-child .card,
 .card-blocks.overview-two .row .col-md-3:nth-of-type(2) .card {
-  color: #00945e !important;
+  color: #9e0000 !important;
   background-color: var(--theme-primary);
 }
 
@@ -3064,7 +3064,7 @@ a {
 }
 
 .jss274.passed {
-  background: green;
+  background: #c00000;
 }
 
 .jss278 > div {
@@ -5162,7 +5162,7 @@ label.label-tag {
 }
 
 .service-tickets {
-  background-color: #d3e5e4;
+  background-color: #ecdada;
   border-radius: 2px;
 }
 
@@ -6932,7 +6932,7 @@ div.menu-items a.ps-menu-button > span img {
 .check-circle {
   width: 130px;
   height: 130px;
-  border: 3px solid #38a169;
+  border: 3px solid #c00000;
   /* green ring */
   border-radius: 50%;
   display: grid;
@@ -6942,7 +6942,7 @@ div.menu-items a.ps-menu-button > span img {
 .check-icon {
   width: 88px;
   height: 88px;
-  fill: #38a169;
+  fill: #c00000;
   /* green check */
 }
 
@@ -8218,7 +8218,7 @@ section {
 }
 
 .sidebar-tab.active {
-  background: #00FFC0;
+  background: #ff8a8a;
   color: var(--theme-primary);
   border-radius: 2px 2px 0 0;
 }
@@ -8596,7 +8596,7 @@ section {
 }
 
 .header-footer-settings__features-banner {
-  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #e0fffa 72.32%);
+  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #fff0f0 72.32%);
   padding: 30px 0;
   display: flex;
   justify-content: center;
@@ -8860,7 +8860,7 @@ section {
   gap: 15px;
 }
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion {
-  background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #b9fff3 121.98%);
+  background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #ffdada 121.98%);
   padding: 15px 20px;
   border-radius: 2px;
   display: flex;
@@ -8877,7 +8877,7 @@ section {
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion-icon {
   width: 35px;
   height: 35px;
-  background: linear-gradient(135deg, var(--color-teal-accent), #00d4aa);
+  background: linear-gradient(135deg, var(--color-teal-accent), #ff4d4d);
   border-radius: 2px;
   display: flex;
   align-items: center;

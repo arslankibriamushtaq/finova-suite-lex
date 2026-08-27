@@ -282,7 +282,7 @@ const ApprovalConditions = () => {
     {
       name: t("common:status"),
       cell: (row: any) => (
-        <Badge variant="outline" className={row.active ? "bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-100" : "bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-100"}>
+        <Badge variant="outline" className={row.active ? "bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100" : "bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-100"}>
           {row.active ? t("common:active") : t("common:inactive")}
         </Badge>
       ),

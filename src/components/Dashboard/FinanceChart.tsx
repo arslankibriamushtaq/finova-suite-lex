@@ -28,7 +28,7 @@ const FinanceBarChart: React.FC = () => {
   //     <YAxis />
   //     <Legend />
   //     <Bar dataKey="RejectedFinance" fill="#D2D2D2" name="Rejected Finance"/>
-  //     <Bar dataKey="DisbursedFinance" fill="#73C0A0" name="Disbursed Finance"/>
+  //     <Bar dataKey="DisbursedFinance" fill="#a78bfa" name="Disbursed Finance"/>
   //     <Bar dataKey="ApprovedFinance" fill="#6871BF" name="Approved Finance"/>
   //     <Bar dataKey="AppliedFinance" fill="#FFB1B1" name="Applied Finance"/>
   //   </BarChart>

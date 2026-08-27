@@ -70,7 +70,7 @@ export const prettyEnum = (value?: string | null) =>
 export const cardStatusClasses = (status?: string): string => {
   switch (status) {
     case "ACTIVE":
-      return "bg-green-100 text-green-700 border border-green-200";
+      return "bg-red-100 text-red-700 border border-red-200";
     case "ISSUED":
       return "bg-blue-100 text-blue-700 border border-blue-200";
     case "REQUESTED":
@@ -91,7 +91,7 @@ export const cardStatusClasses = (status?: string): string => {
 export const shipmentStatusClasses = (status?: string): string => {
   switch (status) {
     case "DELIVERED":
-      return "bg-green-100 text-green-700 border border-green-200";
+      return "bg-red-100 text-red-700 border border-red-200";
     case "IN_TRANSIT":
     case "DISPATCHED":
       return "bg-blue-100 text-blue-700 border border-blue-200";
@@ -127,7 +127,7 @@ export const formatMoney = (value?: number | null, currency?: string): string =>
 export const txnStatusClasses = (status?: string): string => {
   switch (status) {
     case "COMPLETED":
-      return "bg-green-100 text-green-700 border border-green-200";
+      return "bg-red-100 text-red-700 border border-red-200";
     case "PENDING":
       return "bg-amber-100 text-amber-700 border border-amber-200";
     case "DECLINED":

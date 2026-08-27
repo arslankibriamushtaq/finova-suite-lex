@@ -134,7 +134,7 @@ export default function RegulatoryFilings() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Filed': return 'bg-green-100 text-green-800';
+      case 'Filed': return 'bg-red-100 text-red-800';
       case 'In Progress': return 'bg-gray-100 text-gray-900';
       case 'Pending Review': return 'bg-yellow-100 text-yellow-800';
       case 'Overdue': return 'bg-red-100 text-red-800';
@@ -148,7 +148,7 @@ export default function RegulatoryFilings() {
       case 'Critical': return 'bg-red-100 text-red-800';
       case 'High': return 'bg-orange-100 text-orange-800';
       case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'Low': return 'bg-green-100 text-green-800';
+      case 'Low': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -267,9 +267,9 @@ export default function RegulatoryFilings() {
             <div>
               <p className="text-sm text-gray-600">{t('rf.filed')}</p>
               <p className="text-2xl font-bold text-gray-900">{regulatoryFilings.filter(f => f.status === 'Filed').length}</p>
-              <p className="text-xs text-green-600 mt-1">{t('rf.onTime')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('rf.onTime')}</p>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-500" />
+            <CheckCircle className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -425,7 +425,7 @@ export default function RegulatoryFilings() {
                             {(filing.status === 'In Progress' || filing.status === 'Draft') && (
                               <button
                                 onClick={() => handleSubmitFiling(filing)}
-                                className="text-green-600 hover:text-green-900"
+                                className="text-red-600 hover:text-red-900"
                                 title={t('common:submit')}
                               >
                                 <Send className="w-4 h-4" />
@@ -512,7 +512,7 @@ export default function RegulatoryFilings() {
 
               <button className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                 <div className="flex items-center">
-                  <Shield className="w-5 h-5 text-green-600 me-3" />
+                  <Shield className="w-5 h-5 text-red-600 me-3" />
                   <span className="text-sm font-medium text-gray-900">{t('rf.complianceCheck')}</span>
                 </div>
                 <span className="text-gray-400">→</span>

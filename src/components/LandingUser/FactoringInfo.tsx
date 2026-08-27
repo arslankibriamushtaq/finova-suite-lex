@@ -322,7 +322,7 @@ const FactoringInfo = () => {
                     <td style={{ padding: "12px" }}>{invoice.invoiceNumber}</td>
                     <td style={{ padding: "12px" }}>{invoice.invoiceStartDate}</td>
                     <td style={{ padding: "12px" }}>{invoice.dueDate}</td>
-                    <td style={{ padding: "12px", color: "#52c41a", fontWeight: 500 }}>
+                    <td style={{ padding: "12px", color: "#c00000", fontWeight: 500 }}>
                       {invoice.invoiceAmount.toFixed(2)} SAR
                     </td>
                     <td style={{ padding: "12px", color: "#1890ff", fontWeight: 500 }}>
@@ -362,7 +362,7 @@ const FactoringInfo = () => {
         <div className="mt-3">
           <p style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
             {t("factoring.totalAmount")}:{" "}
-            <span style={{ color: "#52c41a" }}>{totalAmount.toFixed(2)} SAR</span>
+            <span style={{ color: "#c00000" }}>{totalAmount.toFixed(2)} SAR</span>
           </p>
           {invoices.length > 0 && (
             <p style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>

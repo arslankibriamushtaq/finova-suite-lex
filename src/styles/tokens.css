@@ -31,7 +31,7 @@
   --chart-2: #f59e0b;
   --chart-3: #2563eb;
   --chart-4: #7c3aed;
-  --chart-5: #0d9488;
+  --chart-5: #db2777;
   /* Single-series chart mark. Validated against the dataviz six checks in
      light mode: lightness band, chroma floor, and >= 3:1 contrast vs
      each surface. --chart-1 (#e60000) also clears 3:1; this deeper red reads better as text. */
@@ -39,10 +39,10 @@
   --radius: 2px;
 
   /* Status colors */
-  --color-success: oklch(0.65 0.2 145);
-  --color-success-bg: oklch(0.95 0.04 145);
-  --color-success-border: oklch(0.87 0.08 145);
-  --color-success-text: oklch(0.3 0.1 145);
+  --color-success: oklch(0.55 0.22 27);
+  --color-success-bg: oklch(0.95 0.04 27);
+  --color-success-border: oklch(0.87 0.08 27);
+  --color-success-text: oklch(0.32 0.12 27);
 
   --color-error: oklch(0.577 0.245 27.325);
   --color-error-bg: oklch(0.95 0.04 25);
@@ -55,7 +55,7 @@
   --color-disabled: oklch(0.82 0 0);
 
   /* Action / confirm color */
-  --color-action: #0B8085;
+  --color-action: #c00000;
 
   /* PEP risk color */
   --color-pep: #9C27B0;
@@ -63,11 +63,11 @@
   /* Department board column colors */
   --dept-operations: #B2E9FF;
   --dept-accounts: #FFEA9D;
-  --dept-compliance: #ABE3BE;
+  --dept-compliance: #C9D4FF;
   --dept-hr: #E88DA4;
   --dept-sales: #D1D9D9;
   --dept-risk: #F0B1B1;
-  --dept-credit: #D1F0D1;
+  --dept-credit: #E7D4FF;
   --dept-marketing: #FFEB7C;
 
   /* Avatar */
@@ -91,9 +91,9 @@
   /* Extended accent / brand colors */
   --color-navy: #004d72;
   --color-danger-dark: #a40000;
-  --color-teal-accent: #0ae3be;
+  --color-teal-accent: #ff4d4d;
   --color-orange: #ff9900;
-  --color-green-teal: #03bb86;
+  --color-green-teal: #e60000;
   --color-purple-dark: #39244f;
   --color-purple-medium: #614fa2;
 
@@ -118,16 +118,16 @@
   /* Status background / light tints */
   --color-yellow-bg: #fcf4d4;
   --color-purple-light-bg: #ebebff;
-  --color-teal-light-bg: #dff5f7;
-  --color-mint-bg: #e2fff7;
-  --color-mint-light-bg: #C2FFF4;
-  --color-green-light-bg: #e4f0ec;
+  --color-teal-light-bg: #fdecec;
+  --color-mint-bg: #fff0f0;
+  --color-mint-light-bg: #ffdcdc;
+  --color-green-light-bg: #f5e8e8;
   --color-blue-light-bg: #e6f7ff;
   --color-blue-xlight-bg: #e1f4ff;
   --color-warning-yellow: #fed932;
   --color-danger-red: #d7232c;
   --color-orange-alt: #ff9811;
-  --color-green-success-light: #6ed66e;
+  --color-green-success-light: #ff6b6b;
 
   /* Near-white surfaces */
   --color-surface-cloud: #f9f9f9;
@@ -147,14 +147,14 @@
 
   /* Bootstrap-origin semantic colors */
   --color-action-blue:    #007bff;
-  --color-status-active:  #28a745;
+  --color-status-active:  #c00000;
 
   /* Block type colors (BlockHistory) */
   --color-block-compliance: #00BCD4;
   --color-block-fallback:   #607D8B;
 
   /* LMS status badge colors */
-  --color-status-green:    #92BC83;
+  --color-status-green:    #e08a8a;
   --color-status-red-soft: #D86969;
   --color-status-amber:    #FAB65E;
   --color-status-coral:    #F85F54;
@@ -171,15 +171,15 @@
 
   /* CMS ticket/action colors */
   --color-cms-purple: #5F4F71;
-  --color-cms-teal:   #20c997;
-  --color-teal-bright: #17c1bc;
+  --color-cms-teal:   #e60000;
+  --color-teal-bright: #e60000;
 
   /* Warning/status variants */
   --color-warning-amber: #faad14;
   --color-error-light:   #ff7875;
 
   /* Surface mint (investor) */
-  --color-surface-mint: #EDFFFB;
+  --color-surface-mint: #fff3f3;
 
   /* Bootstrap warning / medium-risk status */
   --color-warning-gold: #FFC107;
@@ -240,17 +240,17 @@ html.dark,
   --chart-2: #fbbf24;
   --chart-3: #60a5fa;
   --chart-4: #a78bfa;
-  --chart-5: #2dd4bf;
+  --chart-5: #f472b6;
   /* Single-series chart mark. Validated against the dataviz six checks in
      dark: lightness band, chroma floor, and >= 3:1 contrast vs each surface.
      The light-mode #c00000 sits below 3:1 on the dark page and is not safe here. */
   --chart-series-1: #ff5a5a;
 
   /* App surface / status — dark variants */
-  --color-success: #22c55e;
-  --color-success-bg: rgba(34, 197, 94, 0.12);
-  --color-success-border: rgba(34, 197, 94, 0.35);
-  --color-success-text: #86efac;
+  --color-success: #ff5a5a;
+  --color-success-bg: rgba(230, 0, 0, 0.12);
+  --color-success-border: rgba(230, 0, 0, 0.35);
+  --color-success-text: #ffb3b3;
 
   --color-error: #ef4444;
   --color-error-bg: rgba(239, 68, 68, 0.12);
@@ -1374,7 +1374,7 @@ html.dark .no-table td span[style*="background"][style*="--color-success"],
 html.dark .no-table td div[style*="background"][style*="--color-success"] {
   background-color: var(--color-success-bg) !important;
   background: var(--color-success-bg) !important;
-  color: #4ade80 !important;
+  color: #f04d4d !important;
   border: 1px solid var(--color-success-border) !important;
 }
 html.dark .rdt_TableCell span[style*="background"][style*="--color-error"],
@@ -1417,7 +1417,7 @@ html.dark .rdt_TableCell .text-green-500,
 html.dark .no-table .text-green-600,
 html.dark .no-table .text-green-700,
 html.dark .no-table .text-green-500 {
-  color: #4ade80 !important;
+  color: #f04d4d !important;
 }
 html.dark .rdt_TableCell .text-red-500,
 html.dark .rdt_TableCell .text-red-600,

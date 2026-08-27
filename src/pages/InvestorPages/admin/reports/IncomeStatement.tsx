@@ -212,14 +212,14 @@ export default function IncomeStatement() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {/* REVENUE */}
-                    <tr className="bg-green-50">
+                    <tr className="bg-red-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <DollarSign className="w-5 h-5 text-green-600 me-2" />
-                          <span className="text-sm font-bold text-green-900">{t('is.row.revenue')}</span>
+                          <DollarSign className="w-5 h-5 text-red-600 me-2" />
+                          <span className="text-sm font-bold text-red-900">{t('is.row.revenue')}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-green-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-red-900">
                         {formatCurrency(incomeData.revenue.totalRevenue)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
@@ -230,7 +230,7 @@ export default function IncomeStatement() {
                           const change = getChange(incomeData.revenue.totalRevenue, previousYear.totalRevenue);
                           return (
                             <div className={`flex items-center justify-end ${
-                              change.type === 'positive' ? 'text-green-600' : 'text-red-600'
+                              change.type === 'positive' ? 'text-slate-500' : 'text-red-600'
                             }`}>
                               {change.type === 'positive' ? (
                                 <TrendingUp className="w-4 h-4 me-1" />
@@ -256,7 +256,7 @@ export default function IncomeStatement() {
                           <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             {formatCurrency(25800000)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +10.5%
                           </td>
                         </tr>
@@ -270,7 +270,7 @@ export default function IncomeStatement() {
                           <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             {formatCurrency(11200000)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +13.8%
                           </td>
                         </tr>
@@ -284,7 +284,7 @@ export default function IncomeStatement() {
                           <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             {formatCurrency(1200000)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +4.2%
                           </td>
                         </tr>
@@ -378,7 +378,7 @@ export default function IncomeStatement() {
                           <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             ({formatCurrency(2000000)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +2.5%
                           </td>
                         </tr>
@@ -401,7 +401,7 @@ export default function IncomeStatement() {
                           const change = getChange(incomeData.netIncome, previousYear.netIncome);
                           return (
                             <div className={`flex items-center justify-end ${
-                              change.type === 'positive' ? 'text-green-600' : 'text-red-600'
+                              change.type === 'positive' ? 'text-slate-500' : 'text-red-600'
                             }`}>
                               {change.type === 'positive' ? (
                                 <TrendingUp className="w-4 h-4 me-1" />
@@ -441,14 +441,14 @@ export default function IncomeStatement() {
                     <span className="text-sm font-semibold text-gray-900">35.9%</span>
                   </div>
                   <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '35.9%' }}></div>
+                    <div className="bg-red-600 h-2 rounded-full" style={{ width: '35.9%' }}></div>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">{t('is.revenueGrowth')}</span>
-                    <span className="text-sm font-semibold text-green-600">+11.3%</span>
+                    <span className="text-sm font-semibold text-red-600">+11.3%</span>
                   </div>
                 </div>
 
@@ -477,7 +477,7 @@ export default function IncomeStatement() {
                   <span className="text-sm font-semibold text-gray-900">30.0%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '30.0%' }}></div>
+                  <div className="bg-red-600 h-2 rounded-full" style={{ width: '30.0%' }}></div>
                 </div>
 
                 <div className="flex items-center justify-between">

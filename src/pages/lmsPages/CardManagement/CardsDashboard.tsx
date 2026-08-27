@@ -19,17 +19,17 @@ import { CARD_TYPE_LABELS, prettyEnum, cardStatusClasses } from "./cardConstants
 import "../../../components/Dashboard/DashboardOverview.css";
 
 const STATUS_BAR_COLORS: Record<string, string> = {
-  ACTIVE: "#22c55e",
+  ACTIVE: "#c00000",
   ISSUED: "#3b82f6",
   REQUESTED: "#f59e0b",
-  FROZEN: "#06b6d4",
+  FROZEN: "#0ea5e9",
   BLOCKED: "#f97316",
   EXPIRED: "#94a3b8",
-  CANCELLED: "#ef4444",
+  CANCELLED: "#7a0e0e",
 };
 
 // Colors for the "Cards by Type" progress bars (cycled).
-const TYPE_BAR_COLORS = ["#10b981", "#6366f1", "#f59e0b", "#06b6d4", "#f43f5e", "#8b5cf6"];
+const TYPE_BAR_COLORS = ["#e60000", "#6366f1", "#f59e0b", "#0ea5e9", "#db2777", "#8b5cf6"];
 
 const StatCard = ({
   label,

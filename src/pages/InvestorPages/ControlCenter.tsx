@@ -100,7 +100,7 @@ export default function ControlCenter() {
                 <stat.icon className="w-6 h-6 text-gray-600" />
               </div>
               <div className={`flex items-center text-sm font-medium ${
-                stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                stat.changeType === 'increase' ? 'text-slate-500' : 'text-red-600'
               }`}>
                 {stat.changeType === 'increase' ? (
                   <TrendingUp className="w-4 h-4 me-1" />
@@ -127,7 +127,7 @@ export default function ControlCenter() {
               <div key={system.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
                   {system.status === 'operational' ? (
-                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <CheckCircle className="w-5 h-5 text-red-500" />
                   ) : system.status === 'maintenance' ? (
                     <Clock className="w-5 h-5 text-yellow-500" />
                   ) : (
@@ -137,7 +137,7 @@ export default function ControlCenter() {
                 </div>
                 <div className="text-end">
                   <div className={`text-sm font-medium ${
-                    system.status === 'operational' ? 'text-green-600' : 
+                    system.status === 'operational' ? 'text-red-600' : 
                     system.status === 'maintenance' ? 'text-yellow-600' : 'text-red-600'
                   }`}>
                     {system.status.charAt(0).toUpperCase() + system.status.slice(1)}
@@ -156,7 +156,7 @@ export default function ControlCenter() {
             {recentActivity.map((activity) => (
               <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
                 <div className={`w-2 h-2 rounded-full mt-2 ${
-                  activity.severity === 'success' ? 'bg-green-500' :
+                  activity.severity === 'success' ? 'bg-red-500' :
                   activity.severity === 'warning' ? 'bg-yellow-500' :
                   activity.severity === 'error' ? 'bg-red-500' : 'bg-gray-700'
                 }`} />
@@ -178,7 +178,7 @@ export default function ControlCenter() {
             <Users className="w-5 h-5 me-2" />
             Add Investor
           </button>
-          <button className="flex items-center justify-center px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+          <button className="flex items-center justify-center px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors">
             <Activity className="w-5 h-5 me-2" />
             Create Product
           </button>

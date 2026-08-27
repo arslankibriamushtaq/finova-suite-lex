@@ -251,7 +251,7 @@ const LexChecks = () => {
                         ? "bg-muted text-muted-foreground ring-1 ring-border"
                         : halts
                           ? "bg-amber-500 text-white"
-                          : "bg-emerald-500 text-white"
+                          : "bg-red-500 text-white"
                     )}
                   >
                     {check.ordinal}

@@ -147,7 +147,7 @@ const StatusBadge = ({ status }: { status?: string }) => (
 /** Section divider inside the detail dialog. */
 const SectionTitle = ({ icon: Icon, title }: { icon: LucideIcon; title: string }) => (
   <div className="flex items-center gap-2 border-b pb-1 pt-1">
-    <Icon className="h-4 w-4 text-emerald-600" />
+    <Icon className="h-4 w-4 text-red-600" />
     <span className="text-sm font-semibold">{title}</span>
   </div>
 );
@@ -566,7 +566,7 @@ const WalletLedgerTransactions = () => {
           <span
             className={`font-semibold ${
               tone === "up"
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-red-600 dark:text-red-400"
                 : tone === "down"
                   ? "text-red-600 dark:text-red-400"
                   : ""

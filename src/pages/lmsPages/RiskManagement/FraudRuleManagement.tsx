@@ -310,7 +310,7 @@ const FraudRuleManagement = () => {
             disabled={!canEditFraud}
             onCheckedChange={() => handleToggleStatus(row)}
           />
-          <span className={row.status === "ACTIVE" ? "text-green-600 text-sm font-medium" : "text-red-600 text-sm font-medium"}>
+          <span className={row.status === "ACTIVE" ? "text-slate-500 text-sm font-medium" : "text-red-600 text-sm font-medium"}>
             {row.status || "DISABLED"}
           </span>
         </div>

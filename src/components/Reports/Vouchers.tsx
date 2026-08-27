@@ -511,7 +511,7 @@ const Vouchers = () => {
             borderRadius: "2px",
             backgroundColor:
               row.Status === "POSTED" || row.Status === "Approved"
-                ? "#92BC83"
+                ? "#e08a8a"
                 : row.Status === "DRAFT" || row.Status === "Pending"
                   ? "#FAB65E"
                   : row.Status === "REJECTED" || row.Status === "Rejected"

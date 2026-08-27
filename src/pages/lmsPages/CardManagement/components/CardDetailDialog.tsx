@@ -52,7 +52,7 @@ const Section = ({
 }) => (
   <div className="rounded-lg border bg-muted/20 p-4">
     <div className="mb-3 flex items-center gap-2">
-      <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+      <span className="inline-flex size-7 items-center justify-center rounded-md bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
         <Icon className="size-3.5" />
       </span>
       <p className="m-0 text-[13px] font-semibold text-foreground">{title}</p>

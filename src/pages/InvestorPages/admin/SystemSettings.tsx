@@ -269,7 +269,7 @@ export default function SystemSettings() {
                             <p className="text-sm text-gray-500">Real-time market data and analytics</p>
                           </div>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           Connected
                         </span>
                       </div>
@@ -329,7 +329,7 @@ export default function SystemSettings() {
                             <p className="text-sm text-gray-500">Email delivery service</p>
                           </div>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           Connected
                         </span>
                       </div>
@@ -356,15 +356,15 @@ export default function SystemSettings() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center me-3">
-                            <MessageSquare className="w-5 h-5 text-green-600" />
+                          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center me-3">
+                            <MessageSquare className="w-5 h-5 text-red-600" />
                           </div>
                           <div>
                             <h4 className="text-sm font-medium text-gray-900">Twilio</h4>
                             <p className="text-sm text-gray-500">SMS and voice communications</p>
                           </div>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           Connected
                         </span>
                       </div>
@@ -647,7 +647,7 @@ export default function SystemSettings() {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Manual Actions</h3>
                   <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
+                    <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
                       <HardDrive className="w-4 h-4 me-2" />
                       Backup Now
                     </button>

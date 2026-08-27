@@ -212,7 +212,7 @@ export default function InvestmentsList() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
+      case 'Active': return 'bg-red-100 text-red-800';
       case 'Under Review': return 'bg-yellow-100 text-yellow-800';
       case 'Locked': return 'bg-gray-100 text-gray-900';
       case 'Pending': return 'bg-orange-100 text-orange-800';
@@ -314,7 +314,7 @@ export default function InvestmentsList() {
             <div>
               <p className="text-sm text-gray-600">{t('invl.totalInvestments')}</p>
               <p className="text-2xl font-bold text-gray-900">{totalInvestments}</p>
-              <p className="text-xs text-green-600 mt-1">{t('invl.acrossProducts')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('invl.acrossProducts')}</p>
             </div>
             <BarChart3 className="w-8 h-8 text-gray-700" />
           </div>
@@ -324,9 +324,9 @@ export default function InvestmentsList() {
             <div>
               <p className="text-sm text-gray-600">{t('invl.totalValue')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalValue)}</p>
-              <p className="text-xs text-green-600 mt-1">{t('invl.overallPlus')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('invl.overallPlus')}</p>
             </div>
-            <DollarSign className="w-8 h-8 text-green-500" />
+            <DollarSign className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -334,9 +334,9 @@ export default function InvestmentsList() {
             <div>
               <p className="text-sm text-gray-600">{t('invl.totalGains')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalGains)}</p>
-              <p className="text-xs text-green-600 mt-1">{t('invl.realizedUnrealized')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('invl.realizedUnrealized')}</p>
             </div>
-            <TrendingUp className="w-8 h-8 text-green-500" />
+            <TrendingUp className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -495,13 +495,13 @@ export default function InvestmentsList() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {investment.performanceType === 'positive' ? (
-                            <ArrowUpRight className="w-4 h-4 text-green-500 me-1" />
+                            <ArrowUpRight className="w-4 h-4 text-red-500 me-1" />
                           ) : (
                             <ArrowDownLeft className="w-4 h-4 text-red-500 me-1" />
                           )}
                           <div>
                             <div className={`text-sm font-medium ${
-                              investment.performanceType === 'positive' ? 'text-green-600' : 'text-red-600'
+                              investment.performanceType === 'positive' ? 'text-slate-500' : 'text-red-600'
                             }`}>
                               {formatCurrency(investment.unrealizedGain + investment.realizedGain)}
                             </div>
@@ -513,7 +513,7 @@ export default function InvestmentsList() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className={`text-sm font-medium ${
-                          investment.performanceType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          investment.performanceType === 'positive' ? 'text-slate-500' : 'text-red-600'
                         }`}>
                           {investment.performanceYTD > 0 ? '+' : ''}{investment.performanceYTD}%
                         </div>
@@ -624,7 +624,7 @@ export default function InvestmentsList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className={`text-sm font-medium ${log.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className={`text-sm font-medium ${log.amount > 0 ? 'text-slate-500' : 'text-red-600'}`}>
                           {formatCurrency(Math.abs(log.amount))}
                         </div>
                         <div className="text-sm text-gray-500">
@@ -668,10 +668,10 @@ export default function InvestmentsList() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">{t('invl.positivePerformers')}</span>
-                <span className="text-sm font-medium text-green-600">{t('invl.investmentsPlural', { count: 4 })}</span>
+                <span className="text-sm font-medium text-red-600">{t('invl.investmentsPlural', { count: 4 })}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
-                <div className="bg-green-600 h-3 rounded-full" style={{ width: '80%' }}></div>
+                <div className="bg-red-600 h-3 rounded-full" style={{ width: '80%' }}></div>
               </div>
 
               <div className="flex items-center justify-between">
@@ -689,7 +689,7 @@ export default function InvestmentsList() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">{t('invl.risk.conservative')}</span>
-                <span className="text-sm font-medium text-green-600">{t('invl.investmentSingular')}</span>
+                <span className="text-sm font-medium text-red-600">{t('invl.investmentSingular')}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">{t('invl.risk.moderate')}</span>
@@ -773,7 +773,7 @@ export default function InvestmentsList() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.ytdPerformance')}</label>
                   <p className={`text-sm font-medium ${
-                    selectedInvestment.performanceType === 'positive' ? 'text-green-600' : 'text-red-600'
+                    selectedInvestment.performanceType === 'positive' ? 'text-slate-500' : 'text-red-600'
                   }`}>
                     {selectedInvestment.performanceYTD > 0 ? '+' : ''}{selectedInvestment.performanceYTD}%
                   </p>
@@ -781,7 +781,7 @@ export default function InvestmentsList() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.totalGainLoss')}</label>
                   <p className={`text-sm font-medium ${
-                    selectedInvestment.performanceType === 'positive' ? 'text-green-600' : 'text-red-600'
+                    selectedInvestment.performanceType === 'positive' ? 'text-slate-500' : 'text-red-600'
                   }`}>
                     {formatCurrency(selectedInvestment.unrealizedGain + selectedInvestment.realizedGain)}
                   </p>

@@ -242,7 +242,7 @@ const EnvConfig = () => {
       cell: (row: any) => {
         const isActive = row.active === true;
         return (
-          <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+          <span className={isActive ? "text-slate-500 font-medium" : "text-red-600 font-medium"}>
             {isActive ? t("common:active") : t("common:inactive")}
           </span>
         );

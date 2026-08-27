@@ -33,7 +33,7 @@ const kpiData = {
 
 // Mock data for allocation by risk band
 const allocationByRisk = [
-  { riskBand: 'ad.riskBand.low', amount: 3200000000, percentage: 37.6, color: 'bg-green-500' },
+  { riskBand: 'ad.riskBand.low', amount: 3200000000, percentage: 37.6, color: 'bg-red-500' },
   { riskBand: 'ad.riskBand.medium', amount: 3800000000, percentage: 44.7, color: 'bg-yellow-500' },
   { riskBand: 'ad.riskBand.high', amount: 1500000000, percentage: 17.7, color: 'bg-red-500' }
 ];
@@ -109,7 +109,7 @@ export default function AllocationDashboard() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'success': return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'success': return <CheckCircle className="w-4 h-4 text-red-500" />;
       case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
       case 'error': return <AlertTriangle className="w-4 h-4 text-red-500" />;
       case 'manual': return <Users className="w-4 h-4 text-gray-700" />;
@@ -131,7 +131,7 @@ export default function AllocationDashboard() {
     if (value >= 50) return 'bg-red-500';
     if (value >= 30) return 'bg-yellow-500';
     if (value >= 15) return 'bg-gray-700';
-    return 'bg-green-500';
+    return 'bg-red-500';
   };
 
   return (
@@ -173,19 +173,19 @@ export default function AllocationDashboard() {
           <div className="space-y-2">
             <p className="text-2xl font-bold text-black">{kpiData.activeStrategies}</p>
             <p className="text-xs text-gray-500">{t('ad.currentlyRunning')}</p>
-            <p className="text-xs text-green-600">{t('ad.plus2ThisMonth')}</p>
+            <p className="text-xs text-red-600">{t('ad.plus2ThisMonth')}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('ad.totalAllocated')}</h3>
-            <DollarSign className="w-5 h-5 text-green-500" />
+            <DollarSign className="w-5 h-5 text-red-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(kpiData.totalAllocated)}</p>
+            <p className="text-2xl font-bold text-red-600">{formatCurrency(kpiData.totalAllocated)}</p>
             <p className="text-xs text-gray-500">{t('ad.acrossStrategies')}</p>
-            <p className="text-xs text-green-600">{t('ad.plus12Quarter')}</p>
+            <p className="text-xs text-red-600">{t('ad.plus12Quarter')}</p>
           </div>
         </div>
 
@@ -205,13 +205,13 @@ export default function AllocationDashboard() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('ad.latestSimulation')}</h3>
             {kpiData.lastSimulationStatus === 'success' ? (
-              <CheckCircle className="w-5 h-5 text-green-500" />
+              <CheckCircle className="w-5 h-5 text-red-500" />
             ) : (
               <AlertTriangle className="w-5 h-5 text-red-500" />
             )}
           </div>
           <div className="space-y-2">
-            <p className={`text-2xl font-bold ${kpiData.lastSimulationStatus === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+            <p className={`text-2xl font-bold ${kpiData.lastSimulationStatus === 'success' ? 'text-slate-500' : 'text-red-600'}`}>
               {kpiData.lastSimulationStatus === 'success' ? t('ad.success') : t('ad.failed')}
             </p>
             <p className="text-xs text-gray-500">
@@ -242,10 +242,10 @@ export default function AllocationDashboard() {
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
           >
             <div className="flex items-center">
-              <Play className="w-5 h-5 text-green-600 me-3" />
+              <Play className="w-5 h-5 text-red-600 me-3" />
               <span className="text-sm font-medium text-gray-900">{t('ad.runGlobalSim')}</span>
             </div>
-            <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-green-600" />
+            <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-red-600" />
           </button>
 
           <Link
@@ -368,7 +368,7 @@ export default function AllocationDashboard() {
               <div className="text-end">
                 <div className="text-sm font-medium text-gray-900">{formatCurrency(activity.amount)}</div>
                 <div className={`text-xs ${
-                  activity.status === 'success' ? 'text-green-600' :
+                  activity.status === 'success' ? 'text-red-600' :
                   activity.status === 'warning' ? 'text-yellow-600' :
                   activity.status === 'manual' ? 'text-black' :
                   'text-red-600'

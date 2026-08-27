@@ -173,7 +173,7 @@ export default function ApprovalWorkflowsTab({
               {/* Auto-Approval Templates */}
               {/* <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-green-500" />
+                  <Zap className="h-4 w-4 text-red-500" />
                   <h4 className="font-medium">Auto-Approval Templates</h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -265,7 +265,7 @@ export default function ApprovalWorkflowsTab({
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   {previewTemplate?.type === "manual" && <Clock className="h-5 w-5 text-orange-500" />}
-                  {previewTemplate?.type === "auto" && <Zap className="h-5 w-5 text-green-500" />}
+                  {previewTemplate?.type === "auto" && <Zap className="h-5 w-5 text-red-500" />}
                   {previewTemplate?.type === "rejection" && <XCircle className="h-5 w-5 text-red-500" />}
                   {t("workflows.templatePreview", { name: previewTemplate?.template?.name })}
                 </DialogTitle>
@@ -428,7 +428,7 @@ export default function ApprovalWorkflowsTab({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {scenario.type === "manual" && <Clock className="h-5 w-5 text-orange-500" />}
-                        {scenario.type === "auto" && <Zap className="h-5 w-5 text-green-500" />}
+                        {scenario.type === "auto" && <Zap className="h-5 w-5 text-red-500" />}
                         {scenario.type === "rejection" && <XCircle className="h-5 w-5 text-red-500" />}
                         <div>
                           <h3 className="text-lg font-medium">{scenario.name}</h3>

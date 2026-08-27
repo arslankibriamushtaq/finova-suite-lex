@@ -67,11 +67,11 @@ export const Block = ({ title, right, children, className, icon: Icon }: any) =>
     )}
   >
     {/* Soft emerald glow accent — consistent across all cards */}
-    <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+    <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-red-500/[0.07] blur-2xl" />
     <div className="relative mb-4 flex items-center justify-between gap-2">
       <div className="flex items-center gap-2.5">
         {Icon && (
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
             <Icon className="size-4" />
           </span>
         )}
@@ -99,7 +99,7 @@ export const CopyButton = ({ text }: { text?: string }) => {
       className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       aria-label={t("onboarding360.action.copy")}
     >
-      {copied ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
+      {copied ? <Check className="size-3.5 text-red-500" /> : <Copy className="size-3.5" />}
     </button>
   );
 };
@@ -179,11 +179,11 @@ export const OnboardingStepper = ({
             const failed = status === "FAILED";
             const prevDone = idx > 0 && (steps[idx - 1]?.status || "PENDING").toUpperCase() === "COMPLETED";
             const circle = done
-              ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
+              ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
               : failed
               ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
               : current
-              ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
+              ? "border-red-500 text-red-600 ring-4 ring-red-500/15"
               : "border-border text-muted-foreground";
             return (
               <div key={step.step ?? idx} className="relative flex min-w-0 flex-1 flex-col items-center">
@@ -192,7 +192,7 @@ export const OnboardingStepper = ({
                   <div
                     className={cn(
                       "onb-connector absolute top-5 z-0 h-0.5 rounded-full transition-colors duration-500",
-                      prevDone ? "bg-emerald-500" : "bg-border"
+                      prevDone ? "bg-red-500" : "bg-border"
                     )}
                     style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
                   />

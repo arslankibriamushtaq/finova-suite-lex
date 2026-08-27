@@ -53,7 +53,7 @@ import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductP
 const StatusBadge = ({ status, label }: { status?: string; label?: string }) => {
   const map: Record<string, string> = {
     ACTIVE:
-      "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300",
+      "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
     INACTIVE: "bg-muted text-muted-foreground",
   };
   return (
@@ -296,7 +296,7 @@ const ExchangeProviders = () => {
       name: t("providers.col.countries"),
       cell: (row: ExchangeProvider) =>
         !row.countryCodes || row.countryCodes.length === 0 ? (
-          <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+          <span className="inline-flex items-center gap-1 rounded-md bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300">
             <Globe className="h-3.5 w-3.5" />
             {t("providers.allCountries")}
           </span>
@@ -551,8 +551,8 @@ const ExchangeProviders = () => {
                         onClick={() => toggleCountry(c.countryCode)}
                         className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-3 transition ${
                           selected
-                            ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
-                            : "border-border bg-background text-foreground hover:border-emerald-400 hover:bg-muted"
+                            ? "border-red-500 bg-red-500 text-white shadow-sm"
+                            : "border-border bg-background text-foreground hover:border-red-400 hover:bg-muted"
                         }`}
                       >
                         <Check

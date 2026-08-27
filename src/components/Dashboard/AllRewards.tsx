@@ -209,7 +209,7 @@ dashboardData?.map((item: any) => {
     "#FF6384", // Red
     "#36A2EB", // Blue
     "#FFCE56", // Yellow
-    "#4BC0C0", // Teal
+    "#6366f1", // Teal
     "#9966FF", // Purple
     "#FF9F40", // Orange
     "#C9CBCF", // Gray

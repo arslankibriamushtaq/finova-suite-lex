@@ -47,7 +47,7 @@ const STATUS_BADGE: Record<string, string> = {
   PENDING:
     "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 dark:border dark:border-amber-500/30",
   APPROVED:
-    "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300 dark:border dark:border-green-500/30",
+    "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300 dark:border dark:border-red-500/30",
   REJECTED:
     "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300 dark:border dark:border-red-500/30",
 };
@@ -265,7 +265,7 @@ const WalletTransactionLimits = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
                 <DropdownMenuItem onClick={() => openApprove(row)} className="cursor-pointer gap-2">
-                  <Check className="h-4 w-4 text-green-600" />
+                  <Check className="h-4 w-4 text-red-600" />
                   <span>{t("common:approve")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -332,7 +332,7 @@ const WalletTransactionLimits = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Check className="w-5 h-5 text-green-600" />
+              <Check className="w-5 h-5 text-red-600" />
               {t("walletLimits.approve.title")}
             </DialogTitle>
             <DialogDescription>

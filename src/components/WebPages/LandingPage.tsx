@@ -1319,7 +1319,7 @@ const LandingPage = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '2px dashed #0ae3be'
+                border: '2px dashed #ff4d4d'
               }}>
                 <div style={{ fontSize: '48px', marginBottom: '20px' }}>📱</div>
                 <div style={{ fontSize: '14px' }}>No image available</div>

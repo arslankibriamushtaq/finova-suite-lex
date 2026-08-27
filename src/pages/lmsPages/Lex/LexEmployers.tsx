@@ -381,7 +381,7 @@ const LexEmployers = () => {
                     <a
                       href={`/LOS/FinancingApplications/AllApplications/View/${detail.originApplicationId}`}
                       title={detail.originApplicationId}
-                      className="text-emerald-600 underline-offset-2 hover:underline dark:text-emerald-400"
+                      className="text-red-600 underline-offset-2 hover:underline dark:text-red-400"
                     >
                       <span className="inline-block max-w-[12rem] truncate align-bottom">
                         {detail.originApplicationId}

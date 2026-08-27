@@ -134,7 +134,7 @@ export default function DocumentPreview() {
   const getStatusIcon = (verificationStatus: number) => {
     switch (verificationStatus) {
       case 1:
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-red-500" />;
       case 2:
         return <XCircle className="w-4 h-4 text-red-500" />;
       case 0:
@@ -147,7 +147,7 @@ export default function DocumentPreview() {
   const getStatusColor = (verificationStatus: number) => {
     switch (verificationStatus) {
       case 1:
-        return 'bg-green-100 text-green-800';
+        return 'bg-red-100 text-red-800';
       case 2:
         return 'bg-red-100 text-red-800';
       case 0:
@@ -443,7 +443,7 @@ export default function DocumentPreview() {
                 {/* Status Badge Overlay */}
                 <div className="absolute top-4 right-4">
                   <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full shadow-lg ${
-                    document.verificationStatus === 1 ? 'bg-green-500 text-white' : // Approved
+                    document.verificationStatus === 1 ? 'bg-red-500 text-white' : // Approved
                     document.verificationStatus === 2 ? 'bg-red-500 text-white' : // Rejected
                     'bg-yellow-500 text-white' // Pending
                   }`}>
@@ -489,7 +489,7 @@ export default function DocumentPreview() {
 
                   <button
                     onClick={() => handleDownloadDocument(document)}
-                    className="flex-1 px-3 py-2 text-xs font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 flex items-center justify-center"
+                    className="flex-1 px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex items-center justify-center"
                   >
                     <Download className="w-3 h-3 me-1" />
                     {t('doc.download')}
@@ -501,7 +501,7 @@ export default function DocumentPreview() {
                   {document.verificationStatus !== 1 && (
                     <button
                       onClick={() => handleApproveDocument(document)}
-                      className="flex-1 px-3 py-2 text-xs font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 flex items-center justify-center"
+                      className="flex-1 px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex items-center justify-center"
                     >
                       <CheckCircle className="w-3 h-3 me-1" />
                       {t('common:approve')}

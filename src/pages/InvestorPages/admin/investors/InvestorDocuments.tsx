@@ -95,7 +95,7 @@ export default function InvestorDocuments() {
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-red-500" />;
       case 'rejected':
         return <XCircle className="w-4 h-4 text-red-500" />;
       case 'pending':
@@ -108,7 +108,7 @@ export default function InvestorDocuments() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
-        return 'bg-green-100 text-green-800';
+        return 'bg-red-100 text-red-800';
       case 'rejected':
         return 'bg-red-100 text-red-800';
       case 'pending':
@@ -353,7 +353,7 @@ export default function InvestorDocuments() {
                         </button>
                         <button
                           onClick={() => window.open(document.url, '_blank')}
-                          className="text-green-600 hover:text-green-900 flex items-center"
+                          className="text-red-600 hover:text-red-900 flex items-center"
                         >
                           <Download className="w-4 h-4 me-1" />
                           {t('doc.download')}
@@ -361,7 +361,7 @@ export default function InvestorDocuments() {
                         {document.status !== 'approved' && (
                           <button
                             onClick={() => handleApproveDocument(document)}
-                            className="text-green-600 hover:text-green-900 flex items-center"
+                            className="text-red-600 hover:text-red-900 flex items-center"
                           >
                             <CheckCircle className="w-4 h-4 me-1" />
                             {t('common:approve')}

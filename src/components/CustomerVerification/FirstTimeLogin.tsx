@@ -253,7 +253,7 @@ const FirstTimeLogin = () => {
                     alignItems: "center",
                     marginBottom: "8px",
                     fontSize: "14px",
-                    color: requirement.met ? "#28a745" : "#666666",
+                    color: requirement.met ? "#c00000" : "#666666",
                   }}
                 >
                   <span
@@ -261,7 +261,7 @@ const FirstTimeLogin = () => {
                       width: "20px",
                       height: "20px",
                       borderRadius: "50%",
-                      backgroundColor: requirement.met ? "#28a745" : "#E0E0E0",
+                      backgroundColor: requirement.met ? "#c00000" : "#E0E0E0",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",

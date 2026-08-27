@@ -134,7 +134,7 @@ export default function StrategiesList() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Published': return 'bg-green-100 text-green-800';
+      case 'Published': return 'bg-red-100 text-red-800';
       case 'Draft': return 'bg-gray-100 text-gray-800';
       case 'Paused': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -143,7 +143,7 @@ export default function StrategiesList() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Published': return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'Published': return <CheckCircle className="w-4 h-4 text-red-500" />;
       case 'Draft': return <Clock className="w-4 h-4 text-gray-500" />;
       case 'Paused': return <Pause className="w-4 h-4 text-yellow-500" />;
       default: return <XCircle className="w-4 h-4 text-red-500" />;
@@ -319,7 +319,7 @@ export default function StrategiesList() {
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleBulkEnable}
-                className="text-sm font-medium text-green-600 hover:text-green-700"
+                className="text-sm font-medium text-red-600 hover:text-red-700"
               >
                 {t('common:enable')}
               </button>
@@ -425,7 +425,7 @@ export default function StrategiesList() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className={`text-sm font-medium ${strategy.performance > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                    <div className={`text-sm font-medium ${strategy.performance > 0 ? 'text-red-600' : 'text-gray-500'}`}>
                       {strategy.performance > 0 ? `+${strategy.performance}%` : 'N/A'}
                     </div>
                   </td>
@@ -450,14 +450,14 @@ export default function StrategiesList() {
                       </Link>
                       <Link
                         to={`/admin/allocation/strategies/${strategy.id}/simulate`}
-                        className="text-green-600 hover:text-green-900"
+                        className="text-red-600 hover:text-red-900"
                         title={t('sl.runSimulation')}
                       >
                         <Play className="w-4 h-4" />
                       </Link>
                       <button
                         onClick={() => handleToggleStrategy(strategy.id, strategy.status)}
-                        className={`${strategy.status === 'Published' ? 'text-yellow-600 hover:text-yellow-900' : 'text-green-600 hover:text-green-900'}`}
+                        className={`${strategy.status === 'Published' ? 'text-yellow-600 hover:text-yellow-900' : 'text-red-600 hover:text-red-900'}`}
                         title={strategy.status === 'Published' ? t('sl.pauseStrategy') : t('sl.enableStrategy')}
                       >
                         {strategy.status === 'Published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}

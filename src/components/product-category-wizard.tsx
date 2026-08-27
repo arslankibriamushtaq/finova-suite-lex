@@ -46,7 +46,7 @@ const masterCategories = [
     name: "Tawarruq",
     description: "Monetization through commodity trading",
     icon: Banknote,
-    color: "bg-teal-100 text-teal-800 border-teal-200",
+    color: "bg-red-100 text-red-800 border-red-200",
     subCategories: [
       {
         id: "personal-financing",

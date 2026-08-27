@@ -305,7 +305,7 @@ const ProductFee = () => {
                   {detail.isAppliedToLoan ? (
                     <Tag color="blue">{t("productFee.tag.loan")}</Tag>
                   ) : (
-                    <Tag color="green">{t("productFee.tag.invoice", { number: detail.invoiceNumber })}</Tag>
+                    <Tag color="red">{t("productFee.tag.invoice", { number: detail.invoiceNumber })}</Tag>
                   )}
                 </p>
 

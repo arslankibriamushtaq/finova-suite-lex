@@ -153,7 +153,7 @@ export default function InvestorStatements() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Delivered': return 'bg-green-100 text-green-800';
+      case 'Delivered': return 'bg-red-100 text-red-800';
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
       case 'Failed': return 'bg-red-100 text-red-800';
       case 'Processing': return 'bg-gray-100 text-gray-900';
@@ -269,9 +269,9 @@ export default function InvestorStatements() {
             <div>
               <p className="text-sm text-gray-600">{t('ist.delivered')}</p>
               <p className="text-2xl font-bold text-gray-900">{investorStatements.filter(s => s.status === 'Delivered').length}</p>
-              <p className="text-xs text-green-600 mt-1">{t('ist.successfullySent')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('ist.successfullySent')}</p>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-500" />
+            <CheckCircle className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -402,7 +402,7 @@ export default function InvestorStatements() {
                       <div className="text-sm text-gray-900">
                         {t('ist.monthLabel', { value: `${statement.monthlyReturn > 0 ? '+' : ''}${statement.monthlyReturn}%` })}
                       </div>
-                      <div className={`text-sm ${statement.ytdReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <div className={`text-sm ${statement.ytdReturn >= 0 ? 'text-slate-500' : 'text-red-600'}`}>
                         {t('ist.ytdLabel', { value: `${statement.ytdReturn > 0 ? '+' : ''}${statement.ytdReturn}%` })}
                       </div>
                     </td>
@@ -439,7 +439,7 @@ export default function InvestorStatements() {
                         {statement.status === 'Failed' && (
                           <button
                             onClick={() => handleResendStatement(statement)}
-                            className="text-green-600 hover:text-green-900"
+                            className="text-red-600 hover:text-red-900"
                             title={t('ist.resend')}
                           >
                             <Send className="w-4 h-4" />
@@ -501,7 +501,7 @@ export default function InvestorStatements() {
                     {new Date(template.lastModified).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                       {t('ist.usage.active')}
                     </span>
                   </td>
@@ -510,7 +510,7 @@ export default function InvestorStatements() {
                       <button className="text-black hover:text-blue-900" title={t('ist.editTemplate')}>
                         <FileText className="w-4 h-4" />
                       </button>
-                      <button className="text-green-600 hover:text-green-900" title={t('ist.preview')}>
+                      <button className="text-red-600 hover:text-red-900" title={t('ist.preview')}>
                         <Eye className="w-4 h-4" />
                       </button>
                     </div>
@@ -560,13 +560,13 @@ export default function InvestorStatements() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.monthlyReturn')}</label>
-                  <p className={`text-sm ${selectedStatement.monthlyReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={`text-sm ${selectedStatement.monthlyReturn >= 0 ? 'text-slate-500' : 'text-red-600'}`}>
                     {selectedStatement.monthlyReturn > 0 ? '+' : ''}{selectedStatement.monthlyReturn}%
                   </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.ytdReturn')}</label>
-                  <p className={`text-sm ${selectedStatement.ytdReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={`text-sm ${selectedStatement.ytdReturn >= 0 ? 'text-slate-500' : 'text-red-600'}`}>
                     {selectedStatement.ytdReturn > 0 ? '+' : ''}{selectedStatement.ytdReturn}%
                   </p>
                 </div>

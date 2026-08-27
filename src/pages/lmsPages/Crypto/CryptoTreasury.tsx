@@ -474,7 +474,7 @@ const CryptoTreasury = () => {
             <div className="pro-tile">
               <span className="pro-tile__label">{t("tre.balance.onchain")}</span>
               {balanceLoading ? (
-                <span className="mt-1.5 block h-[18px] w-24 animate-pulse rounded-[2px] bg-emerald-500/20" />
+                <span className="mt-1.5 block h-[18px] w-24 animate-pulse rounded-[2px] bg-red-500/20" />
               ) : (
                 <span className="pro-tile__value pro-tile__value--accent">
                   {balance ? formatCryptoAmount(balance.onchainBalance, balance.assetCode) : "—"}

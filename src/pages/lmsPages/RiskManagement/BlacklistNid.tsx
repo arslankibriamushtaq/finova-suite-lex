@@ -215,7 +215,7 @@ const BlacklistNid = () => {
         const status = row.status || "BLACKLISTED";
         const isBlacklisted = status === "BLACKLISTED";
         return (
-          <span className={isBlacklisted ? "text-red-600 font-medium" : "text-green-600 font-medium"}>
+          <span className={isBlacklisted ? "text-red-600 font-medium" : "text-slate-500 font-medium"}>
             {status}
           </span>
         );

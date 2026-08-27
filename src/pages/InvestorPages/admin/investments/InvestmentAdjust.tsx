@@ -253,8 +253,8 @@ export default function InvestmentAdjust() {
               </label>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
-                  { value: 'add', label: 'iadj.type.add', icon: TrendingUp, color: 'green' },
-                  { value: 'redeem', label: 'iadj.type.redeem', icon: TrendingUp, color: 'red' },
+                  { value: 'add', label: 'iadj.type.add', icon: TrendingUp, color: 'red' },
+                  { value: 'redeem', label: 'iadj.type.redeem', icon: TrendingUp, color: 'orange' },
                   { value: 'rebalance', label: 'iadj.type.rebalance', icon: RefreshCw, color: 'blue' },
                   { value: 'transfer', label: 'iadj.type.transfer', icon: RefreshCw, color: 'purple' }
                 ].map((type) => (
@@ -502,7 +502,7 @@ export default function InvestmentAdjust() {
                 <button
                   onClick={handleSubmit}
                   disabled={isSubmitting || !formData.confirmRisks}
-                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
@@ -564,7 +564,7 @@ export default function InvestmentAdjust() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
               >
                 {t('iadj.confirm')}
               </button>

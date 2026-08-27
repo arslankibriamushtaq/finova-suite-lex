@@ -61,8 +61,8 @@ const getStepIcon = (step: any, status: any) => {
   };
 
   if (status === "process") return <Spin indicator={<LoadingOutlined />} />;
-  if (status === "finish") return <CheckCircleOutlined style={{ color: "green" }} />;
-  if (status === "error") return <CloseCircleOutlined style={{ color: "red" }} />;
+  if (status === "finish") return <CheckCircleOutlined style={{ color: "var(--color-success)" }} />;
+  if (status === "error") return <CloseCircleOutlined style={{ color: "#7a0e0e" }} />;
   return iconsMap[step]; // default for "wait"
 };
   const [formValues, setFormValues] = useState<any>({

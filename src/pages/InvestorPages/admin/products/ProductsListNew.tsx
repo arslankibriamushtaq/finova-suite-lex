@@ -310,7 +310,7 @@ export default function ProductsList() {
       name: t('pln.col.expectedReturn'),
       selector: (row: { expectedReturn: any }) => (
         <div className="flex items-center">
-          <Target className="w-4 h-4 text-green-500 me-1" />
+          <Target className="w-4 h-4 text-red-500 me-1" />
           <span>{row.expectedReturn}%</span>
         </div>
       ),
@@ -341,7 +341,7 @@ export default function ProductsList() {
       name: t('common:status'),
       cell: (row: any) => (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          row.status === 0 ? 'bg-green-100 text-green-800' : // Active
+          row.status === 0 ? 'bg-red-100 text-red-800' : // Active
           row.status === 1 ? 'bg-gray-100 text-gray-800' : // Inactive
           row.status === 2 ? 'bg-red-100 text-red-800' : // Closed
           row.status === 3 ? 'bg-yellow-100 text-yellow-800' : // Suspended (Pending-like)

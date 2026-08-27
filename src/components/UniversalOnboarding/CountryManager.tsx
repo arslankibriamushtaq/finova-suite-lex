@@ -85,7 +85,7 @@ const CountryManager: React.FC<{
               {/* Status Indicator */}
               <div className="absolute top-0 right-0 p-4">
                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                  country.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 
+                  country.status === 'Active' ? 'bg-red-100 text-red-700' : 
                   country.status === 'Draft' ? 'bg-slate-100 text-slate-600' : 'bg-amber-100 text-amber-700'
                 }`}>
                   {country.status}

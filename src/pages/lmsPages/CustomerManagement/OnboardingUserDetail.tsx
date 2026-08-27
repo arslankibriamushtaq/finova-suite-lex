@@ -36,7 +36,7 @@ import {
 
 const TONES: Record<string, string> = {
   emerald:
-    "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30",
+    "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/30",
   amber:
     "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30",
   sky: "bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/30",
@@ -109,11 +109,11 @@ const Block = ({
       className
     )}
   >
-    <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+    <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-red-500/[0.07] blur-2xl" />
     <div className="relative mb-4 flex items-center justify-between gap-2">
       <div className="flex items-center gap-2">
         {Icon && (
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
             <Icon className="size-4" />
           </span>
         )}
@@ -232,11 +232,11 @@ const OnboardingUserDetail = () => {
         <div className="flex flex-col gap-4">
           {/* Header band */}
           <div className="relative overflow-hidden rounded-xl border bg-card">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent" />
             <div className="relative flex flex-col gap-6 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
               {/* Identity */}
               <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-                <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base font-semibold text-white ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/20 sm:size-14 sm:text-lg">
+                <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-base font-semibold text-white ring-2 ring-red-500/25 shadow-md shadow-red-500/20 sm:size-14 sm:text-lg">
                   {initials || <User className="size-6" />}
                 </div>
                 <div className="flex min-w-0 flex-col gap-2">
@@ -260,7 +260,7 @@ const OnboardingUserDetail = () => {
                   const Icon = f.icon;
                   return (
                     <div key={f.label} className="flex w-full min-w-0 items-center gap-2.5">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                         <Icon className="size-4" />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -321,11 +321,11 @@ const OnboardingUserDetail = () => {
                   const when =
                     step.completedAt || step.startedAt || step.occurredAt || null;
                   const circle = done
-                    ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
+                    ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
                     : failed
                       ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
                       : current
-                        ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
+                        ? "border-red-500 text-red-600 ring-4 ring-red-500/15"
                         : "border-border text-muted-foreground";
                   return (
                     <div
@@ -336,7 +336,7 @@ const OnboardingUserDetail = () => {
                         <div
                           className={cn(
                             "onb-connector absolute top-5 z-0 h-0.5 rounded-full transition-colors duration-500",
-                            prevDone ? "bg-emerald-500" : "bg-border"
+                            prevDone ? "bg-red-500" : "bg-border"
                           )}
                           style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
                         />

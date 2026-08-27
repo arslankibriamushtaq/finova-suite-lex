@@ -60,7 +60,7 @@ const STATUS_BADGE: Record<string, string> = {
   IN_PROGRESS:
     "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 dark:border dark:border-blue-500/30",
   COMPLETED:
-    "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300 dark:border dark:border-green-500/30",
+    "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300 dark:border dark:border-red-500/30",
   PENDING:
     "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 dark:border dark:border-amber-500/30",
   ABANDONED:
@@ -133,7 +133,7 @@ const ProgressCell = ({ row }: { row: OnboardingSession }) => {
       </div>
       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all"
+          className="h-full rounded-full bg-red-500 transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>

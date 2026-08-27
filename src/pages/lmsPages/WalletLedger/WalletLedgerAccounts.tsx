@@ -295,7 +295,7 @@ const WalletLedgerAccounts = () => {
           <span
             className={`font-medium ${
               signed.tone === "up"
-                ? "text-emerald-600 dark:text-emerald-400"
+                ? "text-red-600 dark:text-red-400"
                 : signed.tone === "down"
                   ? "text-red-600 dark:text-red-400"
                   : ""

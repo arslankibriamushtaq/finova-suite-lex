@@ -97,7 +97,7 @@ const FinanceBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#73E98D",
+            backgroundColor: "#ff8a8a",
             marginRight: 5,
           }}
         />
@@ -204,7 +204,7 @@ const FinanceBarChart = () => {
               radius={[8, 8, 8, 8]}
               dataKey="Resolved"
               barSize={15}
-              fill={"#73E98D"}
+              fill={"#ff8a8a"}
             />
             <Bar
               radius={[8, 8, 8, 8]}

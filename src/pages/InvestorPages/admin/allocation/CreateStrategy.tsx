@@ -1342,7 +1342,7 @@ export default function CreateStrategy() {
                     />
                     <div className="flex-1">
                       <div className="flex items-center mb-1">
-                        <Check className="w-4 h-4 text-green-500 me-2" />
+                        <Check className="w-4 h-4 text-red-500 me-2" />
                         <div className="text-sm font-medium text-gray-900">{t('cs.notif.success.title')}</div>
                       </div>
                       <div className="text-xs text-gray-600 mb-2">{t('cs.notif.success.desc')}</div>
@@ -1397,7 +1397,7 @@ export default function CreateStrategy() {
                     </div>
                     <div className="flex justify-between">
                       <span>{t('cs.s6.status')}</span>
-                      <span className={`font-medium ${formData.status === 'Published' ? 'text-green-600' : 'text-yellow-600'}`}>
+                      <span className={`font-medium ${formData.status === 'Published' ? 'text-red-600' : 'text-yellow-600'}`}>
                         {tStatusReview(formData.status)}
                       </span>
                     </div>
@@ -1497,7 +1497,7 @@ export default function CreateStrategy() {
 
                 <div className="bg-white rounded-lg border p-4">
                   <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
-                    <DollarSign className="w-4 h-4 me-2 text-green-500" />
+                    <DollarSign className="w-4 h-4 me-2 text-red-500" />
                     {t('cs.s6.financialLimits')}
                   </h4>
                   <div className="text-sm text-gray-600 space-y-2">
@@ -1565,7 +1565,7 @@ export default function CreateStrategy() {
                       <span>{t('cs.s6.failureAlerts')}</span>
                       <span className={`text-xs px-2 py-1 rounded font-medium ${
                         formData.notifications.allocationFailure
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-red-100 text-red-700'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {formData.notifications.allocationFailure ? t('cs.enabled') : t('cs.disabled')}
@@ -1575,7 +1575,7 @@ export default function CreateStrategy() {
                       <span>{t('cs.s6.exposureAlerts')}</span>
                       <span className={`text-xs px-2 py-1 rounded font-medium ${
                         formData.notifications.exposureThreshold
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-red-100 text-red-700'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {formData.notifications.exposureThreshold ? t('cs.enabled') : t('cs.disabled')}
@@ -1585,7 +1585,7 @@ export default function CreateStrategy() {
                       <span>{t('cs.s6.manualApproval')}</span>
                       <span className={`text-xs px-2 py-1 rounded font-medium ${
                         formData.notifications.manualApproval
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-red-100 text-red-700'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {formData.notifications.manualApproval ? t('cs.enabled') : t('cs.disabled')}
@@ -1595,7 +1595,7 @@ export default function CreateStrategy() {
                       <span>{t('cs.s6.successSummary')}</span>
                       <span className={`text-xs px-2 py-1 rounded font-medium ${
                         formData.notifications.successSummary
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-red-100 text-red-700'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {formData.notifications.successSummary ? t('cs.enabled') : t('cs.disabled')}
@@ -1621,12 +1621,12 @@ export default function CreateStrategy() {
               </div>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-start">
-                <Check className="w-5 h-5 text-green-600 me-3 mt-0.5" />
+                <Check className="w-5 h-5 text-red-600 me-3 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-medium text-green-900">{t('cs.s6.readyTitle')}</h4>
-                  <p className="text-sm text-green-700 mt-1">
+                  <h4 className="text-sm font-medium text-red-900">{t('cs.s6.readyTitle')}</h4>
+                  <p className="text-sm text-red-700 mt-1">
                     {t('cs.s6.readyText')}
                   </p>
                 </div>

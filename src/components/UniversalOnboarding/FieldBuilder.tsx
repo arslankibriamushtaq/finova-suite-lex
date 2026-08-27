@@ -214,7 +214,7 @@ const FieldBuilder: React.FC<FieldBuilderProps> = ({ selectedStep }) => {
                           className="text-[10px] font-mono text-slate-400 bg-transparent border-none focus:outline-none w-full mb-1"
                         />
                         <div className="flex items-center gap-2">
-                           <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">{field.action.apiMethod}</span>
+                           <span className="text-[9px] font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded">{field.action.apiMethod}</span>
                            <button 
                             onClick={() => updateAction(index, 'hasButton', false)}
                             className="text-[9px] font-black text-red-400 uppercase hover:text-red-600"

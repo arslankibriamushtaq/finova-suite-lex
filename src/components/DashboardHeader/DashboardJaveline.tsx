@@ -77,7 +77,7 @@ const DashboardJaveline =(props: any) => {
             barGap: "0%", // No gap between bars in different series
             barCategoryGap: "0%", // No gap between bars in the same category
             itemStyle: {
-              color: "#98D2DA", // Color for the second set of bars
+              color: "#e8b4b4", // Color for the second set of bars
             },
           },
         ],
@@ -128,7 +128,7 @@ const DashboardJaveline =(props: any) => {
         barGap: "0%", // No gap between bars in different series
         barCategoryGap: "0%", // No gap between bars in the same category
         itemStyle: {
-          color: "#0B8085", // Color for the second set of bars
+          color: "#c00000", // Color for the second set of bars
         },
       },
       {
@@ -139,7 +139,7 @@ const DashboardJaveline =(props: any) => {
         barGap: "0%", // No gap between bars in different series
         barCategoryGap: "0%", // No gap between bars in the same category
         itemStyle: {
-          color: "#98D2DA", // Color for the second set of bars
+          color: "#e8b4b4", // Color for the second set of bars
         },
       }
     ],

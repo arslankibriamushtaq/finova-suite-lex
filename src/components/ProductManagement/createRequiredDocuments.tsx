@@ -239,7 +239,7 @@ export default function CreateRequiredDocuments() {
     {
       name: t("requiredDoc.required"),
       cell: (row: any) => (
-        <span className={row.required ? "text-green-600 font-medium" : "text-muted-foreground"}>
+        <span className={row.required ? "text-red-600 font-medium" : "text-muted-foreground"}>
           {row.required ? t("common:yes") : t("common:no")}
         </span>
       ),
@@ -310,7 +310,7 @@ export default function CreateRequiredDocuments() {
               </div>
             </div>
             <h1 className="text-xl font-semibold mb-4 flex items-center gap-2.5">
-              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                 <Package className="h-4 w-4" />
               </span>
               {t("createDocs.editProduct")}

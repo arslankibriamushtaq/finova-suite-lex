@@ -17,8 +17,8 @@ import { useTranslation } from "react-i18next";
 //     year: "2023",
 //     title: "Customer Onboarded Successfully",
 //     content: "31 Dec, 2023 11:24 am",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "January",
@@ -41,8 +41,8 @@ import { useTranslation } from "react-i18next";
 //     year: "2024",
 //     title: "Stop correspondence",
 //     content: "02 Jan, 2024 02:10 pm",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 
 //   {
@@ -50,16 +50,16 @@ import { useTranslation } from "react-i18next";
 //     year: "2024",
 //     title: "Start an ACH",
 //     content: "02 Feb, 2024 10:20 am",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "February",
 //     year: "2024",
 //     title: "Add servicing of account with post dated checks as a repayment method",
 //     content: " 12 Feb, 2024 11:24 AM",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "February",
@@ -82,8 +82,8 @@ import { useTranslation } from "react-i18next";
 //     year: "2024",
 //     title: "Apply refund payment to an ESC",
 //     content: " 01 March, 2024 11:24 AM",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "March",
@@ -98,8 +98,8 @@ import { useTranslation } from "react-i18next";
 //     year: "2024",
 //     title: "Edit new escrow insurance detail",
 //     content: " 01 April, 2024 11:24 AM",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "April",
@@ -114,8 +114,8 @@ import { useTranslation } from "react-i18next";
 //     year: "2024",
 //     title: "Change escrow indicators of insurance",
 //     content: " 01 April, 2024 11:24 AM",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "April",
@@ -138,8 +138,8 @@ import { useTranslation } from "react-i18next";
 //     year: "2024",
 //     title: "Chnage tax annual desbursement",
 //     content: " 01 May, 2024 11:24 AM",
-//     background: "#EAFBE7",
-//     iconColor: "#6ED66E",
+//     background: "#fff1f1",
+//     iconColor: "#ff6b6b",
 //   },
 //   {
 //     date: "May",
@@ -208,8 +208,8 @@ const LoanTimeline = () => {
                 year: String(year),
                 title: item.description,
                 content: formattedDate,
-                background: index % 2 === 0 ? "#EAFBE7" : "#FEF4E6",
-                iconColor: index % 2 === 0 ? "#6ED66E" : "#FF9900",
+                background: index % 2 === 0 ? "#fff1f1" : "#FEF4E6",
+                iconColor: index % 2 === 0 ? "#ff6b6b" : "#FF9900",
                 eventType: item?.eventType,
                 amount: item.amount,
                 duration: item.duration,
@@ -348,7 +348,7 @@ const LoanTimeline = () => {
                 }}
                 date={event?.content}
                 dateClassName={
-                  event.iconColor === "#6ED66E"
+                  event.iconColor === "#ff6b6b"
                     ? "custom-date-green"
                     : "custom-date-orange"
                 }

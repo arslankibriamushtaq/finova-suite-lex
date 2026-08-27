@@ -509,7 +509,7 @@ export function AddProductWizard({ open, onOpenChange }: AddProductWizardProps) 
                     step.id === currentStep
                       ? "text-primary"
                       : step.id < currentStep
-                        ? "text-green-600"
+                        ? "text-red-600"
                         : "text-muted-foreground"
                   }`}
                   onClick={() => step.id <= currentStep && setCurrentStep(step.id)}
@@ -519,7 +519,7 @@ export function AddProductWizard({ open, onOpenChange }: AddProductWizardProps) 
                       step.id === currentStep
                         ? "bg-primary text-primary-foreground"
                         : step.id < currentStep
-                          ? "bg-green-600 text-white"
+                          ? "bg-red-600 text-white"
                           : "bg-muted text-muted-foreground"
                     }`}
                   >

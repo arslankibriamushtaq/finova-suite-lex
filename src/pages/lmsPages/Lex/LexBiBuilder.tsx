@@ -53,8 +53,8 @@ const OptionGrid = ({
           className={cn(
             "pro-tile text-start transition-colors",
             value === option
-              ? "border-emerald-500 ring-1 ring-emerald-500/30"
-              : "hover:border-emerald-500/40",
+              ? "border-red-500 ring-1 ring-red-500/30"
+              : "hover:border-red-500/40",
             disabled && "cursor-not-allowed opacity-60"
           )}
         >
@@ -91,8 +91,8 @@ const DataSourceGrid = ({
         className={cn(
           "pro-tile text-start transition-colors",
           value === option.value
-            ? "border-emerald-500 ring-1 ring-emerald-500/30"
-            : "hover:border-emerald-500/40",
+            ? "border-red-500 ring-1 ring-red-500/30"
+            : "hover:border-red-500/40",
           !option.available && "cursor-not-allowed opacity-60"
         )}
       >
@@ -261,7 +261,7 @@ const LexBiBuilder = () => {
                   className={cn(
                     "flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
                     done || current
-                      ? "bg-emerald-500 text-white"
+                      ? "bg-red-500 text-white"
                       : "bg-muted text-muted-foreground ring-1 ring-border"
                   )}
                 >

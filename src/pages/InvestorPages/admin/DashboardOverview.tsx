@@ -214,7 +214,7 @@ export default function DashboardOverview() {
                 <stat.icon className="w-6 h-6 text-gray-600" />
               </div>
               <div className={`flex items-center text-sm font-medium ${
-                stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                stat.changeType === 'increase' ? 'text-slate-500' : 'text-red-600'
               }`}>
                 {stat.changeType === 'increase' ? (
                   <TrendingUp className="w-4 h-4 me-1" />
@@ -322,10 +322,10 @@ export default function DashboardOverview() {
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          index === 0 ? 'bg-green-100' : index === 1 ? 'bg-blue-100' : 'bg-purple-100'
+                          index === 0 ? 'bg-red-100' : index === 1 ? 'bg-blue-100' : 'bg-purple-100'
                         }`}>
                           <Activity className={`w-5 h-5 ${
-                            index === 0 ? 'text-green-600' : index === 1 ? 'text-blue-600' : 'text-purple-600'
+                            index === 0 ? 'text-red-600' : index === 1 ? 'text-blue-600' : 'text-purple-600'
                           }`} />
                         </div>
                         <div>
@@ -348,7 +348,7 @@ export default function DashboardOverview() {
                     </td>
                     <td className="py-4 px-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        product.status === 0 ? 'bg-green-100 text-green-800' : 
+                        product.status === 0 ? 'bg-red-100 text-red-800' : 
                         product.status === 1 ? 'bg-yellow-100 text-yellow-800' : 
                         'bg-gray-100 text-gray-800'
                       }`}>
@@ -383,7 +383,7 @@ export default function DashboardOverview() {
           {recentActivity.map((activity) => (
             <div key={activity.id} className="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-lg transition-colors">
               <div className={`w-2 h-2 rounded-full mt-2 ${
-                activity.severity === 'success' ? 'bg-green-500' :
+                activity.severity === 'success' ? 'bg-red-500' :
                 activity.severity === 'warning' ? 'bg-yellow-500' :
                 activity.severity === 'error' ? 'bg-red-500' : 'bg-gray-700'
               }`} />

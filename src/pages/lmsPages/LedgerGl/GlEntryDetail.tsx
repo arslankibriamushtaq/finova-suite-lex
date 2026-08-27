@@ -50,7 +50,7 @@ export const GlStatusBadge = ({ status }: { status?: string }) => (
 
 const SectionTitle = ({ icon: Icon, title }: { icon: LucideIcon; title: string }) => (
   <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-foreground">
-    <Icon className="h-4 w-4 text-emerald-600" />
+    <Icon className="h-4 w-4 text-red-600" />
     {title}
   </div>
 );

@@ -185,7 +185,7 @@ export default function AdminUsers() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
+      case 'Active': return 'bg-red-100 text-red-800';
       case 'Suspended': return 'bg-red-100 text-red-800';
       case 'Inactive': return 'bg-gray-100 text-gray-800';
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
@@ -357,9 +357,9 @@ export default function AdminUsers() {
             <div>
               <p className="text-sm text-gray-600">Active Users</p>
               <p className="text-2xl font-bold text-gray-900">{adminUsers.filter(u => u.status === 'Active').length}</p>
-              <p className="text-xs text-green-600 mt-1">Online today</p>
+              <p className="text-xs text-red-600 mt-1">Online today</p>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-500" />
+            <CheckCircle className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -536,7 +536,7 @@ export default function AdminUsers() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
                           {user.mfaEnabled ? (
-                            <span className="flex items-center text-xs text-green-600">
+                            <span className="flex items-center text-xs text-red-600">
                               <Lock className="w-3 h-3 me-1" />
                               MFA On
                             </span>
@@ -701,7 +701,7 @@ export default function AdminUsers() {
                         </button>
                         <button 
                           onClick={() => handleDuplicateRole(role)}
-                          className="text-green-600 hover:text-green-900" 
+                          className="text-red-600 hover:text-red-900" 
                           title="Duplicate Role"
                         >
                           <Copy className="w-4 h-4" />
@@ -967,7 +967,7 @@ export default function AdminUsers() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">MFA Status</label>
-                  <p className={`text-sm ${selectedUser.mfaEnabled ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={`text-sm ${selectedUser.mfaEnabled ? 'text-slate-500' : 'text-red-600'}`}>
                     {selectedUser.mfaEnabled ? 'Enabled' : 'Disabled'}
                   </p>
                 </div>

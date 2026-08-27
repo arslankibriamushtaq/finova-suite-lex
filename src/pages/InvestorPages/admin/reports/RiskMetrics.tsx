@@ -122,10 +122,10 @@ export default function RiskMetrics() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Green': return 'bg-green-100 text-green-800';
+      case 'Green': return 'bg-red-50 text-red-700';
       case 'Yellow': return 'bg-yellow-100 text-yellow-800';
       case 'Red': return 'bg-red-100 text-red-800';
-      case 'Within Limits': return 'bg-green-100 text-green-800';
+      case 'Within Limits': return 'bg-red-50 text-red-700';
       case 'Monitor': return 'bg-yellow-100 text-yellow-800';
       case 'Breach': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -136,7 +136,7 @@ export default function RiskMetrics() {
     const absValue = Math.abs(value);
     if (absValue >= 0.7) return 'bg-red-100 text-red-800';
     if (absValue >= 0.4) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-green-100 text-green-800';
+    return 'bg-red-100 text-red-800';
   };
 
   return (
@@ -279,7 +279,7 @@ export default function RiskMetrics() {
                     <div
                       className={`h-2 rounded-full ${
                         factor.exposure / factor.limit > 0.8 ? 'bg-red-500' :
-                        factor.exposure / factor.limit > 0.6 ? 'bg-yellow-500' : 'bg-green-500'
+                        factor.exposure / factor.limit > 0.6 ? 'bg-yellow-500' : 'bg-red-500'
                       }`}
                       style={{ width: `${Math.min((factor.exposure / factor.limit) * 100, 100)}%` }}
                     ></div>
@@ -329,7 +329,7 @@ export default function RiskMetrics() {
                   <div 
                     className={`h-2 rounded-full ${
                       limit.utilization > 90 ? 'bg-red-500' : 
-                      limit.utilization > 75 ? 'bg-yellow-500' : 'bg-green-500'
+                      limit.utilization > 75 ? 'bg-yellow-500' : 'bg-red-500'
                     }`}
                     style={{ width: `${Math.min(limit.utilization, 100)}%` }}
                   ></div>
@@ -374,7 +374,7 @@ export default function RiskMetrics() {
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       test.probability.includes('High') ? 'bg-red-100 text-red-800' :
                       test.probability.includes('Medium') ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
+                      'bg-red-100 text-red-800'
                     }`}>
                       {translateProbability(test.probability)}
                     </span>

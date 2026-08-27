@@ -24,7 +24,7 @@ html.dark .brand-loader-overlay {
 
 .brand-loader {
   --ring: var(--primary, #e60000);
-  --ring-2: var(--color-action, #0b8085);
+  --ring-2: var(--color-action, #c00000);
   position: relative;
   width: 132px;
   height: 132px;
@@ -94,7 +94,7 @@ html.dark .brand-loader__logo {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.4px;
-  color: var(--color-action, #0b8085);
+  color: var(--color-action, #c00000);
 }
 
 /* Compact inline spinner — same branded ring, scaled for stat cards / modals /

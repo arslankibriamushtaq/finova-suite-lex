@@ -47,7 +47,7 @@ const Dashboard = () => {
   // Department wise chart configuration
   const departmentCategories: CategoryConfig[] = [
     { key: "Operations", color: "#FF6B6B" },
-    { key: "Account", color: "#6CDF9C" },
+    { key: "Account", color: "#ff8080" },
     { key: "HR", color: "#FFCC6A" },
     { key: "Sales", color: "#B6A4FF" },
     { key: "Risk", color: "#FF9F9F" },

@@ -243,7 +243,7 @@ const AllProviderApis = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "ACTIVE":
-        return "text-green-600 font-medium";
+        return "text-red-600 font-medium";
       case "INACTIVE":
         return "text-yellow-600 font-medium";
       case "DEPRECATED":

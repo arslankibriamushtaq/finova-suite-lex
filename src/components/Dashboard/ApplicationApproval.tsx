@@ -340,9 +340,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         {/* Show status message if approved or rejected */}
         {/* {(isApproved || isRejected || (rejectedHistory && rejectedHistory.application_status)) ? (
           <div style={{
-            backgroundColor: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#d4edda' : '#f8d7da',
-            border: `1px solid ${(isApproved || rejectedHistory?.application_status === "APPROVED") ? '#c3e6cb' : '#f5c6cb'}`,
-            color: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#155724' : '#721c24',
+            backgroundColor: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#ffdcdc' : '#f8d7da',
+            border: `1px solid ${(isApproved || rejectedHistory?.application_status === "APPROVED") ? '#ffcaca' : '#f5c6cb'}`,
+            color: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#7a0e0e' : '#721c24',
             padding: '20px',
             borderRadius: '2px',
             marginTop: '20px',

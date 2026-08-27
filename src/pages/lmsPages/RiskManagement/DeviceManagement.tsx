@@ -347,7 +347,7 @@ const DeviceManagement = () => {
     {
       name: t("common:status"),
       cell: (row: any) => (
-        <Badge className={row.blocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-green-100 text-green-700 hover:bg-green-100"}>
+        <Badge className={row.blocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-slate-100 text-slate-600 hover:bg-slate-100"}>
           {row.blocked ? t("device.badge.blocked") : t("common:active")}
         </Badge>
       ),
@@ -549,7 +549,7 @@ const DeviceManagement = () => {
               {canEditDevice && (
               <DropdownMenuItem
                 onClick={() => openUnblockModal(row)}
-                className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
+                className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
               >
                 <Unlock className="h-4 w-4" />
                 <span>{t("device.action.unblockDevice")}</span>

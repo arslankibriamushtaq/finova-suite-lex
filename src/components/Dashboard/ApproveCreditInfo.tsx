@@ -116,7 +116,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                       style={{
                         fontWeight: "600",
                         color: creditHistory?.application_status?.toLowerCase().includes("approved")
-                          ? "#28a745"
+                          ? "#c00000"
                           : "#000000",
                         fontSize: "14px",
                       }}

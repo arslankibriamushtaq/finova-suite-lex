@@ -33,10 +33,10 @@ const CustomLineChart = () => {
           <Line
             type="linear"
             dataKey="value"
-            stroke="#13B542"
+            stroke="#c00000"
             strokeWidth={1}
-            activeDot={{ r: 2, fill: isHighData ? "#66BF5E" : "#66BF5E" }}
-            dot={{ r: 2, fill: isHighData ? "#13B542" : "#13B542" }}
+            activeDot={{ r: 2, fill: isHighData ? "#e05252" : "#e05252" }}
+            dot={{ r: 2, fill: isHighData ? "#c00000" : "#c00000" }}
           />
         </LineChart>
       </ResponsiveContainer>

@@ -710,7 +710,7 @@ const SullisCashConfigPage = () => {
                   <div className="flex min-w-0 flex-col gap-1.5">
                     <Label>{t("cfg.profit.title")}</Label>
                     <div className="flex h-10 min-w-0 items-center gap-2">
-                      <span className="text-lg font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                      <span className="text-lg font-bold tabular-nums text-red-600 dark:text-red-400">
                         {formatRatePercent(preview.totalRate)}
                       </span>
                       <span className="min-w-0 truncate text-xs text-muted-foreground">
@@ -797,7 +797,7 @@ const SullisCashConfigPage = () => {
 
                 <div className="flex items-baseline justify-between gap-3 border-t pt-3">
                   <span className="text-xs font-medium">{t("cfg.preview.totalDue")}</span>
-                  <span className="shrink-0 text-lg font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                  <span className="shrink-0 text-lg font-bold tabular-nums text-red-600 dark:text-red-400">
                     {formatSullisAmount(preview.totalDue, currency)}
                   </span>
                 </div>
@@ -934,7 +934,7 @@ const StatusPill = ({
   <div className="flex h-10 shrink-0 items-center gap-2.5 rounded-lg bg-card px-3 ring-1 ring-border">
     <span
       className={`size-2 shrink-0 rounded-full ring-4 ${
-        enabled ? "bg-emerald-500 ring-emerald-500/15" : "bg-slate-400 ring-slate-400/15"
+        enabled ? "bg-red-500 ring-red-500/15" : "bg-slate-400 ring-slate-400/15"
       }`}
     />
     <div className="min-w-0 leading-tight">

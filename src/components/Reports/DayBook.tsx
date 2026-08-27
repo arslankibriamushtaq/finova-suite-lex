@@ -332,7 +332,7 @@ const DayBook = () => {
                   style={{
                     fontSize: 22,
                     fontWeight: 700,
-                    color: Number(visibleTotals.difference) === 0 ? "#198754" : "#dc3545",
+                    color: Number(visibleTotals.difference) === 0 ? "#9e0000" : "#7a0e0e",
                   }}
                 >
                   {formatNumber(visibleTotals.difference)}

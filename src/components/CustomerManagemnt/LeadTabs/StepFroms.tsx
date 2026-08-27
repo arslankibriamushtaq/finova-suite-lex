@@ -207,7 +207,7 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
                   <CheckCircleFilled
                     style={{
                       ...styles.icon,
-                      color: task.checked ? "#00B96B" : "var(--color-border-light)", // green/gray
+                      color: task.checked ? "#c00000" : "var(--color-border-light)", // green/gray
                       cursor: "default",
                     }}
                   />
@@ -225,7 +225,7 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
             </Button>
           )}
           {/* {current === stepsData.length - 1 && (
-            <span style={{ color: "#00B96B", fontWeight: 600 }}>
+            <span style={{ color: "#c00000", fontWeight: 600 }}>
               ✅ All Steps Completed
             </span>
           )} */}

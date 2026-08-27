@@ -84,7 +84,7 @@ const Section = ({
   <div className="pro-card p-4">
     <div className="relative mb-3 flex items-center justify-between gap-2">
       <div className="flex items-center gap-2">
-        <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+        <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
           <Icon className="size-4" />
         </span>
         <p className="m-0 text-sm font-semibold text-foreground">{title}</p>
@@ -307,7 +307,7 @@ const CardDetail = () => {
           <div className="pro-card p-4">
             <div className="mb-3 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                   <Receipt className="size-4" />
                 </span>
                 <p className="m-0 text-sm font-semibold text-foreground">{t("detail.txn.title")}</p>
@@ -379,7 +379,7 @@ const CardDetail = () => {
                           <td
                             className={cn(
                               "whitespace-nowrap px-3 py-2.5 text-right text-xs font-semibold",
-                              credit ? "text-emerald-600" : "text-foreground"
+                              credit ? "text-red-600" : "text-foreground"
                             )}
                           >
                             {credit ? "+" : "-"}

@@ -51,7 +51,7 @@ const Departments = () => {
     //       style={{
     //         padding: "0.22rem 1rem",
     //         borderRadius: "2px",
-    //         backgroundColor: row.ByDefault ? "#92BC83" : "#373435",
+    //         backgroundColor: row.ByDefault ? "#e08a8a" : "#373435",
     //         color: "white",
     //       }}
     //     >

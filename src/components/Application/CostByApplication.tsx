@@ -206,7 +206,7 @@ const CostByApplication = () => {
       <Card className="mb-3 pro-card-glow">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
               <ListChecks className="h-4 w-4" />
             </span>
             Items

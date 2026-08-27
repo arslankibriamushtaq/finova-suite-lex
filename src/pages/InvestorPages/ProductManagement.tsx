@@ -135,7 +135,7 @@ export default function ProductManagement() {
               <p className="text-sm text-gray-600">Active Products</p>
               <p className="text-2xl font-bold text-gray-900">38</p>
             </div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -153,7 +153,7 @@ export default function ProductManagement() {
               <p className="text-sm text-gray-600">Avg Performance</p>
               <p className="text-2xl font-bold text-gray-900">+8.2%</p>
             </div>
-            <TrendingUp className="w-6 h-6 text-green-500" />
+            <TrendingUp className="w-6 h-6 text-red-500" />
           </div>
         </div>
       </div>
@@ -246,7 +246,7 @@ export default function ProductManagement() {
                     className={cn(
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                       product.status === 'Active'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-red-100 text-red-800'
                         : product.status === 'Pending Launch'
                         ? 'bg-yellow-100 text-yellow-800'
                         : product.status === 'Fundraising'
@@ -266,7 +266,7 @@ export default function ProductManagement() {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     {product.performanceType === 'positive' ? (
-                      <TrendingUp className="w-4 h-4 text-green-500 me-1" />
+                      <TrendingUp className="w-4 h-4 text-red-500 me-1" />
                     ) : product.performanceType === 'negative' ? (
                       <TrendingDown className="w-4 h-4 text-red-500 me-1" />
                     ) : null}
@@ -274,7 +274,7 @@ export default function ProductManagement() {
                       className={cn(
                         'text-sm font-medium',
                         product.performanceType === 'positive'
-                          ? 'text-green-600'
+                          ? 'text-red-600'
                           : product.performanceType === 'negative'
                           ? 'text-red-600'
                           : 'text-gray-600'
@@ -289,7 +289,7 @@ export default function ProductManagement() {
                     className={cn(
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                       product.riskLevel === 'Conservative'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-red-100 text-red-800'
                         : product.riskLevel === 'Moderate'
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-red-100 text-red-800'

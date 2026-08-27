@@ -142,7 +142,7 @@ export default function Notifications() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Delivered': return 'bg-green-100 text-green-800';
+      case 'Delivered': return 'bg-red-100 text-red-800';
       case 'Scheduled': return 'bg-gray-100 text-gray-900';
       case 'Failed': return 'bg-red-100 text-red-800';
       case 'Sending': return 'bg-yellow-100 text-yellow-800';
@@ -303,7 +303,7 @@ export default function Notifications() {
             <div>
               <p className="text-sm text-gray-600">Total Sent</p>
               <p className="text-2xl font-bold text-gray-900">15,247</p>
-              <p className="text-xs text-green-600 mt-1">This month</p>
+              <p className="text-xs text-red-600 mt-1">This month</p>
             </div>
             <Send className="w-8 h-8 text-gray-700" />
           </div>
@@ -313,9 +313,9 @@ export default function Notifications() {
             <div>
               <p className="text-sm text-gray-600">Delivery Rate</p>
               <p className="text-2xl font-bold text-gray-900">98.5%</p>
-              <p className="text-xs text-green-600 mt-1">Above target</p>
+              <p className="text-xs text-red-600 mt-1">Above target</p>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-500" />
+            <CheckCircle className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -323,7 +323,7 @@ export default function Notifications() {
             <div>
               <p className="text-sm text-gray-600">Open Rate</p>
               <p className="text-2xl font-bold text-gray-900">87.2%</p>
-              <p className="text-xs text-green-600 mt-1">+2.3% vs last month</p>
+              <p className="text-xs text-red-600 mt-1">+2.3% vs last month</p>
             </div>
             <Eye className="w-8 h-8 text-purple-500" />
           </div>
@@ -525,7 +525,7 @@ export default function Notifications() {
                             {notification.status === 'Failed' && (
                               <button 
                                 onClick={() => handleResendNotification(notification)}
-                                className="text-green-600 hover:text-green-900" 
+                                className="text-red-600 hover:text-red-900" 
                                 title="Resend"
                               >
                                 <Send className="w-4 h-4" />
@@ -622,7 +622,7 @@ export default function Notifications() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                        template.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        template.status === 'Active' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                       )}>
                         {template.status}
                       </span>
@@ -645,7 +645,7 @@ export default function Notifications() {
                         </button>
                         <button 
                           onClick={() => handlePreviewTemplate(template)}
-                          className="text-green-600 hover:text-green-900" 
+                          className="text-red-600 hover:text-red-900" 
                           title="Preview"
                         >
                           <Play className="w-4 h-4" />

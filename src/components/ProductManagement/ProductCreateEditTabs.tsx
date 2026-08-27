@@ -67,7 +67,7 @@ export default function ProductCreateEditTabs({
             className={cn(
               "group relative flex items-center gap-2 whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors",
               isActive
-                ? "text-emerald-600"
+                ? "text-red-600"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -75,9 +75,9 @@ export default function ProductCreateEditTabs({
               className={cn(
                 "flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
                 isActive
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-red-500 text-white"
                   : isDone
-                  ? "bg-emerald-500/15 text-emerald-600"
+                  ? "bg-red-500/15 text-red-600"
                   : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/20"
               )}
             >
@@ -85,7 +85,7 @@ export default function ProductCreateEditTabs({
             </span>
             {t(TAB_LABEL_KEYS[tab.id])}
             {isActive && (
-              <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-emerald-500" />
+              <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-red-500" />
             )}
           </button>
         )

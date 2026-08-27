@@ -26,7 +26,7 @@ const reportCategories = [
     name: 'reports.cat.performance.name',
     description: 'reports.cat.performance.description',
     icon: TrendingUp,
-    color: 'green',
+    color: 'red',
     reports: [
       { id: 'pl-summary', name: 'reports.item.plSummary.name', description: 'reports.item.plSummary.desc', frequency: 'Daily', lastGenerated: '2024-01-22' },
       { id: 'portfolio-analytics', name: 'reports.item.portfolioAnalytics.name', description: 'reports.item.portfolioAnalytics.desc', frequency: 'Weekly', lastGenerated: '2024-01-20' },
@@ -126,7 +126,7 @@ export default function ReportsMain() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Completed': return 'bg-green-100 text-green-800';
+      case 'Completed': return 'bg-red-100 text-red-800';
       case 'Processing': return 'bg-yellow-100 text-yellow-800';
       case 'Failed': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -177,7 +177,7 @@ export default function ReportsMain() {
             <div>
               <p className="text-sm text-gray-600">{t('reports.stat.reportsGenerated')}</p>
               <p className="text-2xl font-bold text-gray-900">1,247</p>
-              <p className="text-xs text-green-600 mt-1">{t('reports.stat.thisMonth')}</p>
+              <p className="text-xs text-red-600 mt-1">{t('reports.stat.thisMonth')}</p>
             </div>
             <FileText className="w-8 h-8 text-gray-700" />
           </div>
@@ -189,7 +189,7 @@ export default function ReportsMain() {
               <p className="text-2xl font-bold text-gray-900">23</p>
               <p className="text-xs text-gray-500 mt-1">{t('reports.stat.automatedReports')}</p>
             </div>
-            <Clock className="w-8 h-8 text-green-500" />
+            <Clock className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -346,7 +346,7 @@ export default function ReportsMain() {
                 className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
-                  <TrendingUp className="w-5 h-5 text-green-600 me-3" />
+                  <TrendingUp className="w-5 h-5 text-red-600 me-3" />
                   <span className="text-sm font-medium text-gray-900">{t('reports.generatePlSummary')}</span>
                 </div>
                 <span className="text-gray-400">→</span>

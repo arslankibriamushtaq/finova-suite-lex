@@ -275,7 +275,7 @@ export default function RiskProfiles() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`text-sm font-medium ${
-                        profile.defaultRate <= 1 ? 'text-green-600' :
+                        profile.defaultRate <= 1 ? 'text-red-600' :
                         profile.defaultRate <= 3 ? 'text-yellow-600' :
                         'text-red-600'
                       }`}>
@@ -355,14 +355,14 @@ export default function RiskProfiles() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        profile.riskTolerance === 'Low' ? 'bg-green-100 text-green-800' :
+                        profile.riskTolerance === 'Low' ? 'bg-red-100 text-red-800' :
                         profile.riskTolerance === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>
                         {tTol(profile.riskTolerance)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
                       {profile.expectedReturn}%
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

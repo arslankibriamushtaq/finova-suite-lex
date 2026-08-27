@@ -96,7 +96,7 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
     //         className="gradient-btn"
     //         type="primary"
     //         style={{
-    //           backgroundColor: "#0B8085 !important",
+    //           backgroundColor: "#c00000 !important",
     //           color: "#000000",
     //           borderColor: "white",
     //           borderRadius: "2px",

@@ -112,7 +112,7 @@ const ThresholdScale = ({
     <div className="mt-2">
       <div className="relative h-2 w-full rounded-full bg-muted">
         <div
-          className="absolute inset-y-0 start-0 rounded-full bg-emerald-500/60"
+          className="absolute inset-y-0 start-0 rounded-full bg-red-500/60"
           style={{ width: pct(near) }}
         />
         <div

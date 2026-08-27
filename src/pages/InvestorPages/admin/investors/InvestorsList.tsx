@@ -358,7 +358,7 @@ export default function InvestorsList() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
+      case 'Active': return 'bg-red-100 text-red-800';
       case 'Pending': return 'bg-yellow-100 text-yellow-800';
       case 'Suspended': return 'bg-red-100 text-red-800';
       case 'Inactive': return 'bg-gray-100 text-gray-800';
@@ -524,7 +524,7 @@ export default function InvestorsList() {
 
   const getKycStatusColor = (status: string) => {
     switch (status) {
-      case 'Verified': return 'bg-green-100 text-green-800';
+      case 'Verified': return 'bg-red-100 text-red-800';
       case 'Under Review': return 'bg-yellow-100 text-yellow-800';
       case 'Pending': return 'bg-gray-100 text-gray-900';
       case 'Rejected': return 'bg-red-100 text-red-800';
@@ -634,7 +634,7 @@ export default function InvestorsList() {
               <p className="text-2xl font-bold text-gray-900">
                 {loading ? '...' : dashboardData?.totalInvestors || '0'}
               </p>
-              <p className="text-xs text-green-600 mt-1">
+              <p className="text-xs text-red-600 mt-1">
                 {t('ils.pctThisMonth', { value: `${dashboardData?.monthlyChangeInInvestors >= 0 ? '+' : ''}${dashboardData?.monthlyChangeInInvestors || 0}` })}
               </p>
             </div>
@@ -652,7 +652,7 @@ export default function InvestorsList() {
                 {t('ils.pctOfTotal', { value: dashboardData?.activeInvestorPercentage || 0 })}
               </p>
             </div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -662,7 +662,7 @@ export default function InvestorsList() {
               <p className="text-2xl font-bold text-gray-900">
                 {loading ? '...' : `SAR ${dashboardData?.totalAum || 0}`}
               </p>
-              <p className="text-xs text-green-600 mt-1">
+              <p className="text-xs text-red-600 mt-1">
                 {t('ils.pctThisQuarter', { value: `${dashboardData?.quaterlyChangeInAum >= 0 ? '+' : ''}${dashboardData?.quaterlyChangeInAum || 0}` })}
               </p>
             </div>
@@ -788,7 +788,7 @@ export default function InvestorsList() {
                     <div>
                       <span className="text-sm text-gray-900 font-medium">{t('ilst.type.individual')}</span>
                       <div className="mt-1">
-                        {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           KYC Verified
                         </span> */}
                       </div>
@@ -829,7 +829,7 @@ export default function InvestorsList() {
                       investor.verificationStatus === 0
                         ? "bg-orange-100 text-orange-800"
                         : investor.verificationStatus === 1
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-red-100 text-red-800"
                         : "bg-red-100 text-red-800"
                     }`}>
                       {tVerification(investor.verificationStatus)}
@@ -898,7 +898,7 @@ export default function InvestorsList() {
                         <div>
                           <span className="text-sm text-gray-900 font-medium">{t('ils.business')}</span>
                           <div className="mt-1">
-                            {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                               KYB Verified
                             </span> */}
                           </div>
@@ -939,7 +939,7 @@ export default function InvestorsList() {
                           investor.verificationStatus === 0
                             ? "bg-orange-100 text-orange-800"
                             : investor.verificationStatus === 1
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-red-100 text-red-800"
                             : "bg-red-100 text-red-800"
                         }`}>
                           {tVerification(investor.verificationStatus)}
@@ -1212,7 +1212,7 @@ export default function InvestorsList() {
                   className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-gray-700 hover:bg-gray-50 transition-colors text-start"
                 >
                   <div className="flex items-center">
-                    <Building className="w-8 h-8 text-green-500 me-4" />
+                    <Building className="w-8 h-8 text-red-500 me-4" />
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900">{t('ils.business')}</h4>
                       <p className="text-sm text-gray-600">{t('ils.businessDesc')}</p>
@@ -1913,7 +1913,7 @@ export default function InvestorsList() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.unrealizedGains')}</label>
-                  <p className="text-sm text-green-600">{formatCurrency(selectedInvestor.unrealizedGains)}</p>
+                  <p className="text-sm text-red-600">{formatCurrency(selectedInvestor.unrealizedGains)}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.onboardingDate')}</label>

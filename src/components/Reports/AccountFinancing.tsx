@@ -19,11 +19,11 @@ function AccountFinancing() {
   const { t } = useTranslation("reports");
 
   const buttonLabels: ReportCard[] = [
-    { label: t('accountFinancing.card.vouchers'), link: "vouchers", color: "#10b981", Icon: Receipt },
-    { label: t('accountFinancing.card.daybook'), link: "daybook", color: "#14b8a6", Icon: NotebookText },
-    { label: t('accountFinancing.card.trialBalance'), link: "trialbalance", color: "#06b6d4", Icon: Scale },
+    { label: t('accountFinancing.card.vouchers'), link: "vouchers", color: "#e60000", Icon: Receipt },
+    { label: t('accountFinancing.card.daybook'), link: "daybook", color: "#6366f1", Icon: NotebookText },
+    { label: t('accountFinancing.card.trialBalance'), link: "trialbalance", color: "#0ea5e9", Icon: Scale },
     { label: t('accountFinancing.card.ledger'), link: "ledger", color: "#6366f1", Icon: Library },
-    { label: t('accountFinancing.card.collection'), link: "collection", color: "#22c55e", Icon: HandCoins },
+    { label: t('accountFinancing.card.collection'), link: "collection", color: "#c00000", Icon: HandCoins },
     { label: t('accountFinancing.card.profitRevenue'), link: "profit-revenue", color: "#8b5cf6", Icon: TrendingUp },
     { label: t('accountFinancing.card.customerStatement'), link: "customer-statement", color: "#f59e0b", Icon: FileText },
   ];

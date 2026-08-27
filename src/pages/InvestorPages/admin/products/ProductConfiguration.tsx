@@ -1399,7 +1399,7 @@ export default function ProductConfiguration() {
                 {isEditMode ? t('pc.header.editTitle') : t('pc.header.title')}
               </h1>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                product?.productStatus === 0 ? 'bg-green-100 text-green-800' : // Active
+                product?.productStatus === 0 ? 'bg-red-100 text-red-800' : // Active
                 product?.productStatus === 1 ? 'bg-gray-100 text-gray-800' : // Inactive
                 product?.productStatus === 2 ? 'bg-red-100 text-red-800' : // Closed
                 product?.productStatus === 3 ? 'bg-yellow-100 text-yellow-800' : // Suspended

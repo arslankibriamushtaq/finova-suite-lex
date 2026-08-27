@@ -98,12 +98,12 @@ export default function CashFlowStatement() {
   };
 
   const getCashFlowColor = (amount: number) => {
-    return amount >= 0 ? 'text-green-600' : 'text-red-600';
+    return amount >= 0 ? 'text-slate-500' : 'text-red-600';
   };
 
   const getChangeIcon = (amount: number) => {
     return amount >= 0 ? (
-      <ArrowUpRight className="w-4 h-4 text-green-500" />
+      <ArrowUpRight className="w-4 h-4 text-red-500" />
     ) : (
       <ArrowDownRight className="w-4 h-4 text-red-500" />
     );
@@ -185,12 +185,12 @@ export default function CashFlowStatement() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('cf.operatingCF')}</h3>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-red-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(quarterlyTotals.operating.q4_2023)}</p>
+            <p className="text-2xl font-bold text-red-600">{formatCurrency(quarterlyTotals.operating.q4_2023)}</p>
             <p className="text-xs text-gray-500">Q4 2023</p>
-            <p className="text-xs text-green-600">{t('cf.vsQ3plus')}</p>
+            <p className="text-xs text-red-600">{t('cf.vsQ3plus')}</p>
           </div>
         </div>
 

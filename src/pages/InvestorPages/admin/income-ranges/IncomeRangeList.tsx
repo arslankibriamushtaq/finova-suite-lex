@@ -309,7 +309,7 @@ export default function IncomeRangeList() {
                 {filteredIncomeRanges.map((incomeRange) => (
                   <tr key={incomeRange.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="font-medium text-green-600">
+                      <span className="font-medium text-red-600">
                         {incomeRange.minimumAmount}
                       </span>
                     </td>
@@ -610,7 +610,7 @@ export default function IncomeRangeList() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.minAmount')}</label>
-                <p className="text-lg font-semibold text-green-600">{selectedIncomeRange.minimumAmount}</p>
+                <p className="text-lg font-semibold text-red-600">{selectedIncomeRange.minimumAmount}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.maxAmount')}</label>

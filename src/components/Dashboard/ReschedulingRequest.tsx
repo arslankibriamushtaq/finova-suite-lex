@@ -41,7 +41,7 @@ const getStatusColor = (statusId: number): { backgroundColor: string; color: str
     1: { backgroundColor: "#ffc107", color: "#000" }, // Incomplete - Yellow
     2: { backgroundColor: "#6c757d", color: "white" }, // Pending - Gray
     3: { backgroundColor: "#fd7e14", color: "white" }, // In Progress - Orange
-    4: { backgroundColor: "#28a745", color: "white" }, // Approved - Green
+    4: { backgroundColor: "#c00000", color: "white" }, // Approved - Green
     5: { backgroundColor: " #1963b9", color: "white" }, // Rejected - Red
     6: { backgroundColor: "#6c757d", color: "white" }, // Cancelled - Gray
     7: { backgroundColor: "#ffc107", color: "#000" }, // On Hold - Yellow
@@ -195,7 +195,7 @@ const ReschedulingRequest = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
+              backgroundColor: "#c00000 !important",
               color: "#000000",
               borderColor: "white",
               borderRadius: "2px",

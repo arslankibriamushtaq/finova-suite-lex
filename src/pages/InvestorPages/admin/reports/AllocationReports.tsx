@@ -98,11 +98,11 @@ export default function AllocationReports() {
     const absDrift = Math.abs(drift);
     if (absDrift >= 2.0) return 'text-red-600';
     if (absDrift >= 1.0) return 'text-yellow-600';
-    return 'text-green-600';
+    return 'text-red-600';
   };
 
   const getPerformanceColor = (perf: number) => {
-    return perf >= 0 ? 'text-green-600' : 'text-red-600';
+    return perf >= 0 ? 'text-slate-500' : 'text-red-600';
   };
 
   return (
@@ -191,19 +191,19 @@ export default function AllocationReports() {
           <div className="space-y-2">
             <p className="text-2xl font-bold text-black">$500.0M</p>
             <p className="text-xs text-gray-500">{t('ar2.asOf', { date: new Date().toLocaleDateString() })}</p>
-            <p className="text-xs text-green-600">{t('ar2.ytdPlus')}</p>
+            <p className="text-xs text-red-600">{t('ar2.ytdPlus')}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('ar2.equityAllocation')}</h3>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-red-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-green-600">69.5%</p>
+            <p className="text-2xl font-bold text-red-600">69.5%</p>
             <p className="text-xs text-gray-500">$347.5M</p>
-            <p className="text-xs text-green-600">{t('ar2.vsTargetPlus')}</p>
+            <p className="text-xs text-red-600">{t('ar2.vsTargetPlus')}</p>
           </div>
         </div>
 
@@ -273,13 +273,13 @@ export default function AllocationReports() {
                         <div 
                           className={`w-full max-w-24 h-2 rounded-full ${
                             Math.abs(asset.drift) >= 2 ? 'bg-red-200' : 
-                            Math.abs(asset.drift) >= 1 ? 'bg-yellow-200' : 'bg-green-200'
+                            Math.abs(asset.drift) >= 1 ? 'bg-yellow-200' : 'bg-red-200'
                           }`}
                         >
                           <div 
                             className={`h-2 rounded-full ${
                               Math.abs(asset.drift) >= 2 ? 'bg-red-500' : 
-                              Math.abs(asset.drift) >= 1 ? 'bg-yellow-500' : 'bg-green-500'
+                              Math.abs(asset.drift) >= 1 ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
                             style={{ width: `${(asset.current / Math.max(...assetAllocation.map(a => a.current))) * 100}%` }}
                           ></div>
@@ -347,7 +347,7 @@ export default function AllocationReports() {
               <div key={region.region} className="border border-gray-100 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-sm font-medium text-gray-900">{t(region.region)}</h4>
-                  <span className="text-xl font-bold text-green-600">{formatPercentage(region.allocation)}</span>
+                  <span className="text-xl font-bold text-red-600">{formatPercentage(region.allocation)}</span>
                 </div>
 
                 <div className="mb-3">
@@ -368,7 +368,7 @@ export default function AllocationReports() {
                 
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
-                    className="bg-green-500 h-2 rounded-full"
+                    className="bg-red-500 h-2 rounded-full"
                     style={{ width: `${(region.allocation / Math.max(...geographicAllocation.map(g => g.allocation))) * 100}%` }}
                   ></div>
                 </div>

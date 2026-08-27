@@ -191,7 +191,7 @@ export default function AllocationAudit() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'strategy_executed': return <Play className="w-4 h-4 text-green-500" />;
+      case 'strategy_executed': return <Play className="w-4 h-4 text-red-500" />;
       case 'manual_allocation': return <User className="w-4 h-4 text-gray-700" />;
       case 'simulation_run': return <Activity className="w-4 h-4 text-purple-500" />;
       case 'strategy_modified': return <Settings className="w-4 h-4 text-orange-500" />;
@@ -203,7 +203,7 @@ export default function AllocationAudit() {
 
   const getOutcomeIcon = (outcome: string) => {
     switch (outcome) {
-      case 'success': return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'success': return <CheckCircle className="w-4 h-4 text-red-500" />;
       case 'failure': return <XCircle className="w-4 h-4 text-red-500" />;
       case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
       default: return <Clock className="w-4 h-4 text-gray-500" />;
@@ -393,7 +393,7 @@ export default function AllocationAudit() {
                     <div className="flex items-center">
                       {getOutcomeIcon(log.outcome)}
                       <span className={`ms-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        log.outcome === 'success' ? 'bg-green-100 text-green-800' :
+                        log.outcome === 'success' ? 'bg-red-100 text-red-800' :
                         log.outcome === 'failure' ? 'bg-red-100 text-red-800' :
                         log.outcome === 'warning' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
@@ -477,7 +477,7 @@ export default function AllocationAudit() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.outcome')}</label>
                   <p className={`text-sm font-medium ${
-                    selectedLog.outcome === 'success' ? 'text-green-600' :
+                    selectedLog.outcome === 'success' ? 'text-red-600' :
                     selectedLog.outcome === 'failure' ? 'text-red-600' :
                     selectedLog.outcome === 'warning' ? 'text-yellow-600' :
                     'text-gray-600'

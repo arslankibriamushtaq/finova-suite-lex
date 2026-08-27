@@ -145,7 +145,7 @@ export default function TransactionSummary() {
 
   const getTransactionIcon = (type: string) => {
     switch (type) {
-      case 'Buy': return <ArrowUpRight className="w-4 h-4 text-green-500" />;
+      case 'Buy': return <ArrowUpRight className="w-4 h-4 text-red-500" />;
       case 'Sell': return <ArrowDownRight className="w-4 h-4 text-red-500" />;
       case 'Dividend': return <TrendingUp className="w-4 h-4 text-gray-700" />;
       default: return <Activity className="w-4 h-4 text-gray-500" />;
@@ -154,7 +154,7 @@ export default function TransactionSummary() {
 
   const getTransactionColor = (type: string) => {
     switch (type) {
-      case 'Buy': return 'text-green-600 bg-green-50';
+      case 'Buy': return 'text-red-600 bg-red-50';
       case 'Sell': return 'text-red-600 bg-red-50';
       case 'Dividend': return 'text-black bg-gray-50';
       default: return 'text-gray-600 bg-gray-50';
@@ -273,12 +273,12 @@ export default function TransactionSummary() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('ts.totalVolume')}</h3>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-red-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(summary.totalVolume)}</p>
+            <p className="text-2xl font-bold text-red-600">{formatCurrency(summary.totalVolume)}</p>
             <p className="text-xs text-gray-500">{t('ts.transactionValue')}</p>
-            <p className="text-xs text-green-600">{t('ts.vsLastMonthPlus8')}</p>
+            <p className="text-xs text-red-600">{t('ts.vsLastMonthPlus8')}</p>
           </div>
         </div>
 

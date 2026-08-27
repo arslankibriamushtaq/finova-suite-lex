@@ -625,7 +625,7 @@ const OnboardingStepConfig = () => {
                         "pro-tile mb-2 last:mb-0",
                         // The row being dropped onto, in the app's accent
                         // rather than a grey wash that reads as disabled.
-                        dragOver === index && "border-emerald-500 ring-1 ring-emerald-500/30",
+                        dragOver === index && "border-red-500 ring-1 ring-red-500/30",
                         !step.enabled && "opacity-60"
                       )}
                     >

@@ -743,7 +743,7 @@ const FinancialStatementsSettings = () => {
             <div style={{
               display: 'flex',
               borderBottom: '2px solid var(--color-border-subtle)',
-              background: themeStyle?.table.backgroundColor || '#EDFFFB',
+              background: themeStyle?.table.backgroundColor || '#fff3f3',
               borderRadius: '2px 2px 0 0',
             }}>
               {financialStatementsHeaders.map((column: any, index: number) => (
@@ -756,7 +756,7 @@ const FinancialStatementsSettings = () => {
                     paddingRight: '8px',
                     justifyContent: 'start',
                     alignItems: 'center',
-                    background: themeStyle?.table.backgroundColor || '#EDFFFB',
+                    background: themeStyle?.table.backgroundColor || '#fff3f3',
                     color: themeStyle?.table.headingColor || '#090909',
                     fontSize: '12px',
                     fontWeight: '400',

@@ -273,7 +273,7 @@ const ApproveSimahInfo = () => {
                       fontSize: "14px",
                       fontWeight: "600",
                       color: simahHistory?.application_status?.toLowerCase().includes('approved') 
-                        ? '#28a745' 
+                        ? '#c00000' 
                         : '#000000'
                     }}
                   >

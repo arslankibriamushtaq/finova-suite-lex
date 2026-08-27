@@ -146,7 +146,7 @@ export default function FeeAnalysis() {
   };
 
   const getVarianceColor = (variance: number) => {
-    return variance >= 0 ? 'text-red-600' : 'text-green-600';
+    return variance >= 0 ? 'text-red-600' : 'text-slate-500';
   };
 
   return (
@@ -185,15 +185,15 @@ export default function FeeAnalysis() {
       </div>
 
       {/* Report Info */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
         <div className="flex items-start">
-          <Info className="w-5 h-5 text-green-600 me-3 mt-0.5" />
+          <Info className="w-5 h-5 text-red-600 me-3 mt-0.5" />
           <div>
-            <h3 className="text-sm font-medium text-green-900">{t('fa.infoTitle')}</h3>
-            <p className="text-sm text-green-700 mt-1">
+            <h3 className="text-sm font-medium text-red-900">{t('fa.infoTitle')}</h3>
+            <p className="text-sm text-red-700 mt-1">
               {t('fa.infoBody')}
             </p>
-            <p className="text-xs text-green-600 mt-2">
+            <p className="text-xs text-red-600 mt-2">
               {t('fa.reportingPeriod', { date: new Date().toLocaleDateString() })}
             </p>
           </div>
@@ -225,10 +225,10 @@ export default function FeeAnalysis() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">{t('fa.totalFeesQ4')}</h3>
-            <DollarSign className="w-5 h-5 text-green-500" />
+            <DollarSign className="w-5 h-5 text-red-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(quarterlyFees[0].totalFees)}</p>
+            <p className="text-2xl font-bold text-red-600">{formatCurrency(quarterlyFees[0].totalFees)}</p>
             <p className="text-xs text-gray-500">{t('fa.vsQ3')}</p>
             <p className="text-xs text-gray-600">{t('fa.annualRate', { value: ((quarterlyFees[0].totalFees / quarterlyFees[0].aum) * 100 * 4).toFixed(2) })}</p>
           </div>
@@ -391,7 +391,7 @@ export default function FeeAnalysis() {
                     <td className="px-3 py-3 text-sm text-end text-black">
                       {formatPercentage(investor.managementFeeRate)}
                     </td>
-                    <td className="px-3 py-3 text-sm text-end font-medium text-green-600">
+                    <td className="px-3 py-3 text-sm text-end font-medium text-red-600">
                       {formatCurrency(investor.totalFeesQ4)}
                     </td>
                   </tr>
@@ -463,7 +463,7 @@ export default function FeeAnalysis() {
                   <td className="px-4 py-4 text-sm text-end text-purple-600">{formatCurrency(month.performance)}</td>
                   <td className="px-4 py-4 text-sm text-end text-gray-700">{formatCurrency(month.admin)}</td>
                   <td className="px-4 py-4 text-sm text-end text-gray-700">{formatCurrency(month.custody)}</td>
-                  <td className="px-4 py-4 text-sm text-end font-bold text-green-600">{formatCurrency(month.total)}</td>
+                  <td className="px-4 py-4 text-sm text-end font-bold text-red-600">{formatCurrency(month.total)}</td>
                 </tr>
               ))}
             </tbody>

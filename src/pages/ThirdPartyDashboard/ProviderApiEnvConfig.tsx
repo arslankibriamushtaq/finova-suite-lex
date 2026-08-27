@@ -221,7 +221,7 @@ const ProviderApiEnvConfig = () => {
     {
       name: t("providerApiEnvConfig.col.active"),
       cell: (row: any) => (
-        <span className={row.active ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+        <span className={row.active ? "text-slate-500 font-medium" : "text-red-600 font-medium"}>
           {row.active ? t("common:yes") : t("common:no")}
         </span>
       ),

@@ -253,8 +253,8 @@ function FactoringApproval({ packageDetails }: any) {
                         onClick={handleApproveFactoring}
                         disabled={submitting}
                         style={{
-                          backgroundColor: "#198754",
-                          borderColor: "#198754",
+                          backgroundColor: "#9e0000",
+                          borderColor: "#9e0000",
                           color: "white",
                           fontWeight: "600",
                           borderRadius: "2px",
@@ -343,7 +343,7 @@ function FactoringApproval({ packageDetails }: any) {
                                 fontSize: "14px",
                                 fontWeight: "600",
                                 color: factoringHistory?.application_status?.toLowerCase().includes('approved') 
-                                  ? '#28a745' 
+                                  ? '#c00000' 
                                   : '#000000'
                               }}
                             >

@@ -123,7 +123,7 @@ const Account_Documents_List_Header = [
     cell: (row: any) => (
       <div>
         {row.matched && (
-          <span style={{ color: "green", fontWeight: "bold" }}>{t('accountReport.matched')}</span>
+          <span style={{ color: "var(--color-success)", fontWeight: "bold" }}>{t('accountReport.matched')}</span>
         )}
         {row.unmatched && (
           <span style={{ color: "red", fontWeight: "bold" }}>

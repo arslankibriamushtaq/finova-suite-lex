@@ -56,7 +56,7 @@ import {
  */
 /** `rung` is the solid marker on the sequence rail; `tone` is the badge. */
 const OUTCOME_STYLE: Record<string, { tone: string; rung: string; icon: typeof ShieldCheck }> = {
-  PASS: { tone: TONES.emerald, rung: "bg-emerald-500 text-white", icon: ShieldCheck },
+  PASS: { tone: TONES.emerald, rung: "bg-red-500 text-white", icon: ShieldCheck },
   FAIL: { tone: TONES.red, rung: "bg-red-500 text-white", icon: ShieldAlert },
   FLAGGED: { tone: TONES.amber, rung: "bg-amber-500 text-white", icon: FileWarning },
   NOT_RUN: {
@@ -107,7 +107,7 @@ const ChecksSummary = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <span className={`text-sm font-medium ${allPassed ? "text-emerald-600" : "text-foreground"}`}>
+      <span className={`text-sm font-medium ${allPassed ? "text-red-600" : "text-foreground"}`}>
         {t("ana.checksSummary", { passed, total })}
       </span>
       {(failed > 0 || flagged > 0 || notRun > 0) && (

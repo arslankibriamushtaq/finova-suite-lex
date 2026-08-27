@@ -330,7 +330,7 @@ export default function CreateWizerd() {
 
   const getPopularityBadge = (popularity: string) => {
     const variants = {
-      "Most Popular": "bg-green-100 text-green-800 border-green-200",
+      "Most Popular": "bg-red-100 text-red-800 border-red-200",
       Trending: "bg-blue-100 text-blue-800 border-blue-200",
       New: "bg-purple-100 text-purple-800 border-purple-200",
       Growing: "bg-orange-100 text-orange-800 border-orange-200",
@@ -360,7 +360,7 @@ export default function CreateWizerd() {
         <div className="px-3 py-3">
           <div className={`max-w-8xl mx-auto ${isRTL ? "rtl:text-end" : ""}`}>
             <h1 className="text-xl font-semibold text-foreground mb-1 flex items-center gap-2.5">
-              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                 <Wrench className="h-4 w-4" />
               </span>
               {t("setupWizard.chooseSetupMethodTitle")}
@@ -385,7 +385,7 @@ export default function CreateWizerd() {
           {/* Setup Method Selection */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
+              <div className="w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-red-500/30">
                 1
               </div>
               <h2 className="text-base font-semibold m-0">{t("setupWizard.chooseSetupMethod")}</h2>
@@ -407,26 +407,26 @@ export default function CreateWizerd() {
                     Start with a pre-configured template that includes industry best practices, standard configurations,
                     and proven workflows.
                   </p>
-                  <div className="text-sm text-green-600 font-medium">Recommended • Faster Setup</div>
+                  <div className="text-sm text-red-600 font-medium">Recommended • Faster Setup</div>
                 </CardContent>
               </Card> */}
 
               {/* Create Custom Option */}
               <Card
-                className={`cursor-pointer rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-md ${
-                  selectedOption === "custom" ? "border-emerald-500 ring-1 ring-emerald-500 bg-emerald-500/[0.06]" : ""
+                className={`cursor-pointer rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500/50 hover:shadow-md ${
+                  selectedOption === "custom" ? "border-red-500 ring-1 ring-red-500 bg-red-500/[0.06]" : ""
                 }`}
                 onClick={() => setSelectedOption("custom")}
               >
                 <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <div className="w-12 h-12 bg-red-500/10 text-red-600 ring-1 ring-red-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <Wrench className="h-6 w-6" />
                   </div>
                   <h3 className="text-base font-semibold mb-2">{t("setupWizard.createCustom")}</h3>
                   <p className="text-sm text-muted-foreground mb-3">
                     {t("setupWizard.createCustomDesc")}
                   </p>
-                  <div className="text-xs text-emerald-600 font-medium">{t("setupWizard.fullControl")}</div>
+                  <div className="text-xs text-red-600 font-medium">{t("setupWizard.fullControl")}</div>
                 </CardContent>
               </Card>
             </div>
@@ -436,7 +436,7 @@ export default function CreateWizerd() {
           {selectedOption === "template" && (
             <div>
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
+                <div className="w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-red-500/30">
                   2
                 </div>
                 <h2 className="text-base font-semibold m-0">{t("setupWizard.selectTemplate")}</h2>
@@ -612,7 +612,7 @@ export default function CreateWizerd() {
                     {previewTemplate.preview.approvalWorkflows.map((workflow: any, index: number) => (
                       <div key={index} className="border rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-2">
-                          {workflow.type === "Auto-Approval" && <Zap className="h-4 w-4 text-green-600" />}
+                          {workflow.type === "Auto-Approval" && <Zap className="h-4 w-4 text-red-600" />}
                           {workflow.type === "Manual Review" && <Clock className="h-4 w-4 text-yellow-600" />}
                           {workflow.type === "Rejection" && <CheckCircle className="h-4 w-4 text-red-600" />}
                           <span className="font-medium text-sm">{workflow.type}</span>
@@ -668,7 +668,7 @@ export default function CreateWizerd() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {previewTemplate.preview.documents.map((doc: string, index: number) => (
                       <div key={index} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-4 w-4 text-red-600" />
                         {doc}
                       </div>
                     ))}

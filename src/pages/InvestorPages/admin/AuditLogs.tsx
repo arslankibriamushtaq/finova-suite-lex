@@ -203,7 +203,7 @@ export default function AuditLogs() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Success': return 'bg-green-100 text-green-800';
+      case 'Success': return 'bg-red-100 text-red-800';
       case 'Failed': return 'bg-red-100 text-red-800';
       case 'Alert': return 'bg-yellow-100 text-yellow-800';
       case 'Warning': return 'bg-orange-100 text-orange-800';
@@ -319,9 +319,9 @@ export default function AuditLogs() {
             <div>
               <p className="text-sm text-gray-600">System Events</p>
               <p className="text-2xl font-bold text-gray-900">2</p>
-              <p className="text-xs text-green-600 mt-1">All successful</p>
+              <p className="text-xs text-red-600 mt-1">All successful</p>
             </div>
-            <Database className="w-8 h-8 text-green-500" />
+            <Database className="w-8 h-8 text-red-500" />
           </div>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">

@@ -278,7 +278,7 @@ function ReconciliationDashboard() {
         //   { 
         //     value: data?.matchedVsUnmatched?.matchedCount, 
         //     name: 'VAT Account',
-        //     // itemStyle: { color: '#9bbb59' } 
+        //     // itemStyle: { color: '#e06a6a' } 
         //   },
         //   { 
         //     value: data?.matchedVsUnmatched?.unmatchedCount, 
@@ -328,10 +328,10 @@ function ReconciliationDashboard() {
         type: 'bar',
         barWidth: '50%',
         data: [
-          { value: 6000, itemStyle: { color: '#059669' } }, // IBFT - green
+          { value: 6000, itemStyle: { color: '#9e0000' } }, // IBFT - green
           { value: 4200, itemStyle: { color: '#2563eb' } }, // Raast - blue  
           { value: 3200, itemStyle: { color: '#7c3aed' } }, // UPI5 - purple
-          { value: 1800, itemStyle: { color: '#06b6d4' } }  // Mastercard - cyan
+          { value: 1800, itemStyle: { color: '#0ea5e9' } }  // Mastercard - cyan
         ]
       }
     ]
@@ -496,7 +496,7 @@ function ReconciliationDashboard() {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
-                backgroundColor: '#E9FFF2',
+                backgroundColor: '#fff1f1',
                 borderRadius: '2px',
                 width: 36,
                 height: 36,
@@ -504,7 +504,7 @@ function ReconciliationDashboard() {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <CheckCircleOutlined style={{ color: '#148E3F', fontSize: '18px' }} />
+                <CheckCircleOutlined style={{ color: '#9e0000', fontSize: '18px' }} />
               </div>
               <div>
                 <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>{t("dashboard.card.matchedToday")}</p>

@@ -32,7 +32,7 @@ import {
 
 const APPROVAL_BADGE: Record<string, string> = {
   APPROVED:
-    "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300",
+    "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
   PENDING:
     "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
   REJECTED: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",

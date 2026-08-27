@@ -132,7 +132,7 @@ const AccountsLimitSetting = () => {
     <div>
       <div className="mb-4 flex items-center justify-between gap-3 border-b pb-3">
         <h3 className="m-0 flex items-center gap-2.5 text-lg font-semibold text-foreground">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
             <Wallet className="size-4" />
           </span>
           Accounts Limit Setting
@@ -151,7 +151,7 @@ const AccountsLimitSetting = () => {
             <Card key={p.label} className="pro-card-glow">
               <CardHeader className="relative pb-3">
                 <CardTitle className="flex items-center gap-2.5 text-base">
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                     <Wallet className="size-4" />
                   </span>
                   {p.label} Limit

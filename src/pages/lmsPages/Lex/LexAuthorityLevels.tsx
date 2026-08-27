@@ -188,7 +188,7 @@ const LexAuthorityLevels = () => {
                     className={cn(
                       "relative z-[1] flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
                       level.active
-                        ? "bg-emerald-500 text-white"
+                        ? "bg-red-500 text-white"
                         : "bg-muted text-muted-foreground ring-1 ring-border"
                     )}
                   >

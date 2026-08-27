@@ -33,7 +33,7 @@ const FinanceBarChart = ({ dashboardData }: { dashboardData: any }) => {
       {[
         ["#FFB1B1", "Receivable"],
         ["#6871BF", "Received"],
-        ["#73C0A0", "Early Settlement"],
+        ["#a78bfa", "Early Settlement"],
         ["#FFD700", "Due"],
         ["#FF6347", "Over Due"],
         ["#A9A9A9", "Non Performing"],
@@ -78,7 +78,7 @@ const FinanceBarChart = ({ dashboardData }: { dashboardData: any }) => {
           <Legend wrapperStyle={{ color: "var(--foreground)" }} />
           <Bar dataKey="Receivable" fill="#FFB1B1" />
           <Bar dataKey="Received" fill="#6871BF" />
-          <Bar dataKey="EarlySettlement" fill="#73C0A0" />
+          <Bar dataKey="EarlySettlement" fill="#a78bfa" />
           <Bar dataKey="Due" fill="#FFD700" />
           <Bar dataKey="OverDue" fill="#FF6347" />
           <Bar dataKey="NonPerforming" fill="#A9A9A9" />

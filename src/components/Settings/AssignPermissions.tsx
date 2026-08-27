@@ -281,7 +281,7 @@ const AssignPermissions: React.FC = () => {
           </div>
           <div className="d-flex align-items-center" style={{ gap: 10, flexShrink: 0 }}>
             {total > 0 && (
-              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600">
+              <span className="inline-flex items-center rounded-full bg-red-500/10 px-2 py-0.5 text-xs font-semibold text-red-600">
                 {selectedCount}/{total}
               </span>
             )}

@@ -352,7 +352,7 @@ const WalletQrCodes = () => {
       <Card className="mb-4 pro-card-glow">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
               <WalletIcon className="h-4 w-4" />
             </span>
             {t("wallet.title")}
@@ -548,7 +548,7 @@ const WalletQrCodes = () => {
           <Card className="pro-card-glow">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                   <ScanLine className="h-4 w-4" />
                 </span>
                 {t("pay.title")}

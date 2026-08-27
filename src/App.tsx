@@ -101,7 +101,14 @@ const getStates = async () => {
 // }, []);
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          /* react-hot-toast paints its success tick green by default. */
+          success: { iconTheme: { primary: "#c00000", secondary: "#ffffff" } },
+        }}
+      />
       <I18nextProvider i18n={i18n}>
         {/* Brand red (Finova) for all antd controls — datepicker, select,
             switch, checkbox, radio, tabs, etc. */}
@@ -111,6 +118,9 @@ const getStates = async () => {
             token: {
               colorPrimary: "#e60000",
               colorInfo: "#2563eb",
+              /* No green anywhere: antd success takes the deep brand red, which
+                 stays distinct from the brighter default colorError. */
+              colorSuccess: "#c00000",
               colorLink: "#c00000",
               colorLinkHover: "#e60000",
               borderRadius: 2,

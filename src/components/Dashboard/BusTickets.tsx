@@ -144,7 +144,7 @@ const BusTickets = (props: any) => {
         barWidth: "40%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: "#0B8085", // Color for the first set of bars
+          color: "#c00000", // Color for the first set of bars
         },
       },
     ],

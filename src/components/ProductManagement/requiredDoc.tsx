@@ -88,7 +88,7 @@ const RequiredDoc = ({setSelectedTab}:any) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
+              <UIButton className="gradient-btn bg-red-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
                 {t("list.select")} <ChevronDown className="h-4 w-4" />
               </UIButton>
             </DropdownMenuTrigger>

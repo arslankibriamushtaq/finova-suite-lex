@@ -122,7 +122,7 @@ const PartnerHeaderBand = ({ membership, onBack }: any) => {
 
   return (
     <div className="relative overflow-hidden border-b">
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent" />
       <div className="relative flex flex-col gap-4 p-4 sm:p-5">
         <button
           type="button"
@@ -135,7 +135,7 @@ const PartnerHeaderBand = ({ membership, onBack }: any) => {
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-            <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base font-semibold text-white ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/20 sm:size-14 sm:text-lg">
+            <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 text-base font-semibold text-white ring-2 ring-red-500/25 shadow-md shadow-red-500/20 sm:size-14 sm:text-lg">
               {initials.toUpperCase() || <Users className="size-6" />}
             </div>
 
@@ -165,7 +165,7 @@ const PartnerHeaderBand = ({ membership, onBack }: any) => {
               const Icon = d.icon;
               return (
                 <div key={d.label} className="flex w-full min-w-0 items-center gap-2.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                     <Icon className="size-4" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -434,11 +434,11 @@ const PartnerDetail = () => {
                                   key={item.code}
                                   className={cn(
                                     "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm",
-                                    item.granted ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-muted/20 text-muted-foreground"
+                                    item.granted ? "border-red-500/30 bg-red-500/5" : "border-border bg-muted/20 text-muted-foreground"
                                   )}
                                 >
                                   {item.granted ? (
-                                    <CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                                    <CheckCircle2 className="size-4 shrink-0 text-red-600 dark:text-red-400" />
                                   ) : (
                                     <XCircle className="size-4 shrink-0 text-muted-foreground/50" />
                                   )}
@@ -476,7 +476,7 @@ const PartnerDetail = () => {
                         {(identity?.documents || []).map((doc: any, idx: number) => (
                           <div
                             key={doc.documentId ?? idx}
-                            className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                            className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md"
                           >
                             <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
                               {humanizeCode(doc.kind) || t("onboarding360.doc.documentFallback")}
@@ -490,7 +490,7 @@ const PartnerDetail = () => {
                           </div>
                         ))}
                         {identity?.selfie && (
-                          <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
+                          <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-red-500/40 hover:shadow-md">
                             <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
                               {t("onboarding360.doc.selfieLabel")}
                             </Badge>

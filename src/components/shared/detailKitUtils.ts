@@ -117,22 +117,24 @@ export const humanizeCode = (code?: string): string => {
 /* ------------------------------------------------------------------ */
 
 export const TONES: Record<string, string> = {
+  /* Positive / low-risk — light end of the Finova red ramp. */
   emerald:
-    "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30",
+    "bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-200 dark:border-red-500/20",
   amber:
     "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30",
   sky: "bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/30",
   orange:
     "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-500/30",
-  red: "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/30",
+  /* Negative / high-risk — solid end, so it never reads as the positive tone. */
+  red: "bg-red-600 text-white border-red-700 dark:bg-red-600 dark:text-white dark:border-red-500",
   slate:
     "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/15 dark:text-slate-300 dark:border-slate-500/30",
 };
 
 export const TONE_HEX: Record<string, string> = {
-  emerald: "#10b981",
+  emerald: "#e60000",
   amber: "#f59e0b",
-  red: "#ef4444",
+  red: "#7a0e0e",
   sky: "#0ea5e9",
   slate: "#94a3b8",
 };

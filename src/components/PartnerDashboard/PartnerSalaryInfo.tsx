@@ -73,7 +73,7 @@ const PartnerSalaryInfo = ({ setSelectedTab }: any) => {
           {t("common:reject")}
         </Button>
         <Button
-          style={{ background: "#198754" }}
+          style={{ background: "#9e0000" }}
           type="primary"
         >
           {t("common:approve")}

@@ -84,7 +84,7 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
         `}</style>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <span className="inline-flex size-7 items-center justify-center rounded-md bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
               <Truck className="size-4" />
             </span>
             {t("tracking.title")}
@@ -129,7 +129,7 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
                     {!isLast && (
                       <span
                         className="absolute left-1/2 top-[13px] h-0.5 w-full"
-                        style={{ background: reached ? "#10b981" : "var(--surface-border)" }}
+                        style={{ background: reached ? "#e60000" : "var(--surface-border)" }}
                       />
                     )}
                     {/* node */}
@@ -137,9 +137,9 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
                       className={cn(
                         "relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border-2 bg-background transition-colors",
                         reached
-                          ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
+                          ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
                           : isCurrent
-                          ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
+                          ? "border-red-500 text-red-600 ring-4 ring-red-500/15"
                           : "border-border text-muted-foreground"
                       )}
                     >
@@ -158,7 +158,7 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
                       {step.label || step.stage}
                     </p>
                     {isCurrent && !reached && (
-                      <span className="mt-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600">
+                      <span className="mt-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-medium text-red-600">
                         {t("tracking.current")}
                       </span>
                     )}

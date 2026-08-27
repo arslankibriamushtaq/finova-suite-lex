@@ -214,27 +214,27 @@ export default function PLSummary() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600">{t('pl.card.unrealizedGains')}</p>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-red-500" />
           </div>
-          <p className="text-2xl font-bold text-green-600">{formatCurrency(plData.summary.unrealizedGains)}</p>
+          <p className="text-2xl font-bold text-red-600">{formatCurrency(plData.summary.unrealizedGains)}</p>
           <p className="text-xs text-gray-500 mt-1">{t('pl.card.paperGains')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600">{t('pl.card.realizedGains')}</p>
-            <DollarSign className="w-5 h-5 text-green-500" />
+            <DollarSign className="w-5 h-5 text-red-500" />
           </div>
-          <p className="text-2xl font-bold text-green-600">{formatCurrency(plData.summary.realizedGains)}</p>
+          <p className="text-2xl font-bold text-red-600">{formatCurrency(plData.summary.realizedGains)}</p>
           <p className="text-xs text-gray-500 mt-1">{t('pl.card.actualGains')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600">{t('pl.card.totalReturn')}</p>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-red-500" />
           </div>
-          <p className="text-2xl font-bold text-green-600">{plData.summary.totalReturn.toFixed(2)}%</p>
+          <p className="text-2xl font-bold text-red-600">{plData.summary.totalReturn.toFixed(2)}%</p>
           <p className="text-xs text-gray-500 mt-1">{t('pl.card.overallPerformance')}</p>
         </div>
       </div>
@@ -319,26 +319,26 @@ export default function PLSummary() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm font-medium ${
-                        product.unrealizedGains >= 0 ? 'text-green-600' : 'text-red-600'
+                        product.unrealizedGains >= 0 ? 'text-slate-500' : 'text-red-600'
                       }`}>
                         {product.unrealizedGains >= 0 ? '+' : ''}{formatCurrency(product.unrealizedGains)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-green-600">
+                      <div className="text-sm font-medium text-red-600">
                         +{formatCurrency(product.realizedGains)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm font-medium ${
-                        product.totalGains >= 0 ? 'text-green-600' : 'text-red-600'
+                        product.totalGains >= 0 ? 'text-slate-500' : 'text-red-600'
                       }`}>
                         {product.totalGains >= 0 ? '+' : ''}{formatCurrency(product.totalGains)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`flex items-center text-sm font-medium ${
-                        product.return >= 0 ? 'text-green-600' : 'text-red-600'
+                        product.return >= 0 ? 'text-slate-500' : 'text-red-600'
                       }`}>
                         {product.return >= 0 ? (
                           <TrendingUp className="w-4 h-4 me-1" />
@@ -367,17 +367,17 @@ export default function PLSummary() {
               <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-sm font-medium text-gray-900">{period.period}</h4>
-                  <div className="flex items-center text-green-600">
+                  <div className="flex items-center text-red-600">
                     <TrendingUp className="w-4 h-4 me-1" />
                     <span className="text-sm font-medium">{period.return.toFixed(1)}%</span>
                   </div>
                 </div>
-                <p className="text-lg font-bold text-green-600">
+                <p className="text-lg font-bold text-red-600">
                   +{formatCurrency(period.gains)}
                 </p>
                 <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-green-600 h-2 rounded-full"
+                    className="bg-red-600 h-2 rounded-full"
                     style={{ width: `${(period.return / 4) * 100}%` }}
                   ></div>
                 </div>
@@ -421,11 +421,11 @@ export default function PLSummary() {
                         <div className="text-sm font-medium text-gray-900">{investor.investor}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
                       +{formatCurrency(investor.gains)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm font-medium text-green-600">
+                      <div className="flex items-center text-sm font-medium text-red-600">
                         <TrendingUp className="w-4 h-4 me-1" />
                         +{investor.return.toFixed(1)}%
                       </div>
@@ -433,7 +433,7 @@ export default function PLSummary() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-green-600 h-2 rounded-full"
+                          className="bg-red-600 h-2 rounded-full"
                           style={{ width: `${Math.min((investor.return / 40) * 100, 100)}%` }}
                         ></div>
                       </div>

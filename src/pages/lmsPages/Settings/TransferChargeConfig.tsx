@@ -178,7 +178,7 @@ const TransferChargeConfig = () => {
     <div>
       <div className="mb-4 flex items-center justify-between gap-3 border-b pb-3">
         <h3 className="m-0 flex items-center gap-2.5 text-lg font-semibold text-foreground">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
             <Coins className="size-4" />
           </span>
           Transfer Charges
@@ -197,7 +197,7 @@ const TransferChargeConfig = () => {
           <Card className="pro-card-glow">
             <CardHeader className="relative pb-3">
               <CardTitle className="flex items-center gap-2.5 text-base">
-                <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <span className="flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                   <Calculator className="size-4" />
                 </span>
                 Charge Calculator
@@ -283,7 +283,7 @@ const TransferChargeConfig = () => {
           {/* ---- Per-rail charge config ---- */}
           {rails.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                 <Coins className="size-5" />
               </span>
               <p className="text-sm text-muted-foreground">No charge configs found.</p>
@@ -294,7 +294,7 @@ const TransferChargeConfig = () => {
                 <CardHeader className="relative pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2.5 text-base">
-                      <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/15">
+                      <span className="flex size-8 items-center justify-center rounded-lg bg-red-500/10 text-sm font-semibold text-red-600 ring-1 ring-red-500/15">
                         {form.rail.slice(0, 2)}
                       </span>
                       {form.rail}
@@ -434,7 +434,7 @@ const ResultItem = ({
 }) => (
   <div className="flex flex-col gap-0.5">
     <span className="text-xs text-muted-foreground">{label}</span>
-    <span className={highlight ? "font-semibold text-emerald-600" : "font-medium text-foreground"}>
+    <span className={highlight ? "font-semibold text-red-600" : "font-medium text-foreground"}>
       {value}
     </span>
   </div>

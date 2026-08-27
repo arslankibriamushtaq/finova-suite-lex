@@ -21,14 +21,14 @@ function Loans() {
   const { t } = useTranslation("reports");
 
   const buttonLabels: ReportCard[] = [
-    { label: t('loans.card.overdue'), link: "overdue", color: "#f43f5e", Icon: CalendarX },
+    { label: t('loans.card.overdue'), link: "overdue", color: "#7a0e0e", Icon: CalendarX },
     { label: t('loans.card.nonPerforming'), link: "performingLoans", color: "#f59e0b", Icon: AlertTriangle },
-    { label: t('loans.card.due'), link: "due", color: "#06b6d4", Icon: Clock },
-    { label: t('loans.card.earlySettlement'), link: "earlySettlement", color: "#10b981", Icon: BadgeCheck },
+    { label: t('loans.card.due'), link: "due", color: "#0ea5e9", Icon: Clock },
+    { label: t('loans.card.earlySettlement'), link: "earlySettlement", color: "#e60000", Icon: BadgeCheck },
     { label: t('loans.card.writeOff'), link: "writeOff", color: "#f97316", Icon: FileX2 },
-    { label: t('loans.card.disbursement'), link: "disbursement", color: "#22c55e", Icon: Banknote },
-    { label: t('loans.card.repaymentSchedule'), link: "repaymentScheduleReport", color: "#14b8a6", Icon: CalendarDays },
-    { label: t('loans.card.loanBalance'), link: "loanBalanceReport", color: "#6366f1", Icon: Scale },
+    { label: t('loans.card.disbursement'), link: "disbursement", color: "#db2777", Icon: Banknote },
+    { label: t('loans.card.repaymentSchedule'), link: "repaymentScheduleReport", color: "#6366f1", Icon: CalendarDays },
+    { label: t('loans.card.loanBalance'), link: "loanBalanceReport", color: "#64748b", Icon: Scale },
     { label: t('loans.card.dailyTransactionSummary'), link: "dailyTransactionSummary", color: "#8b5cf6", Icon: Activity },
   ];
 

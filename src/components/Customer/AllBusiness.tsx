@@ -687,7 +687,7 @@ const AllBusiness = () => {
         <DialogContent className="max-h-[90vh] gap-0 overflow-hidden p-0 sm:max-w-3xl">
           <DialogHeader className="border-b px-5 py-4">
             <DialogTitle className="flex items-center gap-2 text-base">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600 ring-1 ring-red-500/15">
                 <Lock className="size-4" />
               </span>
               {t("allCustomers.blockModal.title")}
@@ -768,7 +768,7 @@ const AllBusiness = () => {
                             onClick={() => handleCheckboxChange(code.id)}
                             className={cn(
                               "cursor-pointer border-b border-border/60 transition-colors last:border-b-0",
-                              checked ? "bg-emerald-500/[0.06]" : "hover:bg-muted/40"
+                              checked ? "bg-red-500/[0.06]" : "hover:bg-muted/40"
                             )}
                           >
                             <td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
@@ -821,7 +821,7 @@ const AllBusiness = () => {
                     size="sm"
                     disabled={selectedBlockCodes.length === 0}
                     onClick={handleUnblockSelected}
-                    className="h-8 gap-1.5 border-emerald-500/40 text-xs text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
+                    className="h-8 gap-1.5 border-red-500/40 text-xs text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400"
                   >
                     <ShieldCheck className="size-3.5" />
                     {t("allCustomers.blockModal.unblockSelected")}

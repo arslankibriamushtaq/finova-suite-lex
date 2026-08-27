@@ -153,7 +153,7 @@ const SubmissionLogs: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-5">
-                       <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm">
+                       <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 border border-red-100 shadow-sm">
                           <CheckCircle2 className="w-6 h-6" />
                        </div>
                        <div>
@@ -175,7 +175,7 @@ const SubmissionLogs: React.FC = () => {
 
                   <div className="pt-6 border-t border-slate-100">
                      <div className="p-4 bg-slate-900 rounded-2xl text-white relative overflow-hidden">
-                        <div className="flex items-center gap-2 mb-3 text-emerald-400">
+                        <div className="flex items-center gap-2 mb-3 text-red-400">
                            <AlertCircle className="w-4 h-4" />
                            <span className="text-[9px] font-black uppercase tracking-widest">Audit Policy</span>
                         </div>

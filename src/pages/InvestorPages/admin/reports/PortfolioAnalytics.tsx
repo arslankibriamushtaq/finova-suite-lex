@@ -30,7 +30,7 @@ const analyticsData = {
   },
   assetAllocation: [
     { name: 'pa.asset.equity', value: 65, amount: 1560000000, color: '#3B82F6' },
-    { name: 'pa.asset.fixedIncome', value: 25, amount: 600000000, color: '#10B981' },
+    { name: 'pa.asset.fixedIncome', value: 25, amount: 600000000, color: '#e60000' },
     { name: 'pa.asset.alternative', value: 8, amount: 192000000, color: '#F59E0B' },
     { name: 'pa.asset.cash', value: 2, amount: 48000000, color: '#6B7280' }
   ],
@@ -89,7 +89,7 @@ export default function PortfolioAnalytics() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Good': return 'text-green-600 bg-green-100';
+      case 'Good': return 'text-red-600 bg-red-100';
       case 'Normal': return 'text-black bg-gray-100';
       case 'Warning': return 'text-yellow-600 bg-yellow-100';
       case 'Alert': return 'text-red-600 bg-red-100';
@@ -152,7 +152,7 @@ export default function PortfolioAnalytics() {
             <Target className="w-5 h-5 text-gray-700" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{analyticsData.performanceMetrics.sharpeRatio}</p>
-          <p className="text-xs text-green-600 mt-1">{t('pa.metric.sharpeRatioHint')}</p>
+          <p className="text-xs text-red-600 mt-1">{t('pa.metric.sharpeRatioHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -185,10 +185,10 @@ export default function PortfolioAnalytics() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600">{t('pa.metric.alpha')}</p>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-red-500" />
           </div>
-          <p className="text-2xl font-bold text-green-600">{analyticsData.performanceMetrics.alpha}%</p>
-          <p className="text-xs text-green-600 mt-1">{t('pa.metric.alphaHint')}</p>
+          <p className="text-2xl font-bold text-red-600">{analyticsData.performanceMetrics.alpha}%</p>
+          <p className="text-xs text-red-600 mt-1">{t('pa.metric.alphaHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -332,7 +332,7 @@ export default function PortfolioAnalytics() {
                     {formatCurrency(holding.value)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm font-medium text-green-600">
+                    <div className="flex items-center text-sm font-medium text-red-600">
                       <TrendingUp className="w-4 h-4 me-1" />
                       +{holding.return}%
                     </div>
@@ -386,7 +386,7 @@ export default function PortfolioAnalytics() {
             {analyticsData.performanceTrends.map((trend, index) => (
               <div key={index} className="text-center">
                 <div className="text-xs text-gray-500 mb-1">{trend.month.split(' ')[0]}</div>
-                <div className="text-sm font-medium text-green-600">+{trend.return}%</div>
+                <div className="text-sm font-medium text-red-600">+{trend.return}%</div>
                 <div className="text-xs text-gray-400">{t('pa.benchLabel', { value: trend.benchmark })}</div>
               </div>
             ))}

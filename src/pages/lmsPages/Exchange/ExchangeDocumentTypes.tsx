@@ -66,7 +66,7 @@ const StatusBadge = ({ status, label }: { status?: string; label?: string }) => 
   <span
     className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
       status === "ACTIVE"
-        ? "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300"
+        ? "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300"
         : "bg-muted text-muted-foreground"
     }`}
   >
@@ -238,7 +238,7 @@ const ExchangeDocumentTypes = () => {
       name: t("docTypes.col.sullisVerify"),
       cell: (row: ExchangeDocumentType) =>
         row.sullisVerify ? (
-          <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+          <span className="inline-flex items-center gap-1 rounded-md bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300">
             <ShieldCheck className="h-3.5 w-3.5" />
             {sullisDocLabel(row.sullisDocType)}
           </span>

@@ -62,12 +62,12 @@ interface StatCard {
 
 /** Solid brand color per theme — mirrors the CSS `--c` used by the cards. */
 const THEME_COLOR: Record<CardTheme, string> = {
-  emerald: "#10b981",
-  teal: "#14b8a6",
+  emerald: "#e60000",
+  teal: "#db2777",
   amber: "#f59e0b",
-  green: "#22c55e",
+  green: "#0ea5e9",
   rose: "#f43f5e",
-  cyan: "#06b6d4",
+  cyan: "#64748b",
   violet: "#8b5cf6",
   indigo: "#6366f1",
 };
@@ -141,7 +141,7 @@ const Sparkline = ({
 };
 
 const STATUS_BADGE: Record<string, { bg: string; color: string }> = {
-  ACTIVE: { bg: "#dcfce7", color: "#166534" },
+  ACTIVE: { bg: "#fff1f1", color: "#7a0e0e" },
   PENDING_ACTIVATION: { bg: "#fef3c7", color: "#92400e" },
   FROZEN: { bg: "#cffafe", color: "#155e75" },
   CLOSED: { bg: "#fee2e2", color: "#991b1b" },
