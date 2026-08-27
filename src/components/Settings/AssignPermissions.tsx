@@ -5,17 +5,22 @@ import { ShieldCheck, Layers } from "lucide-react";
 import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions } from "../../redux/apis/apisCrudFactoring";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
-import { usePermissions, PERMISSION_PERMISSIONS, ROLE_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { usePermissions, PERMISSION_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { moduleLabel, permissionLabel } from "../../utils/permissionLabels";
 import {
   getPermissionCatalog,
   getDepartments,
-  setRoleDepartment,
-  clearRoleDepartment,
 } from "../../redux/apis/apisDepartments";
 
 
 const { Option } = Select;
+
+/**
+ * Stands for "roles in no department". Roles created before departments
+ * existed have a null department_id and nothing backfills it, so without this
+ * option a department-first flow would hide every one of them.
+ */
+const NO_DEPARTMENT = "__none__";
 const { Text } = Typography;
 
 /** Both pickers in the selector card use this, so their labels line up. */
@@ -48,7 +53,7 @@ const AssignPermissions: React.FC = () => {
   const [departmentName, setDepartmentName] = useState<string | null>(null);
   const [departments, setDepartments] = useState<any[]>([]);
   const [departmentId, setDepartmentId] = useState<string | undefined>(undefined);
-  const [attaching, setAttaching] = useState(false);
+  const [rolesLoading, setRolesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { hasPermission } = usePermissions();
@@ -56,9 +61,7 @@ const AssignPermissions: React.FC = () => {
   // button to users who have PERMISSION_WRITE. View-only users (PERMISSION_READ) see
   // the page read-only.
   const canManagePermissions = hasPermission(PERMISSION_PERMISSIONS.EDIT);
-  // Attaching a department to a role is a role write, not a permission write:
-  // it changes which department the role inherits from, not the role's own set.
-  const canAttachDepartment = hasPermission(ROLE_PERMISSIONS.CREATE);
+
   useEffect(() => {
     getRoleData();
     getModulesAndPermissions();
@@ -73,26 +76,30 @@ const AssignPermissions: React.FC = () => {
   const handleRoleChange = (value: string) => {
     setSelectedRole(value);
     getPermissionDepartmentStatus(value);
-    loadInherited(value);
   };
 
   /**
-   * If the role belongs to a department, re-fetch the catalog annotated for it.
-   * The annotated response marks each permission `inheritedFromDepartment`, which
-   * is the only way to tell a granted permission from an inherited one.
+   * Choosing the department first, then the role, mirrors how access is
+   * actually decided: the department settles the inherited baseline, and the
+   * role only adds to it. Switching department clears the role, because a role
+   * from the previous one is not in this list any more.
    */
-  const loadInherited = async (roleId: string) => {
-    const role = (Array.isArray(data) ? data : []).find((r: any) => r?.id === roleId);
-    const departmentId = role?.departmentId;
-    setDepartmentId(departmentId || undefined);
-    if (!departmentId) {
-      setInheritedIds([]);
-      setDepartmentName(null);
-      return;
-    }
-    setDepartmentName(role?.departmentName || null);
+  const handleDepartmentChange = async (value?: string) => {
+    setDepartmentId(value);
+    setSelectedRole(undefined);
+    setSelectedPermissions([]);
+    setHasExistingPermissions(false);
+    setInheritedIds([]);
+    setDepartmentName(null);
+    if (!value) return;
+
+    if (value === NO_DEPARTMENT) return; // standalone roles inherit nothing
+
+    const dept = departments.find((d: any) => d?.id === value);
+    setDepartmentName(dept?.departmentName || null);
+    setRolesLoading(true);
     try {
-      const res = await getPermissionCatalog(departmentId);
+      const res = await getPermissionCatalog(value);
       const mods = Array.isArray(res?.data?.data) ? res.data.data : [];
       const ids: string[] = [];
       mods.forEach((m: any) =>
@@ -105,52 +112,18 @@ const AssignPermissions: React.FC = () => {
       // Annotation is additive: without it the screen still works, it just
       // cannot show which entries came from the department.
       setInheritedIds([]);
+    } finally {
+      setRolesLoading(false);
     }
   };
 
-  /**
-   * Move the selected role into a department, or out of one. Both recompute
-   * only this role, so the inherited set is re-read straight afterwards rather
-   * than waiting for a page reload to show what changed.
-   */
-  const handleDepartmentChange = async (value?: string) => {
-    if (!selectedRole) return;
-    setAttaching(true);
-    try {
-      if (value) {
-        await setRoleDepartment(selectedRole, value);
-        toast.success(t("assignPermissions.toast.departmentAttached"));
-      } else {
-        await clearRoleDepartment(selectedRole);
-        toast.success(t("assignPermissions.toast.departmentDetached"));
-      }
-      setDepartmentId(value);
-      // Re-read the roles so role.departmentId is current, then recompute
-      // which permissions are now inherited.
-      const res = await getRoles();
-      const roles = res?.data?.data || [];
-      setData(roles);
-      const role = roles.find((r: any) => r?.id === selectedRole);
-      setDepartmentName(role?.departmentName || null);
-      if (value) {
-        const cat = await getPermissionCatalog(value);
-        const mods = Array.isArray(cat?.data?.data) ? cat.data.data : [];
-        const ids: string[] = [];
-        mods.forEach((m: any) =>
-          (m.permissions || m.permissionsList || []).forEach((p: any) => {
-            if (p?.inheritedFromDepartment) ids.push(p.id);
-          })
-        );
-        setInheritedIds(ids);
-      } else {
-        setInheritedIds([]);
-      }
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || t("assignPermissions.toast.departmentFailed"));
-    } finally {
-      setAttaching(false);
-    }
-  };
+  /** Roles belonging to the chosen department — or the standalone ones. */
+  const rolesInDepartment = React.useMemo(() => {
+    const all = Array.isArray(data) ? data : [];
+    if (!departmentId) return [];
+    if (departmentId === NO_DEPARTMENT) return all.filter((r: any) => !r?.departmentId);
+    return all.filter((r: any) => r?.departmentId === departmentId);
+  }, [data, departmentId]);
 
   const getRoleData = async () => {
     try {
@@ -393,38 +366,22 @@ const AssignPermissions: React.FC = () => {
       {/* Role selector card */}
       <div className="pro-card p-3 mb-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {/* Department leads. It settles the inherited baseline, and the role
+              list below is scoped to it, so picking a role first would mean
+              choosing from a list that the next choice invalidates. */}
           <div>
-            <Text style={labelStyle}>{t("assignPermissions.role")}</Text>
-            <Select
-              placeholder={t("assignPermissions.selectRolePlaceholder")}
-              style={{ width: "100%" }}
-              onChange={handleRoleChange}
-              value={selectedRole}
-              size="large"
-            >
-              {data?.map((dep: any) => (
-                <Option key={dep.id} value={dep.id}>
-                  {dep.roleName}
-                </Option>
-              ))}
-            </Select>
-          </div>
-
-          {/* The department the role inherits from. Editable here because this
-              is the screen where someone reasons about what a role can do, and
-              inheritance is most of that answer. */}
-          <div>
-            <Text style={labelStyle}>{t("roles.field.department")}</Text>
+            <Text style={labelStyle}>
+              {t("roles.field.department")} <span style={{ color: "var(--color-error)" }}>*</span>
+            </Text>
             <Select
               showSearch
               allowClear
               optionFilterProp="children"
-              placeholder={t("roles.ph.department")}
+              placeholder={t("assignPermissions.selectDepartmentPlaceholder")}
               style={{ width: "100%" }}
               size="large"
               value={departmentId}
-              loading={attaching}
-              disabled={!selectedRole || !canAttachDepartment || attaching}
+              loading={rolesLoading}
               onChange={(value?: string) => handleDepartmentChange(value || undefined)}
             >
               {departments.map((d: any) => (
@@ -432,13 +389,43 @@ const AssignPermissions: React.FC = () => {
                   {d.departmentName} ({d.departmentCode})
                 </Option>
               ))}
+              <Option value={NO_DEPARTMENT}>
+                {t("assignPermissions.noDepartment")}
+              </Option>
             </Select>
-            {!selectedRole && (
+          </div>
+
+          <div>
+            <Text style={labelStyle}>
+              {t("assignPermissions.role")} <span style={{ color: "var(--color-error)" }}>*</span>
+            </Text>
+            <Select
+              showSearch
+              optionFilterProp="children"
+              placeholder={
+                departmentId
+                  ? t("assignPermissions.selectRolePlaceholder")
+                  : t("assignPermissions.pickDepartmentFirst")
+              }
+              style={{ width: "100%" }}
+              onChange={handleRoleChange}
+              value={selectedRole}
+              size="large"
+              disabled={!departmentId}
+            >
+              {rolesInDepartment.map((dep: any) => (
+                <Option key={dep.id} value={dep.id}>
+                  {dep.roleName}
+                </Option>
+              ))}
+            </Select>
+            {departmentId && rolesInDepartment.length === 0 && (
               <div className="text-muted" style={{ fontSize: 12, marginTop: 6 }}>
-                {t("assignPermissions.pickRoleFirst")}
+                {t("assignPermissions.noRolesInDepartment")}
               </div>
             )}
           </div>
+
         </div>
       </div>
 
