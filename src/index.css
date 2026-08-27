@@ -329,22 +329,27 @@ body,
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
-/* Anything selectable should read as clickable. antd leaves the default arrow
-   cursor on the closed trigger and on option rows in places, which makes a
-   dropdown look inert until someone happens to click it. Global on purpose —
-   this is a property of every select in the app, not of one screen. */
+/* Anything selectable should read as clickable. antd 5 injects its own styles
+   into <head> at runtime, so they land after this file and win at equal
+   specificity — hence !important, same as the sizing rules around here.
+   The search input is included: with showSearch the caret would otherwise turn
+   to a text bar over the middle of a control that behaves like a button.
+   Global on purpose: this is a property of every select in the app. */
 .ant-select:not(.ant-select-disabled) .ant-select-selector,
+.ant-select:not(.ant-select-disabled) .ant-select-selector input,
+.ant-select:not(.ant-select-disabled) .ant-select-selection-search-input,
 .ant-select-item-option:not(.ant-select-item-option-disabled),
 [data-slot="select-trigger"]:not([disabled]),
 [data-slot="select-item"]:not([data-disabled]) {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 /* ...and anything that cannot be chosen should say so rather than inviting a click. */
 .ant-select-disabled .ant-select-selector,
+.ant-select-disabled .ant-select-selector input,
 .ant-select-item-option-disabled,
 [data-slot="select-trigger"][disabled],
 [data-slot="select-item"][data-disabled] {
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 
 /* Disabled selects were excluded from the rules above, so they kept antd's
