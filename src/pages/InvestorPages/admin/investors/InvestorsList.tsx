@@ -1768,8 +1768,8 @@ export default function InvestorsList() {
                                     newShareholders[index].isPEP = e.target.checked;
                                     setFormData({ ...formData, shareholders: newShareholders });
                                   }}
-                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#e60000] focus:ring-offset-0 me-2 accent-[#e60000]"
-                                  style={{ accentColor: '#e60000' }}
+                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#C81D25] focus:ring-offset-0 me-2 accent-[#C81D25]"
+                                  style={{ accentColor: '#C81D25' }}
                                 />
                                 <span className="text-sm text-gray-700">{t('ils.isPep')}</span>
                               </label>
@@ -1782,8 +1782,8 @@ export default function InvestorsList() {
                                     newShareholders[index].isDirector = e.target.checked;
                                     setFormData({ ...formData, shareholders: newShareholders });
                                   }}
-                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#e60000] focus:ring-offset-0 me-2 accent-[#e60000]"
-                                  style={{ accentColor: '#e60000' }}
+                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#C81D25] focus:ring-offset-0 me-2 accent-[#C81D25]"
+                                  style={{ accentColor: '#C81D25' }}
                                 />
                                 <span className="text-sm text-gray-700">{t('ils.isDirector')}</span>
                               </label>
@@ -1796,8 +1796,8 @@ export default function InvestorsList() {
                                     newShareholders[index].isManager = e.target.checked;
                                     setFormData({ ...formData, shareholders: newShareholders });
                                   }}
-                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#e60000] focus:ring-offset-0 me-2 accent-[#e60000]"
-                                  style={{ accentColor: '#e60000' }}
+                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#C81D25] focus:ring-offset-0 me-2 accent-[#C81D25]"
+                                  style={{ accentColor: '#C81D25' }}
                                 />
                                 <span className="text-sm text-gray-700">{t('ils.isManager')}</span>
                               </label>

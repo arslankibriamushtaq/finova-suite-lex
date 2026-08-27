@@ -625,7 +625,7 @@ const DashboardOnboarding = () => {
       <div className="col-md-3">
         <div className="tail-one">
           <div className="onboard-tail">
-            <span className="img-span" style={{ backgroundColor: "#fff0f0" }}>
+            <span className="img-span" style={{ backgroundColor: "#FAF2F3" }}>
               <img src={icon} alt="" />
             </span>
             <img

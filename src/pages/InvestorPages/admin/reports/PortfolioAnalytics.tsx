@@ -30,7 +30,7 @@ const analyticsData = {
   },
   assetAllocation: [
     { name: 'pa.asset.equity', value: 65, amount: 1560000000, color: '#3B82F6' },
-    { name: 'pa.asset.fixedIncome', value: 25, amount: 600000000, color: '#e60000' },
+    { name: 'pa.asset.fixedIncome', value: 25, amount: 600000000, color: '#C81D25' },
     { name: 'pa.asset.alternative', value: 8, amount: 192000000, color: '#F59E0B' },
     { name: 'pa.asset.cash', value: 2, amount: 48000000, color: '#6B7280' }
   ],

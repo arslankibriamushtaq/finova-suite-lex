@@ -857,12 +857,12 @@ const Onboarding360 = () => {
         .onb360-page .onb-card {
           background-color: var(--surface-card) !important;
           background-image: none !important;
-          border-color: color-mix(in srgb, #e60000 16%, var(--surface-border)) !important;
+          border-color: color-mix(in srgb, #C81D25 16%, var(--surface-border)) !important;
           color: var(--foreground) !important;
         }
         .onb360-page [data-slot="card"] {
-          box-shadow: 0 1px 2px rgba(230,0,0,0.05),
-                      0 8px 20px -16px color-mix(in srgb, #e60000 35%, transparent) !important;
+          box-shadow: 0 1px 2px rgba(200, 29, 37,0.05),
+                      0 8px 20px -16px color-mix(in srgb, #C81D25 35%, transparent) !important;
         }
         /* Stepper card: no background / border / shadow — sits flat on the page */
         .onb360-page .stepper-card[data-slot="card"] {
@@ -929,8 +929,8 @@ const Onboarding360 = () => {
                         formatter={(v: any) => formatMoney(v)}
                       />
                       <Legend wrapperStyle={{ fontSize: 12 }} />
-                      <Bar dataKey="in" name={t("onboarding360.chart.moneyIn")} fill="#e60000" radius={[6, 6, 0, 0]} maxBarSize={60} />
-                      <Bar dataKey="out" name={t("onboarding360.chart.moneyOut")} fill="#7a0e0e" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                      <Bar dataKey="in" name={t("onboarding360.chart.moneyIn")} fill="#C81D25" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                      <Bar dataKey="out" name={t("onboarding360.chart.moneyOut")} fill="#6E1418" radius={[6, 6, 0, 0]} maxBarSize={60} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
@@ -1057,7 +1057,7 @@ const Onboarding360 = () => {
                         <ReTooltip contentStyle={chartTooltipStyle} cursor={{ fill: "var(--muted)" }} formatter={(v: any) => formatMoney(v, selectedCurrency)} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
                         <Bar dataKey="Limit" name={t("onboarding360.chart.limit")} fill="var(--muted-foreground)" radius={[5, 5, 0, 0]} maxBarSize={28} fillOpacity={0.35} />
-                        <Bar dataKey="Spent" name={t("onboarding360.chart.spent")} fill="#e60000" radius={[5, 5, 0, 0]} maxBarSize={28} />
+                        <Bar dataKey="Spent" name={t("onboarding360.chart.spent")} fill="#C81D25" radius={[5, 5, 0, 0]} maxBarSize={28} />
                       </BarChart>
                     </ResponsiveContainer>
                   </Block>

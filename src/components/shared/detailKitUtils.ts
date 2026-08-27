@@ -132,9 +132,9 @@ export const TONES: Record<string, string> = {
 };
 
 export const TONE_HEX: Record<string, string> = {
-  emerald: "#e60000",
+  emerald: "#C81D25",
   amber: "#f59e0b",
-  red: "#7a0e0e",
+  red: "#6E1418",
   sky: "#0ea5e9",
   slate: "#94a3b8",
 };

@@ -30,15 +30,15 @@
 #boot-loader .boot-ring::before {
   width: 116px;
   height: 116px;
-  border-top-color: #e60000;
-  border-right-color: #e60000;
+  border-top-color: #C81D25;
+  border-right-color: #C81D25;
   animation: boot-spin 1s linear infinite;
 }
 #boot-loader .boot-ring::after {
   width: 94px;
   height: 94px;
-  border-bottom-color: #c00000;
-  border-left-color: #c00000;
+  border-bottom-color: #AB1920;
+  border-left-color: #AB1920;
   opacity: 0.85;
   animation: boot-spin 1.4s linear infinite reverse;
 }
@@ -50,7 +50,7 @@
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  box-shadow: 0 6px 20px rgba(230, 0, 0, 0.35);
+  box-shadow: 0 6px 20px rgba(200, 29, 37, 0.35);
   animation: boot-breathe 1.8s ease-in-out infinite;
 }
 #boot-loader .boot-dot img {
@@ -64,7 +64,7 @@
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.4px;
-  color: #c00000;
+  color: #AB1920;
 }
 @keyframes boot-spin {
   to { transform: rotate(360deg); }

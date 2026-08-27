@@ -40,7 +40,7 @@ const ActiveBadge = ({ active }: { active?: boolean }) => {
   <span
     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
     style={{
-      backgroundColor: active ? "rgba(230, 0, 0,0.12)" : "rgba(100,116,139,0.12)",
+      backgroundColor: active ? "rgba(200, 29, 37,0.12)" : "rgba(100,116,139,0.12)",
       color: active ? "rgb(21,128,61)" : "rgb(71,85,105)",
     }}
   >

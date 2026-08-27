@@ -37,10 +37,10 @@ const CustomLineChart = ({ dashboardData }: { dashboardData: any }) => {
           <Line
             type="monotone"
             dataKey="value"
-            stroke="var(--color-success, #c00000)"
+            stroke="var(--color-success, #AB1920)"
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 4, fill: "var(--color-success, #c00000)" }}
+            activeDot={{ r: 4, fill: "var(--color-success, #AB1920)" }}
           />
         </LineChart>
       </ResponsiveContainer>

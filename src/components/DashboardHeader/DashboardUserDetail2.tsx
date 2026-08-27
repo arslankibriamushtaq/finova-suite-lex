@@ -139,7 +139,7 @@ const DashboardUserDetail2 = (props: any) => {
     ];
   
     const systemPieGraph = {
-        color: ["#e60000", "#c00000","#64797a"],
+        color: ["#C81D25", "#AB1920","#64797a"],
         tooltip: {
           trigger: "item",
         },

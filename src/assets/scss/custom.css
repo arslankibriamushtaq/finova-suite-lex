@@ -135,7 +135,7 @@ html, body {
 .header-footer-settings__language-icon {
   width: 16px;
   height: 16px;
-  background-color: #c00000;
+  background-color: #AB1920;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1439,7 +1439,7 @@ h3.welcome-heading {
 
 .card-blocks.overview-two .row .col-md-3:first-child .card,
 .card-blocks.overview-two .row .col-md-3:nth-of-type(2) .card {
-  color: #c00000 !important;
+  color: #AB1920 !important;
   background-color: var(--theme-primary);
 }
 
@@ -2033,7 +2033,7 @@ body .flex.colTwo .ant-btn-default:hover {
 
 .dash-onboarding.cash-in-out.col-12.gap-3 span.on-view {
   color: #181818;
-  background-color: #e8b4b4;
+  background-color: #EDC7C9;
 }
 
 .dash-onboarding.cash-in-out label.lite-red,
@@ -3064,7 +3064,7 @@ a {
 }
 
 .jss274.passed {
-  background: #c00000;
+  background: #AB1920;
 }
 
 .jss278 > div {
@@ -5162,7 +5162,7 @@ label.label-tag {
 }
 
 .service-tickets {
-  background-color: #ecdada;
+  background-color: #F5E3E4;
   border-radius: 2px;
 }
 
@@ -6932,7 +6932,7 @@ div.menu-items a.ps-menu-button > span img {
 .check-circle {
   width: 130px;
   height: 130px;
-  border: 3px solid #c00000;
+  border: 3px solid #AB1920;
   /* green ring */
   border-radius: 50%;
   display: grid;
@@ -6942,7 +6942,7 @@ div.menu-items a.ps-menu-button > span img {
 .check-icon {
   width: 88px;
   height: 88px;
-  fill: #c00000;
+  fill: #AB1920;
   /* green check */
 }
 
@@ -8218,7 +8218,7 @@ section {
 }
 
 .sidebar-tab.active {
-  background: #ff8a8a;
+  background: #E49DA0;
   color: var(--theme-primary);
   border-radius: 2px 2px 0 0;
 }
@@ -8596,7 +8596,7 @@ section {
 }
 
 .header-footer-settings__features-banner {
-  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #fff0f0 72.32%);
+  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #FAF2F3 72.32%);
   padding: 30px 0;
   display: flex;
   justify-content: center;
@@ -8727,7 +8727,7 @@ section {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ff6b6b);
+  background: linear-gradient(90deg, #D96368, #ff8e8e, #D96368);
   border-radius: 2px;
   animation: wave 2s ease-in-out infinite;
 }
@@ -8860,7 +8860,7 @@ section {
   gap: 15px;
 }
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion {
-  background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #ffdada 121.98%);
+  background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #F5E3E4 121.98%);
   padding: 15px 20px;
   border-radius: 2px;
   display: flex;
@@ -8877,7 +8877,7 @@ section {
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion-icon {
   width: 35px;
   height: 35px;
-  background: linear-gradient(135deg, var(--color-teal-accent), #ff4d4d);
+  background: linear-gradient(135deg, var(--color-teal-accent), #D96368);
   border-radius: 2px;
   display: flex;
   align-items: center;

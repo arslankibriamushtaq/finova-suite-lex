@@ -48,7 +48,7 @@ const Ibft = (props: any) => {
         barWidth: "20%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: "#e60000", // Color for the first set of bars
+          color: "#C81D25", // Color for the first set of bars
         },
       },
       {
@@ -109,7 +109,7 @@ const Ibft = (props: any) => {
         barWidth: "20%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: "#e60000", // Color for the first set of bars
+          color: "#C81D25", // Color for the first set of bars
         },
       },
       {

@@ -108,7 +108,7 @@ const Faq = () => {
               className="gradient-btn"
               type="primary"
               style={{
-                backgroundColor: "#c00000 !important",
+                backgroundColor: "#AB1920 !important",
                 color: "#000000",
                 borderColor: "white",
                 borderRadius: "2px",

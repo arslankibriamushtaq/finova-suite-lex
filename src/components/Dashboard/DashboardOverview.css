@@ -1,15 +1,15 @@
 /* ===== Finance Statistics graph card — themed to match the stat cards ===== */
 .dashboard-graph-card.ant-card {
-  border: 1px solid color-mix(in srgb, #e60000 18%, #e5e7eb);
+  border: 1px solid color-mix(in srgb, #C81D25 18%, #e5e7eb);
   border-radius: 2px;
-  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
-  box-shadow: 0 8px 22px -14px color-mix(in srgb, #e60000 45%, transparent);
+  background: linear-gradient(135deg, #FAF2F3 0%, #ffffff 55%);
+  box-shadow: 0 8px 22px -14px color-mix(in srgb, #C81D25 45%, transparent);
 }
 html.dark .dashboard-graph-card.ant-card {
-  border-color: color-mix(in srgb, #e60000 30%, #262a36);
+  border-color: color-mix(in srgb, #C81D25 30%, #262a36);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 12%, #161821) 0%,
+    color-mix(in srgb, #C81D25 12%, #161821) 0%,
     #161821 55%
   );
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
@@ -137,8 +137,8 @@ html.dark .dashboard-graph-card.ant-card {
   white-space: nowrap;
 }
 .dashboard-stats .stat-card__chip--up {
-  color: #7a0e0e;
-  background: color-mix(in srgb, #c00000 16%, transparent);
+  color: #6E1418;
+  background: color-mix(in srgb, #AB1920 16%, transparent);
 }
 .dashboard-stats .stat-card__chip--down {
   color: #b42318;
@@ -149,12 +149,12 @@ html.dark .dashboard-graph-card.ant-card {
   background: color-mix(in srgb, var(--c) 14%, transparent);
 }
 html.dark .dashboard-stats .stat-card__chip--up {
-  color: #f04d4d;
-  background: color-mix(in srgb, #c00000 22%, transparent);
+  color: #D96368;
+  background: color-mix(in srgb, #AB1920 22%, transparent);
 }
 html.dark .dashboard-stats .stat-card__chip--down {
-  color: #fb7185;
-  background: color-mix(in srgb, #f43f5e 22%, transparent);
+  color: var(--brand-300);
+  background: color-mix(in srgb, var(--brand-300) 22%, transparent);
 }
 html.dark .dashboard-stats .stat-card__chip--neutral {
   color: color-mix(in srgb, var(--c) 55%, #cbd5e1);
@@ -170,7 +170,7 @@ html.dark .dashboard-stats .stat-card__chip--neutral {
 }
 
 /* ===== Per-card brand colors ===== */
-.dashboard-stats .stat-card--emerald { --c: #e60000; }
+.dashboard-stats .stat-card--emerald { --c: #C81D25; }
 .dashboard-stats .stat-card--teal    { --c: #db2777; }
 .dashboard-stats .stat-card--amber   { --c: #f59e0b; }
 .dashboard-stats .stat-card--green   { --c: #0ea5e9; }

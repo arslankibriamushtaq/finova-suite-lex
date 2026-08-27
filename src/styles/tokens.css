@@ -3,6 +3,35 @@
  * Consumed by Tailwind @theme inline in index.css and (later) by components.
  */
 
+
+/* ==========================================================================
+   Finova brand ramp — the single source for every red in the app.
+   Reference these instead of pasting a hex.
+   ========================================================================== */
+
+:root {
+  /* Page-level red tint. */
+  --brand-50: #FAF2F3;
+  /* Subtle tinted surface — selected rows, chips, avatars. */
+  --brand-100: #F5E3E4;
+  /* Decorative elements and hairlines on a tinted surface. */
+  --brand-200: #EDC7C9;
+  /* Secondary accents. */
+  --brand-300: #E49DA0;
+  /* Hover step on tinted grounds. */
+  --brand-400: #D96368;
+  /* *The brand.* Primary fills: CTAs, focus rings, active states. */
+  --brand-500: #C81D25;
+  /* Hover / pressed step of --brand-500. */
+  --brand-600: #AB1920;
+  /* Deep pressed state. */
+  --brand-700: #8D161C;
+  /* Dark branding. */
+  --brand-800: #6E1418;
+  /* Deepest brand tone. */
+  --brand-900: #501114;
+}
+
 /* ==========================================================================
    Semantic tokens (shadcn / app-wide)
    ========================================================================== */
@@ -14,40 +43,41 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #e60000; /* Brand red (Finova) */
+  --primary: var(--brand-500); /* Brand red (Finova) */
   --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: #fff1f1; /* Soft Finova-red highlight (dropdowns/select/menus) */
-  --accent-foreground: #8f0f0f;
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
+  --accent: var(--brand-50); /* Soft Finova-red highlight (dropdowns/select/menus) */
+  --accent-foreground: var(--brand-700);
+  --destructive: var(--brand-700);
+  --destructive-foreground: #ffffff;
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: #e60000; /* Brand red focus ring */
-  --chart-1: #e60000;
+  --ring: var(--brand-500); /* Brand red focus ring */
+  --chart-1: var(--brand-500);
   --chart-2: #f59e0b;
   --chart-3: #2563eb;
   --chart-4: #7c3aed;
   --chart-5: #db2777;
   /* Single-series chart mark. Validated against the dataviz six checks in
      light mode: lightness band, chroma floor, and >= 3:1 contrast vs
-     each surface. --chart-1 (#e60000) also clears 3:1; this deeper red reads better as text. */
-  --chart-series-1: #c00000;
+     each surface. --chart-1 (#C81D25) also clears 3:1; this deeper red reads better as text. */
+  --chart-series-1: var(--brand-600);
   --radius: 2px;
 
-  /* Status colors */
-  --color-success: oklch(0.55 0.22 27);
-  --color-success-bg: oklch(0.95 0.04 27);
-  --color-success-border: oklch(0.87 0.08 27);
-  --color-success-text: oklch(0.32 0.12 27);
+  /* Status colors — Finova has no green, so positive sits at the brand step
+     and negative sits deeper in the same ramp. */
+  --color-success: var(--brand-500);
+  --color-success-bg: var(--brand-50);
+  --color-success-border: var(--brand-200);
+  --color-success-text: var(--brand-700);
 
-  --color-error: oklch(0.577 0.245 27.325);
-  --color-error-bg: oklch(0.95 0.04 25);
-  --color-error-border: oklch(0.88 0.06 25);
-  --color-error-text: oklch(0.35 0.12 25);
+  --color-error: var(--brand-800);
+  --color-error-bg: var(--brand-100);
+  --color-error-border: var(--brand-300);
+  --color-error-text: var(--brand-900);
 
   --color-warning: oklch(0.75 0.18 85);
   --color-info: oklch(0.6 0.15 250);
@@ -55,7 +85,7 @@
   --color-disabled: oklch(0.82 0 0);
 
   /* Action / confirm color */
-  --color-action: #c00000;
+  --color-action: var(--brand-600);
 
   /* PEP risk color */
   --color-pep: #9C27B0;
@@ -81,7 +111,7 @@
   /* Surface / background colors */
   --color-surface-subtle: #f5f5f5;
   --color-surface-muted: #f0f0f0;
-  --color-surface-page: #f2f0f0; /* soft warm-gray page bg — makes cards/table pop */
+  --color-surface-page: var(--brand-50); /* soft warm-gray page bg — makes cards/table pop */
 
   /* Border colors */
   --color-border-light: #dddddd;
@@ -91,16 +121,16 @@
   /* Extended accent / brand colors */
   --color-navy: #004d72;
   --color-danger-dark: #a40000;
-  --color-teal-accent: #ff4d4d;
+  --color-teal-accent: var(--brand-400);
   --color-orange: #ff9900;
-  --color-green-teal: #e60000;
+  --color-green-teal: var(--brand-500);
   --color-purple-dark: #39244f;
   --color-purple-medium: #614fa2;
 
   /* Additional surface / state colors */
   --color-surface-alt: #f6f6f6;
   --color-surface-pressed: #e8e8e8;
-  --color-danger-bg: #fff1f1;
+  --color-danger-bg: var(--brand-50);
   --color-danger-deeper: #650000;
 
   /* UI gray shades */
@@ -118,16 +148,16 @@
   /* Status background / light tints */
   --color-yellow-bg: #fcf4d4;
   --color-purple-light-bg: #ebebff;
-  --color-teal-light-bg: #fdecec;
-  --color-mint-bg: #fff0f0;
-  --color-mint-light-bg: #ffdcdc;
-  --color-green-light-bg: #f5e8e8;
+  --color-teal-light-bg: var(--brand-100);
+  --color-mint-bg: var(--brand-50);
+  --color-mint-light-bg: var(--brand-100);
+  --color-green-light-bg: var(--brand-100);
   --color-blue-light-bg: #e6f7ff;
   --color-blue-xlight-bg: #e1f4ff;
   --color-warning-yellow: #fed932;
   --color-danger-red: #d7232c;
   --color-orange-alt: #ff9811;
-  --color-green-success-light: #ff6b6b;
+  --color-green-success-light: var(--brand-400);
 
   /* Near-white surfaces */
   --color-surface-cloud: #f9f9f9;
@@ -147,14 +177,14 @@
 
   /* Bootstrap-origin semantic colors */
   --color-action-blue:    #007bff;
-  --color-status-active:  #c00000;
+  --color-status-active:  var(--brand-600);
 
   /* Block type colors (BlockHistory) */
   --color-block-compliance: #00BCD4;
   --color-block-fallback:   #607D8B;
 
   /* LMS status badge colors */
-  --color-status-green:    #e08a8a;
+  --color-status-green:    var(--brand-300);
   --color-status-red-soft: #D86969;
   --color-status-amber:    #FAB65E;
   --color-status-coral:    #F85F54;
@@ -171,15 +201,15 @@
 
   /* CMS ticket/action colors */
   --color-cms-purple: #5F4F71;
-  --color-cms-teal:   #e60000;
-  --color-teal-bright: #e60000;
+  --color-cms-teal:   var(--brand-500);
+  --color-teal-bright: var(--brand-500);
 
   /* Warning/status variants */
   --color-warning-amber: #faad14;
   --color-error-light:   #ff7875;
 
   /* Surface mint (investor) */
-  --color-surface-mint: #fff3f3;
+  --color-surface-mint: var(--brand-50);
 
   /* Bootstrap warning / medium-risk status */
   --color-warning-gold: #FFC107;
@@ -188,7 +218,7 @@
   --color-border-faint: #eeeeee;
 
   /* ===== Semantic surface tokens (use these everywhere instead of #fff/#000) ===== */
-  --surface-page:        #f2f0f0;   /* soft warm-gray page bg — makes cards/table pop */
+  --surface-page:        var(--brand-50);   /* soft warm-gray page bg — makes cards/table pop */
   --surface-card:        #ffffff;   /* card / panel background */
   --surface-card-alt:    #f8fafc;   /* slightly tinted card header / striped row */
   --surface-card-hover:  #f1f5f9;   /* card hover */
@@ -223,34 +253,34 @@ html.dark,
   --card-foreground: #e6eaf2;
   --popover: #161821;
   --popover-foreground: #e6eaf2;
-  --primary: #e60000; /* Brand red (Finova) */
+  --primary: var(--brand-500); /* Brand red (Finova) */
   --primary-foreground: #ffffff;
   --secondary: #22252f;
   --secondary-foreground: #e6eaf2;
   --muted: #22252f;
   --muted-foreground: #9ba1ad;
-  --accent: color-mix(in srgb, #e60000 22%, #22252f); /* Finova-red-tinted highlight */
-  --accent-foreground: #ffdcdc;
+  --accent: color-mix(in srgb, #C81D25 22%, #22252f); /* Finova-red-tinted highlight */
+  --accent-foreground: var(--brand-100);
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #262a36;
   --input: #1c1f2a;
-  --ring: #e60000; /* Brand red focus ring */
-  --chart-1: #ff5a5a;
+  --ring: var(--brand-500); /* Brand red focus ring */
+  --chart-1: var(--brand-400);
   --chart-2: #fbbf24;
   --chart-3: #60a5fa;
   --chart-4: #a78bfa;
   --chart-5: #f472b6;
   /* Single-series chart mark. Validated against the dataviz six checks in
      dark: lightness band, chroma floor, and >= 3:1 contrast vs each surface.
-     The light-mode #c00000 sits below 3:1 on the dark page and is not safe here. */
-  --chart-series-1: #ff5a5a;
+     The light-mode #AB1920 sits below 3:1 on the dark page and is not safe here. */
+  --chart-series-1: var(--brand-400);
 
   /* App surface / status — dark variants */
-  --color-success: #ff5a5a;
-  --color-success-bg: rgba(230, 0, 0, 0.12);
-  --color-success-border: rgba(230, 0, 0, 0.35);
-  --color-success-text: #ffb3b3;
+  --color-success: var(--brand-400);
+  --color-success-bg: rgba(200, 29, 37, 0.12);
+  --color-success-border: rgba(200, 29, 37, 0.35);
+  --color-success-text: var(--brand-200);
 
   --color-error: #ef4444;
   --color-error-bg: rgba(239, 68, 68, 0.12);
@@ -267,7 +297,7 @@ html.dark,
   --theme-text-color: #e6eaf2;
   --theme-secondary: #eb0d0d;
   --theme-tertiary: #ffffff;
-  --theme-active-color: #ff6b6b;
+  --theme-active-color: var(--brand-400);
   --theme-active-tab: transparent;
   --theme-inactive-tab: #1c1f2a;
   --theme-breadcrumb-active-text-color: #ef4444;
@@ -277,33 +307,33 @@ html.dark,
   --theme-revert-action-color: #475569;
   --theme-other-actions-color: transparent;
   /* Header surface — red-tinted to match the sidebar (follows the logo) */
-  --theme-header-background-color: #150e0e;
+  --theme-header-background-color: #1A0D0F;
   --theme-header-sub-header-bg-color: #0d1117;
   --theme-dashboard-subheader-bg-color: #0d1117;
-  --theme-dashboard-header-bg-color: #150e0e;
+  --theme-dashboard-header-bg-color: #1A0D0F;
   --theme-subheader-text-color: #e6eaf2;
   --theme-heading-text-color: #f1f5f9;
   --theme-cards-background-color: #161821;
   --theme-cards-text-color: #e6eaf2;
-  --theme-table-background-color: #7a0e0e;
+  --theme-table-background-color: var(--brand-800);
   --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #e6eaf2;
-  --theme-table-row-alt: #241717;   /* red-tinted stripe (dark) */
-  --theme-table-row-hover: #332020;
+  --theme-table-row-alt: #2A1114;   /* red-tinted stripe (dark) */
+  --theme-table-row-hover: #3A171A;
   /* Subtle red-tinted sidebar surface — follows the Finova logo color */
-  --theme-flow-sidebar-logo-bg: #120c0c;
-  --theme-flow-dashboard-sidebar-bg: #150e0e;
+  --theme-flow-sidebar-logo-bg: #150B0D;
+  --theme-flow-dashboard-sidebar-bg: #1A0D0F;
   --theme-flow-submenu-sidebar-bg: transparent;
-  --theme-flow-active-color-bg: color-mix(in srgb, #e60000 14%, transparent);
+  --theme-flow-active-color-bg: color-mix(in srgb, #C81D25 14%, transparent);
   /* Stepper accent — matches the active sidebar tab (dark navy gradient).
      Dark mode adds a white border so the dark gradient stays visible
      against the page surface. */
-  --stepper-accent: #e60000;
-  --stepper-accent-bg: linear-gradient(135deg, #e60000 0%, #c00000 100%);
+  --stepper-accent: var(--brand-500);
+  --stepper-accent-bg: linear-gradient(135deg, #C81D25 0%, #AB1920 100%);
   --stepper-accent-border: #ffffff;
   --stepper-accent-ring: rgba(255, 255, 255, 0.18);
   --theme-flow-inactive-color-bg: transparent;
-  --theme-flow-active-text-color: #ff4d4d;
+  --theme-flow-active-text-color: var(--brand-400);
   --theme-flow-inactive-text-color: #e2e8f0;
   --theme-dashboard-sidebar-active-color-bg: #ef4444;
   --theme-dashboard-sidebar-active-text-color: #f87171;
@@ -742,10 +772,10 @@ html:not(.dark) .theme-btn:not(:disabled),
 html:not(.dark) .theme-btn-next:not(:disabled),
 html:not(.dark) .theme-btn-prev:not(:disabled),
 html:not(.dark) .theme-btn-back:not(:disabled) {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  background-color: #e60000 !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  background-color: #C81D25 !important;
   color: #ffffff !important;
-  border: 1px solid #c00000 !important;
+  border: 1px solid #AB1920 !important;
   box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
@@ -762,9 +792,9 @@ html:not(.dark) .theme-btn:not(:disabled):hover,
 html:not(.dark) .theme-btn-next:not(:disabled):hover,
 html:not(.dark) .theme-btn-prev:not(:disabled):hover,
 html:not(.dark) .theme-btn-back:not(:disabled):hover {
-  background: linear-gradient(135deg, #ff4d4d 0%, #e60000 100%) !important;
-  background-color: #ff4d4d !important;
-  border-color: #c00000 !important;
+  background: linear-gradient(135deg, #D96368 0%, #C81D25 100%) !important;
+  background-color: #D96368 !important;
+  border-color: #AB1920 !important;
   color: #ffffff !important;
   box-shadow:
     0 4px 10px rgba(15, 23, 42, 0.35),
@@ -1200,10 +1230,10 @@ html.dark .ant-select-dropdown {
 }
 html.dark .ant-select-item { color: var(--foreground) !important; }
 html.dark .ant-select-item-option-active:not(.ant-select-item-option-selected) {
-  background-color: color-mix(in srgb, #e60000 22%, var(--surface-card-alt)) !important;
+  background-color: color-mix(in srgb, #C81D25 22%, var(--surface-card-alt)) !important;
 }
 html.dark .ant-select-item-option-selected {
-  background-color: color-mix(in srgb, #e60000 32%, var(--surface-card-alt)) !important;
+  background-color: color-mix(in srgb, #C81D25 32%, var(--surface-card-alt)) !important;
   color: #ffffff !important;
 }
 html.dark .rdt_Table {
@@ -1374,7 +1404,7 @@ html.dark .no-table td span[style*="background"][style*="--color-success"],
 html.dark .no-table td div[style*="background"][style*="--color-success"] {
   background-color: var(--color-success-bg) !important;
   background: var(--color-success-bg) !important;
-  color: #f04d4d !important;
+  color: #D96368 !important;
   border: 1px solid var(--color-success-border) !important;
 }
 html.dark .rdt_TableCell span[style*="background"][style*="--color-error"],
@@ -1387,7 +1417,7 @@ html.dark .no-table td span[style*="background"][style*="--color-error"],
 html.dark .no-table td div[style*="background"][style*="--color-error"] {
   background-color: var(--color-error-bg) !important;
   background: var(--color-error-bg) !important;
-  color: #fb7185 !important;
+  color: var(--brand-300) !important;
   border: 1px solid var(--color-error-border) !important;
 }
 html.dark .rdt_TableCell span[style*="background"][style*="--color-warning"],
@@ -1417,7 +1447,7 @@ html.dark .rdt_TableCell .text-green-500,
 html.dark .no-table .text-green-600,
 html.dark .no-table .text-green-700,
 html.dark .no-table .text-green-500 {
-  color: #f04d4d !important;
+  color: #D96368 !important;
 }
 html.dark .rdt_TableCell .text-red-500,
 html.dark .rdt_TableCell .text-red-600,
@@ -1425,7 +1455,7 @@ html.dark .rdt_TableCell .text-red-700,
 html.dark .no-table .text-red-500,
 html.dark .no-table .text-red-600,
 html.dark .no-table .text-red-700 {
-  color: #fb7185 !important;
+  color: var(--brand-300) !important;
 }
 html.dark .rdt_TableCell .text-yellow-500,
 html.dark .rdt_TableCell .text-yellow-600,
@@ -1448,11 +1478,11 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .ant-btn,
 .no-table tbody td button[class*="bg-foreground"],
 .card-settings-page table td button[class*="bg-foreground"] {
-  background-color: #c00000 !important;
-  background: #c00000 !important;
+  background-color: #AB1920 !important;
+  background: #AB1920 !important;
   background-image: none !important;
   color: #ffffff !important;
-  border: 1px solid #c00000 !important;
+  border: 1px solid #AB1920 !important;
   border-radius: 2px !important;
   padding: 6px 14px !important;
   font-size: 12px !important;
@@ -1477,9 +1507,9 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .ant-btn:hover,
 .no-table tbody td button[class*="bg-foreground"]:hover,
 .card-settings-page table td button[class*="bg-foreground"]:hover {
-  background-color: #9e0000 !important;
-  background: #9e0000 !important;
-  border-color: #9e0000 !important;
+  background-color: #8D161C !important;
+  background: #8D161C !important;
+  border-color: #8D161C !important;
   color: #ffffff !important;
 }
 
@@ -1489,15 +1519,15 @@ html.dark .rdt_TableCell .text-amber-600 {
 .rdt_TableCell button[aria-haspopup="menu"],
 .no-table tbody td button[aria-haspopup="menu"],
 .mini-table tbody td button[aria-haspopup="menu"] {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  border: 1px solid #c00000 !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  border: 1px solid #AB1920 !important;
   color: #ffffff !important;
 }
 .rdt_TableCell button[aria-haspopup="menu"]:hover,
 .no-table tbody td button[aria-haspopup="menu"]:hover,
 .mini-table tbody td button[aria-haspopup="menu"]:hover {
-  background: #9e0000 !important;
-  border-color: #9e0000 !important;
+  background: #8D161C !important;
+  border-color: #8D161C !important;
   color: #ffffff !important;
 }
 .rdt_TableCell button[aria-haspopup="menu"] svg,
@@ -1659,9 +1689,9 @@ html.dark .no-table tbody td .theme-btn-next,
 html.dark .no-table tbody td .ant-btn,
 html.dark .no-table tbody td button[class*="bg-foreground"],
 html.dark .no-table tbody td button.dropdown-toggle {
-  background-color: #c00000 !important;
-  background: #c00000 !important;
-  border: 1px solid #ff4d4d !important;
+  background-color: #AB1920 !important;
+  background: #AB1920 !important;
+  border: 1px solid #D96368 !important;
   color: #ffffff !important;
 }
 html.dark .rdt_TableCell .gradient-btn:hover,
@@ -1674,9 +1704,9 @@ html.dark .no-table tbody td .theme-btn-next:hover,
 html.dark .no-table tbody td .ant-btn:hover,
 html.dark .no-table tbody td button[class*="bg-foreground"]:hover,
 html.dark .no-table tbody td button.dropdown-toggle:hover {
-  background-color: #9e0000 !important;
-  background: #9e0000 !important;
-  border-color: #ff4d4d !important;
+  background-color: #8D161C !important;
+  background: #8D161C !important;
+  border-color: #D96368 !important;
   color: #ffffff !important;
 }
 
@@ -1777,13 +1807,13 @@ html.dark li.ps-menuitem-root.ps-active > .ps-menu-button {
      mechanism as the dashboard cards in dark mode. */
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--mi-color, #e60000) 24%, #0e1018) 0%,
-    color-mix(in srgb, var(--mi-color, #e60000) 8%, #0e1018) 100%
+    color-mix(in srgb, var(--mi-color, #C81D25) 24%, #0e1018) 0%,
+    color-mix(in srgb, var(--mi-color, #C81D25) 8%, #0e1018) 100%
   ) !important;
   color: #ffffff !important;
   box-shadow:
-    inset 3px 0 0 var(--mi-color, #e60000),
-    0 0 14px color-mix(in srgb, var(--mi-color, #e60000) 35%, transparent) !important;
+    inset 3px 0 0 var(--mi-color, #C81D25),
+    0 0 14px color-mix(in srgb, var(--mi-color, #C81D25) 35%, transparent) !important;
   border-radius: 2px !important;
 }
 html.dark span.ps-menu-label.ps-active.css-12w9als,
@@ -1847,7 +1877,7 @@ html.dark .bg-white .recharts-wrapper {
   --theme-text-color: #000000;
   --theme-secondary: #eb0d0d;
   --theme-tertiary: #000000;
-  --theme-active-color: #c00000;
+  --theme-active-color: var(--brand-600);
   --theme-active-tab: transparent;
   --theme-inactive-tab: #ededed;
   --theme-breadcrumb-active-text-color: #eb0d0d;
@@ -1857,32 +1887,32 @@ html.dark .bg-white .recharts-wrapper {
   --theme-revert-action-color: #a0a0a0;
   --theme-other-actions-color: transparent;
   /* Header surface — red-tinted to match the sidebar (follows the logo) */
-  --theme-header-background-color: #fdf5f5;
+  --theme-header-background-color: var(--brand-50);
   --theme-header-sub-header-bg-color: #000000;
   --theme-dashboard-subheader-bg-color: #f4f4f4;
-  --theme-dashboard-header-bg-color: #fdf5f5;
+  --theme-dashboard-header-bg-color: var(--brand-50);
   --theme-subheader-text-color: #000000;
   --theme-heading-text-color: #090909;
   --theme-cards-background-color: transparent;
   --theme-cards-text-color: transparent;
-  --theme-table-background-color: #c00000;
+  --theme-table-background-color: var(--brand-600);
   --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #0f172a;
-  --theme-table-row-alt: #fdf0f0;   /* light red stripe — matches theme */
-  --theme-table-row-hover: #fbe4e4;
+  --theme-table-row-alt: var(--brand-50);   /* light red stripe — matches theme */
+  --theme-table-row-hover: var(--brand-100);
   /* Subtle red-tinted sidebar surface — follows the Finova logo color */
-  --theme-flow-sidebar-logo-bg: #fdf3f3;
-  --theme-flow-dashboard-sidebar-bg: #fdf5f5;
+  --theme-flow-sidebar-logo-bg: var(--brand-50);
+  --theme-flow-dashboard-sidebar-bg: var(--brand-50);
   --theme-flow-submenu-sidebar-bg: transparent;
   --theme-flow-active-color-bg: transparent;
   /* Stepper accent — matches the active sidebar tab (dark navy gradient).
      Light mode uses the gradient end color as the border (no extra outline). */
-  --stepper-accent: #e60000;
-  --stepper-accent-bg: linear-gradient(135deg, #e60000 0%, #c00000 100%);
-  --stepper-accent-border: #c00000;
+  --stepper-accent: var(--brand-500);
+  --stepper-accent-bg: linear-gradient(135deg, #C81D25 0%, #AB1920 100%);
+  --stepper-accent-border: var(--brand-600);
   --stepper-accent-ring: rgba(15, 23, 42, 0.18);
   --theme-flow-inactive-color-bg: transparent;
-  --theme-flow-active-text-color: #c00000;
+  --theme-flow-active-text-color: var(--brand-600);
   --theme-flow-inactive-text-color: #000000;
   --theme-dashboard-sidebar-active-color-bg: #eb0d0d;
   --theme-dashboard-sidebar-active-text-color: #eb0d0d;
@@ -1947,17 +1977,17 @@ html.dark .bg-white .recharts-wrapper {
 .ant-input-affix-wrapper,
 .ant-select:not(.ant-select-disabled) .ant-select-selector {
   border-radius: 2px !important;
-  border-color: color-mix(in srgb, #e60000 22%, #d9d9d9) !important;
+  border-color: color-mix(in srgb, #C81D25 22%, #d9d9d9) !important;
 }
 .ant-picker:hover,
 .ant-input-affix-wrapper:hover,
 .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-  border-color: #e60000 !important;
+  border-color: #C81D25 !important;
 }
 html.dark .ant-picker,
 html.dark .ant-input-affix-wrapper,
 html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
-  border-color: color-mix(in srgb, #e60000 28%, #3a4050) !important;
+  border-color: color-mix(in srgb, #C81D25 28%, #3a4050) !important;
 }
 
 /* ==========================================================================
@@ -1975,20 +2005,20 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
 .ant-picker-focused,
 .ant-picker.ant-picker-focused,
 .ant-picker:focus-within {
-  border-color: #e60000 !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #e60000 18%, transparent) !important;
+  border-color: #C81D25 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #C81D25 18%, transparent) !important;
 }
 .ant-picker .ant-picker-suffix {
-  color: #e60000 !important;
+  color: #C81D25 !important;
 }
 .ant-picker .ant-picker-active-bar {
-  background: #e60000 !important;
+  background: #C81D25 !important;
 }
 
 /* --- Calendar dropdown panel --- */
 .ant-picker-dropdown .ant-picker-panel-container {
   border-radius: 12px !important;
-  box-shadow: 0 12px 32px -12px rgba(230, 0, 0, 0.25),
+  box-shadow: 0 12px 32px -12px rgba(200, 29, 37, 0.25),
     0 8px 24px -16px rgba(0, 0, 0, 0.25) !important;
   overflow: hidden;
 }
@@ -1996,10 +2026,10 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
   border: 0 !important;
 }
 .ant-picker-dropdown .ant-picker-header {
-  border-bottom-color: color-mix(in srgb, #e60000 12%, transparent) !important;
+  border-bottom-color: color-mix(in srgb, #C81D25 12%, transparent) !important;
 }
 .ant-picker-dropdown .ant-picker-header button:hover {
-  color: #e60000 !important;
+  color: #C81D25 !important;
 }
 /* Day / month / year cells */
 .ant-picker-dropdown .ant-picker-cell .ant-picker-cell-inner {
@@ -2007,18 +2037,18 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
   transition: background-color 0.15s ease, color 0.15s ease !important;
 }
 .ant-picker-dropdown .ant-picker-cell-in-view:hover .ant-picker-cell-inner {
-  background: color-mix(in srgb, #e60000 14%, transparent) !important;
+  background: color-mix(in srgb, #C81D25 14%, transparent) !important;
 }
 /* Today indicator */
 .ant-picker-dropdown .ant-picker-cell-today .ant-picker-cell-inner::before {
-  border-color: #e60000 !important;
+  border-color: #C81D25 !important;
   border-radius: 8px !important;
 }
 /* Selected day + range endpoints */
 .ant-picker-dropdown .ant-picker-cell-selected .ant-picker-cell-inner,
 .ant-picker-dropdown .ant-picker-cell-range-start .ant-picker-cell-inner,
 .ant-picker-dropdown .ant-picker-cell-range-end .ant-picker-cell-inner {
-  background: #e60000 !important;
+  background: #C81D25 !important;
   color: #fff !important;
   border-radius: 8px !important;
   font-weight: 600;
@@ -2027,15 +2057,15 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
 .ant-picker-dropdown .ant-picker-cell-in-range::before,
 .ant-picker-dropdown .ant-picker-cell-range-start::before,
 .ant-picker-dropdown .ant-picker-cell-range-end::before {
-  background: color-mix(in srgb, #e60000 16%, transparent) !important;
+  background: color-mix(in srgb, #C81D25 16%, transparent) !important;
 }
 /* Footer "Today" link */
 .ant-picker-dropdown .ant-picker-today-btn {
-  color: #e60000 !important;
+  color: #C81D25 !important;
   font-weight: 600;
 }
 .ant-picker-dropdown .ant-picker-today-btn:hover {
-  color: color-mix(in srgb, #e60000 78%, #000) !important;
+  color: color-mix(in srgb, #C81D25 78%, #000) !important;
 }
 
 /* --- Calendar dropdown panel: dark mode ---
@@ -2079,7 +2109,7 @@ html.dark .ant-picker-dropdown .ant-picker-time-panel-cell-inner {
   color: var(--foreground) !important;
 }
 html.dark .ant-picker-dropdown .ant-picker-time-panel-cell-inner:hover {
-  background: color-mix(in srgb, #e60000 14%, transparent) !important;
+  background: color-mix(in srgb, #C81D25 14%, transparent) !important;
 }
 /* Range preview while hovering */
 html.dark .ant-picker-dropdown .ant-picker-cell-in-range:not(.ant-picker-cell-selected) .ant-picker-cell-inner {
@@ -2096,20 +2126,20 @@ html.dark .ant-picker-dropdown .ant-picker-cell-in-range:not(.ant-picker-cell-se
 [data-slot="dialog-content"],
 .ant-modal .ant-modal-content,
 .modal-content {
-  background: linear-gradient(160deg, #fdf6f6 0%, #ffffff 22%) !important;
-  border: 1px solid color-mix(in srgb, #e60000 20%, var(--border)) !important;
+  background: linear-gradient(160deg, #FAF2F3 0%, #ffffff 22%) !important;
+  border: 1px solid color-mix(in srgb, #C81D25 20%, var(--border)) !important;
   border-radius: 2px !important;
-  box-shadow: 0 24px 60px -22px color-mix(in srgb, #e60000 38%, rgba(0, 0, 0, 0.45)) !important;
+  box-shadow: 0 24px 60px -22px color-mix(in srgb, #C81D25 38%, rgba(0, 0, 0, 0.45)) !important;
 }
 html.dark [data-slot="dialog-content"],
 html.dark .ant-modal .ant-modal-content,
 html.dark .modal-content {
   background: linear-gradient(
     160deg,
-    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #C81D25 12%, var(--surface-card)) 0%,
     var(--surface-card) 24%
   ) !important;
-  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border)) !important;
+  border-color: color-mix(in srgb, #C81D25 28%, var(--surface-border)) !important;
 }
 
 /* --- Title --- */
@@ -2125,19 +2155,19 @@ html.dark .modal-content {
 /* --- Header / footer dividers (shadcn + bootstrap) --- */
 [data-slot="dialog-header"] {
   padding-bottom: 12px !important;
-  border-bottom: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
+  border-bottom: 1px solid color-mix(in srgb, #C81D25 14%, var(--border)) !important;
 }
 [data-slot="dialog-footer"] {
   padding-top: 14px !important;
-  border-top: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
+  border-top: 1px solid color-mix(in srgb, #C81D25 14%, var(--border)) !important;
 }
 .modal-header,
 .ant-modal-header {
-  border-bottom: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
+  border-bottom: 1px solid color-mix(in srgb, #C81D25 14%, var(--border)) !important;
   background: transparent !important;
 }
 .modal-footer {
-  border-top: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
+  border-top: 1px solid color-mix(in srgb, #C81D25 14%, var(--border)) !important;
 }
 
 /* --- Close (×) button --- */
@@ -2159,8 +2189,8 @@ html.dark .modal-content {
 .ant-modal-close:hover,
 .modal-header .btn-close:hover,
 .modal-header .close:hover {
-  background-color: color-mix(in srgb, #e60000 14%, transparent) !important;
-  color: #c00000 !important;
+  background-color: color-mix(in srgb, #C81D25 14%, transparent) !important;
+  color: #AB1920 !important;
 }
 
 /* --- Inputs / textarea inside modals --- */
@@ -2172,7 +2202,7 @@ html.dark .modal-content {
 .ant-modal textarea.ant-input,
 .modal-content input.form-control,
 .modal-content textarea.form-control {
-  border: 1px solid color-mix(in srgb, #e60000 18%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, #C81D25 18%, var(--border)) !important;
   border-radius: 2px !important;
 }
 [data-slot="dialog-content"] input:not([type="checkbox"]):not([type="radio"]):focus,
@@ -2181,45 +2211,45 @@ html.dark .modal-content {
 .ant-modal .ant-input:focus,
 .modal-content input.form-control:focus,
 .modal-content textarea.form-control:focus {
-  border-color: #e60000 !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #e60000 22%, transparent) !important;
+  border-color: #C81D25 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #C81D25 22%, transparent) !important;
 }
 
 /* --- Secondary / Cancel action button (footer, non-primary) --- */
 [data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):not([class*="destructive"]):not([class*="bg-red"]),
 .ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous),
 .modal-footer .btn:not(.btn-primary):not(.btn-danger) {
-  border: 1px solid color-mix(in srgb, #e60000 30%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, #C81D25 30%, var(--border)) !important;
   color: var(--foreground) !important;
 }
 [data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):not([class*="destructive"]):not([class*="bg-red"]):hover,
 .ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous):hover,
 .modal-footer .btn:not(.btn-primary):not(.btn-danger):hover {
-  border-color: #e60000 !important;
-  color: #c00000 !important;
-  background-color: color-mix(in srgb, #e60000 10%, transparent) !important;
+  border-color: #C81D25 !important;
+  color: #AB1920 !important;
+  background-color: color-mix(in srgb, #C81D25 10%, transparent) !important;
 }
 
 /* ===== Bootstrap checkboxes / radios — brand red when checked ===== */
 .form-check-input:checked {
-  background-color: #e60000 !important;
-  border-color: #e60000 !important;
+  background-color: #C81D25 !important;
+  border-color: #C81D25 !important;
 }
 .form-check-input:focus {
-  border-color: color-mix(in srgb, #e60000 50%, var(--border)) !important;
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #e60000 22%, transparent) !important;
+  border-color: color-mix(in srgb, #C81D25 50%, var(--border)) !important;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #C81D25 22%, transparent) !important;
 }
 
 /* ===== COA Configuration page — professional card + selectable cells ===== */
 .coa-config-page .coa-card {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 14%, var(--card)) 0%,
-    color-mix(in srgb, #e60000 4%, var(--card)) 60%
+    color-mix(in srgb, #C81D25 14%, var(--card)) 0%,
+    color-mix(in srgb, #C81D25 4%, var(--card)) 60%
   );
-  border: 1px solid color-mix(in srgb, #e60000 22%, var(--border));
+  border: 1px solid color-mix(in srgb, #C81D25 22%, var(--border));
   border-radius: 2px;
-  box-shadow: 0 10px 26px -16px color-mix(in srgb, #e60000 45%, transparent);
+  box-shadow: 0 10px 26px -16px color-mix(in srgb, #C81D25 45%, transparent);
   padding: 22px 24px;
 }
 /* Each account checkbox becomes an red-tinted selectable cell */
@@ -2232,19 +2262,19 @@ html.dark .modal-content {
   margin: 0;
   min-height: 46px;
   padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, #e60000 22%, var(--border));
+  border: 1px solid color-mix(in srgb, #C81D25 22%, var(--border));
   border-radius: 2px;
-  background: color-mix(in srgb, #e60000 6%, var(--card));
+  background: color-mix(in srgb, #C81D25 6%, var(--card));
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 .coa-config-page .form-check:hover {
-  border-color: color-mix(in srgb, #e60000 45%, var(--border));
-  background: color-mix(in srgb, #e60000 12%, var(--card));
+  border-color: color-mix(in srgb, #C81D25 45%, var(--border));
+  background: color-mix(in srgb, #C81D25 12%, var(--card));
 }
 .coa-config-page .form-check:has(.form-check-input:checked) {
-  border-color: #e60000;
-  background: color-mix(in srgb, #e60000 16%, var(--card));
-  box-shadow: 0 4px 12px -6px color-mix(in srgb, #e60000 45%, transparent);
+  border-color: #C81D25;
+  background: color-mix(in srgb, #C81D25 16%, var(--card));
+  box-shadow: 0 4px 12px -6px color-mix(in srgb, #C81D25 45%, transparent);
 }
 .coa-config-page .form-check .form-check-input {
   margin: 0 !important;
@@ -2267,7 +2297,7 @@ html.dark .modal-content {
 }
 
 span.ps-menu-label.ps-active.css-12w9als {
-  color: color-mix(in srgb, var(--mi-color, #e60000) 55%, #0f172a) !important;
+  color: color-mix(in srgb, var(--mi-color, #C81D25) 55%, #0f172a) !important;
 }
 
 /* Active sidebar item styling lives in custom.scss to avoid duplication */
@@ -2356,12 +2386,12 @@ li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
      same mechanism as the dashboard stat cards. */
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--mi-color, #e60000) 16%, #ffffff) 0%,
-    color-mix(in srgb, var(--mi-color, #e60000) 5%, #ffffff) 100%
+    color-mix(in srgb, var(--mi-color, #C81D25) 16%, #ffffff) 0%,
+    color-mix(in srgb, var(--mi-color, #C81D25) 5%, #ffffff) 100%
   ) !important;
-  color: color-mix(in srgb, var(--mi-color, #e60000) 55%, #0f172a) !important;
+  color: color-mix(in srgb, var(--mi-color, #C81D25) 55%, #0f172a) !important;
   border-radius: 2px !important;
-  box-shadow: inset 3px 0 0 var(--mi-color, #e60000) !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #C81D25) !important;
 }
 
 /* ==========================================================================
@@ -2384,10 +2414,10 @@ button[class*="bg-primary"][class*="text-primary-foreground"],
 .theme-btn-next,
 .theme-btn-prev,
 .theme-btn-back {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  background-color: #e60000 !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  background-color: #C81D25 !important;
   color: #ffffff !important;
-  border: 1px solid #c00000 !important;
+  border: 1px solid #AB1920 !important;
   box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
@@ -2404,9 +2434,9 @@ button[class*="bg-primary"][class*="text-primary-foreground"]:not(:disabled):hov
 .theme-btn-next:not(:disabled):hover,
 .theme-btn-prev:not(:disabled):hover,
 .theme-btn-back:not(:disabled):hover {
-  background: linear-gradient(135deg, #ff4d4d 0%, #e60000 100%) !important;
-  background-color: #ff4d4d !important;
-  border-color: #c00000 !important;
+  background: linear-gradient(135deg, #D96368 0%, #C81D25 100%) !important;
+  background-color: #D96368 !important;
+  border-color: #AB1920 !important;
   color: #ffffff !important;
   box-shadow:
     0 4px 12px rgba(15, 23, 42, 0.35),
@@ -2508,9 +2538,9 @@ html.dark .theme-btn-back:disabled {
    stays visible on the dark surface.
    ============================================================ */
 .wallet-brand-btn {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  background-color: #e60000 !important;
-  border-color: #c00000 !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  background-color: #C81D25 !important;
+  border-color: #AB1920 !important;
   color: #ffffff !important;
   border-radius: 2px !important;
 }
@@ -2518,19 +2548,19 @@ html.dark .theme-btn-back:disabled {
   filter: brightness(0.92);
 }
 .wallet-brand-bg {
-  background-color: #c00000 !important;
+  background-color: #AB1920 !important;
   color: #ffffff !important;
 }
 .wallet-brand-card {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
   color: #ffffff !important;
 }
 
 html.dark .wallet-brand-btn,
 .dark .wallet-brand-btn {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  background-color: #e60000 !important;
-  border-color: #ff4d4d !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  background-color: #C81D25 !important;
+  border-color: #D96368 !important;
   color: #ffffff !important;
 }
 html.dark .wallet-brand-bg,
@@ -2729,7 +2759,7 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   transition: color 0.15s ease;
 }
 .detail-tabs .detail-tab-trigger:hover {
-  color: #9e0000 !important;
+  color: #8D161C !important;
 }
 .detail-tabs .detail-tab-trigger:hover::after {
   content: "";
@@ -2738,11 +2768,11 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   right: 0;
   bottom: -1px;
   height: 2px;
-  background-color: color-mix(in srgb, #e60000 40%, transparent);
+  background-color: color-mix(in srgb, #C81D25 40%, transparent);
 }
 .detail-tabs .detail-tab-trigger[data-state="active"] {
   background: transparent !important;
-  color: #c00000 !important;
+  color: #AB1920 !important;
   box-shadow: none !important;
   font-weight: 700;
 }
@@ -2753,19 +2783,19 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   right: 0;
   bottom: -1px;
   height: 2px;
-  background-color: #e60000;
+  background-color: #C81D25;
 }
 html.dark .detail-tabs .detail-tab-trigger[data-state="active"],
 .dark .detail-tabs .detail-tab-trigger[data-state="active"] {
-  color: #ff4d4d !important;
+  color: #D96368 !important;
 }
 html.dark .detail-tabs .detail-tab-trigger[data-state="active"]::after,
 .dark .detail-tabs .detail-tab-trigger[data-state="active"]::after {
-  background-color: #ff4d4d;
+  background-color: #D96368;
 }
 html.dark .detail-tabs .detail-tab-trigger:hover,
 .dark .detail-tabs .detail-tab-trigger:hover {
-  color: #ff4d4d !important;
+  color: #D96368 !important;
 }
 
 /* Underline nav tabs — matches the CoaConfiguration look: dark bold active label

@@ -263,10 +263,10 @@ const Dashboard = () => {
   };
 
   const loans = [
-    { title: "Received Loans", value: dashboardData?.receivedAmount ?? 0, color: "#e60000", Icon: HandCoins },
+    { title: "Received Loans", value: dashboardData?.receivedAmount ?? 0, color: "#C81D25", Icon: HandCoins },
     { title: "Receivable Loan", value: dashboardData?.receivableAmount ?? 0, color: "#6366f1", Icon: Wallet },
     { title: "Early Settlements", value: dashboardData?.earlySettlementAmount ?? 0, color: "#0ea5e9", Icon: BadgeCheck },
-    { title: "Non Performing Loans", value: dashboardData?.nonPerformingAmount ?? 0, color: "#7a0e0e", Icon: AlertTriangle },
+    { title: "Non Performing Loans", value: dashboardData?.nonPerformingAmount ?? 0, color: "#6E1418", Icon: AlertTriangle },
     { title: "Due Loans", value: dashboardData?.dueAmount ?? 0, color: "#f59e0b", Icon: Clock },
     { title: "Over Due Loans", value: dashboardData?.overDueAmount ?? 0, color: "#db2777", Icon: CalendarX },
   ];
@@ -358,7 +358,7 @@ const Dashboard = () => {
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <div className="kpi-card" style={{ ["--c" as any]: "#e60000" }}>
+          <div className="kpi-card" style={{ ["--c" as any]: "#C81D25" }}>
             <div className="kpi-header">{disbursedAmount.title}</div>
             <div className="kpi-body">
               <p className="kpi-value">

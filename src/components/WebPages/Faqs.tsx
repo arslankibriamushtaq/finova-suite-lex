@@ -410,7 +410,7 @@ const Faqs = () => {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: '#fff0f0',
+                  backgroundColor: '#FAF2F3',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

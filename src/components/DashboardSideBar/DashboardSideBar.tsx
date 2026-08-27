@@ -59,7 +59,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "risk management": { Icon: ShieldAlert, color: "#f43f5e" },
   "access control management": { Icon: ShieldCheck, color: "#6366f1" },
   "block codes": { Icon: Ban, color: "#0ea5e9" },
-  lms: { Icon: Landmark, color: "#e60000" },
+  lms: { Icon: Landmark, color: "#C81D25" },
   "loan management": { Icon: Banknote, color: "#3b82f6" },
   reports: { Icon: FileBarChart2, color: "#0ea5e9" },
   // Top-level accounting desks — they sit beside Ledger/Accounts Limit Setting
@@ -67,24 +67,24 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "all reports": { Icon: FileBarChart2, color: "#0ea5e9" },
   "general ledger": { Icon: BookOpen, color: "#6366f1" },
   "chart of account": { Icon: BarChart3, color: "#6366f1" },
-  collections: { Icon: HandCoins, color: "#c00000" },
+  collections: { Icon: HandCoins, color: "#AB1920" },
   setting: { Icon: SettingsIcon, color: "#64748b" },
   "connector management": { Icon: Plug, color: "#ec4899" },
   "environment settings": { Icon: SlidersHorizontal, color: "#0ea5e9" },
   "clients management": { Icon: Contact, color: "#8b5cf6" },
   "system logs": { Icon: ScrollText, color: "#f59e0b" },
-  "wallet management": { Icon: Wallet, color: "#e60000" },
+  "wallet management": { Icon: Wallet, color: "#C81D25" },
   transfers: { Icon: ArrowLeftRight, color: "#6366f1" },
   financing: { Icon: Landmark, color: "#0ea5e9" },
   "general setting": { Icon: SettingsIcon, color: "#db2777" },
   "send money": { Icon: Send, color: "#8b5cf6" },
   "internal transfer": { Icon: ArrowLeftRight, color: "#6366f1" },
   "wallet transactions limits": { Icon: SlidersHorizontal, color: "#6366f1" },
-  "wallet qr": { Icon: QrCode, color: "#e60000" },
-  "qr codes": { Icon: QrCode, color: "#e60000" },
-  "scan & pay": { Icon: ScanLine, color: "#e60000" },
+  "wallet qr": { Icon: QrCode, color: "#C81D25" },
+  "qr codes": { Icon: QrCode, color: "#C81D25" },
+  "scan & pay": { Icon: ScanLine, color: "#C81D25" },
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
-  "wallet ledger": { Icon: BookOpen, color: "#e60000" },
+  "wallet ledger": { Icon: BookOpen, color: "#C81D25" },
   // Groups only, no entry per child: a leaf draws an icon only when it has its
   // own entry, so leaving the children out gives the plain iconless list that
   // Exchange Top-Up has. They still get the group's colour on the active pill,
@@ -100,7 +100,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
 };
 
-const DEFAULT_MI_COLOR = "#e60000";
+const DEFAULT_MI_COLOR = "#C81D25";
 const getModuleTheme = (label?: string) =>
   label ? MODULE_THEME[label.trim().toLowerCase()] : undefined;
 
@@ -3325,7 +3325,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
              nested rows have no .menu-items wrapper, so they're untouched). */
           .css-12w9als:not(.is-collapsed) .menu-items[style*="--mi-color"] {
             border-bottom: 1px solid
-              color-mix(in srgb, var(--mi-color, #e60000) 35%, transparent) !important;
+              color-mix(in srgb, var(--mi-color, #C81D25) 35%, transparent) !important;
           }
 
           /* ===== Final polish ===== */
@@ -3352,7 +3352,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }
           /* Subtle hover wash in the module's own colour (non-active rows) */
           .css-12w9als:not(.is-collapsed) .ps-menu-button:not(.ps-active):hover {
-            background: color-mix(in srgb, var(--mi-color, #e60000) 8%, transparent) !important;
+            background: color-mix(in srgb, var(--mi-color, #C81D25) 8%, transparent) !important;
           }
           /* Group headers read a touch stronger than leaf rows */
           .css-12w9als:not(.is-collapsed) .ps-submenu-root > .ps-menu-button .ps-menu-label {

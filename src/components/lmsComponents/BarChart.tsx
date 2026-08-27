@@ -69,7 +69,7 @@ const CustomBarChart = ({ dashboardData }: { dashboardData: any }) => {
           style={{
             width: 14,
             height: 14,
-            backgroundColor: "var(--chart-1, #e60000)",
+            backgroundColor: "var(--chart-1, #C81D25)",
             marginRight: 6,
             borderRadius: 2,
           }}
@@ -111,7 +111,7 @@ const CustomBarChart = ({ dashboardData }: { dashboardData: any }) => {
           <Bar
             radius={[5, 5, 0, 0]}
             dataKey="Individual"
-            fill="var(--chart-1, #e60000)"
+            fill="var(--chart-1, #C81D25)"
           />
         </BarChart>
       </ResponsiveContainer>

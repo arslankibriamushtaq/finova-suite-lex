@@ -41,13 +41,13 @@ export function LanguageSwitcher() {
             }
             .lang-switch-btn:hover {
               background: linear-gradient(180deg, #ffffff 0%, var(--muted, #f1f5f9) 100%);
-              border-color: var(--color-action, #e60000);
+              border-color: var(--color-action, #C81D25);
               box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6);
               transform: translateY(-1px);
             }
             .lang-switch-btn:active { transform: translateY(0); }
-            .lang-switch-btn[data-state="open"] { border-color: var(--color-action, #e60000); }
-            .lang-switch-globe { color: var(--color-action, #e60000); }
+            .lang-switch-btn[data-state="open"] { border-color: var(--color-action, #C81D25); }
+            .lang-switch-globe { color: var(--color-action, #C81D25); }
             .lang-switch-code { letter-spacing: 0.4px; }
             .lang-switch-chevron { opacity: 0.5; transition: transform 0.15s ease; }
             .lang-switch-btn[data-state="open"] .lang-switch-chevron { transform: rotate(180deg); }
@@ -60,7 +60,7 @@ export function LanguageSwitcher() {
             }
             html.dark .lang-switch-btn:hover {
               background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-              border-color: var(--color-action, #e60000);
+              border-color: var(--color-action, #C81D25);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             }
 
@@ -85,17 +85,17 @@ export function LanguageSwitcher() {
               font-weight: 700;
               letter-spacing: 0.4px;
               flex-shrink: 0;
-              background: color-mix(in srgb, var(--color-action, #e60000) 12%, transparent);
-              color: var(--color-action, #e60000);
+              background: color-mix(in srgb, var(--color-action, #C81D25) 12%, transparent);
+              color: var(--color-action, #C81D25);
             }
             .lang-switch-native { font-size: 14px; font-weight: 600; line-height: 1.2; }
             .lang-switch-name { font-size: 12px; color: var(--muted-foreground, #64748b); line-height: 1.2; }
-            .lang-switch-check { color: var(--color-action, #e60000); flex-shrink: 0; }
+            .lang-switch-check { color: var(--color-action, #C81D25); flex-shrink: 0; }
             .lang-switch-item.is-active {
-              background: color-mix(in srgb, var(--color-action, #e60000) 9%, transparent);
+              background: color-mix(in srgb, var(--color-action, #C81D25) 9%, transparent);
             }
             .lang-switch-item.is-active .lang-switch-badge {
-              background: var(--color-action, #e60000);
+              background: var(--color-action, #C81D25);
               color: #ffffff;
             }
           `}</style>

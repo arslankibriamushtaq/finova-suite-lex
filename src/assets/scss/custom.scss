@@ -131,7 +131,7 @@ html, body {
 .header-footer-settings__language-icon {
   width: 16px;
   height: 16px;
-  background-color: #c00000;
+  background-color: #AB1920;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1447,7 +1447,7 @@ h3.welcome-heading {
 
 .card-blocks.overview-two .row .col-md-3:first-child .card,
 .card-blocks.overview-two .row .col-md-3:nth-of-type(2) .card {
-  color: #c00000 !important;
+  color: #AB1920 !important;
   background-color: var(--theme-primary);
 }
 
@@ -2086,7 +2086,7 @@ body .flex.colTwo .ant-btn-default:hover {
 
 .dash-onboarding.cash-in-out.col-12.gap-3 span.on-view {
   color: #181818;
-  background-color: #e8b4b4;
+  background-color: #EDC7C9;
 }
 
 .dash-onboarding.cash-in-out label.lite-red,
@@ -2294,7 +2294,7 @@ span.ps-submenu-expand-icon.css-1cuxlhl {
 }
 
 .css-1654oxy>.ps-menu-button {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
   color: #ffffff !important;
 }
 
@@ -3116,7 +3116,7 @@ a {
 }
 
 .active .css-1tqrhto>.ps-menu-button {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
   color: #ffffff !important;
 }
 
@@ -3178,7 +3178,7 @@ a {
 }
 
 .jss274.passed {
-  background: #c00000;
+  background: #AB1920;
 }
 
 .jss278>div {
@@ -4956,7 +4956,7 @@ label {
   align-items: center;
   justify-content: center;
   /* Dark navy to match the sidebar active (tab) colour instead of red */
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%);
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%);
   border-radius: 2px;
   /* Rounded edges */
   padding: 5px;
@@ -5369,7 +5369,7 @@ label.label-tag {
 }
 
 .service-tickets {
-  background-color: #ecdada;
+  background-color: #F5E3E4;
   border-radius: 2px;
 }
 
@@ -6595,7 +6595,7 @@ span.asc.__rdt_custom_sort_icon__ img {
 
 a.ps-menu-button.ps-open span {
   /* Open module — label takes the module's own icon color (--mi-color). */
-  color: var(--mi-color, #e60000) !important;
+  color: var(--mi-color, #C81D25) !important;
 }
 
 div.menu-items a.ps-menu-button.ps-open {
@@ -7216,7 +7216,7 @@ div.menu-items a.ps-menu-button>span img {
 .check-circle {
   width: 130px;
   height: 130px;
-  border: 3px solid #c00000;
+  border: 3px solid #AB1920;
   /* green ring */
   border-radius: 50%;
   display: grid;
@@ -7226,7 +7226,7 @@ div.menu-items a.ps-menu-button>span img {
 .check-icon {
   width: 88px;
   height: 88px;
-  fill: #c00000;
+  fill: #AB1920;
   /* green check */
 }
 
@@ -7287,7 +7287,7 @@ div.menu-items a.ps-menu-button>span img {
 
 .sidebar-tab.active,
 button.sidebar-tab.active {
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
   background-color: #0f172a !important;
   border: 1px solid #0f172a !important;
   color: #ffffff !important;
@@ -8535,7 +8535,7 @@ section {
 }
 
 .sidebar-tab.active {
-  background: #ff8a8a;
+  background: #E49DA0;
   color: var(--theme-primary);
   border-radius: 2px 2px 0 0;
 }
@@ -8939,7 +8939,7 @@ section {
 }
 
 .header-footer-settings__features-banner {
-  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #fff0f0 72.32%);
+  background: linear-gradient(90.9deg, var(--color-teal-accent) -41.65%, #FAF2F3 72.32%);
   padding: 30px 0;
   display: flex;
   justify-content: center;
@@ -9079,7 +9079,7 @@ section {
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ff6b6b);
+        background: linear-gradient(90deg, #D96368, #ff8e8e, #D96368);
         border-radius: 2px;
         animation: wave 2s ease-in-out infinite;
       }
@@ -9226,13 +9226,13 @@ section {
   }
   
   .header-footer-settings__landing-eligibility-criterion {
-    background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #ffdada 121.98%);
+    background: linear-gradient(325.76deg, var(--theme-primary) 54.81%, #F5E3E4 121.98%);
     padding: 15px 20px;
     border-radius: 2px;
     display: flex;
     align-items: center;
     gap: 15px;
-    border: 1px solid #ffdcdc86;
+    border: 1px solid #F5E3E486;
     box-shadow: 0 2px 8px rgba(10, 227, 190, 0.1);
     transition: all 0.3s ease;
     
@@ -9245,7 +9245,7 @@ section {
   .header-footer-settings__landing-eligibility-criterion-icon {
     width: 35px;
     height: 35px;
-    background: linear-gradient(135deg, var(--color-teal-accent), #ff4d4d);
+    background: linear-gradient(135deg, var(--color-teal-accent), #D96368);
     border-radius: 2px;
     display: flex;
     align-items: center;
@@ -9902,15 +9902,15 @@ div.menu-items a.ps-menu-button.ps-active::before{
 }
 .nav-tabs .nav-link:hover {
   background: transparent !important;
-  color: #9e0000 !important;
-  border-bottom: 2px solid color-mix(in srgb, #e60000 40%, transparent) !important;
+  color: #8D161C !important;
+  border-bottom: 2px solid color-mix(in srgb, #C81D25 40%, transparent) !important;
 }
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
   background: transparent !important;
-  color: #c00000 !important;
+  color: #AB1920 !important;
   border: none !important;
-  border-bottom: 2px solid #e60000 !important;
+  border-bottom: 2px solid #C81D25 !important;
   font-weight: 700 !important;
 }
 
@@ -9925,11 +9925,11 @@ div.menu-items a.ps-menu-button.ps-active::before{
   padding: 10px 16px !important;
 }
 .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #c00000 !important;
+  color: #AB1920 !important;
   font-weight: 700 !important;
 }
 .ant-tabs .ant-tabs-ink-bar {
-  background: #e60000 !important;
+  background: #C81D25 !important;
 }
 
 /* ===== Remove blue focus shadow on all input fields globally ===== */
@@ -9993,20 +9993,20 @@ input[type="date"] {
 /* ===== Global filter + table card layout ===== */
 /* Filter row appears in its own rounded card on every page that uses `.filter-select` */
 .service > .filter-select {
-  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #e60000 18%, var(--border));
+  background: linear-gradient(135deg, #FAF2F3 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #C81D25 18%, var(--border));
   border-radius: 2px;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #C81D25 40%, transparent);
   padding: 12px 16px;
   margin-bottom: 12px;
 }
 html.dark .service > .filter-select {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #C81D25 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   );
-  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border));
+  border-color: color-mix(in srgb, #C81D25 28%, var(--surface-border));
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
 }
 
@@ -10016,19 +10016,19 @@ html.dark .service > .filter-select {
 .service > .bg-white:has(.ant-picker),
 .service > .bg-white.mb-3:has(input),
 .service > .bg-white.mb-3:has(.ant-input) {
-  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%) !important;
-  border: 1px solid color-mix(in srgb, #e60000 18%, var(--border)) !important;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent) !important;
+  background: linear-gradient(135deg, #FAF2F3 0%, #ffffff 55%) !important;
+  border: 1px solid color-mix(in srgb, #C81D25 18%, var(--border)) !important;
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #C81D25 40%, transparent) !important;
 }
 html.dark .service > .bg-white:has(.ant-picker),
 html.dark .service > .bg-white.mb-3:has(input),
 html.dark .service > .bg-white.mb-3:has(.ant-input) {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #C81D25 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   ) !important;
-  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border)) !important;
+  border-color: color-mix(in srgb, #C81D25 28%, var(--surface-border)) !important;
 }
 
 /* Table appears in its own rounded white card on every page that uses `.cs-table` */
@@ -10039,10 +10039,10 @@ html.dark .service > .bg-white.mb-3:has(.ant-input) {
 .service > .filter-select ~ div:has(> .rdt_Table),
 .service > div:has(> .rdt_Table),
 div:has(> .rdt_Table) {
-  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #e60000 18%, var(--surface-border));
+  background: linear-gradient(135deg, #FAF2F3 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #C81D25 18%, var(--surface-border));
   border-radius: 2px;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #C81D25 40%, transparent);
   overflow: hidden;
 }
 html.dark .service > .cs-table,
@@ -10054,10 +10054,10 @@ html.dark .service > div:has(> .rdt_Table),
 html.dark div:has(> .rdt_Table) {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #C81D25 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   );
-  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border));
+  border-color: color-mix(in srgb, #C81D25 28%, var(--surface-border));
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
 }
 
@@ -10067,21 +10067,21 @@ html.dark div:has(> .rdt_Table) {
 .card-product {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 14%, var(--card)) 0%,
+    color-mix(in srgb, #C81D25 14%, var(--card)) 0%,
     var(--card) 60%
   ) !important;
-  border: 1px solid color-mix(in srgb, #e60000 20%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, #C81D25 20%, var(--border)) !important;
   border-radius: 2px !important;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent) !important;
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #C81D25 40%, transparent) !important;
   color: var(--foreground) !important;
 }
 html.dark .card-product {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #C81D25 12%, var(--surface-card)) 0%,
     var(--surface-card) 60%
   ) !important;
-  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border)) !important;
+  border-color: color-mix(in srgb, #C81D25 28%, var(--surface-border)) !important;
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7) !important;
 }
 
@@ -10190,21 +10190,21 @@ header.rdt_TableHeadRow,
 .pagination .page-item.active .page-link,
 .page-item.active .page-link,
 .pagination-div .page-item.active .page-link {
-  background-color: #e60000 !important;
-  border-color: #e60000 !important;
+  background-color: #C81D25 !important;
+  border-color: #C81D25 !important;
   color: #ffffff !important;
 }
 .pagination .page-link,
 .pagination-div .page-link {
-  color: #c00000 !important;
+  color: #AB1920 !important;
 }
 .pagination .page-link:hover,
 .pagination-div .page-link:hover {
-  background-color: color-mix(in srgb, #e60000 12%, transparent) !important;
-  color: #9e0000 !important;
+  background-color: color-mix(in srgb, #C81D25 12%, transparent) !important;
+  color: #8D161C !important;
 }
 .pagination .page-link:focus {
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #e60000 30%, transparent) !important;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #C81D25 30%, transparent) !important;
 }
 
 /* ===== Status pills inside tables — works in both modes ===== */
@@ -10224,9 +10224,9 @@ header.rdt_TableHeadRow,
 .rdt_TableCell .status-pill.active,
 .rdt_TableCell .badge-status.active,
 .status-pill.active {
-  background: rgba(230, 0, 0, 0.12);
-  color: #9e0000;
-  border: 1px solid rgba(230, 0, 0, 0.30);
+  background: rgba(200, 29, 37, 0.12);
+  color: #8D161C;
+  border: 1px solid rgba(200, 29, 37, 0.30);
 }
 .rdt_TableCell .status-pill.inactive,
 .rdt_TableCell .badge-status.inactive,
@@ -10239,15 +10239,15 @@ html.dark .rdt_TableCell .status-pill.active,
 html.dark .rdt_TableCell .badge-status.active,
 html.dark .status-pill.active {
   background: rgba(74, 222, 128, 0.14);
-  color: #f04d4d;
+  color: #D96368;
   border-color: rgba(74, 222, 128, 0.40);
 }
 html.dark .rdt_TableCell .status-pill.inactive,
 html.dark .rdt_TableCell .badge-status.inactive,
 html.dark .status-pill.inactive {
-  background: rgba(251, 113, 133, 0.14);
-  color: #fb7185;
-  border-color: rgba(251, 113, 133, 0.40);
+  background: rgba(228, 157, 160, 0.14);
+  color: var(--brand-300);
+  border-color: rgba(228, 157, 160, 0.40);
 }
 
 /* Switch + status pill cluster (e.g. InternalChecksConfig) */
@@ -10263,16 +10263,16 @@ html.dark .status-pill.inactive {
   border: 1.5px solid #cbd5e1 !important;
 }
 [data-slot="switch"][data-state="checked"] {
-  background-color: #c00000 !important;
-  border-color: #c00000 !important;
+  background-color: #AB1920 !important;
+  border-color: #AB1920 !important;
 }
 html.dark [data-slot="switch"] {
   background-color: #475569 !important;
   border: 1.5px solid #ffffff !important;
 }
 html.dark [data-slot="switch"][data-state="checked"] {
-  background-color: #c00000 !important;
-  border-color: #c00000 !important;
+  background-color: #AB1920 !important;
+  border-color: #AB1920 !important;
 }
 [data-slot="switch-thumb"] {
   background-color: #ffffff !important;
@@ -10300,15 +10300,15 @@ html.dark [data-slot="switch"][data-state="checked"] {
   background-color: #cbd5e1 !important;
 }
 .ant-switch.ant-switch-checked {
-  background-color: #c00000 !important;
+  background-color: #AB1920 !important;
 }
 html.dark .ant-switch {
   background-color: #475569 !important;
   border: 1.5px solid #ffffff !important;
 }
 html.dark .ant-switch.ant-switch-checked {
-  background-color: #c00000 !important;
-  border-color: #c00000 !important;
+  background-color: #AB1920 !important;
+  border-color: #AB1920 !important;
 }
 
 /* Ant Radio buttons — white border + dark fill in dark mode */
@@ -10767,8 +10767,8 @@ table td span[style*="border-radius"] {
 .ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
 .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
   /* Soft wash of the item's own color (--mi-color) on hover. */
-  background: color-mix(in srgb, var(--mi-color, #e60000) 10%, transparent) !important;
-  background-color: color-mix(in srgb, var(--mi-color, #e60000) 10%, transparent) !important;
+  background: color-mix(in srgb, var(--mi-color, #C81D25) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--mi-color, #C81D25) 10%, transparent) !important;
   color: var(--foreground) !important;
 }
 html.dark .ps-sidebar-root .ps-menu-button:hover:not(.ps-active),
@@ -10776,8 +10776,8 @@ html.dark .ps-sidebar-root .ps-submenu-content .ps-menu-button:hover:not(.ps-act
 html.dark .ps-sidebar-root [class^="css-"] .ps-menu-button:hover:not(.ps-active),
 html.dark .ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
 html.dark .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
-  background: color-mix(in srgb, var(--mi-color, #e60000) 16%, transparent) !important;
-  background-color: color-mix(in srgb, var(--mi-color, #e60000) 16%, transparent) !important;
+  background: color-mix(in srgb, var(--mi-color, #C81D25) 16%, transparent) !important;
+  background-color: color-mix(in srgb, var(--mi-color, #C81D25) 16%, transparent) !important;
   color: #ffffff !important;
 }
 .ps-sidebar-root .ps-menu-button:hover:not(.ps-active) span,
@@ -10792,12 +10792,12 @@ html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active,
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: color-mix(in srgb, var(--mi-color, #e60000) 12%, transparent) !important;
-  color: color-mix(in srgb, var(--mi-color, #e60000) 60%, #0f172a) !important;
+  background: color-mix(in srgb, var(--mi-color, #C81D25) 12%, transparent) !important;
+  color: color-mix(in srgb, var(--mi-color, #C81D25) 60%, #0f172a) !important;
   border-radius: 0 !important;
   position: relative !important;
   overflow: hidden !important;
-  box-shadow: inset 3px 0 0 var(--mi-color, #e60000) !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #C81D25) !important;
 }
 
 /* Active item (dark): deep tinted-glass + colored glow, per item color. */
@@ -10805,18 +10805,18 @@ html.dark .ps-sidebar-root .ps-menu-button.ps-active,
 html.dark .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: color-mix(in srgb, var(--mi-color, #e60000) 22%, transparent) !important;
+  background: color-mix(in srgb, var(--mi-color, #C81D25) 22%, transparent) !important;
   color: #ffffff !important;
   border-radius: 0 !important;
   position: relative !important;
   overflow: hidden !important;
-  box-shadow: inset 3px 0 0 var(--mi-color, #e60000) !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #C81D25) !important;
 }
 
 /* Active label text — dark tinted in light, white in dark; bold either way. */
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active span,
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover span {
-  color: color-mix(in srgb, var(--mi-color, #e60000) 55%, #0f172a) !important;
+  color: color-mix(in srgb, var(--mi-color, #C81D25) 55%, #0f172a) !important;
   font-weight: 600 !important;
 }
 html.dark .ps-sidebar-root .ps-menu-button.ps-active span,

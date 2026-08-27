@@ -53,7 +53,7 @@ const ProductView = () => {
 
   const getProductStatusColor = (status: number) => {
     const colorMap: { [key: number]: string } = {
-      0: '#c00000', // Green for Active
+      0: '#AB1920', // Green for Active
       1: '#8c8c8c', // Gray for Inactive
       2: '#ff4d4f', // Red for Closed
       3: '#faad14', // Yellow for Suspended

@@ -13,7 +13,7 @@ const getDocumentStatusColor = (status: string): { backgroundColor: string; colo
   const statusLower = status?.toLowerCase() || "";
   const colorMap: { [key: string]: { backgroundColor: string; color: string } } = {
     "uploaded": { backgroundColor: "#17a2b8", color: "white" }, // Blue
-    "approved": { backgroundColor: "#c00000", color: "white" }, // Green
+    "approved": { backgroundColor: "#AB1920", color: "white" }, // Green
     "rejected": { backgroundColor: " #1963b9", color: "white" }, // Red
     "pending": { backgroundColor: "#ffc107", color: "var(--foreground)" }, // Yellow
     "under_review": { backgroundColor: "#fd7e14", color: "white" }, // Orange
@@ -223,7 +223,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#c00000 !important",
+              backgroundColor: "#AB1920 !important",
               color: "#000000",
               borderColor: "white",
               borderRadius: "2px",

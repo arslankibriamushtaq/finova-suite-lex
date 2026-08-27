@@ -91,7 +91,7 @@ const DashboardPartner = () => {
           style={{
             backgroundColor:
               row.parentStatus === "Approved"
-                ? "#d43a3a"
+                ? "#C81D25"
                 : row.parentStatus === "In Progress"
                 ? "#ffc107"
                 : "#ccc",

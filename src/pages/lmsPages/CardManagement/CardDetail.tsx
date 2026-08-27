@@ -228,8 +228,8 @@ const CardDetail = () => {
           <div
             className="relative overflow-hidden rounded-xl p-5 text-white"
             style={{
-              background: "linear-gradient(135deg, #e60000 0%, #c00000 100%)",
-              boxShadow: "0 10px 26px -12px rgba(230, 0, 0, 0.55)",
+              background: "linear-gradient(135deg, #C81D25 0%, #AB1920 100%)",
+              boxShadow: "0 10px 26px -12px rgba(200, 29, 37, 0.55)",
             }}
           >
             <div

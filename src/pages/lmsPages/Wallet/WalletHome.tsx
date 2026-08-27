@@ -62,7 +62,7 @@ interface StatCard {
 
 /** Solid brand color per theme — mirrors the CSS `--c` used by the cards. */
 const THEME_COLOR: Record<CardTheme, string> = {
-  emerald: "#e60000",
+  emerald: "#C81D25",
   teal: "#db2777",
   amber: "#f59e0b",
   green: "#0ea5e9",
@@ -141,7 +141,7 @@ const Sparkline = ({
 };
 
 const STATUS_BADGE: Record<string, { bg: string; color: string }> = {
-  ACTIVE: { bg: "#fff1f1", color: "#7a0e0e" },
+  ACTIVE: { bg: "#FAF2F3", color: "#6E1418" },
   PENDING_ACTIVATION: { bg: "#fef3c7", color: "#92400e" },
   FROZEN: { bg: "#cffafe", color: "#155e75" },
   CLOSED: { bg: "#fee2e2", color: "#991b1b" },
@@ -241,10 +241,10 @@ const WalletHome = () => {
 
   const cardWrap: React.CSSProperties = {
     background:
-      "linear-gradient(135deg, color-mix(in srgb, #e60000 8%, var(--surface-card)) 0%, var(--surface-card) 55%)",
-    border: "1px solid color-mix(in srgb, #e60000 18%, var(--surface-border))",
+      "linear-gradient(135deg, color-mix(in srgb, #C81D25 8%, var(--surface-card)) 0%, var(--surface-card) 55%)",
+    border: "1px solid color-mix(in srgb, #C81D25 18%, var(--surface-border))",
     borderRadius: 2,
-    boxShadow: "0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent)",
+    boxShadow: "0 6px 18px -12px color-mix(in srgb, #C81D25 40%, transparent)",
     padding: "18px 20px",
     marginTop: 16,
     color: "var(--foreground)",
@@ -357,7 +357,7 @@ const WalletHome = () => {
             <Bar
               dataKey="count"
               name={t("dashboard.walletsBar")}
-              fill="var(--chart-series-1, #c00000)"
+              fill="var(--chart-series-1, #AB1920)"
               radius={[4, 4, 0, 0]}
               maxBarSize={36}
             />
@@ -373,7 +373,7 @@ const WalletHome = () => {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead>
-              <tr style={{ background: "#c00000", color: "#fff" }}>
+              <tr style={{ background: "#AB1920", color: "#fff" }}>
                 {[t("dashboard.col.walletNumber"), t("dashboard.col.accountNumber"), t("dashboard.col.name"), t("dashboard.col.balance", { currency: CURRENCY }), t("dashboard.col.status"), t("dashboard.col.createdAt")].map((h) => (
                   <th key={h} style={{ textAlign: "left", padding: "12px 16px", fontWeight: 600 }}>
                     {h}

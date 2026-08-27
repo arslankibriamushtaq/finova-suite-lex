@@ -53,7 +53,7 @@ const DashboardSpinWheel = (props: any) => {
         barWidth: "15%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: " #e8b4b4", // Color for the first set of bars
+          color: " #EDC7C9", // Color for the first set of bars
         },
       },
       {
@@ -65,7 +65,7 @@ const DashboardSpinWheel = (props: any) => {
         barWidth: "15%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: " #e60000", // Color for the first set of bars
+          color: " #C81D25", // Color for the first set of bars
         },
       },
       {
@@ -129,7 +129,7 @@ const DashboardSpinWheel = (props: any) => {
         barWidth: "15%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: " #e8b4b4", // Color for the first set of bars
+          color: " #EDC7C9", // Color for the first set of bars
         },
       },
       {
@@ -141,7 +141,7 @@ const DashboardSpinWheel = (props: any) => {
         barWidth: "15%", // Adjust the width of the bars (e.g., 40% of the category width)
 
         itemStyle: {
-          color: " #e60000", // Color for the first set of bars
+          color: " #C81D25", // Color for the first set of bars
         },
       },
       {

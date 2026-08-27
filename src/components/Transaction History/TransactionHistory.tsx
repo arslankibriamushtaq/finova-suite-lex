@@ -95,7 +95,7 @@ const TransactionHistory = () => {
             whiteSpace: "nowrap",
             padding: "0.4rem 1rem",
             borderRadius: "2px",
-            backgroundColor: "#e08a8a",
+            backgroundColor: "#E49DA0",
             color: "rgba(255, 255, 255, 1)",
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}

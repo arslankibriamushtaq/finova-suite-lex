@@ -51,7 +51,7 @@ const DashboardCashback = () => {
         data: [10, 20, 15, 25, 30, 22, 18], // Data for the first set of bars
         type: "bar",
         itemStyle: {
-          color: "#e60000", // Color for the first set of bars
+          color: "#C81D25", // Color for the first set of bars
         },
       },
       {

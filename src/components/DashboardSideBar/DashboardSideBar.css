@@ -10,7 +10,7 @@ html.dark .sidebar-logo--dark { display: inline-block; }
 .ps-sidebar-root .ps-menu-button.ps-open .sidebar-label-text,
 .ps-sidebar-root .ps-submenu-root > .ps-menu-button.ps-open,
 .ps-sidebar-root .ps-submenu-root > .ps-menu-button.ps-open .ps-menu-label {
-  color: var(--mi-color, #e60000) !important;
+  color: var(--mi-color, #C81D25) !important;
   font-weight: 600 !important;
 }
 
@@ -26,12 +26,12 @@ html.dark .sidebar-logo--dark { display: inline-block; }
    Works for border- or bar-drawn chevrons. */
 .ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon,
 .ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon span {
-  color: var(--mi-color, #e60000) !important;
-  border-color: var(--mi-color, #e60000) !important;
+  color: var(--mi-color, #C81D25) !important;
+  border-color: var(--mi-color, #C81D25) !important;
 }
 .ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon span::after,
 .ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon span::before {
-  background-color: var(--mi-color, #e60000) !important;
+  background-color: var(--mi-color, #C81D25) !important;
 }
 
 /* ===== Menu item icons — fixed column so every label lines up ===== */
@@ -154,11 +154,11 @@ html.dark .sidebar-logo--dark { display: inline-block; }
    `button.sidebar-tab.active` rule in custom.scss/custom.css. */
 .sidebar-tab-row button.sidebar-tab.active {
   /* Sullis-emerald brand gradient — follows the logo color */
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  border: 1px solid #c00000 !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  border: 1px solid #AB1920 !important;
   color: #ffffff !important;
   box-shadow:
-    0 4px 12px color-mix(in srgb, #e60000 35%, transparent),
+    0 4px 12px color-mix(in srgb, #C81D25 35%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
   transform: translateY(-1px);
 }
@@ -166,14 +166,14 @@ html.dark .sidebar-logo--dark { display: inline-block; }
 html.dark .sidebar-tab-row button.sidebar-tab.active {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #e60000 30%, #0e1018) 0%,
-    color-mix(in srgb, #e60000 12%, #0e1018) 100%
+    color-mix(in srgb, #C81D25 30%, #0e1018) 0%,
+    color-mix(in srgb, #C81D25 12%, #0e1018) 100%
   ) !important;
-  border: 1px solid color-mix(in srgb, #e60000 60%, transparent) !important;
+  border: 1px solid color-mix(in srgb, #C81D25 60%, transparent) !important;
   color: #ffffff !important;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #e60000 25%, transparent),
-    0 0 16px color-mix(in srgb, #e60000 35%, transparent),
+    0 0 0 1px color-mix(in srgb, #C81D25 25%, transparent),
+    0 0 16px color-mix(in srgb, #C81D25 35%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 

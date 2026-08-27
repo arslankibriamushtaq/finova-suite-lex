@@ -23,8 +23,8 @@ html.dark .brand-loader-overlay {
 }
 
 .brand-loader {
-  --ring: var(--primary, #e60000);
-  --ring-2: var(--color-action, #c00000);
+  --ring: var(--primary, #C81D25);
+  --ring-2: var(--color-action, #AB1920);
   position: relative;
   width: 132px;
   height: 132px;
@@ -94,7 +94,7 @@ html.dark .brand-loader__logo {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.4px;
-  color: var(--color-action, #c00000);
+  color: var(--color-action, #AB1920);
 }
 
 /* Compact inline spinner — same branded ring, scaled for stat cards / modals /
@@ -104,9 +104,9 @@ html.dark .brand-loader__logo {
   display: inline-block;
   width: 22px;
   height: 22px;
-  border: 2.5px solid color-mix(in srgb, var(--primary, #e60000) 22%, transparent);
-  border-top-color: var(--primary, #e60000);
-  border-right-color: var(--primary, #e60000);
+  border: 2.5px solid color-mix(in srgb, var(--primary, #C81D25) 22%, transparent);
+  border-top-color: var(--primary, #C81D25);
+  border-right-color: var(--primary, #C81D25);
   border-radius: 50%;
   vertical-align: middle;
   animation: brand-loader-spin 0.8s linear infinite;

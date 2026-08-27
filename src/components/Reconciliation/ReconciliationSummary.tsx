@@ -109,7 +109,7 @@ function ReconciliationSummary() {
       dataIndex: 'matched',
       key: 'matched',
       render: (value: number) => (
-        <span style={{ color: '#c00000', fontWeight: 'bold' }}>
+        <span style={{ color: '#AB1920', fontWeight: 'bold' }}>
           {value.toLocaleString()}
         </span>
       ),
@@ -120,7 +120,7 @@ function ReconciliationSummary() {
       dataIndex: 'unmatched',
       key: 'unmatched',
       render: (value: number) => (
-        <span style={{ color: value > 0 ? '#7a0e0e' : '#c00000', fontWeight: 'bold' }}>
+        <span style={{ color: value > 0 ? '#6E1418' : '#AB1920', fontWeight: 'bold' }}>
           {value.toLocaleString()}
         </span>
       ),
@@ -149,7 +149,7 @@ function ReconciliationSummary() {
       dataIndex: 'exceptions',
       key: 'exceptions',
       render: (value: number) => (
-        <span style={{ color: value > 0 ? '#ff4d4f' : '#c00000' }}>
+        <span style={{ color: value > 0 ? '#ff4d4f' : '#AB1920' }}>
           {value}
         </span>
       ),

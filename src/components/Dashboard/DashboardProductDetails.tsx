@@ -80,7 +80,7 @@ const DashboardProductDetails = () => {
   useEffect(() => {
     if (activeTab === "applicationType") {
       // setApplicationData([
-      //   { name: "Individual", value: 8500241, color: "#ff8a8a" },
+      //   { name: "Individual", value: 8500241, color: "#E49DA0" },
       //   { name: "Corporate", value: 8500241, color: "#FFCC6A" },
       //   { name: "SME", value: 2500241, color: "#ff6961" },
       // ]);
@@ -88,7 +88,7 @@ const DashboardProductDetails = () => {
     } else if (activeTab === "departmentWise") {
       getDepartmentApplications();
       // setApplicationData([
-      //   { name: "Approved", value: 8500241, color: "#ff8a8a" },
+      //   { name: "Approved", value: 8500241, color: "#E49DA0" },
       //   { name: "Pending", value: 8500241, color: "#FFCC6A" },
       //   { name: "Rejected", value: 2500241, color: "#ff6961" },
       //   { name: "Disbursed", value: 8500241, color: "#80D1FF" },
@@ -96,7 +96,7 @@ const DashboardProductDetails = () => {
     } else if (activeTab === "productWise") {
       getStatusWiseApplications();
       // setApplicationData([
-      //   { name: "Approved", value: 8500241, color: "#ff8a8a" },
+      //   { name: "Approved", value: 8500241, color: "#E49DA0" },
       //   { name: "Pending", value: 8500241, color: "#FFCC6A" },
       //   { name: "Rejected", value: 2500241, color: "#ff6961" },
       //   { name: "Disbursed", value: 8500241, color: "#80D1FF" },
@@ -104,7 +104,7 @@ const DashboardProductDetails = () => {
     } else if (activeTab === "approvalAverage") {
       getComplianceData();
       // setApplicationData([
-      //   { name: "Compliance", value: 8500241, color: "#ff8a8a" },
+      //   { name: "Compliance", value: 8500241, color: "#E49DA0" },
       //   { name: "Credit", value: 2500241, color: "#ff6961" },
       // ]);
     }
@@ -135,7 +135,7 @@ const DashboardProductDetails = () => {
       const res = await getproducTypeApplications();
       const data = res?.data?.data;
       const colorsMap: Record<string, string> = {
-        Individual: "#ff8a8a",
+        Individual: "#E49DA0",
         Corporate: "#FFCC6A",
         SME: "#ff6961",
       };
@@ -157,7 +157,7 @@ const DashboardProductDetails = () => {
 
       // Mapping: original key => display name + color
       const labelColorMap: Record<string, { name: string; color: string }> = {
-        "REVENUE-APPROVED": { name: t("common:approved"), color: "#ff8a8a" },
+        "REVENUE-APPROVED": { name: t("common:approved"), color: "#E49DA0" },
         PENDING: { name: t("common:pending"), color: "#FFCC6A" },
         REJECTED: { name: t("common:rejected"), color: "#ff6961" },
         DISBURSED: { name: t("bar.disbursed"), color: "#80D1FF" },
@@ -185,7 +185,7 @@ const DashboardProductDetails = () => {
 
       // Mapping: original key => display name + color
       const labelColorMap: Record<string, { name: string; color: string }> = {
-        "REVENUE-APPROVED": { name: t("common:approved"), color: "#ff8a8a" },
+        "REVENUE-APPROVED": { name: t("common:approved"), color: "#E49DA0" },
         PENDING: { name: t("common:pending"), color: "#FFCC6A" },
         REJECTED: { name: t("common:rejected"), color: "#ff6961" },
         DISBURSED: { name: t("bar.disbursed"), color: "#80D1FF" },
@@ -225,7 +225,7 @@ const DashboardProductDetails = () => {
 
       // Define mapping: original key -> desired label and color
       const labelMap: Record<string, { name: string; color: string }> = {
-        averageComplianceTimes: { name: t("appApproval.check.compliance"), color: "#ff8a8a" },
+        averageComplianceTimes: { name: t("appApproval.check.compliance"), color: "#E49DA0" },
         averageCreditTimes: { name: t("appApproval.check.credit"), color: "#ff6961" },
       };
 
@@ -324,8 +324,8 @@ const DashboardProductDetails = () => {
 
   // Department wise chart configuration
   const departmentCategories: CategoryConfig[] = [
-    { key: "Operations", color: "#FF6B6B" },
-    { key: "Account", color: "#ff8080" },
+    { key: "Operations", color: "#D96368" },
+    { key: "Account", color: "#E49DA0" },
     { key: "HR", color: "#FFCC6A" },
     { key: "Sales", color: "#B6A4FF" },
     { key: "Risk", color: "#FF9F9F" },
@@ -334,8 +334,8 @@ const DashboardProductDetails = () => {
 
   // Status wise chart configuration
   const statusCategories: CategoryConfig[] = [
-    { key: "Rejected", color: "#FF6B6B" },
-    { key: "Approved", color: "#ff8080" },
+    { key: "Rejected", color: "#D96368" },
+    { key: "Approved", color: "#E49DA0" },
     { key: "Pending", color: "#FFCC6A" },
     { key: "Incomplete", color: "#B6A4FF" },
     { key: "InProgress", color: "#93c5fd" },

@@ -31,7 +31,7 @@ const PartnerInvoice = () => {
           style={{
             backgroundColor:
               row.status === "Approved"
-                ? "#d43a3a"
+                ? "#C81D25"
                 : row.status === "Processed"
                 ? "#ffc107"
                 : "#6c757d",

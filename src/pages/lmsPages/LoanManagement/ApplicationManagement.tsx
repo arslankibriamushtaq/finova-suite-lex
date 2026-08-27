@@ -47,7 +47,7 @@ const getApproveStepIcon = (stepIndex: any, status: any) => {
 
   if (status === "process") return <Spin indicator={<LoadingOutlined />} />;
   if (status === "finish") return <CheckCircleOutlined style={{ color: "var(--color-success)" }} />;
-  if (status === "error") return <CloseCircleOutlined style={{ color: "#7a0e0e" }} />;
+  if (status === "error") return <CloseCircleOutlined style={{ color: "#6E1418" }} />;
   return iconMap[stepIndex]; // wait
 };
 const ApplicationManagement = () => {

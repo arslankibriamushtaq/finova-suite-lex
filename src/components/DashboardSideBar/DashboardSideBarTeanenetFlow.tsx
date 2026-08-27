@@ -133,7 +133,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                       view === "product"
                         ? { background: " #1963b9" }
                         : product
-                        ? { background: "#e60000" }
+                        ? { background: "#C81D25" }
                         : {}
                     }
                   >
@@ -167,7 +167,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                     className="jss274 d-flex justify-content-center align-items-center"
                     style={
                       business
-                        ? { background: "#e60000" }
+                        ? { background: "#C81D25" }
                         : view === "info"
                         ? { background: " #1963b9" }
                         : { background: "#B8B8B8" }
@@ -205,7 +205,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                       view === "payment"
                         ? { background: " #1963b9" }
                         : payment
-                        ? { background: "#e60000" }
+                        ? { background: "#C81D25" }
                         : { background: "#B8B8B8" }
                     }
                   >
@@ -241,7 +241,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                       view === "setpassword"
                         ? { background: " #1963b9" }
                         : password
-                        ? { background: "#e60000" }
+                        ? { background: "#C81D25" }
                         : { background: "#B8B8B8" }
                     }
                   >

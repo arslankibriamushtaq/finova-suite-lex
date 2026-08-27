@@ -67,8 +67,8 @@ const AccountTimeline = () => {
                 year: String(year),
                 title: item.description,
                 content: formattedDate,
-                background: index % 2 === 0 ? "#fff1f1" : "#FEF4E6",
-                iconColor: index % 2 === 0 ? "#ff6b6b" : "#FF9900",
+                background: index % 2 === 0 ? "#FAF2F3" : "#FEF4E6",
+                iconColor: index % 2 === 0 ? "#D96368" : "#FF9900",
                 eventType: item?.eventType,
                 propertyName: item?.propertyName,
                 oldValue: item?.oldValue,
@@ -184,7 +184,7 @@ const AccountTimeline = () => {
                 }}
                 date={event?.content}
                 dateClassName={
-                  event.iconColor === "#ff6b6b"
+                  event.iconColor === "#D96368"
                     ? "custom-date-green"
                     : "custom-date-orange"
                 }

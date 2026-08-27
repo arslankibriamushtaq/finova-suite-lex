@@ -315,12 +315,12 @@ const PartnerDetail = () => {
         .onb360-page .onb-card {
           background-color: var(--surface-card) !important;
           background-image: none !important;
-          border-color: color-mix(in srgb, #e60000 16%, var(--surface-border)) !important;
+          border-color: color-mix(in srgb, #C81D25 16%, var(--surface-border)) !important;
           color: var(--foreground) !important;
         }
         .onb360-page [data-slot="card"] {
-          box-shadow: 0 1px 2px rgba(230, 0, 0,0.05),
-                      0 8px 20px -16px color-mix(in srgb, #e60000 35%, transparent) !important;
+          box-shadow: 0 1px 2px rgba(200, 29, 37,0.05),
+                      0 8px 20px -16px color-mix(in srgb, #C81D25 35%, transparent) !important;
         }
         .onb360-page h1 { font-size: 1.125rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .onb360-page h2 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }

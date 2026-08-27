@@ -265,35 +265,35 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           {/* Header Row */}
           <div style={{
             padding: "12px 16px",
-            background: "#c00000",
+            background: "#AB1920",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('appApproval.col.checks')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#c00000",
+            background: "#AB1920",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('common:status')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#c00000",
+            background: "#AB1920",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('approval.processedDate')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#c00000",
+            background: "#AB1920",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('appApproval.col.processedBy')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#c00000",
+            background: "#AB1920",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
@@ -340,9 +340,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         {/* Show status message if approved or rejected */}
         {/* {(isApproved || isRejected || (rejectedHistory && rejectedHistory.application_status)) ? (
           <div style={{
-            backgroundColor: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#ffdcdc' : '#f8d7da',
-            border: `1px solid ${(isApproved || rejectedHistory?.application_status === "APPROVED") ? '#ffcaca' : '#f5c6cb'}`,
-            color: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#7a0e0e' : '#721c24',
+            backgroundColor: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#F5E3E4' : '#f8d7da',
+            border: `1px solid ${(isApproved || rejectedHistory?.application_status === "APPROVED") ? '#EDC7C9' : '#f5c6cb'}`,
+            color: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#6E1418' : '#721c24',
             padding: '20px',
             borderRadius: '2px',
             marginTop: '20px',

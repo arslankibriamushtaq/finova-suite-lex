@@ -129,7 +129,7 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
                     {!isLast && (
                       <span
                         className="absolute left-1/2 top-[13px] h-0.5 w-full"
-                        style={{ background: reached ? "#e60000" : "var(--surface-border)" }}
+                        style={{ background: reached ? "#C81D25" : "var(--surface-border)" }}
                       />
                     )}
                     {/* node */}

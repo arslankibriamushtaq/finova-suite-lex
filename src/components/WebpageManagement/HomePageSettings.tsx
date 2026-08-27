@@ -1769,7 +1769,7 @@ const HomepageSettings: React.FC = () => {
                 style={{
                   width: '250px',
                   height: '500px',
-                  border: '2px dashed #ff4d4d',
+                  border: '2px dashed #D96368',
                   borderRadius: '2px',
               display: 'flex',
               alignItems: 'center',
@@ -1807,7 +1807,7 @@ const HomepageSettings: React.FC = () => {
             style={{
                   width: '500px',
                   height: '700px',
-                 // border: '2px dashed #ff4d4d',
+                 // border: '2px dashed #D96368',
                   borderRadius: '2px',
                   display: 'flex',
                   alignItems: 'center',

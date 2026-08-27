@@ -106,7 +106,7 @@ const getStates = async () => {
         reverseOrder={false}
         toastOptions={{
           /* react-hot-toast paints its success tick green by default. */
-          success: { iconTheme: { primary: "#c00000", secondary: "#ffffff" } },
+          success: { iconTheme: { primary: "#AB1920", secondary: "#ffffff" } },
         }}
       />
       <I18nextProvider i18n={i18n}>
@@ -116,13 +116,13 @@ const getStates = async () => {
           direction={dir}
           theme={{
             token: {
-              colorPrimary: "#e60000",
+              colorPrimary: "#C81D25",
               colorInfo: "#2563eb",
               /* No green anywhere: antd success takes the deep brand red, which
                  stays distinct from the brighter default colorError. */
-              colorSuccess: "#c00000",
-              colorLink: "#c00000",
-              colorLinkHover: "#e60000",
+              colorSuccess: "#AB1920",
+              colorLink: "#AB1920",
+              colorLinkHover: "#C81D25",
               borderRadius: 2,
               fontFamily:
                 '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
@@ -130,9 +130,9 @@ const getStates = async () => {
             components: {
               Select: {
                 // Dropdown option states — Finova-red-tinted hover/selected
-                optionActiveBg: "#fff1f1",
-                optionSelectedBg: "#ffdcdc",
-                optionSelectedColor: "#8f0f0f",
+                optionActiveBg: "#FAF2F3",
+                optionSelectedBg: "#F5E3E4",
+                optionSelectedColor: "#8D161C",
               },
             },
           }}

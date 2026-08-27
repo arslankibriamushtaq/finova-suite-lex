@@ -83,7 +83,7 @@ html[dir="rtl"] body .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-butto
 html[dir="rtl"] body .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover,
 html[dir="rtl"] body .ps-sidebar-root .ps-menuitem-root .ps-menu-button.ps-active {
   /* inset offset negative -> bar renders on the RIGHT inner edge in RTL */
-  box-shadow: inset -3px 0 0 var(--mi-color, #e60000) !important;
+  box-shadow: inset -3px 0 0 var(--mi-color, #C81D25) !important;
 }
 
 /* --- Sidebar HOVER accent bar on the RIGHT in RTL ---
@@ -93,7 +93,7 @@ html[dir="rtl"] body .ps-sidebar-root .ps-menu-button:hover,
 html[dir="rtl"] body .ps-sidebar-root .ps-submenu-content .ps-menu-button:hover,
 html[dir="rtl"] body .ps-sidebar-root [class*="css-"] .ps-menu-button:hover,
 html[dir="rtl"] body .ps-sidebar-root a:hover .ps-menu-button {
-  box-shadow: inset -3px 0 0 var(--mi-color, #e60000) !important;
+  box-shadow: inset -3px 0 0 var(--mi-color, #C81D25) !important;
 }
 
 /* --- Sidebar: submenu expand arrow on the LEFT (end side) in RTL ---

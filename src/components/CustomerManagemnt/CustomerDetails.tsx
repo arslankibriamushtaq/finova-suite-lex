@@ -243,7 +243,7 @@ const CustomerDetail = () => {
                 width: 20,
                 height: 20,
                 borderRadius: "50%",
-                backgroundColor: kycSteps[activeIndex]?.status === "completed" ? "#c00000" : "#E5E7EB",
+                backgroundColor: kycSteps[activeIndex]?.status === "completed" ? "#AB1920" : "#E5E7EB",
                 display: "inline-block",
               }}
             />

@@ -25,6 +25,21 @@
   --color-border: 229 231 235;
   --color-input: 229 231 235;
   --color-ring: 0 0 0;
+
+  /* Finova brand ramp — this file is a second, self-contained Tailwind build,
+     so it needs its own copy of the red scale (literal, not var(--brand-*),
+     because the theme layer resolves before tokens.css is in play). */
+  --color-red-50: #FAF2F3;
+  --color-red-100: #F5E3E4;
+  --color-red-200: #EDC7C9;
+  --color-red-300: #E49DA0;
+  --color-red-400: #D96368;
+  --color-red-500: #C81D25;
+  --color-red-600: #AB1920;
+  --color-red-700: #8D161C;
+  --color-red-800: #6E1418;
+  --color-red-900: #501114;
+  --color-red-950: #3A0C0F;
 }
 
 /* Custom component styles for Investor Dashboard - Scoped to investor-pages-container */

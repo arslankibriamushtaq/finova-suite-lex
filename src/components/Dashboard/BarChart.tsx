@@ -19,9 +19,9 @@ const { Option } = Select;
 
 // Chart palette — hex kept intentionally: SVG fill attributes don't resolve CSS custom properties
 const CHART_COLORS = {
-  applied:   "#e60000", // Finova red (brand)
+  applied:   "#C81D25", // Finova red (brand)
   approved:  "#6366f1", // indigo
-  rejected:  "#7a0e0e", // deep maroon — never reads as the brand red
+  rejected:  "#6E1418", // deep maroon — never reads as the brand red
   disbursed: "#f59e0b", // amber
 } as const;
 interface CustomerData {

@@ -437,13 +437,13 @@ function SalaryDetails({ fullDetail }: any) {
           {isApproved && (
             <div
               style={{
-                background: "#ffdcdc",
+                background: "#F5E3E4",
                 padding: "12px 20px",
                 borderRadius: "2px",
                 marginTop: "20px",
               }}
             >
-              <div style={{ color: "#7a0e0e", fontWeight: 700, fontSize: "14px" }}>
+              <div style={{ color: "#6E1418", fontWeight: 700, fontSize: "14px" }}>
                 {t("salary.applicationApproved")}
               </div>
             </div>

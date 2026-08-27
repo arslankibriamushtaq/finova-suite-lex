@@ -473,9 +473,9 @@ const OnboardingDashboard: React.FC = () => {
       border-color: #e2e8f0;
     }
     .universal-onboarding-page .field-tag-pii {
-      color: #7a0e0e;
-      background: #fff1f1;
-      border-color: #ffb3b3;
+      color: #6E1418;
+      background: #FAF2F3;
+      border-color: #EDC7C9;
     }
     .universal-onboarding-page .field-tag-action {
       color: #1d4ed8;
@@ -602,7 +602,7 @@ const OnboardingDashboard: React.FC = () => {
     }
     .uo-modal .uo-json-viewer {
       background: #0f172a;
-      color: #e60000;
+      color: #C81D25;
       padding: 16px;
       border-radius: 10px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

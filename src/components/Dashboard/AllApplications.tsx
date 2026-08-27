@@ -55,12 +55,12 @@ const getStatusColor = (statusId: number): { backgroundColor: string; color: str
   const colorMap: { [key: number]: { backgroundColor: string; color: string } } = {
     1: { backgroundColor: "#6c757d", color: "white" }, // PENDING - Gray
     2: { backgroundColor: "#fd7e14", color: "white" }, // IN-PROGRESS - Orange
-    3: { backgroundColor: "#c00000", color: "white" }, // REVENUE-APPROVED - Green
-    4: { backgroundColor: "#c00000", color: "white" }, // CREDIT-CHECK-APPROVED - Green
-    5: { backgroundColor: "#c00000", color: "white" }, // COMPLIANCE-APPROVED - Green
-    6: { backgroundColor: "#c00000", color: "white" }, // BAYAN-APPROVED - Green
-    7: { backgroundColor: "#c00000", color: "white" }, // SIMAH-APPROVED - Green
-    8: { backgroundColor: "#c00000", color: "white" }, // FACTORING-AMOUNT-APPROVED - Green
+    3: { backgroundColor: "#AB1920", color: "white" }, // REVENUE-APPROVED - Green
+    4: { backgroundColor: "#AB1920", color: "white" }, // CREDIT-CHECK-APPROVED - Green
+    5: { backgroundColor: "#AB1920", color: "white" }, // COMPLIANCE-APPROVED - Green
+    6: { backgroundColor: "#AB1920", color: "white" }, // BAYAN-APPROVED - Green
+    7: { backgroundColor: "#AB1920", color: "white" }, // SIMAH-APPROVED - Green
+    8: { backgroundColor: "#AB1920", color: "white" }, // FACTORING-AMOUNT-APPROVED - Green
     9: { backgroundColor: "#ffc107", color: "#000" }, // REVISION-REQUESTED - Yellow
     10: { backgroundColor: " #1963b9", color: "white" }, // REJECTED - Red
     11: { backgroundColor: " #1963b9", color: "white" }, // REVENUE-REJECTED - Red
@@ -69,14 +69,14 @@ const getStatusColor = (statusId: number): { backgroundColor: string; color: str
     14: { backgroundColor: " #1963b9", color: "white" }, // BAYAN-REJECTED - Red
     15: { backgroundColor: " #1963b9", color: "white" }, // SIMAH-REJECTED - Red
     16: { backgroundColor: " #1963b9", color: "white" }, // FACTORING-AMOUNT-REJECTED - Red
-    17: { backgroundColor: "#c00000", color: "white" }, // APPROVED - Green
+    17: { backgroundColor: "#AB1920", color: "white" }, // APPROVED - Green
     18: { backgroundColor: "#17a2b8", color: "white" }, // DISBURSED - Blue
     19: { backgroundColor: "#6c757d", color: "white" }, // NON-DISBURSED - Gray
     20: { backgroundColor: "#ffc107", color: "#000" }, // INCOMPLETE - Yellow
     21: { backgroundColor: "#6c757d", color: "white" }, // CANCELLED - Gray
     22: { backgroundColor: "#ffc107", color: "#000" }, // REVENUE-APPROVED-INCOMPLETE - Yellow
     23: { backgroundColor: " #1963b9", color: "white" }, // REVENUE-REJECTED-INCOMPLETE - Red
-    24: { backgroundColor: "#c00000", color: "white" }, // PAID - Green
+    24: { backgroundColor: "#AB1920", color: "white" }, // PAID - Green
   };
   return colorMap[statusId] || { backgroundColor: "#6c757d", color: "white" };
 };
@@ -203,7 +203,7 @@ const AllApplication = () => {
         }
         const colorMap: { [key: string]: { backgroundColor: string; color: string } } = {
           SUBMITTED: { backgroundColor: "#fd7e14", color: "white" },
-          APPLIED: { backgroundColor: "#c00000", color: "white" },
+          APPLIED: { backgroundColor: "#AB1920", color: "white" },
           REJECTED: { backgroundColor: "#dc3545", color: "white" },
           PENDING: { backgroundColor: "#6c757d", color: "white" },
         };
@@ -257,7 +257,7 @@ const AllApplication = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#c00000 !important",
+              backgroundColor: "#AB1920 !important",
               color: "#000000",
               borderColor: "white",
               borderRadius: "2px",

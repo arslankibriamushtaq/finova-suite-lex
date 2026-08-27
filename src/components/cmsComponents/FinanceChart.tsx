@@ -85,7 +85,7 @@ const FinanceBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#FF6B6B",
+            backgroundColor: "#D96368",
             marginRight: 5,
           }}
         />
@@ -97,7 +97,7 @@ const FinanceBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#ff8a8a",
+            backgroundColor: "#E49DA0",
             marginRight: 5,
           }}
         />
@@ -198,13 +198,13 @@ const FinanceBarChart = () => {
               radius={[8, 8, 8, 8]}
               dataKey="Rejected"
               barSize={15}
-              fill={"#FF6B6B"}
+              fill={"#D96368"}
             />
             <Bar
               radius={[8, 8, 8, 8]}
               dataKey="Resolved"
               barSize={15}
-              fill={"#ff8a8a"}
+              fill={"#E49DA0"}
             />
             <Bar
               radius={[8, 8, 8, 8]}

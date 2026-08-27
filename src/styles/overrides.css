@@ -83,8 +83,8 @@ li:has(> .profile-dropdown) {
   width: 100% !important;
   margin: 16px 0 0 !important;
   padding: 4px !important;
-  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
-  background-image: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
+  background-image: linear-gradient(135deg, #C81D25 0%, #AB1920 100%) !important;
   border-radius: 8px !important;
 }
 .profile-dropdown .profile-actions .divider {
@@ -134,66 +134,66 @@ li:has(> .profile-dropdown) {
    Bootstrap variables and the utilities that read them.
    ========================================================================== */
 :root, :root:root {
-  --bs-success: #c00000;
-  --bs-success-rgb: 192, 0, 0;
-  --bs-success-bg-subtle: #ffdcdc;
-  --bs-success-border-subtle: #ffb3b3;
-  --bs-success-text-emphasis: #7a0e0e;
+  --bs-success: #AB1920;
+  --bs-success-rgb: 171, 25, 32;
+  --bs-success-bg-subtle: #F5E3E4;
+  --bs-success-border-subtle: #EDC7C9;
+  --bs-success-text-emphasis: #6E1418;
   --bs-teal: #db2777;
-  --bs-green: #c00000;
+  --bs-green: #AB1920;
 }
-html body .bg-success { background-color: #c00000 !important; }
-html body .text-success { color: #c00000 !important; }
-html body .border-success { border-color: #c00000 !important; }
+html body .bg-success { background-color: #AB1920 !important; }
+html body .text-success { color: #AB1920 !important; }
+html body .border-success { border-color: #AB1920 !important; }
 html body .badge-success,
-html body .badge.bg-success { background-color: #c00000 !important; color: #fff !important; }
+html body .badge.bg-success { background-color: #AB1920 !important; color: #fff !important; }
 html body .alert-success {
-  background-color: #ffdcdc !important;
-  border-color: #ffb3b3 !important;
-  color: #7a0e0e !important;
+  background-color: #F5E3E4 !important;
+  border-color: #EDC7C9 !important;
+  color: #6E1418 !important;
 }
 html body .btn-outline-success {
-  color: #c00000 !important;
-  border-color: #c00000 !important;
+  color: #AB1920 !important;
+  border-color: #AB1920 !important;
 }
 html body .btn-outline-success:hover {
-  background-color: #c00000 !important;
+  background-color: #AB1920 !important;
   color: #fff !important;
 }
-html body .progress-bar.bg-success { background-color: #c00000 !important; }
-html.dark .text-success { color: #ff5a5a !important; }
+html body .progress-bar.bg-success { background-color: #AB1920 !important; }
+html.dark .text-success { color: #D96368 !important; }
 html.dark .alert-success {
-  background-color: rgba(230, 0, 0, 0.12) !important;
-  border-color: rgba(230, 0, 0, 0.35) !important;
-  color: #ffb3b3 !important;
+  background-color: rgba(200, 29, 37, 0.12) !important;
+  border-color: rgba(200, 29, 37, 0.35) !important;
+  color: #EDC7C9 !important;
 }
 
 /* Bootstrap's remaining success variants (link, table row, list group, and the
    green form-validation state) — same treatment. */
-html body .link-success { color: #c00000 !important; }
-html body .text-bg-success { background-color: #c00000 !important; color: #fff !important; }
+html body .link-success { color: #AB1920 !important; }
+html body .text-bg-success { background-color: #AB1920 !important; color: #fff !important; }
 html body .table-success,
 html body .table-success > td,
-html body .table-success > th { background-color: #ffdcdc !important; color: #7a0e0e !important; }
-html body .list-group-item-success { background-color: #ffdcdc !important; color: #7a0e0e !important; }
+html body .table-success > th { background-color: #F5E3E4 !important; color: #6E1418 !important; }
+html body .list-group-item-success { background-color: #F5E3E4 !important; color: #6E1418 !important; }
 :root, :root:root {
-  --bs-form-valid-color: #c00000;
-  --bs-form-valid-border-color: #c00000;
+  --bs-form-valid-color: #AB1920;
+  --bs-form-valid-border-color: #AB1920;
 }
-html body .valid-feedback { color: #c00000 !important; }
+html body .valid-feedback { color: #AB1920 !important; }
 html body .form-control.is-valid,
 html body .was-validated .form-control:valid,
 html body .form-select.is-valid,
 html body .was-validated .form-select:valid,
 html body .form-check-input.is-valid,
 html body .was-validated .form-check-input:valid {
-  border-color: #c00000 !important;
+  border-color: #AB1920 !important;
 }
 html body .form-control.is-valid:focus,
 html body .was-validated .form-control:valid:focus {
-  box-shadow: 0 0 0 0.25rem rgba(192, 0, 0, 0.25) !important;
+  box-shadow: 0 0 0 0.25rem rgba(171, 25, 32, 0.25) !important;
 }
 html body .form-check-input.is-valid:checked,
 html body .was-validated .form-check-input:valid:checked {
-  background-color: #c00000 !important;
+  background-color: #AB1920 !important;
 }

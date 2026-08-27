@@ -241,7 +241,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                             fontWeight: "600",
                             marginBottom: "15px",
                             paddingBottom: "8px",
-                            borderBottom: "2px solid #e60000"
+                            borderBottom: "2px solid #C81D25"
                           }}
                         >
                           {formatCategoryName(category)}
@@ -292,7 +292,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                             fontWeight: "600",
                             marginBottom: "15px",
                             paddingBottom: "8px",
-                            borderBottom: "2px solid #e60000"
+                            borderBottom: "2px solid #C81D25"
                           }}
                         >
                           {formatCategoryName(category)}
