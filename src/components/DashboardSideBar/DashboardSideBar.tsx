@@ -2866,7 +2866,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         pathname.includes("/ProductManagement") ||
         pathname.includes("/LOV"),
       menu: [
-        {
+        // Every row inside LOS is gated, so without this a role holding none of
+        // them (e.g. a LEX-only underwriter) got an empty LOS group whose own
+        // link still navigated to /LOS/Dashboard — a 404.
+        hasAccess(["DASHBOARD_READ", "PRODUCT", "LOV", "RISK"]) && {
           label: "LOS",
           Link: "/LOS/Dashboard",
           img: Images.ApiManagementIcon,
