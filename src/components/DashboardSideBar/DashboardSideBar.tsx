@@ -100,7 +100,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
 };
 
-const DEFAULT_MI_COLOR = "#10b981";
+const DEFAULT_MI_COLOR = "#e60000";
 const getModuleTheme = (label?: string) =>
   label ? MODULE_THEME[label.trim().toLowerCase()] : undefined;
 
@@ -3106,7 +3106,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }}
         >
           <img
-            src={isCollapsed ? Images.SullisFavicon : Images.DashboardLogo}
+            src={isCollapsed ? Images.FinovaMark : Images.DashboardLogo}
             alt="logo"
             className="sidebar-logo sidebar-logo--light"
             style={{
@@ -3117,7 +3117,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             }}
           />
           <img
-            src={isCollapsed ? Images.SullisFavicon : Images.DashboardLogoWhite}
+            src={isCollapsed ? Images.FinovaMarkDark : Images.DashboardLogoWhite}
             alt="logo"
             className="sidebar-logo sidebar-logo--dark"
             style={{
@@ -3325,7 +3325,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
              nested rows have no .menu-items wrapper, so they're untouched). */
           .css-12w9als:not(.is-collapsed) .menu-items[style*="--mi-color"] {
             border-bottom: 1px solid
-              color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
+              color-mix(in srgb, var(--mi-color, #e60000) 35%, transparent) !important;
           }
 
           /* ===== Final polish ===== */
@@ -3352,7 +3352,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }
           /* Subtle hover wash in the module's own colour (non-active rows) */
           .css-12w9als:not(.is-collapsed) .ps-menu-button:not(.ps-active):hover {
-            background: color-mix(in srgb, var(--mi-color, #10b981) 8%, transparent) !important;
+            background: color-mix(in srgb, var(--mi-color, #e60000) 8%, transparent) !important;
           }
           /* Group headers read a touch stronger than leaf rows */
           .css-12w9als:not(.is-collapsed) .ps-submenu-root > .ps-menu-button .ps-menu-label {

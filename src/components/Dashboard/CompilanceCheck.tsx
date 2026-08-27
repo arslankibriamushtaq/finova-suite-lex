@@ -241,7 +241,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                             fontWeight: "600",
                             marginBottom: "15px",
                             paddingBottom: "8px",
-                            borderBottom: "2px solid #10b981"
+                            borderBottom: "2px solid #e60000"
                           }}
                         >
                           {formatCategoryName(category)}
@@ -265,7 +265,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                               <span 
                                 style={{ 
                                   fontWeight: "600", 
-                                  color: isYes ? "#10b981" : "var(--foreground)",
+                                  color: isYes ? "var(--color-success)" : "var(--foreground)",
                                   fontSize: "14px",
                                   minWidth: "40px",
                                   textAlign: "right"
@@ -292,7 +292,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                             fontWeight: "600",
                             marginBottom: "15px",
                             paddingBottom: "8px",
-                            borderBottom: "2px solid #10b981"
+                            borderBottom: "2px solid #e60000"
                           }}
                         >
                           {formatCategoryName(category)}
@@ -316,7 +316,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                               <span 
                                 style={{ 
                                   fontWeight: "600", 
-                                  color: isYes ? "#10b981" : "var(--foreground)",
+                                  color: isYes ? "var(--color-success)" : "var(--foreground)",
                                   fontSize: "14px",
                                   minWidth: "40px",
                                   textAlign: "left"

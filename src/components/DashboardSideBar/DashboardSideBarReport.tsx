@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Images } from "../Config/Images";
+import BrandLogo from "../shared/BrandLogo";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -159,7 +160,7 @@ const DasbhboardSidebar = () => {
                 themeStyle?.dashboardSibeBarFlow.flowSideBarLogoBg,
             }}
           >
-            <img src={Images.FactoringLogo} alt="logo" height={80}/>
+            <BrandLogo height={80} />
           </span>
           <Menu>
             {sidebarItems.map((item: any, index: any) => (

@@ -3,13 +3,13 @@
   "name": "Finova Loan Origination System",
   "icons": [
     {
-      "src": "vite.svg",
-      "type": "image/svg+xml",
+      "src": "finova-favicon.png",
+      "type": "image/png",
       "sizes": "any"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#e60000",
   "background_color": "#ffffff"
 }

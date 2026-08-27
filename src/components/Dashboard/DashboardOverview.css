@@ -1,15 +1,15 @@
 /* ===== Finance Statistics graph card — themed to match the stat cards ===== */
 .dashboard-graph-card.ant-card {
-  border: 1px solid color-mix(in srgb, #10b981 18%, #e5e7eb);
+  border: 1px solid color-mix(in srgb, #e60000 18%, #e5e7eb);
   border-radius: 2px;
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
-  box-shadow: 0 8px 22px -14px color-mix(in srgb, #10b981 45%, transparent);
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
+  box-shadow: 0 8px 22px -14px color-mix(in srgb, #e60000 45%, transparent);
 }
 html.dark .dashboard-graph-card.ant-card {
-  border-color: color-mix(in srgb, #10b981 30%, #262a36);
+  border-color: color-mix(in srgb, #e60000 30%, #262a36);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 12%, #161821) 0%,
+    color-mix(in srgb, #e60000 12%, #161821) 0%,
     #161821 55%
   );
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
@@ -21,7 +21,7 @@ html.dark .dashboard-graph-card.ant-card {
 /* Dashboard stat cards
    Soft pastel-gradient cards (light mode) / deep tinted-glass cards (dark mode).
    Each card derives its whole look from a single brand color: --c
-   Palette anchored on the Sullis Digital emerald / teal / green logo,
+   Palette anchored on the Finova red / black / white logo,
    with semantic accents (amber = in-progress, rose = rejected). */
 
 /* Make sure the row/columns never clip a card's border or glow (the top row
@@ -170,7 +170,7 @@ html.dark .dashboard-stats .stat-card__chip--neutral {
 }
 
 /* ===== Per-card brand colors ===== */
-.dashboard-stats .stat-card--emerald { --c: #10b981; }
+.dashboard-stats .stat-card--emerald { --c: #e60000; }
 .dashboard-stats .stat-card--teal    { --c: #14b8a6; }
 .dashboard-stats .stat-card--amber   { --c: #f59e0b; }
 .dashboard-stats .stat-card--green   { --c: #22c55e; }

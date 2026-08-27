@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import FactoringLogo from "../../assets/images/factoring-png.png";
+import BrandLogo from "../shared/BrandLogo";
 import {
   setPermissions,
   setRefreshToken,
@@ -255,9 +255,7 @@ const VerifyOtp: React.FC = () => {
         >
           {/* Logo */}
           <div style={{ marginBottom: "32px", textAlign: "center" }}>
-            <img
-              src={FactoringLogo}
-              alt="Factoring Valley"
+            <BrandLogo
               style={{
                 height: "40px",
                 objectFit: "contain",

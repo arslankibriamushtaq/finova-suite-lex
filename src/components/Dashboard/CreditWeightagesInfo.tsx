@@ -197,7 +197,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           width: "80px",
           height: "80px",
           borderRadius: "50%",
-          background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+          background: "linear-gradient(135deg, #e60000 0%, #c00000 100%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -237,7 +237,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
         <div style={{
           padding: "12px 24px",
           borderRadius: "2px",
-          background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+          background: "linear-gradient(135deg, #e60000 0%, #c00000 100%)",
           color: "#fff",
           display: "flex",
           flexDirection: "column",
@@ -318,7 +318,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                     <div style={{
                       padding: "4px 12px",
                       borderRadius: "2px",
-                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                      background: "linear-gradient(135deg, #e60000 0%, #c00000 100%)",
                       color: "#fff",
                       fontSize: "14px",
                       fontWeight: "600",
@@ -389,7 +389,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
         padding: "0",
         borderRadius: "2px", 
         marginTop: "24px",
-        border: "1px solid #D1FAE5",
+        border: "1px solid #ffdcdc",
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
       }}>
         {/* Header with dropdown */}

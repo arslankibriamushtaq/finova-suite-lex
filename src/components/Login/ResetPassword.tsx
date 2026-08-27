@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import FactoringLogo from "../../assets/images/factoring-png.png";
+import BrandLogo from "../shared/BrandLogo";
 import Loader from "../Loader/Loader";
 import { resetPassword } from "../../redux/apis/apisCrudFactoring";
 
@@ -117,7 +117,7 @@ const ResetPassword: React.FC = () => {
         <div className="login-form-wrapper">
           <div className="login-left-panel">
             <div className="login-left-content">
-              <img src={FactoringLogo} alt="Factoring Valley Logo" className="login-logo" />
+              <BrandLogo className="login-logo" />
               <h1 className="login-welcome-text">Welcome !</h1>
               <p className="login-instruction-text">
                 To keep connected with us please login with your personal info.
@@ -150,7 +150,7 @@ const ResetPassword: React.FC = () => {
       <div className="login-form-wrapper">
         <div className="login-left-panel">
           <div className="login-left-content">
-            <img src={FactoringLogo} alt="Factoring Valley Logo" className="login-logo" />
+            <BrandLogo className="login-logo" />
             <h1 className="login-welcome-text">Welcome !</h1>
             <p className="login-instruction-text">
               Enter a new password to regain access to your account.

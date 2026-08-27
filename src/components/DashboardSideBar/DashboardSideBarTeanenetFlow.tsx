@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sidebar, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Images } from "../Config/Images";
+import BrandLogo from "../shared/BrandLogo";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -117,7 +118,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
             href={`lms/dashboard`}
             className="d-flex justify-content-center p-3"
           >
-            <img src={Images.FactoringLogo} alt="logo" height={80}/>
+            <BrandLogo height={80} />
           </a>
           <section
             className="jss271 d-flex justify-content-center"

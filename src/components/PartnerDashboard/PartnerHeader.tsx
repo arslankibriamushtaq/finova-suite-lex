@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Images } from "../Config/Images";
+import BrandLogo from "../shared/BrandLogo";
 import { DatePicker, Menu, Radio } from "antd";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "react-bootstrap";
@@ -220,7 +221,7 @@ const PartnerHeader = () => {
             }}
             className="col-3"
           >
-            <img src={Images.FactoringLogo} alt="logo" />
+            <BrandLogo />
           </div>
 
           <div className="profile-container">

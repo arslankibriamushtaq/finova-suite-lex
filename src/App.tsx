@@ -103,26 +103,26 @@ const getStates = async () => {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <I18nextProvider i18n={i18n}>
-        {/* Brand emerald (Sullis) for all antd controls — datepicker, select,
+        {/* Brand red (Finova) for all antd controls — datepicker, select,
             switch, checkbox, radio, tabs, etc. */}
         <ConfigProvider
           direction={dir}
           theme={{
             token: {
-              colorPrimary: "#10b981",
-              colorInfo: "#10b981",
-              colorLink: "#059669",
-              colorLinkHover: "#10b981",
+              colorPrimary: "#e60000",
+              colorInfo: "#2563eb",
+              colorLink: "#c00000",
+              colorLinkHover: "#e60000",
               borderRadius: 2,
               fontFamily:
                 '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
             },
             components: {
               Select: {
-                // Dropdown option states — emerald-tinted hover/selected
-                optionActiveBg: "#ecfdf5",
-                optionSelectedBg: "#d1fae5",
-                optionSelectedColor: "#065f46",
+                // Dropdown option states — Finova-red-tinted hover/selected
+                optionActiveBg: "#fff1f1",
+                optionSelectedBg: "#ffdcdc",
+                optionSelectedColor: "#8f0f0f",
               },
             },
           }}

@@ -40,9 +40,9 @@ const FinanceBarChart: React.FC = () => {
       <Tooltip cursor={false} />
       <Legend />
       <Bar dataKey="RejectedFinance" fill="#94a3b8" name={t("financeChart.rejected")} />
-      <Bar dataKey="DisbursedFinance" fill="#0d9488" name={t("financeChart.disbursed")} />
-      <Bar dataKey="ApprovedFinance" fill="#10b981" name={t("financeChart.approved")} />
-      <Bar dataKey="AppliedFinance" fill="#6ee7b7" name={t("financeChart.applied")} />
+      <Bar dataKey="DisbursedFinance" fill="#9e0000" name={t("financeChart.disbursed")} />
+      <Bar dataKey="ApprovedFinance" fill="#e60000" name={t("financeChart.approved")} />
+      <Bar dataKey="AppliedFinance" fill="#ff9d9d" name={t("financeChart.applied")} />
     </BarChart>
   </ResponsiveContainer>
   );

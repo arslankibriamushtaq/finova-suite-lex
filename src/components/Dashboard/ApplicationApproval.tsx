@@ -265,35 +265,35 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           {/* Header Row */}
           <div style={{
             padding: "12px 16px",
-            background: "#059669",
+            background: "#c00000",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('appApproval.col.checks')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#059669",
+            background: "#c00000",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('common:status')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#059669",
+            background: "#c00000",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('approval.processedDate')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#059669",
+            background: "#c00000",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>{t('appApproval.col.processedBy')}</div>
           <div style={{
             padding: "12px 16px",
-            background: "#059669",
+            background: "#c00000",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"

@@ -82,8 +82,8 @@ const Login: React.FC = () => {
                   height: "72px",
                   borderRadius: "50%",
                   background:
-                    "color-mix(in srgb, var(--color-action, #10b981) 12%, transparent)",
-                  color: "var(--color-action, #10b981)",
+                    "color-mix(in srgb, var(--color-action, #e60000) 12%, transparent)",
+                  color: "var(--color-action, #e60000)",
                 }}
               >
                 <WifiOff size={34} />
@@ -113,7 +113,7 @@ const Login: React.FC = () => {
             style={{
               width: "100%",
               background:
-                "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                "linear-gradient(135deg, #e60000 0%, #c00000 100%)",
               borderColor: "transparent",
               color: "#ffffff",
             }}

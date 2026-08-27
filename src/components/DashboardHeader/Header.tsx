@@ -5,6 +5,7 @@ import { createGlobalStyle } from "styled-components";
 import { authSlice, setToken } from "../../redux/apis/apisSlice";
 import type { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
+import BrandLogo from "../shared/BrandLogo";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { RiArrowDropDownFill } from "react-icons/ri";
@@ -120,7 +121,7 @@ const DashboardHeader = () => {
                 onClick={() => navigate("/lms/dashboard")}
                 className="d-flex justify-content-center p-2"
               >
-                <img src={Images.FactoringLogo} alt="logo" />
+                <BrandLogo />
               </span>
             </div>
           )}

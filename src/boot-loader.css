@@ -30,8 +30,8 @@
 #boot-loader .boot-ring::before {
   width: 116px;
   height: 116px;
-  border-top-color: #10b981;
-  border-right-color: #10b981;
+  border-top-color: #e60000;
+  border-right-color: #e60000;
   animation: boot-spin 1s linear infinite;
 }
 #boot-loader .boot-ring::after {
@@ -50,7 +50,7 @@
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 6px 20px rgba(230, 0, 0, 0.35);
   animation: boot-breathe 1.8s ease-in-out infinite;
 }
 #boot-loader .boot-dot img {

@@ -14,28 +14,28 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #10b981; /* Brand emerald (Sullis) */
+  --primary: #e60000; /* Brand red (Finova) */
   --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: #ecfdf5; /* Soft emerald highlight (dropdowns/select/menus) */
-  --accent-foreground: #065f46;
+  --accent: #fff1f1; /* Soft Finova-red highlight (dropdowns/select/menus) */
+  --accent-foreground: #8f0f0f;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: #10b981; /* Brand emerald focus ring */
-  --chart-1: #10b981;
-  --chart-2: #14b8a6;
-  --chart-3: #06b6d4;
-  --chart-4: #34d399;
+  --ring: #e60000; /* Brand red focus ring */
+  --chart-1: #e60000;
+  --chart-2: #f59e0b;
+  --chart-3: #2563eb;
+  --chart-4: #7c3aed;
   --chart-5: #0d9488;
   /* Single-series chart mark. Validated against the dataviz six checks in
-     BOTH light and dark: lightness band, chroma floor, and >= 3:1 contrast vs
-     each surface. --chart-1 (#10b981) sits below 3:1 and is not safe here. */
-  --chart-series-1: #059669;
+     light mode: lightness band, chroma floor, and >= 3:1 contrast vs
+     each surface. --chart-1 (#e60000) also clears 3:1; this deeper red reads better as text. */
+  --chart-series-1: #c00000;
   --radius: 2px;
 
   /* Status colors */
@@ -81,7 +81,7 @@
   /* Surface / background colors */
   --color-surface-subtle: #f5f5f5;
   --color-surface-muted: #f0f0f0;
-  --color-surface-page: #edf2f0; /* soft sage-gray page bg — makes cards/table pop */
+  --color-surface-page: #f2f0f0; /* soft warm-gray page bg — makes cards/table pop */
 
   /* Border colors */
   --color-border-light: #dddddd;
@@ -188,7 +188,7 @@
   --color-border-faint: #eeeeee;
 
   /* ===== Semantic surface tokens (use these everywhere instead of #fff/#000) ===== */
-  --surface-page:        #edf2f0;   /* soft sage-gray page bg — makes cards/table pop */
+  --surface-page:        #f2f0f0;   /* soft warm-gray page bg — makes cards/table pop */
   --surface-card:        #ffffff;   /* card / panel background */
   --surface-card-alt:    #f8fafc;   /* slightly tinted card header / striped row */
   --surface-card-hover:  #f1f5f9;   /* card hover */
@@ -223,28 +223,28 @@ html.dark,
   --card-foreground: #e6eaf2;
   --popover: #161821;
   --popover-foreground: #e6eaf2;
-  --primary: #10b981; /* Brand emerald (Sullis) */
+  --primary: #e60000; /* Brand red (Finova) */
   --primary-foreground: #ffffff;
   --secondary: #22252f;
   --secondary-foreground: #e6eaf2;
   --muted: #22252f;
   --muted-foreground: #9ba1ad;
-  --accent: color-mix(in srgb, #10b981 22%, #22252f); /* Emerald-tinted highlight */
-  --accent-foreground: #d1fae5;
+  --accent: color-mix(in srgb, #e60000 22%, #22252f); /* Finova-red-tinted highlight */
+  --accent-foreground: #ffdcdc;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #262a36;
   --input: #1c1f2a;
-  --ring: #10b981; /* Brand emerald focus ring */
-  --chart-1: #10b981;
-  --chart-2: #14b8a6;
-  --chart-3: #06b6d4;
-  --chart-4: #34d399;
-  --chart-5: #0d9488;
+  --ring: #e60000; /* Brand red focus ring */
+  --chart-1: #ff5a5a;
+  --chart-2: #fbbf24;
+  --chart-3: #60a5fa;
+  --chart-4: #a78bfa;
+  --chart-5: #2dd4bf;
   /* Single-series chart mark. Validated against the dataviz six checks in
-     BOTH light and dark: lightness band, chroma floor, and >= 3:1 contrast vs
-     each surface. --chart-1 (#10b981) sits below 3:1 and is not safe here. */
-  --chart-series-1: #059669;
+     dark: lightness band, chroma floor, and >= 3:1 contrast vs each surface.
+     The light-mode #c00000 sits below 3:1 on the dark page and is not safe here. */
+  --chart-series-1: #ff5a5a;
 
   /* App surface / status — dark variants */
   --color-success: #22c55e;
@@ -267,7 +267,7 @@ html.dark,
   --theme-text-color: #e6eaf2;
   --theme-secondary: #eb0d0d;
   --theme-tertiary: #ffffff;
-  --theme-active-color: #93c5fd;
+  --theme-active-color: #ff6b6b;
   --theme-active-tab: transparent;
   --theme-inactive-tab: #1c1f2a;
   --theme-breadcrumb-active-text-color: #ef4444;
@@ -276,34 +276,34 @@ html.dark,
   --theme-sidebar-text-color: #e6eaf2;
   --theme-revert-action-color: #475569;
   --theme-other-actions-color: transparent;
-  /* Header surface — emerald-tinted to match the sidebar (follows the logo) */
-  --theme-header-background-color: #0c1512;
+  /* Header surface — red-tinted to match the sidebar (follows the logo) */
+  --theme-header-background-color: #150e0e;
   --theme-header-sub-header-bg-color: #0d1117;
   --theme-dashboard-subheader-bg-color: #0d1117;
-  --theme-dashboard-header-bg-color: #0c1512;
+  --theme-dashboard-header-bg-color: #150e0e;
   --theme-subheader-text-color: #e6eaf2;
   --theme-heading-text-color: #f1f5f9;
   --theme-cards-background-color: #161821;
   --theme-cards-text-color: #e6eaf2;
-  --theme-table-background-color: #064e3b;
+  --theme-table-background-color: #7a0e0e;
   --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #e6eaf2;
-  --theme-table-row-alt: #16241e;   /* emerald-tinted stripe (dark) */
-  --theme-table-row-hover: #1e3329;
-  /* Subtle emerald-tinted sidebar surface — follows the Sullis logo color */
-  --theme-flow-sidebar-logo-bg: #0b1411;
-  --theme-flow-dashboard-sidebar-bg: #0c1512;
+  --theme-table-row-alt: #241717;   /* red-tinted stripe (dark) */
+  --theme-table-row-hover: #332020;
+  /* Subtle red-tinted sidebar surface — follows the Finova logo color */
+  --theme-flow-sidebar-logo-bg: #120c0c;
+  --theme-flow-dashboard-sidebar-bg: #150e0e;
   --theme-flow-submenu-sidebar-bg: transparent;
-  --theme-flow-active-color-bg: color-mix(in srgb, #10b981 14%, transparent);
+  --theme-flow-active-color-bg: color-mix(in srgb, #e60000 14%, transparent);
   /* Stepper accent — matches the active sidebar tab (dark navy gradient).
      Dark mode adds a white border so the dark gradient stays visible
      against the page surface. */
-  --stepper-accent: #10b981;
-  --stepper-accent-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --stepper-accent: #e60000;
+  --stepper-accent-bg: linear-gradient(135deg, #e60000 0%, #c00000 100%);
   --stepper-accent-border: #ffffff;
   --stepper-accent-ring: rgba(255, 255, 255, 0.18);
   --theme-flow-inactive-color-bg: transparent;
-  --theme-flow-active-text-color: #34d399;
+  --theme-flow-active-text-color: #ff4d4d;
   --theme-flow-inactive-text-color: #e2e8f0;
   --theme-dashboard-sidebar-active-color-bg: #ef4444;
   --theme-dashboard-sidebar-active-text-color: #f87171;
@@ -742,10 +742,10 @@ html:not(.dark) .theme-btn:not(:disabled),
 html:not(.dark) .theme-btn-next:not(:disabled),
 html:not(.dark) .theme-btn-prev:not(:disabled),
 html:not(.dark) .theme-btn-back:not(:disabled) {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  background-color: #10b981 !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background-color: #e60000 !important;
   color: #ffffff !important;
-  border: 1px solid #059669 !important;
+  border: 1px solid #c00000 !important;
   box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
@@ -762,9 +762,9 @@ html:not(.dark) .theme-btn:not(:disabled):hover,
 html:not(.dark) .theme-btn-next:not(:disabled):hover,
 html:not(.dark) .theme-btn-prev:not(:disabled):hover,
 html:not(.dark) .theme-btn-back:not(:disabled):hover {
-  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
-  background-color: #34d399 !important;
-  border-color: #059669 !important;
+  background: linear-gradient(135deg, #ff4d4d 0%, #e60000 100%) !important;
+  background-color: #ff4d4d !important;
+  border-color: #c00000 !important;
   color: #ffffff !important;
   box-shadow:
     0 4px 10px rgba(15, 23, 42, 0.35),
@@ -1200,10 +1200,10 @@ html.dark .ant-select-dropdown {
 }
 html.dark .ant-select-item { color: var(--foreground) !important; }
 html.dark .ant-select-item-option-active:not(.ant-select-item-option-selected) {
-  background-color: color-mix(in srgb, #10b981 22%, var(--surface-card-alt)) !important;
+  background-color: color-mix(in srgb, #e60000 22%, var(--surface-card-alt)) !important;
 }
 html.dark .ant-select-item-option-selected {
-  background-color: color-mix(in srgb, #10b981 32%, var(--surface-card-alt)) !important;
+  background-color: color-mix(in srgb, #e60000 32%, var(--surface-card-alt)) !important;
   color: #ffffff !important;
 }
 html.dark .rdt_Table {
@@ -1448,11 +1448,11 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .ant-btn,
 .no-table tbody td button[class*="bg-foreground"],
 .card-settings-page table td button[class*="bg-foreground"] {
-  background-color: #059669 !important;
-  background: #059669 !important;
+  background-color: #c00000 !important;
+  background: #c00000 !important;
   background-image: none !important;
   color: #ffffff !important;
-  border: 1px solid #059669 !important;
+  border: 1px solid #c00000 !important;
   border-radius: 2px !important;
   padding: 6px 14px !important;
   font-size: 12px !important;
@@ -1477,27 +1477,27 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .ant-btn:hover,
 .no-table tbody td button[class*="bg-foreground"]:hover,
 .card-settings-page table td button[class*="bg-foreground"]:hover {
-  background-color: #047857 !important;
-  background: #047857 !important;
-  border-color: #047857 !important;
+  background-color: #9e0000 !important;
+  background: #9e0000 !important;
+  border-color: #9e0000 !important;
   color: #ffffff !important;
 }
 
 /* Shadcn dropdown-trigger "Select" buttons inside tables (variant=outline) →
-   emerald, to match the .dropdown-toggle / .wallet-brand-btn select buttons
+   red, to match the .dropdown-toggle / .wallet-brand-btn select buttons
    used on other pages. Scoped via aria-haspopup so only menu triggers match. */
 .rdt_TableCell button[aria-haspopup="menu"],
 .no-table tbody td button[aria-haspopup="menu"],
 .mini-table tbody td button[aria-haspopup="menu"] {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  border: 1px solid #059669 !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  border: 1px solid #c00000 !important;
   color: #ffffff !important;
 }
 .rdt_TableCell button[aria-haspopup="menu"]:hover,
 .no-table tbody td button[aria-haspopup="menu"]:hover,
 .mini-table tbody td button[aria-haspopup="menu"]:hover {
-  background: #047857 !important;
-  border-color: #047857 !important;
+  background: #9e0000 !important;
+  border-color: #9e0000 !important;
   color: #ffffff !important;
 }
 .rdt_TableCell button[aria-haspopup="menu"] svg,
@@ -1659,9 +1659,9 @@ html.dark .no-table tbody td .theme-btn-next,
 html.dark .no-table tbody td .ant-btn,
 html.dark .no-table tbody td button[class*="bg-foreground"],
 html.dark .no-table tbody td button.dropdown-toggle {
-  background-color: #059669 !important;
-  background: #059669 !important;
-  border: 1px solid #34d399 !important;
+  background-color: #c00000 !important;
+  background: #c00000 !important;
+  border: 1px solid #ff4d4d !important;
   color: #ffffff !important;
 }
 html.dark .rdt_TableCell .gradient-btn:hover,
@@ -1674,9 +1674,9 @@ html.dark .no-table tbody td .theme-btn-next:hover,
 html.dark .no-table tbody td .ant-btn:hover,
 html.dark .no-table tbody td button[class*="bg-foreground"]:hover,
 html.dark .no-table tbody td button.dropdown-toggle:hover {
-  background-color: #047857 !important;
-  background: #047857 !important;
-  border-color: #34d399 !important;
+  background-color: #9e0000 !important;
+  background: #9e0000 !important;
+  border-color: #ff4d4d !important;
   color: #ffffff !important;
 }
 
@@ -1777,13 +1777,13 @@ html.dark li.ps-menuitem-root.ps-active > .ps-menu-button {
      mechanism as the dashboard cards in dark mode. */
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--mi-color, #10b981) 24%, #0e1018) 0%,
-    color-mix(in srgb, var(--mi-color, #10b981) 8%, #0e1018) 100%
+    color-mix(in srgb, var(--mi-color, #e60000) 24%, #0e1018) 0%,
+    color-mix(in srgb, var(--mi-color, #e60000) 8%, #0e1018) 100%
   ) !important;
   color: #ffffff !important;
   box-shadow:
-    inset 3px 0 0 var(--mi-color, #10b981),
-    0 0 14px color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
+    inset 3px 0 0 var(--mi-color, #e60000),
+    0 0 14px color-mix(in srgb, var(--mi-color, #e60000) 35%, transparent) !important;
   border-radius: 2px !important;
 }
 html.dark span.ps-menu-label.ps-active.css-12w9als,
@@ -1847,7 +1847,7 @@ html.dark .bg-white .recharts-wrapper {
   --theme-text-color: #000000;
   --theme-secondary: #eb0d0d;
   --theme-tertiary: #000000;
-  --theme-active-color: #4d6685;
+  --theme-active-color: #c00000;
   --theme-active-tab: transparent;
   --theme-inactive-tab: #ededed;
   --theme-breadcrumb-active-text-color: #eb0d0d;
@@ -1856,33 +1856,33 @@ html.dark .bg-white .recharts-wrapper {
   --theme-sidebar-text-color: #000000;
   --theme-revert-action-color: #a0a0a0;
   --theme-other-actions-color: transparent;
-  /* Header surface — emerald-tinted to match the sidebar (follows the logo) */
-  --theme-header-background-color: #f3f9f6;
+  /* Header surface — red-tinted to match the sidebar (follows the logo) */
+  --theme-header-background-color: #fdf5f5;
   --theme-header-sub-header-bg-color: #000000;
   --theme-dashboard-subheader-bg-color: #f4f4f4;
-  --theme-dashboard-header-bg-color: #f3f9f6;
+  --theme-dashboard-header-bg-color: #fdf5f5;
   --theme-subheader-text-color: #000000;
   --theme-heading-text-color: #090909;
   --theme-cards-background-color: transparent;
   --theme-cards-text-color: transparent;
-  --theme-table-background-color: #059669;
+  --theme-table-background-color: #c00000;
   --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #0f172a;
-  --theme-table-row-alt: #eaf7f1;   /* light emerald stripe — matches theme */
-  --theme-table-row-hover: #d8f0e6;
-  /* Subtle emerald-tinted sidebar surface — follows the Sullis logo color */
-  --theme-flow-sidebar-logo-bg: #eef6f1;
-  --theme-flow-dashboard-sidebar-bg: #f3f9f6;
+  --theme-table-row-alt: #fdf0f0;   /* light red stripe — matches theme */
+  --theme-table-row-hover: #fbe4e4;
+  /* Subtle red-tinted sidebar surface — follows the Finova logo color */
+  --theme-flow-sidebar-logo-bg: #fdf3f3;
+  --theme-flow-dashboard-sidebar-bg: #fdf5f5;
   --theme-flow-submenu-sidebar-bg: transparent;
   --theme-flow-active-color-bg: transparent;
   /* Stepper accent — matches the active sidebar tab (dark navy gradient).
      Light mode uses the gradient end color as the border (no extra outline). */
-  --stepper-accent: #10b981;
-  --stepper-accent-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  --stepper-accent-border: #059669;
+  --stepper-accent: #e60000;
+  --stepper-accent-bg: linear-gradient(135deg, #e60000 0%, #c00000 100%);
+  --stepper-accent-border: #c00000;
   --stepper-accent-ring: rgba(15, 23, 42, 0.18);
   --theme-flow-inactive-color-bg: transparent;
-  --theme-flow-active-text-color: #059669;
+  --theme-flow-active-text-color: #c00000;
   --theme-flow-inactive-text-color: #000000;
   --theme-dashboard-sidebar-active-color-bg: #eb0d0d;
   --theme-dashboard-sidebar-active-text-color: #eb0d0d;
@@ -1941,28 +1941,28 @@ html.dark .bg-white .recharts-wrapper {
   background: var(--theme-header-background-color) !important;
 }
 
-/* Antd date/select/input fields — subtle emerald-tinted border so they match
+/* Antd date/select/input fields — subtle red-tinted border so they match
    the brand (focus/active highlight is handled by the antd ConfigProvider). */
 .ant-picker,
 .ant-input-affix-wrapper,
 .ant-select:not(.ant-select-disabled) .ant-select-selector {
   border-radius: 2px !important;
-  border-color: color-mix(in srgb, #10b981 22%, #d9d9d9) !important;
+  border-color: color-mix(in srgb, #e60000 22%, #d9d9d9) !important;
 }
 .ant-picker:hover,
 .ant-input-affix-wrapper:hover,
 .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-  border-color: #10b981 !important;
+  border-color: #e60000 !important;
 }
 html.dark .ant-picker,
 html.dark .ant-input-affix-wrapper,
 html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
-  border-color: color-mix(in srgb, #10b981 28%, #3a4050) !important;
+  border-color: color-mix(in srgb, #e60000 28%, #3a4050) !important;
 }
 
 /* ==========================================================================
    PROFESSIONAL DATE PICKER — refined antd <DatePicker> field + calendar panel.
-   Only accents (focus ring, selected / today / hover) use the brand emerald;
+   Only accents (focus ring, selected / today / hover) use the brand red;
    surfaces & text are left to antd's theme so light AND dark stay correct.
    Global — applies to every DatePicker (and RangePicker) in the project.
    ========================================================================== */
@@ -1975,20 +1975,20 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
 .ant-picker-focused,
 .ant-picker.ant-picker-focused,
 .ant-picker:focus-within {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #10b981 18%, transparent) !important;
+  border-color: #e60000 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #e60000 18%, transparent) !important;
 }
 .ant-picker .ant-picker-suffix {
-  color: #10b981 !important;
+  color: #e60000 !important;
 }
 .ant-picker .ant-picker-active-bar {
-  background: #10b981 !important;
+  background: #e60000 !important;
 }
 
 /* --- Calendar dropdown panel --- */
 .ant-picker-dropdown .ant-picker-panel-container {
   border-radius: 12px !important;
-  box-shadow: 0 12px 32px -12px rgba(16, 185, 129, 0.25),
+  box-shadow: 0 12px 32px -12px rgba(230, 0, 0, 0.25),
     0 8px 24px -16px rgba(0, 0, 0, 0.25) !important;
   overflow: hidden;
 }
@@ -1996,10 +1996,10 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
   border: 0 !important;
 }
 .ant-picker-dropdown .ant-picker-header {
-  border-bottom-color: color-mix(in srgb, #10b981 12%, transparent) !important;
+  border-bottom-color: color-mix(in srgb, #e60000 12%, transparent) !important;
 }
 .ant-picker-dropdown .ant-picker-header button:hover {
-  color: #10b981 !important;
+  color: #e60000 !important;
 }
 /* Day / month / year cells */
 .ant-picker-dropdown .ant-picker-cell .ant-picker-cell-inner {
@@ -2007,18 +2007,18 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
   transition: background-color 0.15s ease, color 0.15s ease !important;
 }
 .ant-picker-dropdown .ant-picker-cell-in-view:hover .ant-picker-cell-inner {
-  background: color-mix(in srgb, #10b981 14%, transparent) !important;
+  background: color-mix(in srgb, #e60000 14%, transparent) !important;
 }
 /* Today indicator */
 .ant-picker-dropdown .ant-picker-cell-today .ant-picker-cell-inner::before {
-  border-color: #10b981 !important;
+  border-color: #e60000 !important;
   border-radius: 8px !important;
 }
 /* Selected day + range endpoints */
 .ant-picker-dropdown .ant-picker-cell-selected .ant-picker-cell-inner,
 .ant-picker-dropdown .ant-picker-cell-range-start .ant-picker-cell-inner,
 .ant-picker-dropdown .ant-picker-cell-range-end .ant-picker-cell-inner {
-  background: #10b981 !important;
+  background: #e60000 !important;
   color: #fff !important;
   border-radius: 8px !important;
   font-weight: 600;
@@ -2027,21 +2027,21 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
 .ant-picker-dropdown .ant-picker-cell-in-range::before,
 .ant-picker-dropdown .ant-picker-cell-range-start::before,
 .ant-picker-dropdown .ant-picker-cell-range-end::before {
-  background: color-mix(in srgb, #10b981 16%, transparent) !important;
+  background: color-mix(in srgb, #e60000 16%, transparent) !important;
 }
 /* Footer "Today" link */
 .ant-picker-dropdown .ant-picker-today-btn {
-  color: #10b981 !important;
+  color: #e60000 !important;
   font-weight: 600;
 }
 .ant-picker-dropdown .ant-picker-today-btn:hover {
-  color: color-mix(in srgb, #10b981 78%, #000) !important;
+  color: color-mix(in srgb, #e60000 78%, #000) !important;
 }
 
 /* --- Calendar dropdown panel: dark mode ---
    The panel portals to <body> (inside html.dark) so it inherits no theme by
    default and antd renders it white. Re-skin every surface/text part with the
-   theme tokens so it matches the rest of dark mode. The emerald accent cells
+   theme tokens so it matches the rest of dark mode. The red accent cells
    above already adapt, so they're left untouched. */
 html.dark .ant-picker-dropdown .ant-picker-panel-container,
 html.dark .ant-picker-dropdown .ant-picker-panel {
@@ -2079,7 +2079,7 @@ html.dark .ant-picker-dropdown .ant-picker-time-panel-cell-inner {
   color: var(--foreground) !important;
 }
 html.dark .ant-picker-dropdown .ant-picker-time-panel-cell-inner:hover {
-  background: color-mix(in srgb, #10b981 14%, transparent) !important;
+  background: color-mix(in srgb, #e60000 14%, transparent) !important;
 }
 /* Range preview while hovering */
 html.dark .ant-picker-dropdown .ant-picker-cell-in-range:not(.ant-picker-cell-selected) .ant-picker-cell-inner {
@@ -2087,7 +2087,7 @@ html.dark .ant-picker-dropdown .ant-picker-cell-in-range:not(.ant-picker-cell-se
 }
 
 /* ==========================================================================
-   THEMED MODALS — emerald touch for every modal (shadcn Dialog, antd Modal,
+   THEMED MODALS — red touch for every modal (shadcn Dialog, antd Modal,
    Bootstrap Modal): tinted surface, professional header/footer dividers,
    themed close (×), inputs/textarea, and action buttons.
    ========================================================================== */
@@ -2096,20 +2096,20 @@ html.dark .ant-picker-dropdown .ant-picker-cell-in-range:not(.ant-picker-cell-se
 [data-slot="dialog-content"],
 .ant-modal .ant-modal-content,
 .modal-content {
-  background: linear-gradient(160deg, #f3faf7 0%, #ffffff 22%) !important;
-  border: 1px solid color-mix(in srgb, #10b981 20%, var(--border)) !important;
+  background: linear-gradient(160deg, #fdf6f6 0%, #ffffff 22%) !important;
+  border: 1px solid color-mix(in srgb, #e60000 20%, var(--border)) !important;
   border-radius: 2px !important;
-  box-shadow: 0 24px 60px -22px color-mix(in srgb, #10b981 38%, rgba(0, 0, 0, 0.45)) !important;
+  box-shadow: 0 24px 60px -22px color-mix(in srgb, #e60000 38%, rgba(0, 0, 0, 0.45)) !important;
 }
 html.dark [data-slot="dialog-content"],
 html.dark .ant-modal .ant-modal-content,
 html.dark .modal-content {
   background: linear-gradient(
     160deg,
-    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
     var(--surface-card) 24%
   ) !important;
-  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border)) !important;
+  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border)) !important;
 }
 
 /* --- Title --- */
@@ -2125,19 +2125,19 @@ html.dark .modal-content {
 /* --- Header / footer dividers (shadcn + bootstrap) --- */
 [data-slot="dialog-header"] {
   padding-bottom: 12px !important;
-  border-bottom: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+  border-bottom: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
 }
 [data-slot="dialog-footer"] {
   padding-top: 14px !important;
-  border-top: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+  border-top: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
 }
 .modal-header,
 .ant-modal-header {
-  border-bottom: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+  border-bottom: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
   background: transparent !important;
 }
 .modal-footer {
-  border-top: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+  border-top: 1px solid color-mix(in srgb, #e60000 14%, var(--border)) !important;
 }
 
 /* --- Close (×) button --- */
@@ -2159,8 +2159,8 @@ html.dark .modal-content {
 .ant-modal-close:hover,
 .modal-header .btn-close:hover,
 .modal-header .close:hover {
-  background-color: color-mix(in srgb, #10b981 14%, transparent) !important;
-  color: #059669 !important;
+  background-color: color-mix(in srgb, #e60000 14%, transparent) !important;
+  color: #c00000 !important;
 }
 
 /* --- Inputs / textarea inside modals --- */
@@ -2172,7 +2172,7 @@ html.dark .modal-content {
 .ant-modal textarea.ant-input,
 .modal-content input.form-control,
 .modal-content textarea.form-control {
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--border)) !important;
   border-radius: 2px !important;
 }
 [data-slot="dialog-content"] input:not([type="checkbox"]):not([type="radio"]):focus,
@@ -2181,48 +2181,48 @@ html.dark .modal-content {
 .ant-modal .ant-input:focus,
 .modal-content input.form-control:focus,
 .modal-content textarea.form-control:focus {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #10b981 22%, transparent) !important;
+  border-color: #e60000 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #e60000 22%, transparent) !important;
 }
 
 /* --- Secondary / Cancel action button (footer, non-primary) --- */
 [data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):not([class*="destructive"]):not([class*="bg-red"]),
 .ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous),
 .modal-footer .btn:not(.btn-primary):not(.btn-danger) {
-  border: 1px solid color-mix(in srgb, #10b981 30%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, #e60000 30%, var(--border)) !important;
   color: var(--foreground) !important;
 }
 [data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):not([class*="destructive"]):not([class*="bg-red"]):hover,
 .ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous):hover,
 .modal-footer .btn:not(.btn-primary):not(.btn-danger):hover {
-  border-color: #10b981 !important;
-  color: #059669 !important;
-  background-color: color-mix(in srgb, #10b981 10%, transparent) !important;
+  border-color: #e60000 !important;
+  color: #c00000 !important;
+  background-color: color-mix(in srgb, #e60000 10%, transparent) !important;
 }
 
-/* ===== Bootstrap checkboxes / radios — brand emerald when checked ===== */
+/* ===== Bootstrap checkboxes / radios — brand red when checked ===== */
 .form-check-input:checked {
-  background-color: #10b981 !important;
-  border-color: #10b981 !important;
+  background-color: #e60000 !important;
+  border-color: #e60000 !important;
 }
 .form-check-input:focus {
-  border-color: color-mix(in srgb, #10b981 50%, var(--border)) !important;
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #10b981 22%, transparent) !important;
+  border-color: color-mix(in srgb, #e60000 50%, var(--border)) !important;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #e60000 22%, transparent) !important;
 }
 
 /* ===== COA Configuration page — professional card + selectable cells ===== */
 .coa-config-page .coa-card {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 14%, var(--card)) 0%,
-    color-mix(in srgb, #10b981 4%, var(--card)) 60%
+    color-mix(in srgb, #e60000 14%, var(--card)) 0%,
+    color-mix(in srgb, #e60000 4%, var(--card)) 60%
   );
-  border: 1px solid color-mix(in srgb, #10b981 22%, var(--border));
+  border: 1px solid color-mix(in srgb, #e60000 22%, var(--border));
   border-radius: 2px;
-  box-shadow: 0 10px 26px -16px color-mix(in srgb, #10b981 45%, transparent);
+  box-shadow: 0 10px 26px -16px color-mix(in srgb, #e60000 45%, transparent);
   padding: 22px 24px;
 }
-/* Each account checkbox becomes an emerald-tinted selectable cell */
+/* Each account checkbox becomes an red-tinted selectable cell */
 .coa-config-page .ps-tab-content .form-check,
 .coa-config-page form .form-check,
 .coa-config-page .form-check {
@@ -2232,19 +2232,19 @@ html.dark .modal-content {
   margin: 0;
   min-height: 46px;
   padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, #10b981 22%, var(--border));
+  border: 1px solid color-mix(in srgb, #e60000 22%, var(--border));
   border-radius: 2px;
-  background: color-mix(in srgb, #10b981 6%, var(--card));
+  background: color-mix(in srgb, #e60000 6%, var(--card));
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 .coa-config-page .form-check:hover {
-  border-color: color-mix(in srgb, #10b981 45%, var(--border));
-  background: color-mix(in srgb, #10b981 12%, var(--card));
+  border-color: color-mix(in srgb, #e60000 45%, var(--border));
+  background: color-mix(in srgb, #e60000 12%, var(--card));
 }
 .coa-config-page .form-check:has(.form-check-input:checked) {
-  border-color: #10b981;
-  background: color-mix(in srgb, #10b981 16%, var(--card));
-  box-shadow: 0 4px 12px -6px color-mix(in srgb, #10b981 45%, transparent);
+  border-color: #e60000;
+  background: color-mix(in srgb, #e60000 16%, var(--card));
+  box-shadow: 0 4px 12px -6px color-mix(in srgb, #e60000 45%, transparent);
 }
 .coa-config-page .form-check .form-check-input {
   margin: 0 !important;
@@ -2267,7 +2267,7 @@ html.dark .modal-content {
 }
 
 span.ps-menu-label.ps-active.css-12w9als {
-  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
+  color: color-mix(in srgb, var(--mi-color, #e60000) 55%, #0f172a) !important;
 }
 
 /* Active sidebar item styling lives in custom.scss to avoid duplication */
@@ -2356,12 +2356,12 @@ li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
      same mechanism as the dashboard stat cards. */
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--mi-color, #10b981) 16%, #ffffff) 0%,
-    color-mix(in srgb, var(--mi-color, #10b981) 5%, #ffffff) 100%
+    color-mix(in srgb, var(--mi-color, #e60000) 16%, #ffffff) 0%,
+    color-mix(in srgb, var(--mi-color, #e60000) 5%, #ffffff) 100%
   ) !important;
-  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
+  color: color-mix(in srgb, var(--mi-color, #e60000) 55%, #0f172a) !important;
   border-radius: 2px !important;
-  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #e60000) !important;
 }
 
 /* ==========================================================================
@@ -2384,10 +2384,10 @@ button[class*="bg-primary"][class*="text-primary-foreground"],
 .theme-btn-next,
 .theme-btn-prev,
 .theme-btn-back {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  background-color: #10b981 !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background-color: #e60000 !important;
   color: #ffffff !important;
-  border: 1px solid #059669 !important;
+  border: 1px solid #c00000 !important;
   box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
@@ -2404,9 +2404,9 @@ button[class*="bg-primary"][class*="text-primary-foreground"]:not(:disabled):hov
 .theme-btn-next:not(:disabled):hover,
 .theme-btn-prev:not(:disabled):hover,
 .theme-btn-back:not(:disabled):hover {
-  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
-  background-color: #34d399 !important;
-  border-color: #059669 !important;
+  background: linear-gradient(135deg, #ff4d4d 0%, #e60000 100%) !important;
+  background-color: #ff4d4d !important;
+  border-color: #c00000 !important;
   color: #ffffff !important;
   box-shadow:
     0 4px 12px rgba(15, 23, 42, 0.35),
@@ -2508,9 +2508,9 @@ html.dark .theme-btn-back:disabled {
    stays visible on the dark surface.
    ============================================================ */
 .wallet-brand-btn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  background-color: #10b981 !important;
-  border-color: #059669 !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background-color: #e60000 !important;
+  border-color: #c00000 !important;
   color: #ffffff !important;
   border-radius: 2px !important;
 }
@@ -2518,19 +2518,19 @@ html.dark .theme-btn-back:disabled {
   filter: brightness(0.92);
 }
 .wallet-brand-bg {
-  background-color: #059669 !important;
+  background-color: #c00000 !important;
   color: #ffffff !important;
 }
 .wallet-brand-card {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
   color: #ffffff !important;
 }
 
 html.dark .wallet-brand-btn,
 .dark .wallet-brand-btn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  background-color: #10b981 !important;
-  border-color: #34d399 !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
+  background-color: #e60000 !important;
+  border-color: #ff4d4d !important;
   color: #ffffff !important;
 }
 html.dark .wallet-brand-bg,
@@ -2697,7 +2697,7 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   .onb360-page .onb-label { animation: none !important; }
 }
 
-/* Detail-page tabs (Business / Partner / 360 screens) — emerald underline.
+/* Detail-page tabs (Business / Partner / 360 screens) — red underline.
    Same shape as .wallet-tabs above: shadcn's Tabs ship a filled "pill" look via
    data-[state=active] utilities, and since this file is imported BEFORE
    `@import 'tailwindcss'`, only !important reliably wins over them. The bar is
@@ -2729,7 +2729,7 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   transition: color 0.15s ease;
 }
 .detail-tabs .detail-tab-trigger:hover {
-  color: #047857 !important;
+  color: #9e0000 !important;
 }
 .detail-tabs .detail-tab-trigger:hover::after {
   content: "";
@@ -2738,11 +2738,11 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   right: 0;
   bottom: -1px;
   height: 2px;
-  background-color: color-mix(in srgb, #10b981 40%, transparent);
+  background-color: color-mix(in srgb, #e60000 40%, transparent);
 }
 .detail-tabs .detail-tab-trigger[data-state="active"] {
   background: transparent !important;
-  color: #059669 !important;
+  color: #c00000 !important;
   box-shadow: none !important;
   font-weight: 700;
 }
@@ -2753,23 +2753,23 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   right: 0;
   bottom: -1px;
   height: 2px;
-  background-color: #10b981;
+  background-color: #e60000;
 }
 html.dark .detail-tabs .detail-tab-trigger[data-state="active"],
 .dark .detail-tabs .detail-tab-trigger[data-state="active"] {
-  color: #34d399 !important;
+  color: #ff4d4d !important;
 }
 html.dark .detail-tabs .detail-tab-trigger[data-state="active"]::after,
 .dark .detail-tabs .detail-tab-trigger[data-state="active"]::after {
-  background-color: #34d399;
+  background-color: #ff4d4d;
 }
 html.dark .detail-tabs .detail-tab-trigger:hover,
 .dark .detail-tabs .detail-tab-trigger:hover {
-  color: #34d399 !important;
+  color: #ff4d4d !important;
 }
 
 /* Underline nav tabs — matches the CoaConfiguration look: dark bold active label
-   with an emerald underline, gray inactive labels, no boxes/backgrounds. */
+   with an red underline, gray inactive labels, no boxes/backgrounds. */
 .coa-tabs {
   background: transparent !important;
   padding: 0 !important;
@@ -2825,3 +2825,11 @@ html.dark .detail-tabs .detail-tab-trigger:hover,
 .coa-form textarea::placeholder {
   font-size: 13px !important;
 }
+
+/* ==========================================================================
+   Brand logo — theme-aware swap (src/components/shared/BrandLogo.tsx)
+   Light mode shows the dark wordmark; dark mode shows the white one.
+   ========================================================================== */
+.brand-logo--dark { display: none; }
+html.dark .brand-logo--light { display: none; }
+html.dark .brand-logo--dark { display: inline-block; }

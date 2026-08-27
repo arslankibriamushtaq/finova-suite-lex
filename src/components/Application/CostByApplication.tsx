@@ -335,9 +335,9 @@ const CostByApplication = () => {
           height: 42px;
           padding: 0 18px;
           border-radius: 2px;
-          background-color: #10b981;
+          background-color: #e60000;
           color: #ffffff;
-          border: 1px solid #10b981;
+          border: 1px solid #e60000;
           font-size: 14px;
           font-weight: 500;
           white-space: nowrap;
@@ -347,7 +347,7 @@ const CostByApplication = () => {
           flex-shrink: 0;
         }
         .application-cost-page .refresh-btn:hover:not(:disabled) {
-          background-color: #059669;
+          background-color: #c00000;
         }
         .application-cost-page .refresh-btn:disabled {
           opacity: 0.6;

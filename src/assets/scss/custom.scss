@@ -2294,7 +2294,7 @@ span.ps-submenu-expand-icon.css-1cuxlhl {
 }
 
 .css-1654oxy>.ps-menu-button {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
   color: #ffffff !important;
 }
 
@@ -3116,7 +3116,7 @@ a {
 }
 
 .active .css-1tqrhto>.ps-menu-button {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
   color: #ffffff !important;
 }
 
@@ -4956,7 +4956,7 @@ label {
   align-items: center;
   justify-content: center;
   /* Dark navy to match the sidebar active (tab) colour instead of red */
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%);
   border-radius: 2px;
   /* Rounded edges */
   padding: 5px;
@@ -6595,7 +6595,7 @@ span.asc.__rdt_custom_sort_icon__ img {
 
 a.ps-menu-button.ps-open span {
   /* Open module — label takes the module's own icon color (--mi-color). */
-  color: var(--mi-color, #10b981) !important;
+  color: var(--mi-color, #e60000) !important;
 }
 
 div.menu-items a.ps-menu-button.ps-open {
@@ -7287,7 +7287,7 @@ div.menu-items a.ps-menu-button>span img {
 
 .sidebar-tab.active,
 button.sidebar-tab.active {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background: linear-gradient(135deg, #e60000 0%, #c00000 100%) !important;
   background-color: #0f172a !important;
   border: 1px solid #0f172a !important;
   color: #ffffff !important;
@@ -9902,15 +9902,15 @@ div.menu-items a.ps-menu-button.ps-active::before{
 }
 .nav-tabs .nav-link:hover {
   background: transparent !important;
-  color: #047857 !important;
-  border-bottom: 2px solid color-mix(in srgb, #10b981 40%, transparent) !important;
+  color: #9e0000 !important;
+  border-bottom: 2px solid color-mix(in srgb, #e60000 40%, transparent) !important;
 }
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
   background: transparent !important;
-  color: #059669 !important;
+  color: #c00000 !important;
   border: none !important;
-  border-bottom: 2px solid #10b981 !important;
+  border-bottom: 2px solid #e60000 !important;
   font-weight: 700 !important;
 }
 
@@ -9925,11 +9925,11 @@ div.menu-items a.ps-menu-button.ps-active::before{
   padding: 10px 16px !important;
 }
 .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #059669 !important;
+  color: #c00000 !important;
   font-weight: 700 !important;
 }
 .ant-tabs .ant-tabs-ink-bar {
-  background: #10b981 !important;
+  background: #e60000 !important;
 }
 
 /* ===== Remove blue focus shadow on all input fields globally ===== */
@@ -9993,20 +9993,20 @@ input[type="date"] {
 /* ===== Global filter + table card layout ===== */
 /* Filter row appears in its own rounded card on every page that uses `.filter-select` */
 .service > .filter-select {
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--border));
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--border));
   border-radius: 2px;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
   padding: 12px 16px;
   margin-bottom: 12px;
 }
 html.dark .service > .filter-select {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   );
-  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border));
+  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border));
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
 }
 
@@ -10016,19 +10016,19 @@ html.dark .service > .filter-select {
 .service > .bg-white:has(.ant-picker),
 .service > .bg-white.mb-3:has(input),
 .service > .bg-white.mb-3:has(.ant-input) {
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%) !important;
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--border)) !important;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent) !important;
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%) !important;
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--border)) !important;
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent) !important;
 }
 html.dark .service > .bg-white:has(.ant-picker),
 html.dark .service > .bg-white.mb-3:has(input),
 html.dark .service > .bg-white.mb-3:has(.ant-input) {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   ) !important;
-  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border)) !important;
+  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border)) !important;
 }
 
 /* Table appears in its own rounded white card on every page that uses `.cs-table` */
@@ -10039,10 +10039,10 @@ html.dark .service > .bg-white.mb-3:has(.ant-input) {
 .service > .filter-select ~ div:has(> .rdt_Table),
 .service > div:has(> .rdt_Table),
 div:has(> .rdt_Table) {
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--surface-border));
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--surface-border));
   border-radius: 2px;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
   overflow: hidden;
 }
 html.dark .service > .cs-table,
@@ -10054,10 +10054,10 @@ html.dark .service > div:has(> .rdt_Table),
 html.dark div:has(> .rdt_Table) {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   );
-  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border));
+  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border));
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
 }
 
@@ -10067,21 +10067,21 @@ html.dark div:has(> .rdt_Table) {
 .card-product {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 14%, var(--card)) 0%,
+    color-mix(in srgb, #e60000 14%, var(--card)) 0%,
     var(--card) 60%
   ) !important;
-  border: 1px solid color-mix(in srgb, #10b981 20%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, #e60000 20%, var(--border)) !important;
   border-radius: 2px !important;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent) !important;
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent) !important;
   color: var(--foreground) !important;
 }
 html.dark .card-product {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
     var(--surface-card) 60%
   ) !important;
-  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border)) !important;
+  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border)) !important;
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7) !important;
 }
 
@@ -10190,21 +10190,21 @@ header.rdt_TableHeadRow,
 .pagination .page-item.active .page-link,
 .page-item.active .page-link,
 .pagination-div .page-item.active .page-link {
-  background-color: #10b981 !important;
-  border-color: #10b981 !important;
+  background-color: #e60000 !important;
+  border-color: #e60000 !important;
   color: #ffffff !important;
 }
 .pagination .page-link,
 .pagination-div .page-link {
-  color: #059669 !important;
+  color: #c00000 !important;
 }
 .pagination .page-link:hover,
 .pagination-div .page-link:hover {
-  background-color: color-mix(in srgb, #10b981 12%, transparent) !important;
-  color: #047857 !important;
+  background-color: color-mix(in srgb, #e60000 12%, transparent) !important;
+  color: #9e0000 !important;
 }
 .pagination .page-link:focus {
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #10b981 30%, transparent) !important;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #e60000 30%, transparent) !important;
 }
 
 /* ===== Status pills inside tables — works in both modes ===== */
@@ -10767,8 +10767,8 @@ table td span[style*="border-radius"] {
 .ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
 .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
   /* Soft wash of the item's own color (--mi-color) on hover. */
-  background: color-mix(in srgb, var(--mi-color, #10b981) 10%, transparent) !important;
-  background-color: color-mix(in srgb, var(--mi-color, #10b981) 10%, transparent) !important;
+  background: color-mix(in srgb, var(--mi-color, #e60000) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--mi-color, #e60000) 10%, transparent) !important;
   color: var(--foreground) !important;
 }
 html.dark .ps-sidebar-root .ps-menu-button:hover:not(.ps-active),
@@ -10776,8 +10776,8 @@ html.dark .ps-sidebar-root .ps-submenu-content .ps-menu-button:hover:not(.ps-act
 html.dark .ps-sidebar-root [class^="css-"] .ps-menu-button:hover:not(.ps-active),
 html.dark .ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
 html.dark .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
-  background: color-mix(in srgb, var(--mi-color, #10b981) 16%, transparent) !important;
-  background-color: color-mix(in srgb, var(--mi-color, #10b981) 16%, transparent) !important;
+  background: color-mix(in srgb, var(--mi-color, #e60000) 16%, transparent) !important;
+  background-color: color-mix(in srgb, var(--mi-color, #e60000) 16%, transparent) !important;
   color: #ffffff !important;
 }
 .ps-sidebar-root .ps-menu-button:hover:not(.ps-active) span,
@@ -10792,12 +10792,12 @@ html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active,
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: color-mix(in srgb, var(--mi-color, #10b981) 12%, transparent) !important;
-  color: color-mix(in srgb, var(--mi-color, #10b981) 60%, #0f172a) !important;
+  background: color-mix(in srgb, var(--mi-color, #e60000) 12%, transparent) !important;
+  color: color-mix(in srgb, var(--mi-color, #e60000) 60%, #0f172a) !important;
   border-radius: 0 !important;
   position: relative !important;
   overflow: hidden !important;
-  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #e60000) !important;
 }
 
 /* Active item (dark): deep tinted-glass + colored glow, per item color. */
@@ -10805,18 +10805,18 @@ html.dark .ps-sidebar-root .ps-menu-button.ps-active,
 html.dark .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: color-mix(in srgb, var(--mi-color, #10b981) 22%, transparent) !important;
+  background: color-mix(in srgb, var(--mi-color, #e60000) 22%, transparent) !important;
   color: #ffffff !important;
   border-radius: 0 !important;
   position: relative !important;
   overflow: hidden !important;
-  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #e60000) !important;
 }
 
 /* Active label text — dark tinted in light, white in dark; bold either way. */
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active span,
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover span {
-  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
+  color: color-mix(in srgb, var(--mi-color, #e60000) 55%, #0f172a) !important;
   font-weight: 600 !important;
 }
 html.dark .ps-sidebar-root .ps-menu-button.ps-active span,

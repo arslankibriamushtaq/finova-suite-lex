@@ -65,7 +65,7 @@
 /* A thin accent bar fades in on the leading edge, tinted with the row's own
    --mi-color. Restrained (no row movement) — reads as polished, not flashy. */
 .ps-sidebar-root .ps-menu-button:not(.ps-active):hover {
-  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--mi-color, #10b981) 60%, transparent) !important;
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--mi-color, #e60000) 60%, transparent) !important;
 }
 
 /* Icon eases up to a gentle scale — smooth ease-out, no bounce/overshoot. */

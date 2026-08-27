@@ -568,7 +568,7 @@ const CardSettings = () => {
         }
         .card-settings-page [data-slot="tabs-trigger"]:hover { color: var(--foreground) !important; }
         .card-settings-page [data-slot="tabs-trigger"][data-state="active"] {
-          color: #10b981 !important;
+          color: #e60000 !important;
           font-weight: 600 !important;
         }
         .card-settings-page [data-slot="tabs-trigger"][data-state="active"]::after {
@@ -577,7 +577,7 @@ const CardSettings = () => {
           left: 12px; right: 12px; bottom: -1px;
           height: 2px;
           border-radius: 2px;
-          background: #10b981;
+          background: #e60000;
         }
         /* Tables — match the shared TableView (branded header, striped, hover, 12px) */
         .card-settings-page table thead tr {
@@ -619,16 +619,16 @@ const CardSettings = () => {
           font-weight: 500 !important;
           gap: 6px !important;
           border-radius: 6px !important;
-          border: 1px solid color-mix(in srgb, #10b981 35%, transparent) !important;
-          background: color-mix(in srgb, #10b981 8%, transparent) !important;
-          color: #059669 !important;
+          border: 1px solid color-mix(in srgb, #e60000 35%, transparent) !important;
+          background: color-mix(in srgb, #e60000 8%, transparent) !important;
+          color: #c00000 !important;
           box-shadow: none !important;
           transition: background 0.15s ease, border-color 0.15s ease !important;
         }
         .card-settings-page table [data-slot="button"]:hover {
-          background: color-mix(in srgb, #10b981 16%, transparent) !important;
-          border-color: #10b981 !important;
-          color: #047857 !important;
+          background: color-mix(in srgb, #e60000 16%, transparent) !important;
+          border-color: #e60000 !important;
+          color: #9e0000 !important;
         }
         .card-settings-page table [data-slot="button"] svg {
           width: 13px !important;

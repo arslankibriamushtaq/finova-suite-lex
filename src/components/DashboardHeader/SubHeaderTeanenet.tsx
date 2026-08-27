@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
+import BrandLogo from "../shared/BrandLogo";
 import SuperAdmin from "./SuperAdmin";
 
 const SubHeaderTeanenet = () => {
@@ -37,7 +38,7 @@ const SubHeaderTeanenet = () => {
       >
         <div className="col-11 d-flex justify-content-end">
           <div className="col-4 d-flex justify-content-start align-items-center">
-            <img src={Images.FactoringLogo} alt="" height={80}/>
+            <BrandLogo height={80} />
           </div>
           <div className="col-4 d-flex justify-content-end align-items-center">
             <div

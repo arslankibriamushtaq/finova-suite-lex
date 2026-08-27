@@ -241,10 +241,10 @@ const WalletHome = () => {
 
   const cardWrap: React.CSSProperties = {
     background:
-      "linear-gradient(135deg, color-mix(in srgb, #10b981 8%, var(--surface-card)) 0%, var(--surface-card) 55%)",
-    border: "1px solid color-mix(in srgb, #10b981 18%, var(--surface-border))",
+      "linear-gradient(135deg, color-mix(in srgb, #e60000 8%, var(--surface-card)) 0%, var(--surface-card) 55%)",
+    border: "1px solid color-mix(in srgb, #e60000 18%, var(--surface-border))",
     borderRadius: 2,
-    boxShadow: "0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent)",
+    boxShadow: "0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent)",
     padding: "18px 20px",
     marginTop: 16,
     color: "var(--foreground)",
@@ -357,7 +357,7 @@ const WalletHome = () => {
             <Bar
               dataKey="count"
               name={t("dashboard.walletsBar")}
-              fill="#10b981"
+              fill="var(--chart-series-1, #c00000)"
               radius={[4, 4, 0, 0]}
               maxBarSize={36}
             />
@@ -373,7 +373,7 @@ const WalletHome = () => {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead>
-              <tr style={{ background: "#059669", color: "#fff" }}>
+              <tr style={{ background: "#c00000", color: "#fff" }}>
                 {[t("dashboard.col.walletNumber"), t("dashboard.col.accountNumber"), t("dashboard.col.name"), t("dashboard.col.balance", { currency: CURRENCY }), t("dashboard.col.status"), t("dashboard.col.createdAt")].map((h) => (
                   <th key={h} style={{ textAlign: "left", padding: "12px 16px", fontWeight: 600 }}>
                     {h}

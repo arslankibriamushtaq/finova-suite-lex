@@ -16,22 +16,22 @@
 
 /* ===== Overview bar (period selector) ===== */
 .lms-dashboard .overview-bar {
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--surface-border));
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--surface-border));
   border-radius: 2px;
   padding: 14px 20px;
   margin: 16px 0;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
 }
 html.dark .lms-dashboard .overview-bar,
 html.dark .lms-dashboard .loans-grid-card,
 html.dark .lms-dashboard .chart-card {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    color-mix(in srgb, #e60000 12%, var(--surface-card)) 0%,
     var(--surface-card) 55%
   );
-  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border));
+  border-color: color-mix(in srgb, #e60000 28%, var(--surface-border));
   box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
 }
 
@@ -54,8 +54,8 @@ html.dark .lms-dashboard .chart-card {
   background: transparent;
 }
 .lms-dashboard .overview-bar .ant-radio-wrapper-checked .ant-radio-inner {
-  border-color: #10b981;
-  background: #10b981;
+  border-color: #e60000;
+  background: #e60000;
 }
 .lms-dashboard .overview-bar .ant-radio-wrapper-checked .ant-radio-inner::after {
   background: #ffffff;
@@ -97,19 +97,19 @@ html.dark .lms-dashboard .chart-card {
   min-height: 118px;
   border-radius: 2px;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--c, #10b981) 24%, var(--surface-light));
+  border: 1px solid color-mix(in srgb, var(--c, #e60000) 24%, var(--surface-light));
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--c, #10b981) 16%, var(--surface-light)) 0%,
-    color-mix(in srgb, var(--c, #10b981) 4%, var(--surface-light)) 100%
+    color-mix(in srgb, var(--c, #e60000) 16%, var(--surface-light)) 0%,
+    color-mix(in srgb, var(--c, #e60000) 4%, var(--surface-light)) 100%
   );
-  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--c, #10b981) 55%, transparent);
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--c, #e60000) 55%, transparent);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .lms-dashboard .kpi-card:hover {
-  border-color: color-mix(in srgb, var(--c, #10b981) 55%, var(--surface-light));
-  box-shadow: 0 14px 26px -12px color-mix(in srgb, var(--c, #10b981) 60%, transparent);
+  border-color: color-mix(in srgb, var(--c, #e60000) 55%, var(--surface-light));
+  box-shadow: 0 14px 26px -12px color-mix(in srgb, var(--c, #e60000) 60%, transparent);
 }
 
 .lms-dashboard .kpi-card .kpi-header {
@@ -120,7 +120,7 @@ html.dark .lms-dashboard .chart-card {
   font-weight: 600;
   letter-spacing: 0.1px;
   line-height: 1.3;
-  color: color-mix(in srgb, var(--c, #10b981) 45%, #334155);
+  color: color-mix(in srgb, var(--c, #e60000) 45%, #334155);
 }
 
 .lms-dashboard .kpi-card .kpi-body {
@@ -159,9 +159,9 @@ html.dark .lms-dashboard .chart-card {
   width: 40px;
   height: 40px;
   border-radius: 2px;
-  background: color-mix(in srgb, var(--c, #10b981) 22%, var(--surface-light));
-  color: color-mix(in srgb, var(--c, #10b981) 78%, #000);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, #10b981) 20%, transparent);
+  background: color-mix(in srgb, var(--c, #e60000) 22%, var(--surface-light));
+  color: color-mix(in srgb, var(--c, #e60000) 78%, #000);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, #e60000) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -267,11 +267,11 @@ html.dark .lms-dashboard .chart-card {
 
 /* ===== Loans grid card (3 columns x 2 rows of mini-stats) ===== */
 .lms-dashboard .loans-grid-card {
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--surface-border));
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--surface-border));
   border-radius: 2px;
   padding: 20px 22px;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
   height: 100%;
 }
 
@@ -315,10 +315,10 @@ html.dark .lms-dashboard .chart-card {
 
 /* ===== Generic themed chart/table card ===== */
 .lms-dashboard .chart-card {
-  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
-  border: 1px solid color-mix(in srgb, #10b981 18%, var(--surface-border));
+  background: linear-gradient(135deg, #fdf6f6 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #e60000 18%, var(--surface-border));
   border-radius: 2px;
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #e60000 40%, transparent);
   padding: 18px 20px;
   margin-bottom: 16px;
 }
@@ -332,20 +332,20 @@ html.dark .lms-dashboard .chart-card {
 
 /* ===== Dark mode — deep tinted glass + glowing icon (per --c) ===== */
 html.dark .lms-dashboard .kpi-card {
-  border-color: color-mix(in srgb, var(--c, #10b981) 32%, #1a1d28);
+  border-color: color-mix(in srgb, var(--c, #e60000) 32%, #1a1d28);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--c, #10b981) 22%, var(--surface-dark)) 0%,
-    color-mix(in srgb, var(--c, #10b981) 6%, var(--surface-dark)) 100%
+    color-mix(in srgb, var(--c, #e60000) 22%, var(--surface-dark)) 0%,
+    color-mix(in srgb, var(--c, #e60000) 6%, var(--surface-dark)) 100%
   );
   box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.8);
 }
 html.dark .lms-dashboard .kpi-card:hover {
-  border-color: color-mix(in srgb, var(--c, #10b981) 50%, #1a1d28);
-  box-shadow: 0 16px 30px -14px color-mix(in srgb, var(--c, #10b981) 45%, #000);
+  border-color: color-mix(in srgb, var(--c, #e60000) 50%, #1a1d28);
+  box-shadow: 0 16px 30px -14px color-mix(in srgb, var(--c, #e60000) 45%, #000);
 }
 html.dark .lms-dashboard .kpi-card .kpi-header {
-  color: color-mix(in srgb, var(--c, #10b981) 28%, #cbd5e1);
+  color: color-mix(in srgb, var(--c, #e60000) 28%, #cbd5e1);
 }
 html.dark .lms-dashboard .kpi-card .kpi-value {
   color: #f8fafc;
@@ -357,10 +357,10 @@ html.dark .lms-dashboard .kpi-card.tall .kpi-sub-value {
   color: #f8fafc;
 }
 html.dark .lms-dashboard .kpi-card .kpi-icon {
-  background: color-mix(in srgb, var(--c, #10b981) 26%, var(--surface-dark));
-  color: color-mix(in srgb, var(--c, #10b981) 62%, #ffffff);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, #10b981) 35%, transparent),
-    0 0 14px -2px color-mix(in srgb, var(--c, #10b981) 55%, transparent);
+  background: color-mix(in srgb, var(--c, #e60000) 26%, var(--surface-dark));
+  color: color-mix(in srgb, var(--c, #e60000) 62%, #ffffff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, #e60000) 35%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c, #e60000) 55%, transparent);
 }
 
 /* ===== Responsive ===== */

@@ -19,7 +19,7 @@ const { Option } = Select;
 
 // Chart palette — hex kept intentionally: SVG fill attributes don't resolve CSS custom properties
 const CHART_COLORS = {
-  applied:   "#10b981", // emerald (brand)
+  applied:   "#10b981", // emerald (kept distinct/semantic)
   approved:  "#14b8a6", // teal
   rejected:  "#f43f5e", // rose (kept distinct/semantic)
   disbursed: "#f59e0b", // amber (kept distinct/semantic)

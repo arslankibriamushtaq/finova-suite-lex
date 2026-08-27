@@ -939,7 +939,7 @@ export default function ProductConfiguration() {
                     value="fixed"
                     checked={configData.returnType === 'fixed'}
                     onChange={() => setConfigData(prev => ({ ...prev, returnType: 'fixed' as 'fixed' | 'average' }))}
-                    className="text-[#10B981] border-gray-300 me-2"
+                    className="text-[#e60000] border-gray-300 me-2"
                     style={{ accentColor: 'var(--foreground)' }}
                   />
                   <span className="text-sm text-black ms-2">{t('pc.returns.fixed')}</span>
@@ -951,7 +951,7 @@ export default function ProductConfiguration() {
                     value="average"
                     checked={configData.returnType === 'average'}
                     onChange={() => setConfigData(prev => ({ ...prev, returnType: 'average' as 'fixed' | 'average' }))}
-                    className="text-[#10B981] border-gray-300  me-2"
+                    className="text-[#e60000] border-gray-300  me-2"
                     style={{ accentColor: 'var(--foreground)' }}
                   />
                   <span className="text-sm  text-black ms-2">{t('pc.returns.average')}</span>

@@ -6,6 +6,7 @@ import { authSlice } from "../../redux/apis/apisSlice";
 import { clearAdminSession } from "../../utils/adminSession";
 import type { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
+import BrandLogo from "../shared/BrandLogo";
 import SuperAdmin from "./SuperAdmin";
 import { themeStyle } from "../Config/Theme";
 import { useNavigate } from "react-router-dom";
@@ -74,11 +75,7 @@ const DashboardHeaderLms = () => {
                 onClick={() => navigate("/lms/dashboard")}
                 className="d-flex justify-content-center p-2"
               >
-                <img
-                  src={Images.FactoringLogo || "/placeholder.svg"}
-                  alt="logo"
-                  height={80}
-                />
+                <BrandLogo height={80} />
               </span>
             </div>
           )}

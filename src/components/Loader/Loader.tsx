@@ -1,10 +1,10 @@
 import "./Loader.css";
-import favicon from "../../assets/images/sullis-favicon.svg";
+import favicon from "../../assets/images/finova-favicon.png";
 
 /**
  * Branded full-screen loader.
  *
- * Renders the Sullis favicon at rest inside a rotating brand-coloured ring with
+ * Renders the Finova mark at rest inside a rotating brand-coloured ring with
  * a soft pulsing halo over a translucent, blurred backdrop. All styling lives in
  * Loader.css (no inline styles); ring colours come from the theme tokens.
  */
@@ -22,7 +22,7 @@ const Loader = () => {
             <img src={favicon} alt="Loading" draggable={false} />
           </div>
         </div>
-        <div className="brand-loader__text">Sullis Digital</div>
+        <div className="brand-loader__text">Finova</div>
       </div>
     </div>
   );
