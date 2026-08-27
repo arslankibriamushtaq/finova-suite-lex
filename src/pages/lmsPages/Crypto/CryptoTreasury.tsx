@@ -30,6 +30,7 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
+import { SearchField } from "../../../components/shared/filterKit";
 import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils";
 import { useProductPermissions, CRYPTO_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import {
@@ -71,6 +72,7 @@ const CryptoTreasury = () => {
 
   const [wallets, setWallets] = useState<TreasuryWallet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -355,12 +357,22 @@ const CryptoTreasury = () => {
 
   if (!canRead) return <PermissionDenied />;
 
-  // The endpoint returns every wallet in one response, so paging is local.
-  const totalRows = wallets.length;
+  // The endpoint returns every wallet in one response, so searching and paging
+  // are both local.
+  const needle = search.trim().toLowerCase();
+  const filtered = needle
+    ? wallets.filter((row) =>
+        [row.assetCode, row.address, row.walletType, row.status]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(needle))
+      )
+    : wallets;
+
+  const totalRows = filtered.length;
   const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalRows);
   const totalPage = Math.ceil(totalRows / pageSize) || 1;
-  const pageRows = wallets.slice((page - 1) * pageSize, page * pageSize);
+  const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   const isRotation = !!editing;
 
@@ -376,23 +388,38 @@ const CryptoTreasury = () => {
           </h3>
           <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("tre.subtitle")}</p>
         </div>
-        <div className="d-flex align-items-center gap-2">
-          <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            {t("common:refresh")}
-          </Button>
-          {canCreate && (
-            <Button className="wallet-brand-btn h-10 gap-2" onClick={openRegister}>
-              <Plus className="h-4 w-4" />
-              {t("tre.register")}
+      </div>
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <SearchField
+            id="tre-search"
+            className="flex-1"
+            value={search}
+            onChange={(next) => {
+              setSearch(next);
+              setPage(1);
+            }}
+            placeholder={t("tre.search")}
+          />
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button variant="outline" className="gap-2" onClick={load} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
             </Button>
-          )}
+            {canCreate && (
+              <Button className="wallet-brand-btn gap-2" onClick={openRegister}>
+                <Plus className="h-4 w-4" />
+                {t("tre.register")}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
       {noSigner && (
         <div
-          className={`mb-3 flex items-start gap-2 rounded-lg px-3 py-2 text-xs ring-1 ${TONES.amber}`}
+          className={`mb-3 flex items-start gap-2 rounded-[2px] px-3 py-2 text-xs ring-1 ${TONES.amber}`}
         >
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>{t("tre.signing.noneWarning")}</span>
@@ -491,7 +518,7 @@ const CryptoTreasury = () => {
 
       <div className="pro-card">
         {!isLoading && totalRows === 0 ? (
-          <EmptyState icon={Vault} text={t("tre.empty")} />
+          <EmptyState icon={Vault} text={t(needle ? "tre.noMatch" : "tre.empty")} />
         ) : (
           <TableView
             header={headers}
@@ -531,7 +558,7 @@ const CryptoTreasury = () => {
                 server does nothing to stop it. Say so before the button. */}
             {isRotation && (
               <div
-                className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ring-1 ${TONES.amber}`}
+                className={`flex items-start gap-2 rounded-[2px] px-3 py-2 text-xs ring-1 ${TONES.amber}`}
               >
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <div className="min-w-0">
@@ -548,7 +575,6 @@ const CryptoTreasury = () => {
                 <Label htmlFor="tre-asset">{t("tre.form.asset")}</Label>
                 <Input
                   id="tre-asset"
-                  className="h-10"
                   placeholder={t("tre.form.assetPlaceholder")}
                   value={assetCode}
                   disabled={isRotation}
@@ -562,7 +588,7 @@ const CryptoTreasury = () => {
                   onValueChange={(v) => setWalletType(v as TreasuryWalletType)}
                   disabled={isRotation}
                 >
-                  <SelectTrigger id="tre-type" className="w-full data-[size=default]:h-10">
+                  <SelectTrigger id="tre-type" className="w-full">
                     <SelectValue placeholder={t("tre.form.type")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -580,7 +606,7 @@ const CryptoTreasury = () => {
               <Label htmlFor="tre-address">{t("tre.form.address")}</Label>
               <Input
                 id="tre-address"
-                className="h-10 font-mono text-xs"
+                className="font-mono text-xs"
                 placeholder={t("tre.form.addressPlaceholder")}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -591,7 +617,7 @@ const CryptoTreasury = () => {
               <Label htmlFor="tre-kms">{t("tre.form.kmsKeyRef")}</Label>
               <Input
                 id="tre-kms"
-                className="h-10 font-mono text-xs"
+                className="font-mono text-xs"
                 placeholder={t("tre.form.kmsKeyRefPlaceholder")}
                 value={kmsKeyRef}
                 onChange={(e) => setKmsKeyRef(e.target.value)}
@@ -607,7 +633,7 @@ const CryptoTreasury = () => {
                 validated independently, and the deposit watcher resolves an
                 inbound transfer by address, so a treasury movement would be
                 attributed to a customer. */}
-            <div className="flex flex-col gap-1.5 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground ring-1 ring-border">
+            <div className="pro-tile flex flex-col gap-1.5 text-xs text-muted-foreground">
               <p className="m-0">{t("tre.form.sharedAddressNote")}</p>
               <p className="m-0">{t("tre.form.userWalletCheck")}</p>
             </div>

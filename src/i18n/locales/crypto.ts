@@ -14,6 +14,8 @@ const crypto: ModuleLocale = {
     "tre.title": "Crypto Treasury",
     "tre.subtitle":
       "The platform's own inventory — the pool a buy settles out of. HOT is the small online balance the backend can sign from; COLD is bulk and offline.",
+    "tre.search": "Search by asset, address, type or status",
+    "tre.noMatch": "No address matches that search.",
     "tre.empty": "No treasury addresses are registered.",
     "tre.col.asset": "Asset",
     "tre.col.address": "Address",
@@ -138,6 +140,8 @@ const crypto: ModuleLocale = {
     "tre.title": "Trésorerie crypto",
     "tre.subtitle":
       "Le stock de la plateforme — la réserve sur laquelle un achat est réglé. HOT est le petit solde en ligne que le backend peut signer ; COLD est le stock hors ligne.",
+    "tre.search": "Rechercher par actif, adresse, type ou statut",
+    "tre.noMatch": "Aucune adresse ne correspond à cette recherche.",
     "tre.empty": "Aucune adresse de trésorerie enregistrée.",
     "tre.col.asset": "Actif",
     "tre.col.address": "Adresse",
@@ -258,6 +262,8 @@ const crypto: ModuleLocale = {
     "tre.title": "خزينة العملات الرقمية",
     "tre.subtitle":
       "مخزون المنصة نفسها — الرصيد الذي تُسوّى منه عمليات الشراء. HOT هو الرصيد المتصل الصغير الذي يمكن للنظام التوقيع منه، أما COLD فهو المخزون غير المتصل.",
+    "tre.search": "ابحث بالأصل أو العنوان أو النوع أو الحالة",
+    "tre.noMatch": "لا يوجد عنوان يطابق هذا البحث.",
     "tre.empty": "لا توجد عناوين خزينة مسجّلة.",
     "tre.col.asset": "الأصل",
     "tre.col.address": "العنوان",
