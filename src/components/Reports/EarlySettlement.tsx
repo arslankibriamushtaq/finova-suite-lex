@@ -156,7 +156,7 @@ const EarlySettlement = () => {
       name: t("common:status"),
       cell: (row: any) => {
         const color =
-          String(row.status || "").toLowerCase() === "settled" ? "rgba(63,195,128,0.9)" : "#6c757d";
+          String(row.status || "").toLowerCase() === "settled" ? "rgba(200, 29, 37,0.9)" : "#6c757d";
         return (
           <div
             style={{

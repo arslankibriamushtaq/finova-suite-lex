@@ -211,10 +211,10 @@ const LoanBalanceReport = () => {
           switch (String(status).toLowerCase()) {
             case "active":
             case "paid":
-              return "rgba(63,195,128,0.9)";
+              return "rgba(200, 29, 37,0.9)";
             case "overdue":
             case "default":
-              return "#F84D4D";
+              return "#6E1418";
             case "pending":
               return "#FFC107";
             default:

@@ -203,7 +203,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           alignItems: "center",
           justifyContent: "center",
           color: "#fff",
-          boxShadow: "0 2px 8px rgba(32, 178, 170, 0.3)"
+          boxShadow: "0 2px 8px rgba(200, 29, 37, 0.3)"
         }}>
           <div style={{ fontSize: "28px", fontWeight: "700", lineHeight: "1" }}>
             {totalScore}
@@ -243,7 +243,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 2px 8px rgba(32, 178, 170, 0.3)"
+          boxShadow: "0 2px 8px rgba(200, 29, 37, 0.3)"
         }}>
           <div style={{ fontSize: "12px", fontWeight: "500", marginBottom: "4px", opacity: 0.9 }}>
             {t("creditWeight.totalScore")}

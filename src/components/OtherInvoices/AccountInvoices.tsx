@@ -262,7 +262,7 @@ const AccountInvoices = () => {
             borderRadius: "2px",
             backgroundColor:
               row.Status === "Active"
-                ? "rgba(146, 188, 131, 1)"
+                ? "rgba(200, 29, 37, 1)"
                 : "rgba(55, 52, 53, 1)",
             color: "rgba(255, 255, 255, 1)",
             cursor: row.Status === "Active" ? "pointer" : "default",

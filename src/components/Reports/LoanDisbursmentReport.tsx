@@ -104,16 +104,16 @@ const LoanDisbursmentReport = () => {
         const getStatusColor = (status: string) => {
           switch (status?.toLowerCase()) {
             case "paid":
-              return "rgba(63, 195, 128, 0.9)";
+              return "rgba(200, 29, 37, 0.9)";
             case "unpaid":
-              return "#F84D4D";
+              return "#6E1418";
             case "pending":
               return "#FFC107";
             case "approved":
-              return "rgba(63, 195, 128, 0.9)";
+              return "rgba(200, 29, 37, 0.9)";
             case "rejected":
             case "reject":
-              return "#F84D4D";
+              return "#6E1418";
             default:
               return "#6c757d";
           }

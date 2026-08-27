@@ -87,10 +87,10 @@ const Faq = () => {
                 textAlign:"center",
                 backgroundColor:
                   row.status === "active"
-                    ? "rgba(63, 195, 128, 0.9)"
+                    ? "rgba(200, 29, 37, 0.9)"
                     : row.accountStatus === "inactive"
-                    ? "#F84D4D"
-                    : " #f84d4d ",
+                    ? "#6E1418"
+                    : " #6E1418 ",
                 color: "white",
                 cursor: row.status === "active" ? "pointer" : "default",
               }}

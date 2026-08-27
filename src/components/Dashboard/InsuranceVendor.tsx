@@ -117,9 +117,9 @@ const InsuranceVendor = () => {
             fontSize: "12px",
             backgroundColor:
               row.status === "Active"
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "rgba(200, 29, 37, 0.9)"
                 : row.status === "inactive"
-                ? "#F84D4D"
+                ? "#6E1418"
                 : "transparent",
             color: "white",
             cursor: row.status === "active" ? "pointer" : "default",

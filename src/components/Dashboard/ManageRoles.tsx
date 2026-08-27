@@ -137,7 +137,7 @@ const ManageRoles = () => {
             padding: "0.22rem 1rem",
             borderRadius: "2px",
             backgroundColor: row.status
-              ? "rgba(146, 188, 131, 1)"
+              ? "rgba(200, 29, 37, 1)"
               : "rgba(55, 52, 53, 1)",
 
             color: "rgba(255, 255, 255, 1)",

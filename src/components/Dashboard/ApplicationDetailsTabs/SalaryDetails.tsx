@@ -122,7 +122,7 @@ function SalaryDetails({ fullDetail }: any) {
   const getEmploymentStatusColor = (status: string) => {
     const statusLower = status?.toLowerCase() || "";
     if (statusLower.includes("active")) {
-      return "rgba(63, 195, 128, 0.9)";
+      return "rgba(200, 29, 37, 0.9)";
     }
     if (statusLower.includes("pension") || statusLower.includes("pensioned")) {
       return "#FFC107";

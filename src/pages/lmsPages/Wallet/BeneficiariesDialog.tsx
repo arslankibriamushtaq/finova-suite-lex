@@ -41,12 +41,12 @@ const ActiveBadge = ({ active }: { active?: boolean }) => {
     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
     style={{
       backgroundColor: active ? "rgba(200, 29, 37,0.12)" : "rgba(100,116,139,0.12)",
-      color: active ? "rgb(21,128,61)" : "rgb(71,85,105)",
+      color: active ? "rgb(141, 22, 28)" : "rgb(71,85,105)",
     }}
   >
     <span
       className="inline-block h-1.5 w-1.5 rounded-full"
-      style={{ backgroundColor: active ? "rgb(34,197,94)" : "rgb(148,163,184)" }}
+      style={{ backgroundColor: active ? "rgb(200, 29, 37)" : "rgb(148,163,184)" }}
     />
     {active ? t("beneficiaries.active") : t("beneficiaries.inactive")}
   </span>

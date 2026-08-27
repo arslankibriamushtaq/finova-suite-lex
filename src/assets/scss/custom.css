@@ -895,7 +895,7 @@ html, body {
 .calculator-settings__input:focus {
   outline: none;
   border-color: var(--theme-secondary);
-  box-shadow: 0 0 0 2px rgba(11, 249, 209, 0.2);
+  box-shadow: 0 0 0 2px rgba(217, 99, 104, 0.2);
 }
 
 /* Loading Styles */
@@ -1046,7 +1046,7 @@ html, body {
   animation: wave 1.2s ease-in-out infinite;
   display: inline-block;
   line-height: 1;
-  text-shadow: 0 4px 8px rgba(11, 249, 209, 0.3);
+  text-shadow: 0 4px 8px rgba(217, 99, 104, 0.3);
   will-change: transform;
   transition: all 0.3s ease;
 }
@@ -3962,7 +3962,7 @@ h2 {
 .accent-green .form-check-input:focus {
   border-color: var(--theme-secondary);
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(0, 111, 99, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(171, 25, 32, 0.25);
 }
 
 .accent-green label {
@@ -8678,7 +8678,7 @@ section {
   border-radius: 50%;
   background: var(--color-teal-accent);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(10, 227, 190, 0.3);
+  box-shadow: 0 2px 8px rgba(217, 99, 104, 0.3);
 }
 .header-footer-settings__landing-calculator .header-footer-settings__landing-calculator-slider::-moz-range-thumb {
   width: 20px;
@@ -8687,7 +8687,7 @@ section {
   background: var(--color-teal-accent);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(10, 227, 190, 0.3);
+  box-shadow: 0 2px 8px rgba(217, 99, 104, 0.3);
 }
 .header-footer-settings__landing-calculator .header-footer-settings__landing-calculator-slider-tooltip {
   position: absolute;
@@ -8866,13 +8866,13 @@ section {
   display: flex;
   align-items: center;
   gap: 15px;
-  border: 1px solid rgba(165, 255, 240, 0.5254901961);
-  box-shadow: 0 2px 8px rgba(10, 227, 190, 0.1);
+  border: 1px solid rgba(237, 199, 201, 0.5254901961);
+  box-shadow: 0 2px 8px rgba(217, 99, 104, 0.1);
   transition: all 0.3s ease;
 }
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(10, 227, 190, 0.2);
+  box-shadow: 0 4px 15px rgba(217, 99, 104, 0.2);
 }
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion-icon {
   width: 35px;
@@ -8886,7 +8886,7 @@ section {
   font-size: 16px;
   font-weight: bold;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(10, 227, 190, 0.3);
+  box-shadow: 0 2px 6px rgba(217, 99, 104, 0.3);
 }
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-criterion-text {
   color: #2c3e50;
@@ -8907,7 +8907,7 @@ section {
   font-size: 12px;
   font-weight: bold;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(10, 227, 190, 0.3);
+  box-shadow: 0 2px 4px rgba(217, 99, 104, 0.3);
 }
 .header-footer-settings__landing-eligibility .header-footer-settings__landing-eligibility-text {
   text-align: left;
