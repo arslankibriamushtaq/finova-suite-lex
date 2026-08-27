@@ -568,6 +568,84 @@ const lex: ModuleLocale = {
     "dt.err.checkUnknown": "This company's check library has no such check. Add it there first.",
     "dt.err.duplicateCheck": "This check is already in the sequence.",
 
+    // --- Reason code checklists — which documents a finding asks for
+    "rcd.title": "Reason Code Documents",
+    "rcd.subtitle":
+      "What to ask the applicant for when a finding comes back. The document types above say what runs on a document; this says when to ask for one — so two underwriters looking at the same finding ask for the same thing, and the decision is reviewable afterwards.",
+    "rcd.searchPlaceholder": "Search a reason code or title",
+    "rcd.showUnmapped": "Show codes with no checklist",
+    "rcd.mapCode": "Map a code",
+    "rcd.listTitle": "Reason codes",
+    "rcd.empty": "No reason codes to show.",
+    "rcd.emptyExplain":
+      "Nothing is mapped yet, and no published code matched. A code with no checklist asks for nothing — which is how this worked before the screen existed.",
+    "rcd.vocabularyUnavailable":
+      "The Agent Configurator's published codes could not be read, so this list shows only the codes that already have a checklist. Codes with no checklist are not visible here.",
+    "rcd.unmappedBanner":
+      "{{count}} published reason codes have no checklist and currently ask for nothing.",
+    "rcd.documentCount": "{{count}} documents",
+    "rcd.mandatoryCount": "{{count}} mandatory",
+    "rcd.unmapped": "No checklist — asks for nothing",
+    "rcd.selectCode": "Pick a reason code to see and edit its checklist.",
+    "rcd.checklistFor": "Checklist",
+    "rcd.rowCount": "{{count}} documents",
+    "rcd.unsaved": "Unsaved",
+    "rcd.discard": "Discard",
+    "rcd.saveChecklist": "Save checklist",
+    "rcd.noDocuments": "This finding asks for nothing.",
+    "rcd.noDocumentsExplain":
+      "Add the documents an applicant must send when this code comes back. Until then the underwriter chooses from the full catalogue, from memory.",
+    "rcd.mandatory": "Mandatory",
+    "rcd.optional": "Optional",
+    "rcd.skipped": "Not requested",
+    "rcd.typeRetired": "Type retired",
+    "rcd.moveUp": "Move up",
+    "rcd.moveDown": "Move down",
+    "rcd.removeRow": "Remove from checklist",
+    "rcd.field.mandatory": "Mandatory",
+    "rcd.field.active": "In use",
+    "rcd.field.note": "What to tell the applicant on this finding",
+    "rcd.field.notePlaceholder": "Last six months, showing the IBAN",
+    "rcd.field.reasonCode": "Reason code",
+    "rcd.field.reasonCodeHint":
+      "Any code — it need not be published yet. You can decide what a finding needs before writing the process that handles it.",
+    "rcd.addDocument": "Add a document",
+    "rcd.pickType": "Pick a document type",
+    "rcd.noTypes": "This company has no document types yet.",
+    "rcd.allTypesUsed": "Every document type is already on this checklist.",
+    "rcd.add": "Add",
+    "rcd.catalogueNote":
+      "The picker offers the company's document types. A request for a document nobody defined is one the applicant cannot satisfy — define it on the Document Types screen first.",
+    "rcd.map.title": "Map a reason code",
+    "rcd.map.explain":
+      "Opens an empty checklist for this code. Nothing is written until you add documents and save.",
+    "rcd.map.confirm": "Open checklist",
+    "rcd.clear.title": "Clear this checklist?",
+    "rcd.clear.explain":
+      "{{code}} will stop asking for anything, and an underwriter handing a case back on it chooses from the full catalogue again. This is not a delete — you can map it again at any time.",
+    "rcd.clear.confirm": "Stop asking for anything",
+    "rcd.toast.loadFailed": "The reason codes could not be loaded.",
+    "rcd.toast.checklistFailed": "This checklist could not be loaded.",
+    "rcd.toast.saved": "Checklist saved.",
+    "rcd.toast.saveFailed":
+      "The checklist was refused and nothing was written — correct the flagged row and save again.",
+    "rcd.err.typeUnknown":
+      "Not a document type this company has defined. Add it on the Document Types screen first.",
+    "rcd.err.duplicateType": "This document is already on the checklist.",
+    "rcd.err.duplicateOrdinal":
+      "Two documents were given the same position. Reload the checklist and save again.",
+    "rcd.err.invalid": "The checklist was refused.",
+
+    // --- Send to source, pre-filled from the case's reason codes
+    "case.source.prefill": "Pre-fill from reason codes",
+    "case.source.prefilled":
+      "Pre-filled from {{count}} reason codes on this case. Edit freely — this is a starting point, not a decision.",
+    "case.source.prefillEmpty":
+      "None of this case's reason codes has a checklist, so nothing was pre-filled. Choose from the catalogue as usual.",
+    "case.source.prefillFailed": "The checklist could not be read. Choose from the catalogue as usual.",
+    "case.source.requiredBy": "Asked for by {{codes}}",
+    "case.source.mandatory": "Mandatory",
+
     // --- SLA board
     "board.tile.averageInFlight": "Average time on the clock",
     "board.onClockHint": "Excludes stopped-clock periods, so it is not the same as time open.",
@@ -1391,6 +1469,81 @@ const lex: ModuleLocale = {
     "dt.err.checkUnknown":
       "La bibliothèque de contrôles de cette société ne contient pas ce contrôle. Ajoutez-le d'abord.",
     "dt.err.duplicateCheck": "Ce contrôle figure déjà dans la séquence.",
+    "rcd.title": "Documents par code de motif",
+    "rcd.subtitle":
+      "Ce qu'il faut demander au demandeur lorsqu'un constat revient. Les types de documents disent ce qui s'exécute sur un document ; ceci dit quand en demander un — afin que deux analystes face au même constat demandent la même chose, et que la décision reste vérifiable ensuite.",
+    "rcd.searchPlaceholder": "Rechercher un code de motif ou un titre",
+    "rcd.showUnmapped": "Afficher les codes sans liste",
+    "rcd.mapCode": "Associer un code",
+    "rcd.listTitle": "Codes de motif",
+    "rcd.empty": "Aucun code de motif à afficher.",
+    "rcd.emptyExplain":
+      "Rien n'est encore associé et aucun code publié ne correspond. Un code sans liste ne demande rien — c'est le fonctionnement d'avant cet écran.",
+    "rcd.vocabularyUnavailable":
+      "Les codes publiés du Configurateur n'ont pas pu être lus : cette liste ne montre donc que les codes disposant déjà d'une liste. Les codes sans liste n'y figurent pas.",
+    "rcd.unmappedBanner":
+      "{{count}} codes de motif publiés n'ont aucune liste et ne demandent donc rien.",
+    "rcd.documentCount": "{{count}} documents",
+    "rcd.mandatoryCount": "{{count}} obligatoires",
+    "rcd.unmapped": "Aucune liste — ne demande rien",
+    "rcd.selectCode": "Choisissez un code de motif pour voir et modifier sa liste.",
+    "rcd.checklistFor": "Liste de documents",
+    "rcd.rowCount": "{{count}} documents",
+    "rcd.unsaved": "Non enregistré",
+    "rcd.discard": "Abandonner",
+    "rcd.saveChecklist": "Enregistrer la liste",
+    "rcd.noDocuments": "Ce constat ne demande rien.",
+    "rcd.noDocumentsExplain":
+      "Ajoutez les documents que le demandeur doit envoyer lorsque ce code revient. D'ici là, l'analyste choisit de mémoire dans tout le catalogue.",
+    "rcd.mandatory": "Obligatoire",
+    "rcd.optional": "Facultatif",
+    "rcd.skipped": "Non demandé",
+    "rcd.typeRetired": "Type retiré",
+    "rcd.moveUp": "Monter",
+    "rcd.moveDown": "Descendre",
+    "rcd.removeRow": "Retirer de la liste",
+    "rcd.field.mandatory": "Obligatoire",
+    "rcd.field.active": "Actif",
+    "rcd.field.note": "Ce qu'il faut dire au demandeur pour ce constat",
+    "rcd.field.notePlaceholder": "Les six derniers mois, faisant apparaître l'IBAN",
+    "rcd.field.reasonCode": "Code de motif",
+    "rcd.field.reasonCodeHint":
+      "N'importe quel code — il n'a pas besoin d'être déjà publié. Vous pouvez décider de ce qu'un constat exige avant d'écrire le processus qui le traite.",
+    "rcd.addDocument": "Ajouter un document",
+    "rcd.pickType": "Choisir un type de document",
+    "rcd.noTypes": "Cette société n'a encore aucun type de document.",
+    "rcd.allTypesUsed": "Tous les types de documents figurent déjà dans cette liste.",
+    "rcd.add": "Ajouter",
+    "rcd.catalogueNote":
+      "Le sélecteur propose les types de documents de la société. Demander un document que personne n'a défini, c'est demander l'impossible — définissez-le d'abord sur l'écran Types de documents.",
+    "rcd.map.title": "Associer un code de motif",
+    "rcd.map.explain":
+      "Ouvre une liste vide pour ce code. Rien n'est écrit tant que vous n'avez pas ajouté de documents et enregistré.",
+    "rcd.map.confirm": "Ouvrir la liste",
+    "rcd.clear.title": "Vider cette liste ?",
+    "rcd.clear.explain":
+      "{{code}} cessera de demander quoi que ce soit, et l'analyste qui renvoie un dossier sur ce motif choisira de nouveau dans tout le catalogue. Ce n'est pas une suppression : vous pouvez l'associer de nouveau à tout moment.",
+    "rcd.clear.confirm": "Ne plus rien demander",
+    "rcd.toast.loadFailed": "Les codes de motif n'ont pas pu être chargés.",
+    "rcd.toast.checklistFailed": "Cette liste n'a pas pu être chargée.",
+    "rcd.toast.saved": "Liste enregistrée.",
+    "rcd.toast.saveFailed":
+      "La liste a été refusée et rien n'a été écrit — corrigez la ligne signalée puis enregistrez de nouveau.",
+    "rcd.err.typeUnknown":
+      "Ce n'est pas un type de document défini par cette société. Ajoutez-le d'abord sur l'écran Types de documents.",
+    "rcd.err.duplicateType": "Ce document figure déjà dans la liste.",
+    "rcd.err.duplicateOrdinal":
+      "Deux documents ont reçu la même position. Rechargez la liste puis enregistrez de nouveau.",
+    "rcd.err.invalid": "La liste a été refusée.",
+    "case.source.prefill": "Pré-remplir depuis les codes de motif",
+    "case.source.prefilled":
+      "Pré-rempli à partir de {{count}} codes de motif de ce dossier. Modifiez librement : c'est un point de départ, pas une décision.",
+    "case.source.prefillEmpty":
+      "Aucun code de motif de ce dossier n'a de liste : rien n'a été pré-rempli. Choisissez dans le catalogue comme d'habitude.",
+    "case.source.prefillFailed":
+      "La liste n'a pas pu être lue. Choisissez dans le catalogue comme d'habitude.",
+    "case.source.requiredBy": "Demandé par {{codes}}",
+    "case.source.mandatory": "Obligatoire",
     "board.tile.averageInFlight": "Temps moyen décompté",
     "board.onClockHint": "Exclut les périodes de chronomètre arrêté : ce n'est donc pas la durée d'ouverture.",
     "gov.configVersion": "Configurateur v{{version}}",
@@ -2310,6 +2463,75 @@ const lex: ModuleLocale = {
     "dt.err.duplicateOrdinal": "أُعطيت خطوتان الموضع نفسه. أعد تحميل التسلسل ثم احفظ مجددًا.",
     "dt.err.checkUnknown": "مكتبة فحوص هذه الشركة لا تتضمّن هذا الفحص. أضِفه إليها أولًا.",
     "dt.err.duplicateCheck": "هذا الفحص موجود في التسلسل بالفعل.",
+    "rcd.title": "مستندات رموز الأسباب",
+    "rcd.subtitle":
+      "ما يُطلب من مقدّم الطلب عند ورود ملاحظة. أنواع المستندات تحدّد ما يُنفَّذ على المستند، وهذه الشاشة تحدّد متى يُطلب المستند أصلًا — حتى يطلب محلّلان أمام الملاحظة نفسها الشيء نفسه، ويبقى القرار قابلًا للمراجعة لاحقًا.",
+    "rcd.searchPlaceholder": "ابحث عن رمز سبب أو عنوان",
+    "rcd.showUnmapped": "إظهار الرموز بلا قائمة",
+    "rcd.mapCode": "ربط رمز",
+    "rcd.listTitle": "رموز الأسباب",
+    "rcd.empty": "لا توجد رموز أسباب لعرضها.",
+    "rcd.emptyExplain":
+      "لا شيء مربوط بعد ولم يطابق أي رمز منشور. الرمز الذي لا قائمة له لا يطلب شيئًا — وهو ما كان عليه الحال قبل هذه الشاشة.",
+    "rcd.vocabularyUnavailable":
+      "تعذّرت قراءة الرموز المنشورة من مُهيّئ الوكيل، لذا تعرض هذه القائمة الرموز التي لديها قائمة مستندات فقط. الرموز بلا قائمة غير ظاهرة هنا.",
+    "rcd.unmappedBanner": "{{count}} من رموز الأسباب المنشورة بلا قائمة مستندات ولا تطلب شيئًا حاليًا.",
+    "rcd.documentCount": "{{count}} مستندات",
+    "rcd.mandatoryCount": "{{count}} إلزامية",
+    "rcd.unmapped": "لا توجد قائمة — لا يطلب شيئًا",
+    "rcd.selectCode": "اختر رمز سبب لعرض قائمته وتعديلها.",
+    "rcd.checklistFor": "قائمة المستندات",
+    "rcd.rowCount": "{{count}} مستندات",
+    "rcd.unsaved": "غير محفوظ",
+    "rcd.discard": "تجاهل",
+    "rcd.saveChecklist": "حفظ القائمة",
+    "rcd.noDocuments": "هذه الملاحظة لا تطلب شيئًا.",
+    "rcd.noDocumentsExplain":
+      "أضِف المستندات التي يجب على مقدّم الطلب إرسالها عند ورود هذا الرمز. وحتى ذلك الحين يختار المحلّل من الفهرس كاملًا اعتمادًا على ذاكرته.",
+    "rcd.mandatory": "إلزامي",
+    "rcd.optional": "اختياري",
+    "rcd.skipped": "غير مطلوب",
+    "rcd.typeRetired": "نوع مُتقاعد",
+    "rcd.moveUp": "تحريك لأعلى",
+    "rcd.moveDown": "تحريك لأسفل",
+    "rcd.removeRow": "إزالة من القائمة",
+    "rcd.field.mandatory": "إلزامي",
+    "rcd.field.active": "قيد الاستخدام",
+    "rcd.field.note": "ما يُقال لمقدّم الطلب بشأن هذه الملاحظة",
+    "rcd.field.notePlaceholder": "آخر ستة أشهر، مع إظهار رقم الآيبان",
+    "rcd.field.reasonCode": "رمز السبب",
+    "rcd.field.reasonCodeHint":
+      "أي رمز — لا يلزم أن يكون منشورًا بعد. يمكنك تحديد ما تتطلّبه الملاحظة قبل كتابة الإجراء الذي يعالجها.",
+    "rcd.addDocument": "إضافة مستند",
+    "rcd.pickType": "اختر نوع مستند",
+    "rcd.noTypes": "لا توجد أنواع مستندات لهذه الشركة بعد.",
+    "rcd.allTypesUsed": "كل أنواع المستندات موجودة في هذه القائمة بالفعل.",
+    "rcd.add": "إضافة",
+    "rcd.catalogueNote":
+      "يعرض المُحدِّد أنواع مستندات الشركة. وطلب مستند لم يُعرّفه أحد هو طلب لا يستطيع مقدّم الطلب تلبيته — عرّفه أولًا في شاشة أنواع المستندات.",
+    "rcd.map.title": "ربط رمز سبب",
+    "rcd.map.explain": "يفتح قائمة فارغة لهذا الرمز. ولا يُكتب شيء حتى تضيف مستندات وتحفظ.",
+    "rcd.map.confirm": "فتح القائمة",
+    "rcd.clear.title": "إفراغ هذه القائمة؟",
+    "rcd.clear.explain":
+      "سيتوقّف {{code}} عن طلب أي شيء، وسيعود المحلّل الذي يعيد الحالة إلى المصدر إلى الاختيار من الفهرس كاملًا. هذا ليس حذفًا: يمكنك ربطه من جديد في أي وقت.",
+    "rcd.clear.confirm": "التوقّف عن طلب أي شيء",
+    "rcd.toast.loadFailed": "تعذّر تحميل رموز الأسباب.",
+    "rcd.toast.checklistFailed": "تعذّر تحميل هذه القائمة.",
+    "rcd.toast.saved": "حُفظت القائمة.",
+    "rcd.toast.saveFailed": "رُفضت القائمة ولم يُكتب شيء — صحّح الصف المُشار إليه ثم احفظ مجددًا.",
+    "rcd.err.typeUnknown": "ليس نوع مستند عرّفته هذه الشركة. أضِفه أولًا في شاشة أنواع المستندات.",
+    "rcd.err.duplicateType": "هذا المستند موجود في القائمة بالفعل.",
+    "rcd.err.duplicateOrdinal": "أُعطي مستندان الموضع نفسه. أعد تحميل القائمة ثم احفظ مجددًا.",
+    "rcd.err.invalid": "رُفضت القائمة.",
+    "case.source.prefill": "تعبئة مسبقة من رموز الأسباب",
+    "case.source.prefilled":
+      "عُبِّئت مسبقًا من {{count}} من رموز الأسباب في هذه الحالة. عدِّلها بحرية — فهي نقطة بداية وليست قرارًا.",
+    "case.source.prefillEmpty":
+      "لا يوجد لأي من رموز أسباب هذه الحالة قائمة مستندات، لذا لم تُعبّأ أي صفوف. اختر من الفهرس كالمعتاد.",
+    "case.source.prefillFailed": "تعذّرت قراءة القائمة. اختر من الفهرس كالمعتاد.",
+    "case.source.requiredBy": "طلبها {{codes}}",
+    "case.source.mandatory": "إلزامي",
     "board.tile.averageInFlight": "متوسط الوقت المحتسَب",
     "board.onClockHint": "لا يشمل فترات توقّف المؤقّت، فهو ليس مدة بقاء الحالة مفتوحة.",
     "gov.configVersion": "المُهيّئ الإصدار {{version}}",

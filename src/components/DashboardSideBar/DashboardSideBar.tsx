@@ -168,6 +168,7 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Authority Levels": "lexAuthorityLevels",
   "SLA Policies": "lexSlaPolicies",
   "Verification Sequence": "lexChecks",
+  "Reason Code Documents": "lexReasonCodeDocuments",
   "Document Analyses": "lexAnalyses",
   "SLA Board": "lexSlaBoard",
   "Policy Library": "lexPolicyLibrary",
@@ -2318,6 +2319,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         Link: "DocumentTypes",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/DocumentTypes",
+      },
+      hasAccess("LEX_DOCUMENTS_READ") &&
+      {
+        label: "Reason Code Documents",
+        Link: "ReasonCodeDocuments",
+        LinkLable: "/LOS/Lex",
+        active: pathname === "/LOS/Lex/ReasonCodeDocuments",
       },
       hasAccess("LEX_DOCUMENTS_READ") &&
       {

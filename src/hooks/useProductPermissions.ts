@@ -1000,6 +1000,13 @@ export const LEX_PERMISSIONS = {
    */
   DOC_TYPE_READ: "LEX_DOCUMENTS_READ",
   DOC_TYPE_WRITE: "LEX_DOCUMENTS_MANAGE",
+  /**
+   * `lex.documents.reason-codes` — which documents a finding asks for. Again a
+   * separate Casbin object on the same catalogue permission: deciding what a
+   * DBR breach needs is document configuration, not case work.
+   */
+  REASON_CODE_DOC_READ: "LEX_DOCUMENTS_READ",
+  REASON_CODE_DOC_WRITE: "LEX_DOCUMENTS_MANAGE",
   /** Read-only in Casbin too: no act writes an analysis. */
   ANALYSIS_READ: "LEX_DOCUMENTS_READ",
 

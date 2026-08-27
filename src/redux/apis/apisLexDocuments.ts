@@ -276,6 +276,163 @@ export const misorderedFinancialStep = (groups: (string | undefined)[]): number 
 };
 
 /* ------------------------------------------------------------------ */
+/* Reason code checklists                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * `lex.documents.reason-codes` — which documents a finding asks for.
+ *
+ * The link that was missing in the chain: the types and their sequences already
+ * said *what runs on a document*, but nothing said *when to ask for one*. Before
+ * this the answer lived in an underwriter's head, so two people looking at the
+ * same finding asked for different things and neither decision was reviewable.
+ *
+ * The two references are deliberately asymmetric:
+ *
+ * - `typeCode` is **hard**: a checklist may only name a type the company has
+ *   defined, because a request for a document nobody defined is one the
+ *   applicant cannot satisfy and the reader cannot match.
+ * - `reasonCode` is **not**: a plain string, and mapping documents to a code the
+ *   Agent Configurator has not published yet is allowed on purpose. A company
+ *   should be able to decide what a finding needs before it writes the process
+ *   for handling it.
+ */
+const REASON_CODES = "/api/v1/lex/documents/reason-codes";
+
+export interface LexReasonCodeSummary {
+  reasonCode: string;
+  /** Every row, deactivated ones included. */
+  documentCount: number;
+  /** Active mandatory rows only — the number that actually gates a case coming back. */
+  mandatoryCount: number;
+}
+
+/** One line of a checklist, **as configured** — deactivated rows included. */
+export interface LexReasonCodeDocument {
+  id?: string;
+  reasonCode?: string;
+  /** Position in the checklist the applicant sees, 1-based. */
+  ordinal: number;
+  documentTypeId?: string;
+  typeCode: string;
+  /**
+   * **Omitted means true**, unlike most flags in this codebase. Getting it
+   * backwards means a case comes back without a document the underwriter was
+   * waiting for, and the only symptom is a case sitting for days.
+   */
+  mandatory?: boolean;
+  /**
+   * What to tell the applicant *on this finding* — per code, not per type. The
+   * catalogue's `description` says what a bank statement generally is; this says
+   * what this finding needs from it. Six months for a DBR breach; the page
+   * showing the IBAN for a mismatch.
+   */
+  note?: string | null;
+  active?: boolean;
+}
+
+/** One line of the folded checklist an application actually gets. */
+export interface LexResolvedDocument {
+  documentTypeId: string;
+  typeCode: string;
+  /** From the **type**, not the mapping — one place to rename a document. */
+  displayName?: string;
+  description?: string;
+  /** A sort key, not a display number: the output is not contiguous. */
+  ordinal: number;
+  mandatory: boolean;
+  note?: string | null;
+  /** Every code that asked for this document, ascending. */
+  requiredBy?: string[];
+}
+
+/**
+ * Only the codes this company has actually mapped.
+ *
+ * **A code absent from this list asks for nothing** — not an error, just the
+ * behaviour from before checklists existed. Which is why the screen joins it
+ * against the Agent Configurator's vocabulary: a list of only the mapped codes
+ * hides exactly the thing that needs attention.
+ */
+export const getReasonCodeSummaries = async (): Promise<LexReasonCodeSummary[]> => {
+  const rows = unwrapList<LexReasonCodeSummary>(await lexDocumentApi.get(REASON_CODES));
+  return [...rows].sort((a, b) => a.reasonCode.localeCompare(b.reasonCode));
+};
+
+/** One code's checklist as configured, ascending by ordinal. */
+export const getReasonCodeDocuments = async (
+  reasonCode: string
+): Promise<LexReasonCodeDocument[]> => {
+  const rows = unwrapList<LexReasonCodeDocument>(
+    await lexDocumentApi.get(`${REASON_CODES}/${encodeURIComponent(reasonCode)}/documents`)
+  );
+  return [...rows].sort((a, b) => a.ordinal - b.ordinal);
+};
+
+/**
+ * Replace the whole checklist. Same contract as the type sequence editor, and
+ * for the same reason: there is no add-one or reorder call.
+ *
+ * Ordinals are re-indexed 1..n here so a drag never sends a gap. `mandatory`
+ * is sent explicitly rather than relying on the server's default — a field the
+ * caller left undefined would silently become "required", which is the one
+ * direction this flag must never move by accident.
+ *
+ * An empty list is a real save: it clears the checklist and the finding stops
+ * asking for anything. Confirm that with the user before calling.
+ */
+export const putReasonCodeDocuments = async (
+  reasonCode: string,
+  rows: LexReasonCodeDocument[]
+): Promise<LexReasonCodeDocument[]> => {
+  const documents = rows.map((row, index) => ({
+    ordinal: index + 1,
+    typeCode: row.typeCode,
+    mandatory: row.mandatory !== false,
+    note: row.note?.trim() || undefined,
+    active: row.active !== false,
+  }));
+  return unwrapList(
+    await lexDocumentApi.put(`${REASON_CODES}/${encodeURIComponent(reasonCode)}/documents`, {
+      documents,
+    })
+  );
+};
+
+/**
+ * **The endpoint that does the work.** An application almost never arrives with
+ * one finding, and the applicant uploads a bank statement once however many
+ * findings wanted it — so this folds every code the case carries into one list.
+ *
+ * The merge is not a union of rows: `mandatory` is true if **any** contributing
+ * code says so (relaxing a requirement silently is the failure that costs a
+ * rejected file), the **earliest** ordinal wins, and the note is the **first
+ * non-empty** one in position order rather than a concatenation, which would put
+ * two codes' contradictory instructions on the applicant's screen.
+ *
+ * An empty result is not an error — the company has mapped none of these codes.
+ * Fall back to free choice from the type catalogue; never block a hand-back over
+ * a configuration gap.
+ */
+export const resolveReasonCodeDocuments = async (
+  reasonCodes: string[]
+): Promise<LexResolvedDocument[]> => {
+  const codes = [...new Set(reasonCodes.map((code) => code.trim()).filter(Boolean))];
+  if (codes.length === 0) return [];
+  const rows = unwrapList<LexResolvedDocument>(
+    await lexDocumentApi.get(`${REASON_CODES}/resolve`, {
+      // Repeated `reasonCode=A&reasonCode=B`, which is what the endpoint reads —
+      // axios' default would send `reasonCode[]=A`.
+      params: { reasonCode: codes },
+      paramsSerializer: {
+        indexes: null,
+      },
+    })
+  );
+  return [...rows].sort((a, b) => a.ordinal - b.ordinal);
+};
+
+/* ------------------------------------------------------------------ */
 /* Analyses                                                            */
 /* ------------------------------------------------------------------ */
 
