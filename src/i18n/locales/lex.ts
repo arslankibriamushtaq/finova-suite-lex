@@ -494,6 +494,11 @@ const lex: ModuleLocale = {
     "chk.err.noSequence": "No verification sequence is configured for this tenant yet.",
 
     // --- Document types and their sequences
+        "set.tab.reasonCodeDocuments": "Reason Code Documents",
+    "set.tab.checks": "Verification Sequence",
+    "set.tab.documentTypes": "Document Types",
+    "set.tab.analyses": "Document Analysis",
+    "set.tab.employers": "Approved Employers",
     "dt.title": "Document Types",
     "dt.subtitle":
       "The document types this company verifies, and for each one the sequence of checks that runs on it. A salary certificate has no closing balance to reconcile, and a bank statement has no employer stamp to validate.",
@@ -1399,6 +1404,11 @@ const lex: ModuleLocale = {
     "chk.err.noSequence": "Aucune séquence de vérification n'est encore configurée pour ce locataire.",
 
     // --- Types de documents et leurs séquences
+        "set.tab.reasonCodeDocuments": "Documents par code de motif",
+    "set.tab.checks": "Séquence de vérification",
+    "set.tab.documentTypes": "Types de documents",
+    "set.tab.analyses": "Analyses documentaires",
+    "set.tab.employers": "Employeurs agréés",
     "dt.title": "Types de documents",
     "dt.subtitle":
       "Les types de documents que cette société vérifie, et pour chacun la séquence de contrôles qui s'y applique. Une attestation de salaire n'a pas de solde de clôture à rapprocher, et un relevé bancaire n'a pas de cachet employeur à valider.",
@@ -2402,6 +2412,11 @@ const lex: ModuleLocale = {
     "chk.err.noSequence": "لا يوجد تسلسل تحقّق مُهيأ لهذا المستأجر بعد.",
 
     // --- أنواع المستندات وتسلسل فحوصها
+        "set.tab.reasonCodeDocuments": "مستندات رموز الأسباب",
+    "set.tab.checks": "تسلسل التحقق",
+    "set.tab.documentTypes": "أنواع المستندات",
+    "set.tab.analyses": "تحليلات المستندات",
+    "set.tab.employers": "أصحاب العمل المعتمدون",
     "dt.title": "أنواع المستندات",
     "dt.subtitle":
       "أنواع المستندات التي تتحقّق منها هذه الشركة، ولكل نوع تسلسل الفحوص الذي يُطبَّق عليه. فشهادة الراتب لا رصيد ختامي فيها لتتم مطابقته، وكشف الحساب لا ختم صاحب عمل فيه ليُتحقَّق منه.",

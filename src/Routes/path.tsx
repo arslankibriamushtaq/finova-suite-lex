@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "../Layout/Layout";
 import NotFound from "../components/NotFound/NotFound";
 import LayoutDashboard from "../Layout/LayoutDashboard";
@@ -246,6 +246,7 @@ import BnplCategories from "../pages/lmsPages/Bnpl/BnplCategories";
 import BnplCurrencyLimits from "../pages/lmsPages/Bnpl/BnplCurrencyLimits";
 import SullisCashConfig from "../pages/lmsPages/SullisCash/SullisCashConfig";
 import SullisCashLoans from "../pages/lmsPages/SullisCash/SullisCashLoans";
+import LexSettings from "../pages/lmsPages/Lex/LexSettings";
 import CryptoTreasury from "../pages/lmsPages/Crypto/CryptoTreasury";
 import CryptoTransfers from "../pages/lmsPages/Crypto/CryptoTransfers";
 // LEX — the agentic decisioning layer. One route per screen, and per Casbin
@@ -262,13 +263,8 @@ import LexDelegation from "../pages/lmsPages/Lex/LexDelegation";
 import LexAuthorityLevels from "../pages/lmsPages/Lex/LexAuthorityLevels";
 import LexSectors from "../pages/lmsPages/Lex/LexSectors";
 import LexSlaPolicies from "../pages/lmsPages/Lex/LexSlaPolicies";
-import LexChecks from "../pages/lmsPages/Lex/LexChecks";
-import LexDocumentTypes from "../pages/lmsPages/Lex/LexDocumentTypes";
-import LexReasonCodeDocuments from "../pages/lmsPages/Lex/LexReasonCodeDocuments";
-import LexAnalyses from "../pages/lmsPages/Lex/LexAnalyses";
 import LexSlaBoard from "../pages/lmsPages/Lex/LexSlaBoard";
 import LexPolicyLibrary from "../pages/lmsPages/Lex/LexPolicyLibrary";
-import LexEmployers from "../pages/lmsPages/Lex/LexEmployers";
 import LexGovernance from "../pages/lmsPages/Lex/LexGovernance";
 import LexBiGallery from "../pages/lmsPages/Lex/LexBiGallery";
 import LexBiReport from "../pages/lmsPages/Lex/LexBiReport";
@@ -1007,14 +1003,30 @@ export const router = createBrowserRouter(
             // governed here, and like the ladder it is data, not an enum.
             { path: "/LOS/Lex/Sectors", element: <LexSectors /> },
             { path: "/LOS/Lex/SlaPolicies", element: <LexSlaPolicies /> },
-            { path: "/LOS/Lex/Checks", element: <LexChecks /> },
+            // The five configuration desks that used to be five sidebar
+            // rows. Their old paths still resolve — they redirect to the
+            // matching tab, so a bookmark or a pasted link still lands.
+            { path: "/LOS/Lex/Settings", element: <LexSettings /> },
+            {
+              path: "/LOS/Lex/Checks",
+              element: <Navigate to="/LOS/Lex/Settings?tab=checks" replace />,
+            },
             // The checks library above; which of them run on which document
             // type here. The type references the library, never copies it.
-            { path: "/LOS/Lex/DocumentTypes", element: <LexDocumentTypes /> },
+            {
+              path: "/LOS/Lex/DocumentTypes",
+              element: <Navigate to="/LOS/Lex/Settings?tab=documentTypes" replace />,
+            },
             // The other end of the chain: which document types a finding asks
             // for. The types above are referenced by code, never redefined.
-            { path: "/LOS/Lex/ReasonCodeDocuments", element: <LexReasonCodeDocuments /> },
-            { path: "/LOS/Lex/Analyses", element: <LexAnalyses /> },
+            {
+              path: "/LOS/Lex/ReasonCodeDocuments",
+              element: <Navigate to="/LOS/Lex/Settings?tab=reasonCodeDocuments" replace />,
+            },
+            {
+              path: "/LOS/Lex/Analyses",
+              element: <Navigate to="/LOS/Lex/Settings?tab=analyses" replace />,
+            },
             // The review queue and one case. `lex.cases.messages` and
             // `lex.cases.decision` are separate objects, gated in the page.
             { path: "/LOS/Lex/Overview", element: <LexOverview /> },
@@ -1023,7 +1035,10 @@ export const router = createBrowserRouter(
             { path: "/LOS/Lex/Cases/:caseId", element: <LexCaseDetail /> },
             { path: "/LOS/Lex/SlaBoard", element: <LexSlaBoard /> },
             { path: "/LOS/Lex/PolicyLibrary", element: <LexPolicyLibrary /> },
-            { path: "/LOS/Lex/Employers", element: <LexEmployers /> },
+            {
+              path: "/LOS/Lex/Employers",
+              element: <Navigate to="/LOS/Lex/Settings?tab=employers" replace />,
+            },
             { path: "/LOS/Lex/Governance", element: <LexGovernance /> },
             { path: "/LOS/Lex/Bi", element: <LexBiGallery /> },
             { path: "/LOS/Lex/Bi/Builder", element: <LexBiBuilder /> },

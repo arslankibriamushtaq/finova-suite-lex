@@ -167,6 +167,7 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Delegation Matrices": "lexDelegation",
   "Authority Levels": "lexAuthorityLevels",
   "SLA Policies": "lexSlaPolicies",
+  "LEX Settings": "lexSettings",
   "Verification Sequence": "lexChecks",
   "Reason Code Documents": "lexReasonCodeDocuments",
   "Document Analyses": "lexAnalyses",
@@ -2249,15 +2250,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     menu: [
       // The portfolio as it stands, and the way into any single application —
       // so it is the landing item, not the configurator.
-      hasAccess("LEX_CASES_READ") &&
-      {
+      hasAccess("LEX_CASES_READ") && {
         label: "Overview",
         Link: "Overview",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Overview",
       },
-        hasAccess("LEX_CASES_READ") &&
-      {
+      hasAccess("LEX_CASES_READ") && {
         label: "Review Cases",
         Link: "Cases",
         LinkLable: "/LOS/Lex",
@@ -2270,91 +2269,59 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       //   LinkLable: "/LOS/Lex",
       //   active: pathname === "/LOS/Lex/Hub",
       // },
-      hasAccess("LEX_CONFIG_READ") &&
-      {
+      hasAccess("LEX_CONFIG_READ") && {
         label: "Reason Code Processes",
         Link: "Processes",
         LinkLable: "/LOS/Lex",
         active: pathname.startsWith("/LOS/Lex/Processes"),
       },
-       hasAccess("LEX_CONFIG_READ") &&
-      {
+      hasAccess("LEX_CONFIG_READ") && {
         label: "Delegation Authority Levels",
         Link: "AuthorityLevels",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/AuthorityLevels",
       },
-      hasAccess("LEX_CONFIG_READ") &&
-      {
+      hasAccess("LEX_CONFIG_READ") && {
         label: "Delegation of Authority",
         Link: "Delegation",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Delegation",
       },
-     
-      hasAccess("LEX_CONFIG_READ") &&
-      {
+
+      hasAccess("LEX_CONFIG_READ") && {
         label: "Sectors",
         Link: "Sectors",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/Sectors",
       },
-      hasAccess("LEX_CONFIG_READ") &&
-      {
+      hasAccess("LEX_CONFIG_READ") && {
         label: "SLA Policies",
         Link: "SlaPolicies",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/SlaPolicies",
       },
-      hasAccess("LEX_DOCUMENTS_READ") &&
-      {
-        label: "Verification Sequence",
-        Link: "Checks",
+      // Five rows became five tabs. They are one subject — which documents a
+      // finding asks for, the checks that run on them, the types those checks
+      // belong to, what the analyser concluded, and who is an approved
+      // employer — and reading them meant walking a list of fifteen.
+      (hasAccess("LEX_DOCUMENTS_READ") || hasAccess("LEX_KNOWLEDGE_READ")) && {
+        label: "LEX Settings",
+        Link: "Settings",
         LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/Checks",
+        active: pathname === "/LOS/Lex/Settings",
       },
-      hasAccess("LEX_DOCUMENTS_READ") &&
-      {
-        label: "Document Types",
-        Link: "DocumentTypes",
-        LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/DocumentTypes",
-      },
-      hasAccess("LEX_DOCUMENTS_READ") &&
-      {
-        label: "Reason Code Documents",
-        Link: "ReasonCodeDocuments",
-        LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/ReasonCodeDocuments",
-      },
-      hasAccess("LEX_DOCUMENTS_READ") &&
-      {
-        label: "Document Analyses",
-        Link: "Analyses",
-        LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/Analyses",
-      },
-    
-      hasAccess("LEX_CASES_READ") &&
-      {
+
+      hasAccess("LEX_CASES_READ") && {
         label: "SLA Board",
         Link: "SlaBoard",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/SlaBoard",
       },
-      hasAccess("LEX_KNOWLEDGE_READ") &&
-      {
+      hasAccess("LEX_KNOWLEDGE_READ") && {
         label: "Policy Library",
         Link: "PolicyLibrary",
         LinkLable: "/LOS/Lex",
         active: pathname === "/LOS/Lex/PolicyLibrary",
-      },
-      hasAccess("LEX_KNOWLEDGE_READ") &&
-      {
-        label: "Approved Employers",
-        Link: "Employers",
-        LinkLable: "/LOS/Lex",
-        active: pathname === "/LOS/Lex/Employers",
       },
       // hasAccess("LEX_KNOWLEDGE_READ") &&
       // {
@@ -2363,15 +2330,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       //   LinkLable: "/LOS/Lex",
       //   active: pathname === "/LOS/Lex/Governance",
       // },
-      hasAccess("LEX_BI_READ") &&
-      {
+      hasAccess("LEX_BI_READ") && {
         label: "LEX Reports",
         Link: "Bi",
         LinkLable: "/LOS/Lex",
         active: pathname.startsWith("/LOS/Lex/Bi") && !pathname.includes("/Schedules"),
       },
-      hasAccess("LEX_BI_READ") &&
-      {
+      hasAccess("LEX_BI_READ") && {
         label: "Scheduled Exports",
         Link: "Schedules",
         LinkLable: "/LOS/Lex",
@@ -2890,7 +2855,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // gates and active-state rules are exactly what they were inside LMS —
     // only `submenu` became `menu`, which is what the top level renders from.
     ...accountingItems,
-    // hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK", "LEX"]) && 
+    // hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK", "LEX"]) &&
     {
       label: "Financing",
       Link: "/LOS/Dashboard",
