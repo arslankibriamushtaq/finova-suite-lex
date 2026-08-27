@@ -92,9 +92,11 @@ import {
   getDocumentTypeCatalogue,
   isDataProblem,
   isStubReader,
+  resolveReasonCodeDocuments,
   type LexAnalysis,
   type LexAnalysisRow,
   type LexDocumentType,
+  type LexResolvedDocument,
 } from "../../../redux/apis/apisLexDocuments";
 import {
   SOURCE_REQUEST_CHANNELS,
@@ -292,6 +294,15 @@ const LexCaseDetail = () => {
    * must not be shown until the fetch has actually returned one.
    */
   const [catalogue, setCatalogue] = useState<LexDocumentType[] | null>(null);
+  /**
+   * The checklist the case's reason codes resolve to — the decoration behind
+   * the pre-filled rows, not the rows themselves. Kept so each row can name
+   * which finding asked for it: an underwriter who sees a document they did not
+   * expect needs to know where it came from, or they redo the list by hand.
+   */
+  const [resolvedDocs, setResolvedDocs] = useState<LexResolvedDocument[]>([]);
+  /** What the pre-fill did, so the dialog can say it rather than look arbitrary. */
+  const [prefillState, setPrefillState] = useState<"idle" | "done" | "empty" | "failed">("idle");
 
   /**
    * The open file.
@@ -681,8 +692,12 @@ const LexCaseDetail = () => {
     setSendDocs([]);
     setSendDue("");
     setSendErrors({});
+    setResolvedDocs([]);
+    setPrefillState("idle");
     setSendOpen(true);
-    loadCatalogue();
+    // The catalogue first, because the pre-fill is pruned against it: a
+    // resolved row naming a retired type would render as an empty picker.
+    loadCatalogue().then((types) => prefill(types));
   };
 
   /**
@@ -693,12 +708,58 @@ const LexCaseDetail = () => {
    * loaded" rather than as an empty catalogue: those are different statements,
    * and only one of them means "ask an administrator".
    */
-  const loadCatalogue = async (force = false) => {
+  const loadCatalogue = async (force = false): Promise<LexDocumentType[] | null> => {
     try {
-      setCatalogue(await getDocumentTypeCatalogue(force));
+      const types = await getDocumentTypeCatalogue(force);
+      setCatalogue(types);
+      return types;
     } catch (error) {
       logForbidden(error, "GET /documents/types?activeOnly=true");
       setCatalogue(null);
+      return null;
+    }
+  };
+
+  /**
+   * Pre-fill the request from the case's own reason codes.
+   *
+   * This is the reason `/resolve` exists: the underwriter edits from a correct
+   * starting point instead of deciding from memory, and the same document asked
+   * for by two findings appears once.
+   *
+   * **A config gap never blocks the hand-back.** No codes, no checklists, or a
+   * failed call all leave the dialog exactly as it was before — free choice from
+   * the catalogue, with a line saying why nothing was filled in.
+   */
+  const prefill = async (types: LexDocumentType[] | null) => {
+    const codes = (record?.attachedCodes || [])
+      .map((code) => code.referenceCode)
+      .filter(Boolean) as string[];
+    if (codes.length === 0) return setPrefillState("empty");
+
+    try {
+      const resolved = await resolveReasonCodeDocuments(codes);
+      // Offerable codes only — the picker lists the active catalogue, so a row
+      // it cannot represent is worse than a row that is not there.
+      const offerable = types ? new Set(types.map((type) => type.typeCode)) : null;
+      const usable = offerable
+        ? resolved.filter((row) => offerable.has(row.typeCode))
+        : resolved;
+      setResolvedDocs(usable);
+      if (usable.length === 0) return setPrefillState("empty");
+      setSendDocs(
+        usable.map((row) => ({
+          kind: row.typeCode,
+          // The checklist's note is finding-specific and beats the type's
+          // general description; both stay editable.
+          note: row.note || row.description || "",
+        }))
+      );
+      setPrefillState("done");
+    } catch (error) {
+      logForbidden(error, "GET /documents/reason-codes/resolve");
+      setResolvedDocs([]);
+      setPrefillState("failed");
     }
   };
 
@@ -1751,8 +1812,22 @@ const LexCaseDetail = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <Label>{t("case.source.documents")}</Label>
+                {/* Re-apply, for the underwriter who cleared the rows and wants
+                    the checklist back. Only offered when there is one. */}
+                {!!(record?.attachedCodes || []).length && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 me-auto"
+                    onClick={() => prefill(catalogue)}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    {t("case.source.prefill")}
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"
@@ -1784,54 +1859,101 @@ const LexCaseDetail = () => {
                 // Zero rows is valid, and it changes what the request is: a
                 // question rather than a re-upload. The case stays with the
                 // applicant until they press Send either way.
-                <LexNotice tone="amber" className="mb-0">
-                  {t("case.source.noDocumentsWarning")}
-                </LexNotice>
+                <>
+                  {/* A config gap is worth naming, but it is never a blocker —
+                      the free choice below is the same one that existed before
+                      checklists did. */}
+                  {prefillState === "empty" && (
+                    <LexNotice tone="slate" className="mb-0">
+                      {t("case.source.prefillEmpty")}
+                    </LexNotice>
+                  )}
+                  {prefillState === "failed" && (
+                    <LexNotice tone="slate" className="mb-0">
+                      {t("case.source.prefillFailed")}
+                    </LexNotice>
+                  )}
+                  <LexNotice tone="amber" className="mb-0">
+                    {t("case.source.noDocumentsWarning")}
+                  </LexNotice>
+                </>
               ) : (
-                sendDocs.map((row, index) => {
-                  const type = catalogue.find((entry) => entry.typeCode === row.kind);
-                  return (
-                    <div key={index} className="flex items-start gap-2">
-                      <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
-                        {/* Governed data: the picker shows `displayName` and
-                            posts `typeCode`, which is what the reader matches
-                            on. A typed code is refused. */}
-                        <Select
-                          value={row.kind}
-                          onValueChange={(value) => setDocKind(index, value)}
+                <>
+                  {prefillState === "done" && (
+                    <LexNotice tone="sky" className="mb-0">
+                      {t("case.source.prefilled", {
+                        count: (record?.attachedCodes || []).length,
+                      })}
+                    </LexNotice>
+                  )}
+                  {sendDocs.map((row, index) => {
+                    const type = catalogue.find((entry) => entry.typeCode === row.kind);
+                    // What the checklist said about this document, when it came
+                    // from one. Null for a row the underwriter added by hand.
+                    const resolved = resolvedDocs.find((entry) => entry.typeCode === row.kind);
+                    return (
+                      <div key={index} className="flex items-start gap-2">
+                        <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
+                          {/* Governed data: the picker shows `displayName` and
+                              posts `typeCode`, which is what the reader matches
+                              on. A typed code is refused. */}
+                          <Select
+                            value={row.kind}
+                            onValueChange={(value) => setDocKind(index, value)}
+                          >
+                            <SelectTrigger className="w-full data-[size=default]:h-10">
+                              <SelectValue placeholder={t("case.source.kindPlaceholder")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {catalogue.map((entry) => (
+                                <SelectItem key={entry.id} value={entry.typeCode}>
+                                  {entry.displayName}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {/* Pre-filled from the type's description and still
+                              editable — the note is what turns a second rejected
+                              upload into a first accepted one. */}
+                          <Input
+                            value={row.note || ""}
+                            placeholder={type?.description || t("case.source.notePlaceholder")}
+                            onChange={(e) => setDocRow(index, { note: e.target.value })}
+                          />
+                          {/* Which finding asked for this. The difference
+                              between a list the underwriter trusts and one they
+                              redo from scratch. */}
+                          {!!resolved?.requiredBy?.length && (
+                            <div className="flex flex-wrap items-center gap-1.5 sm:col-span-2">
+                              <span className="text-xs text-muted-foreground">
+                                {t("case.source.requiredBy", {
+                                  codes: resolved.requiredBy.join(", "),
+                                })}
+                              </span>
+                              {resolved.mandatory && (
+                                <Badge
+                                  variant="outline"
+                                  className={`border font-medium ${TONES.sky}`}
+                                >
+                                  {t("case.source.mandatory")}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label={t("case.source.removeDocument")}
+                          onClick={() => setSendDocs((rows) => rows.filter((_, i) => i !== index))}
                         >
-                          <SelectTrigger className="w-full data-[size=default]:h-10">
-                            <SelectValue placeholder={t("case.source.kindPlaceholder")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {catalogue.map((entry) => (
-                              <SelectItem key={entry.id} value={entry.typeCode}>
-                                {entry.displayName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {/* Pre-filled from the type's description and still
-                            editable — the note is what turns a second rejected
-                            upload into a first accepted one. */}
-                        <Input
-                          value={row.note || ""}
-                          placeholder={type?.description || t("case.source.notePlaceholder")}
-                          onChange={(e) => setDocRow(index, { note: e.target.value })}
-                        />
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        aria-label={t("case.source.removeDocument")}
-                        onClick={() => setSendDocs((rows) => rows.filter((_, i) => i !== index))}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </>
               )}
             </div>
 
