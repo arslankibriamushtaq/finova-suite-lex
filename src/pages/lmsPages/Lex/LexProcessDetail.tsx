@@ -6,13 +6,10 @@ import {
   Archive,
   ArrowLeft,
   CalendarClock,
-  ChevronDown,
-  ChevronUp,
   Copy,
   FileText,
   GitBranch,
   History,
-  ListOrdered,
   Lock,
   Plus,
   Save,
@@ -48,6 +45,8 @@ import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils
 import {
   LexNotice,
   LexPageHeader,
+  LexProductSelect,
+  LexSectorSelect,
   LexStatusBadge,
   LexVersionTimeline,
 } from "../../../components/shared/lexKit";
@@ -67,6 +66,8 @@ import {
   forbidsEvidence,
   getProcess,
   getProcessLineage,
+  getScopeProducts,
+  getSectors,
   publishProcess,
   requiresEvidence,
   requiresPolicyParameter,
@@ -74,6 +75,8 @@ import {
   verbsForRouting,
   type LexExecutionStep,
   type LexProcess,
+  type LexScopeProduct,
+  type LexSector,
 } from "../../../redux/apis/apisLexConfig";
 
 /**
@@ -126,6 +129,17 @@ const LexProcessDetail = () => {
   const [effectiveDate, setEffectiveDate] = useState("");
   const [verbDraft, setVerbDraft] = useState("");
 
+  /**
+   * A process carries a list of scopes, but the editor writes one — the pair on
+   * the form. `null` on either half is the All wildcard, which is why these are
+   * `string | null` and not empty strings: the server distinguishes "every
+   * product" from "a product whose id is blank", and only one of those saves.
+   */
+  const [productId, setProductId] = useState<string | null>(null);
+  const [sectorId, setSectorId] = useState<string | null>(null);
+  const [products, setProducts] = useState<LexScopeProduct[]>([]);
+  const [sectors, setSectors] = useState<LexSector[]>([]);
+
   const [lineage, setLineage] = useState<LexProcess[]>([]);
   const [lineageOpen, setLineageOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
@@ -167,6 +181,12 @@ const LexProcessDetail = () => {
     setAdditionalActions(data.additionalActions || []);
     setExpectedOutcome(data.expectedOutcome || "");
     setEffectiveDate(data.effectiveDate || "");
+    // The first scope is the one the form edits. A process with none is scoped
+    // to All Products / All Sectors, which is both nulls — the same thing the
+    // pickers show when nothing is chosen.
+    const scope = data.scopes?.[0];
+    setProductId(scope?.productId ?? null);
+    setSectorId(scope?.sectorId ?? null);
   };
 
   const load = async () => {
@@ -186,6 +206,22 @@ const LexProcessDetail = () => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Both halves of the scope are picked from a list, never typed. Sectors are
+  // governed in LEX; products come from LOS. Both ids are validated on save
+  // now, so an empty picker would leave the admin guessing at ids the server
+  // is about to refuse. A catalogue that fails to load leaves its picker with
+  // only the All option rather than blocking the form — the scope stays
+  // whatever it already was.
+  useEffect(() => {
+    if (!canRead) return;
+    getSectors({ activeOnly: true })
+      .then(setSectors)
+      .catch(() => setSectors([]));
+    getScopeProducts()
+      .then(setProducts)
+      .catch(() => setProducts([]));
+  }, [canRead]);
 
   // `editable` comes from the server and already encodes the lifecycle rule.
   const editable = isNew || isEditable(process ?? undefined);
@@ -218,14 +254,6 @@ const LexProcessDetail = () => {
     setVerbDraft("");
   };
 
-  const moveStep = (index: number, delta: number) => {
-    const next = [...steps];
-    const target = index + delta;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
-    setSteps(next);
-  };
-
   const onSave = async () => {
     if (!referenceCode.trim()) return toast.error(t("proc.valid.referenceCode"));
     if (!title.trim()) return toast.error(t("proc.valid.title"));
@@ -253,8 +281,13 @@ const LexProcessDetail = () => {
         // APPLICATION_SOURCE has to clear the evidence type, not leave the old
         // one in place for the constraint to reject.
         evidenceType: noEvidence || !needsEvidence ? null : evidenceType,
-        // Renumbered 1..n on save, so reordering is lossless — the order is
-        // what gets sent, not the numbers.
+        // One scope, both halves nullable. Nulls are sent rather than omitted:
+        // widening a process back to All Products has to clear the id, not
+        // leave the previous one in place.
+        scopes: [{ productId, sectorId }],
+        // No longer edited on this screen, but still round-tripped — omitting
+        // the field on an update would drop steps an earlier version authored,
+        // and nothing here asked for that.
         executionSteps: steps.map((step, index) => ({ ...step, ordinal: index + 1 })),
         primaryActions,
         additionalActions,
@@ -613,15 +646,32 @@ const LexProcessDetail = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label>{t("proc.field.scope")}</Label>
-            <div className="flex h-10 items-center rounded-md border border-input bg-transparent px-3 text-sm text-muted-foreground">
-              {/* The server built this label; assembling one from two nulls
-                  risks disagreeing with what resolution actually used. */}
-              {process?.scopes?.[0]?.describe ||
-                `${process?.productName || t("scope.allProducts")} / ${
-                  process?.sectorName || t("scope.allSectors")
-                }`}
-            </div>
+            <Label htmlFor="lex-product">{t("proc.field.product")}</Label>
+            <LexProductSelect
+              value={productId}
+              onChange={setProductId}
+              products={products}
+              allProductsLabel={t("scope.allProducts")}
+              disabled={readOnly}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="lex-sector">{t("proc.field.sector")}</Label>
+            {/* "All Sectors" is the wildcard the picker adds, not a row in
+                GET /config/sectors — sending a literal id for it would name a
+                sector the company does not have. */}
+            <LexSectorSelect
+              value={sectorId}
+              onChange={setSectorId}
+              sectors={sectors}
+              allSectorsLabel={t("scope.allSectors")}
+              disabled={readOnly}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <p className="m-0 text-xs text-muted-foreground">{t("proc.field.scopeHint")}</p>
           </div>
 
           <div className="flex flex-col gap-1.5 sm:col-span-2">
@@ -646,111 +696,6 @@ const LexProcessDetail = () => {
             />
           </div>
         </div>
-      </div>
-
-      {/* Execution steps — ordered, reorderable, renumbered on save. */}
-      <div className="pro-form pro-card mb-3 p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <span className="pro-head-badge">
-              <ListOrdered className="h-4 w-4" />
-            </span>
-            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
-              {t("proc.steps.title")}
-            </h4>
-          </div>
-          {!readOnly && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setSteps([...steps, { instruction: "", policyParameter: null }])}
-            >
-              <Plus className="h-4 w-4" />
-              {t("proc.steps.add")}
-            </Button>
-          )}
-        </div>
-
-        {steps.length === 0 ? (
-          <p className="m-0 py-6 text-center text-sm text-muted-foreground">{t("proc.steps.empty")}</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {steps.map((step, index) => (
-              <div key={index} className="pro-tile">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-[2px] bg-muted text-xs font-semibold text-muted-foreground">
-                    {index + 1}
-                  </span>
-                  <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-[2fr_1fr]">
-                    <Input
-                      className="h-9"
-                      placeholder={t("proc.steps.instruction")}
-                      value={step.instruction}
-                      disabled={readOnly}
-                      onChange={(e) => {
-                        const next = [...steps];
-                        next[index] = { ...step, instruction: e.target.value };
-                        setSteps(next);
-                      }}
-                    />
-                    <Select
-                      value={step.policyParameter || "NONE"}
-                      disabled={readOnly}
-                      onValueChange={(v) => {
-                        const next = [...steps];
-                        next[index] = { ...step, policyParameter: v === "NONE" ? null : v };
-                        setSteps(next);
-                      }}
-                    >
-                      <SelectTrigger className="w-full data-[size=default]:h-9">
-                        <SelectValue placeholder={t("proc.steps.policyParameter")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="NONE">{t("proc.steps.noParameter")}</SelectItem>
-                        {POLICY_PARAMETERS.map((param) => (
-                          <SelectItem key={param} value={param}>
-                            {param}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {!readOnly && (
-                    <div className="flex shrink-0 items-center gap-0.5">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => moveStep(index, -1)}
-                        disabled={index === 0}
-                        aria-label={t("proc.steps.moveUp")}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => moveStep(index, 1)}
-                        disabled={index === steps.length - 1}
-                        aria-label={t("proc.steps.moveDown")}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setSteps(steps.filter((_, i) => i !== index))}
-                        aria-label={t("proc.steps.remove")}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Actions. Free-form by design — nothing validates these against a
