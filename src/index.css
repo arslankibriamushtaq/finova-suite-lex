@@ -329,6 +329,45 @@ body,
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
+/* Anything selectable should read as clickable. antd leaves the default arrow
+   cursor on the closed trigger and on option rows in places, which makes a
+   dropdown look inert until someone happens to click it. Global on purpose —
+   this is a property of every select in the app, not of one screen. */
+.ant-select:not(.ant-select-disabled) .ant-select-selector,
+.ant-select-item-option:not(.ant-select-item-option-disabled),
+[data-slot="select-trigger"]:not([disabled]),
+[data-slot="select-item"]:not([data-disabled]) {
+  cursor: pointer;
+}
+/* ...and anything that cannot be chosen should say so rather than inviting a click. */
+.ant-select-disabled .ant-select-selector,
+.ant-select-item-option-disabled,
+[data-slot="select-trigger"][disabled],
+[data-slot="select-item"][data-disabled] {
+  cursor: not-allowed;
+}
+
+/* Disabled selects were excluded from the rules above, so they kept antd's
+   inline height:40 while their enabled neighbours were pinned to 34px — two
+   fields side by side in one row came out different heights. Only the box is
+   normalised here; antd keeps its own disabled colour and background. */
+.pro-card .ant-select.ant-select-disabled,
+.no-card .ant-select.ant-select-disabled,
+.bg-white.p-3 .ant-select.ant-select-disabled {
+  height: 34px !important;
+  min-height: 34px !important;
+  font-size: 12px !important;
+}
+.pro-card .ant-select.ant-select-disabled .ant-select-selector,
+.no-card .ant-select.ant-select-disabled .ant-select-selector,
+.bg-white.p-3 .ant-select.ant-select-disabled .ant-select-selector {
+  height: 34px !important;
+  min-height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
 .pro-card .ant-select-single .ant-select-selector .ant-select-selection-item,
 .pro-card .ant-select-single .ant-select-selector .ant-select-selection-placeholder,
 .no-card .ant-select-single .ant-select-selector .ant-select-selection-item,
