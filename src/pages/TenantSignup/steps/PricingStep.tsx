@@ -34,8 +34,7 @@ export default function PricingStep() {
   const navigate = useNavigate();
   const isArabic = getCurrentLanguage() === "ar";
 
-  const { packageCodes, billingCycle, setSelection, togglePackage } =
-    useTenantSignup();
+  const { packageCodes, billingCycle, setSelection } = useTenantSignup();
 
   const [packages, setPackages] = useState<CatalogPackage[] | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
@@ -116,6 +115,39 @@ export default function PricingStep() {
     return () => window.clearTimeout(timer);
   }, [packageCodes, billingCycle, loadCatalog, t]);
 
+  /**
+   * The bundle and the individual modules are mutually exclusive.
+   *
+   * "All Modules" already contains every other card, so a basket holding both
+   * bills the buyer for a module and for the bundle that includes it. Picking
+   * the bundle therefore clears the rest, and picking any single module drops
+   * the bundle — the same rule read from either end.
+   *
+   * `togglePackage` from the context cannot do this: it is handed a code and
+   * has no way to know which one is the everything-tier. That fact lives on the
+   * catalogue, which is here.
+   */
+  const onTogglePackage = (pkg: CatalogPackage) => {
+    const bundleCodes = new Set(
+      (packages ?? []).filter((p) => p.bundle).map((p) => p.packageCode)
+    );
+
+    if (packageCodes.includes(pkg.packageCode)) {
+      setSelection(
+        packageCodes.filter((code) => code !== pkg.packageCode),
+        billingCycle
+      );
+      return;
+    }
+
+    setSelection(
+      pkg.bundle
+        ? [pkg.packageCode]
+        : [...packageCodes.filter((code) => !bundleCodes.has(code)), pkg.packageCode],
+      billingCycle
+    );
+  };
+
   const onContinue = () => {
     setSelection(packageCodes, billingCycle);
     navigate(TENANT_SIGNUP_ROUTES.details);
@@ -162,7 +194,7 @@ export default function PricingStep() {
                   isArabic={isArabic}
                   billingCycle={billingCycle}
                   selected={packageCodes.includes(pkg.packageCode)}
-                  onToggle={() => togglePackage(pkg.packageCode)}
+                  onToggle={() => onTogglePackage(pkg)}
                 />
               ))
             : [0, 1, 2, 3, 4].map((i) => (
