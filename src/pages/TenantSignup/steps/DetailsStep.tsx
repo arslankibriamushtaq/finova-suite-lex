@@ -341,7 +341,10 @@ export default function DetailsStep() {
   };
 
   return (
-    <div className="space-y-6">
+    // Form and running total side by side from `lg` up, the same shape as the
+    // pricing screen. Below that the rail drops under the form rather than
+    // squeezing both into a phone's width.
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <StepCard
         title={part === "company" ? t("form.title") : t("form.title.admin")}
         description={part === "company" ? t("form.sub") : t("form.sub.admin")}
@@ -664,10 +667,15 @@ export default function DetailsStep() {
       </StepCard>
 
       {quote ? (
-        <section className="ts-card space-y-4 rounded-2xl p-6">
-          <h2 className="ts-card-title">{t("form.summaryTitle")}</h2>
-          <QuoteLines quote={quote} />
-        </section>
+        // Sticky so the total stays in view while the buyer works down a long
+        // form — the number they are committing to should never scroll away.
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <section className="ts-card space-y-4 p-[1.25rem]">
+            <h2 className="ts-card-title">{t("form.summaryTitle")}</h2>
+            <hr className="ts-divider" />
+            <QuoteLines quote={quote} />
+          </section>
+        </aside>
       ) : null}
     </div>
   );

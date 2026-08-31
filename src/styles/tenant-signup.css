@@ -767,3 +767,9 @@
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
 }
+
+/* Loading placeholders should be the same shape as the cards they stand in
+   for, which `rounded-2xl` cannot do under the 2px radius tokens. */
+.tenant-signup .ts-skeleton {
+  border-radius: 0.875rem;
+}

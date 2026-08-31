@@ -166,11 +166,11 @@ export default function PricingStep() {
                 />
               ))
             : [0, 1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-56 rounded-2xl" />
+                <Skeleton key={i} className="ts-skeleton h-56" />
               ))}
         </div>
 
-        <aside className="lg:sticky lg:top-6 lg:self-start">
+        <aside className="lg:sticky lg:top-24 lg:self-start">
           <div className="ts-card space-y-4 rounded-2xl p-[1.25rem]">
             <div className="flex items-center justify-between gap-[0.75rem]">
               <h2 className="ts-card-title">{t("pricing.summaryTitle")}</h2>

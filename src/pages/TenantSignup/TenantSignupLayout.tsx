@@ -11,11 +11,20 @@ import { stepForRoute } from "./navigation";
 import { TenantSignupProvider } from "./TenantSignupContext";
 
 /**
- * The pricing screen is a marketing page — five cards side by side plus a
- * summary rail — and needs the full width. Everything after it is a single
- * column of form or status.
+ * How wide each step's column runs.
+ *
+ * Pricing is a marketing page — five cards side by side plus a summary rail —
+ * and needs the full width. Details carries the same rail beside a form, so it
+ * needs room for two columns but not six cards: 64rem seats a ~40rem form, the
+ * 20rem rail and the gutter between them without stretching the fields to an
+ * uncomfortable line length. Payment and setup are a single column of status.
  */
-const WIDE_STEPS = new Set(["pricing"]);
+const STEP_WIDTH: Record<string, string> = {
+  pricing: "max-w-6xl",
+  details: "max-w-5xl",
+};
+
+const DEFAULT_WIDTH = "max-w-2xl";
 
 function LanguageSwitcher() {
   const { currentLanguage, setLanguage } = useLanguage();
@@ -65,7 +74,7 @@ export default function TenantSignupLayout() {
   const { t } = useTranslation("tenantSignup");
 
   const step = stepForRoute(pathname);
-  const columnWidth = step && WIDE_STEPS.has(step) ? "max-w-6xl" : "max-w-2xl";
+  const columnWidth = (step && STEP_WIDTH[step]) ?? DEFAULT_WIDTH;
 
   return (
     <TenantSignupProvider>
