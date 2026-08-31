@@ -72,14 +72,24 @@ const PlatformInvoices = () => {
     <div>
       <LexPageHeader icon={FileText} title="Platform Invoices" subtitle="Every invoice raised, across every tenant." />
 
-      <div className="mb-3 d-flex flex-wrap gap-1">
-        <Button size="sm" variant={status === "" ? "default" : "outline"} onClick={() => setStatus("")}>
+      <div
+        role="group"
+        aria-label="Filter by status"
+        className="no-card mb-3 flex flex-wrap items-center gap-1.5"
+      >
+        <Button
+          size="sm"
+          aria-pressed={status === ""}
+          variant={status === "" ? "default" : "outline"}
+          onClick={() => setStatus("")}
+        >
           All
         </Button>
         {INVOICE_STATUSES.map((s) => (
           <Button
             key={s}
             size="sm"
+            aria-pressed={status === s}
             variant={status === s ? "default" : "outline"}
             onClick={() => setStatus(s)}
           >
@@ -89,7 +99,7 @@ const PlatformInvoices = () => {
       </div>
 
       {isLoading && rows.length === 0 ? (
-        <div className="d-grid gap-2">
+        <div className="grid gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -97,31 +107,31 @@ const PlatformInvoices = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={FileText} text="No invoices match this filter." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
           <table className="w-full min-w-[760px] text-sm">
-            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
-              <tr>
-                <th className="p-2 text-start font-medium">Invoice</th>
-                <th className="p-2 text-start font-medium">Type</th>
-                <th className="p-2 text-start font-medium">Buyer</th>
-                <th className="p-2 text-start font-medium">Issued</th>
-                <th className="p-2 text-end font-medium">Total</th>
-                <th className="p-2 text-start font-medium">Status</th>
+            <thead>
+              <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
+                <th className="px-3 py-2.5 text-start font-semibold">Invoice</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Type</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Buyer</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Issued</th>
+                <th className="px-3 py-2.5 text-end font-semibold">Total</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Status</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((inv) => (
                 <tr
                   key={inv.invoiceId}
-                  className="cursor-pointer border-t border-border/60 hover:bg-muted/30"
+                  className="cursor-pointer border-t border-[var(--surface-border)] transition-colors odd:bg-[var(--theme-table-row-alt)] hover:bg-[var(--theme-table-row-hover)]"
                   onClick={() => openInvoice(inv)}
                 >
-                  <td className="p-2 font-mono text-xs">{inv.invoiceNo}</td>
-                  <td className="p-2">{inv.invoiceType}</td>
-                  <td className="p-2">{inv.buyerName}</td>
-                  <td className="p-2">{inv.issueDate}</td>
-                  <td className="p-2 text-end">{money(inv.totalAmount, inv.currency)}</td>
-                  <td className="p-2">
+                  <td className="px-3 py-2.5 font-mono text-xs">{inv.invoiceNo}</td>
+                  <td className="px-3 py-2.5">{inv.invoiceType}</td>
+                  <td className="px-3 py-2.5">{inv.buyerName}</td>
+                  <td className="px-3 py-2.5">{inv.issueDate}</td>
+                  <td className="px-3 py-2.5 text-end">{money(inv.totalAmount, inv.currency)}</td>
+                  <td className="px-3 py-2.5">
                     <TenancyStatusBadge status={inv.status} />
                   </td>
                 </tr>
@@ -141,7 +151,9 @@ const PlatformInvoices = () => {
       )}
 
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="max-w-3xl">
+        {/* A twenty-line invoice is taller than the viewport, so the document
+            scrolls inside the dialog rather than running off the bottom. */}
+        <DialogContent className="max-h-[88vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Invoice {open?.invoiceNo}</DialogTitle>
           </DialogHeader>

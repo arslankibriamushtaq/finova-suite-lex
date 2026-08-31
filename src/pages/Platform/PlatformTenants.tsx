@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Building2, Loader2, Search } from "lucide-react";
+import { Building2, Loader2, RefreshCw, Search } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
 import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
+import { SearchField } from "../../components/shared/filterKit";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import { TenancyStatusBadge } from "../../components/shared/tenancyKit";
+import { cn } from "../../lib/utils";
 import {
   TENANT_STATUSES,
   getTenants,
@@ -80,50 +81,81 @@ const PlatformTenants = () => {
         subtitle="Every company on the platform. Search by name, tenant code, CR number or admin email."
       />
 
-      <form
-        className="mb-3 d-flex flex-wrap align-items-center gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSubmittedQuery(query.trim());
-        }}
-      >
-        <div className="position-relative" style={{ maxWidth: 320, flex: "1 1 240px" }}>
-          <Search className="pointer-events-none absolute start-0 top-1/2 ms-2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+      {/* The app's standard filter bar: a search that fills the row and the
+          actions gathered at its end. Same shape as the ledger screens, built
+          on the same shared SearchField. */}
+      <div className="pro-card mb-3 p-3">
+        <form
+          className="flex flex-col gap-2 sm:flex-row sm:items-center"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmittedQuery(query.trim());
+          }}
+        >
+          <SearchField
+            id="tenant-search"
+            className="flex-1"
+            placeholder="Search by name, tenant code, CR number or admin email"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tenants"
-            className="ps-4"
+            onChange={setQuery}
           />
-        </div>
-        <Button type="submit" size="sm" variant="outline">
-          Search
+
+          <div className="flex items-center gap-2">
+            <Button type="submit" variant="outline" className="h-10 flex-1 gap-2 sm:flex-none">
+              <Search className="h-4 w-4" />
+              Search
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 flex-1 gap-2 sm:flex-none"
+              disabled={isLoading}
+              onClick={() => load(0, false)}
+            >
+              <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+              Refresh
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      {/* Status is a view of the register rather than a filter you fill in, so
+          it sits on its own row as tabs rather than inside the search card.
+          `no-card` is the app's class for filter controls that are NOT in a
+          card — it applies the same 34px/12px sizing the search bar above
+          gets from `.pro-card`. Without it these chips fall back to shadcn's
+          own `sm` size and render a size larger than every other filter
+          control in the product. */}
+      <div
+        role="group"
+        aria-label="Filter by status"
+        className="no-card mb-3 flex flex-wrap items-center gap-1.5"
+      >
+        <Button
+          type="button"
+          size="sm"
+          aria-pressed={status === ""}
+          variant={status === "" ? "default" : "outline"}
+          onClick={() => setStatus("")}
+        >
+          All
         </Button>
-        <div className="d-flex flex-wrap gap-1">
+        {TENANT_STATUSES.map((s) => (
           <Button
+            key={s}
             type="button"
             size="sm"
-            variant={status === "" ? "default" : "outline"}
-            onClick={() => setStatus("")}
+            aria-pressed={status === s}
+            variant={status === s ? "default" : "outline"}
+            onClick={() => setStatus(s)}
           >
-            All
+            {s}
           </Button>
-          {TENANT_STATUSES.map((s) => (
-            <Button
-              key={s}
-              type="button"
-              size="sm"
-              variant={status === s ? "default" : "outline"}
-              onClick={() => setStatus(s)}
-            >
-              {s}
-            </Button>
-          ))}
-        </div>
-      </form>
+        ))}
+      </div>
 
       {isLoading && rows.length === 0 ? (
-        <div className="d-grid gap-2">
+        <div className="grid gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -131,25 +163,31 @@ const PlatformTenants = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={Building2} text="No tenants match this filter." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-[820px] text-sm">
-            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
-              <tr>
-                <th className="p-2 text-start font-medium">Company</th>
-                <th className="p-2 text-start font-medium">Code</th>
-                <th className="p-2 text-start font-medium">CR</th>
-                <th className="p-2 text-start font-medium">Admin</th>
-                <th className="p-2 text-start font-medium">City</th>
-                <th className="p-2 text-start font-medium">Status</th>
+        <div className="overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
+          <table className="w-full min-w-[820px] border-collapse text-sm">
+            {/* Same header treatment the LMS and antd tables get elsewhere:
+                the brand fill from --theme-table-background-color with white
+                labels, so this page reads as part of the same product. */}
+            <thead>
+              <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
+                <th className="px-3 py-2.5 text-start font-semibold">Company</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Code</th>
+                <th className="px-3 py-2.5 text-start font-semibold">CR</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Admin</th>
+                <th className="px-3 py-2.5 text-start font-semibold">City</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Status</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((t) => (
-                <tr key={t.tenantId} className="border-t border-border/60 hover:bg-muted/30">
-                  <td className="p-2">
+                <tr
+                  key={t.tenantId}
+                  className="border-t border-[var(--surface-border)] transition-colors odd:bg-[var(--theme-table-row-alt)] hover:bg-[var(--theme-table-row-hover)]"
+                >
+                  <td className="px-3 py-2.5">
                     <Link
                       to={`/Platform/Tenants/${t.tenantId}`}
-                      className="fw-medium text-decoration-none"
+                      className="font-medium hover:underline"
                     >
                       {t.companyName}
                     </Link>
@@ -159,11 +197,11 @@ const PlatformTenants = () => {
                       </div>
                     )}
                   </td>
-                  <td className="p-2 font-mono text-xs">{t.tenantCode}</td>
-                  <td className="p-2 font-mono text-xs">{t.crNumber || "—"}</td>
-                  <td className="p-2">{t.adminEmail || "—"}</td>
-                  <td className="p-2">{t.city || "—"}</td>
-                  <td className="p-2">
+                  <td className="px-3 py-2.5 font-mono text-xs">{t.tenantCode}</td>
+                  <td className="px-3 py-2.5 font-mono text-xs">{t.crNumber || "—"}</td>
+                  <td className="px-3 py-2.5">{t.adminEmail || "—"}</td>
+                  <td className="px-3 py-2.5">{t.city || "—"}</td>
+                  <td className="px-3 py-2.5">
                     <TenancyStatusBadge status={t.status} />
                   </td>
                 </tr>

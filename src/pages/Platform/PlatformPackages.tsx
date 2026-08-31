@@ -276,7 +276,7 @@ const PlatformPackages = () => {
       </p>
 
       {isLoading && rows.length === 0 ? (
-        <div className="d-grid gap-2">
+        <div className="grid gap-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
@@ -284,13 +284,13 @@ const PlatformPackages = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={Package} text="The catalogue is empty." />
       ) : (
-        <div className="d-grid gap-2">
+        <div className="grid gap-2">
           {rows.map((p) => (
-            <div key={p.packageCode} className="rounded-lg border border-border bg-card p-3">
-              <div className="d-flex flex-wrap align-items-start justify-content-between gap-2">
+            <div key={p.packageCode} className="pro-card p-3">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <div className="d-flex align-items-center gap-2">
-                    <span className="fw-semibold">{p.nameEn}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{p.nameEn}</span>
                     <span className="font-mono text-xs text-muted-foreground">{p.packageCode}</span>
                     {p.bundle && (
                       <Badge variant="outline" className="border-border text-[10px]">
@@ -301,7 +301,7 @@ const PlatformPackages = () => {
                       variant="outline"
                       className={
                         p.active
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 text-[10px]"
+                          ? "border-red-200 bg-red-50 text-red-700 text-[10px]"
                           : "border-slate-500/40 bg-slate-500/10 text-slate-600 text-[10px]"
                       }
                     >
@@ -315,7 +315,7 @@ const PlatformPackages = () => {
                     {money(p.monthlyPrice, p.currency)} / month ·{" "}
                     {money(p.annualPrice, p.currency)} / year
                   </div>
-                  <div className="mt-1 d-flex flex-wrap gap-1">
+                  <div className="mt-1 flex flex-wrap gap-1">
                     {p.moduleCodes?.map((m) => (
                       <Badge
                         key={m}
@@ -327,7 +327,7 @@ const PlatformPackages = () => {
                     ))}
                   </div>
                 </div>
-                <div className="d-flex flex-wrap align-items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     size="sm"
                     variant="outline"
@@ -366,7 +366,7 @@ const PlatformPackages = () => {
                   >
                     Modules
                   </Button>
-                  <div className="d-flex align-items-center gap-1">
+                  <div className="flex items-center gap-1">
                     <Switch
                       checked={p.active}
                       disabled={busy}
@@ -391,7 +391,7 @@ const PlatformPackages = () => {
               unit prices it was sold at — no customer's bill moves.
             </DialogDescription>
           </DialogHeader>
-          <div className="d-grid gap-2">
+          <div className="grid gap-2">
             <div>
               <Label htmlFor="p-monthly">Monthly price ({pricing?.currency})</Label>
               <Input
@@ -425,7 +425,7 @@ const PlatformPackages = () => {
             </div>
 
             {overCeiling && (
-              <div className="rounded-md border border-amber-500/50 bg-amber-500/5 p-2 text-xs">
+              <div className="rounded-md border border-[color-mix(in_srgb,var(--color-warning)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-warning)_8%,transparent)] p-2 text-xs">
                 <strong>Above the checkout ceiling.</strong> Everything on sale, billed annually
                 with VAT, comes to {money(worstCaseCheckout, pricing?.currency)} — and the payment
                 provider refuses a single checkout above{" "}
@@ -455,7 +455,7 @@ const PlatformPackages = () => {
               Names, descriptions and ordering. What the package grants is edited separately.
             </DialogDescription>
           </DialogHeader>
-          <div className="d-grid gap-2">
+          <div className="grid gap-2">
             <div>
               <Label htmlFor="d-en">Name (EN)</Label>
               <Input id="d-en" value={nameEn} onChange={(e) => setNameEn(e.target.value)} />
@@ -549,7 +549,7 @@ const PlatformPackages = () => {
               It is created withdrawn or on sale per the server default — check the list afterwards.
             </DialogDescription>
           </DialogHeader>
-          <div className="d-grid gap-2">
+          <div className="grid gap-2">
             <div>
               <Label htmlFor="c-code">Package code</Label>
               <Input
@@ -580,8 +580,8 @@ const PlatformPackages = () => {
                 placeholder="CUSTOMER, LENDING, PRODUCT"
               />
             </div>
-            <div className="row g-2">
-              <div className="col-6">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
                 <Label htmlFor="c-monthly">Monthly (SAR)</Label>
                 <Input
                   id="c-monthly"
@@ -590,7 +590,7 @@ const PlatformPackages = () => {
                   onChange={(e) => setMonthlyPrice(e.target.value)}
                 />
               </div>
-              <div className="col-6">
+              <div>
                 <Label htmlFor="c-annual">Annual (SAR)</Label>
                 <Input
                   id="c-annual"
@@ -601,7 +601,7 @@ const PlatformPackages = () => {
               </div>
             </div>
             {overCeiling && (
-              <div className="rounded-md border border-amber-500/50 bg-amber-500/5 p-2 text-xs">
+              <div className="rounded-md border border-[color-mix(in_srgb,var(--color-warning)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-warning)_8%,transparent)] p-2 text-xs">
                 <strong>Above the checkout ceiling.</strong> With this package on sale, everything
                 billed annually with VAT comes to {money(worstCaseCheckout, "SAR")} — and the
                 payment provider refuses a single checkout above {money(CHECKOUT_CEILING, "SAR")}.

@@ -228,7 +228,7 @@ const PlatformTenantDetail = () => {
       </LexPageHeader>
 
       {isProvisioningStuck && (
-        <div className="mb-3 rounded-lg border border-amber-500/50 bg-amber-500/5 p-3 text-sm">
+        <div className="mb-3 rounded-lg border border-[color-mix(in_srgb,var(--color-warning)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-warning)_8%,transparent)] p-3 text-sm">
           Mid-SAGA: provisioning with no subscription yet. If it has been here longer than a minute
           or two it is stuck — check identity-service and Keycloak.
         </div>
