@@ -36,6 +36,7 @@ const tenantSignup: ModuleLocale = {
     "step.setup": "Setup",
 
     // Screen 1 — pricing
+    "pricing.eyebrow": "Modular platform",
     "pricing.headline": "Pick the platform you need",
     "pricing.sub": "Subscribe to what you use today and add the rest whenever you are ready.",
     "pricing.cycleLabel": "Billing cycle",
@@ -69,6 +70,7 @@ const tenantSignup: ModuleLocale = {
     "form.sub.admin":
       "This person receives the activation email and becomes the first administrator of the workspace.",
     "form.part": "Step {{current}} of 2 · {{name}}",
+    "form.partShort": "Step {{current}} of 2",
     "form.part.company": "Your company",
     "form.part.admin": "Administrator",
     "form.next": "Continue",
@@ -214,6 +216,7 @@ const tenantSignup: ModuleLocale = {
     "step.payment": "Paiement",
     "step.setup": "Installation",
 
+    "pricing.eyebrow": "Plateforme modulaire",
     "pricing.headline": "Choisissez la plateforme qu'il vous faut",
     "pricing.sub":
       "Abonnez-vous à ce que vous utilisez aujourd'hui et ajoutez le reste quand vous le souhaitez.",
@@ -246,6 +249,7 @@ const tenantSignup: ModuleLocale = {
     "form.sub.admin":
       "Cette personne reçoit l'e-mail d'activation et devient le premier administrateur de l'espace.",
     "form.part": "Étape {{current}} sur 2 · {{name}}",
+    "form.partShort": "Étape {{current}} sur 2",
     "form.part.company": "Votre entreprise",
     "form.part.admin": "Administrateur",
     "form.next": "Continuer",
@@ -391,6 +395,7 @@ const tenantSignup: ModuleLocale = {
     "step.payment": "الدفع",
     "step.setup": "التهيئة",
 
+    "pricing.eyebrow": "منصة معيارية",
     "pricing.headline": "اختر المنصة التي تحتاجها",
     "pricing.sub": "اشترك بما تستخدمه اليوم وأضف الباقي متى شئت.",
     "pricing.cycleLabel": "دورة الفوترة",
@@ -421,6 +426,7 @@ const tenantSignup: ModuleLocale = {
     "form.title.admin": "أخبرنا الآن عنك",
     "form.sub.admin": "يستلم هذا الشخص رسالة التفعيل ويصبح أول مسؤول لمساحة العمل.",
     "form.part": "الخطوة {{current}} من 2 · {{name}}",
+    "form.partShort": "الخطوة {{current}} من 2",
     "form.part.company": "شركتك",
     "form.part.admin": "المسؤول",
     "form.next": "متابعة",

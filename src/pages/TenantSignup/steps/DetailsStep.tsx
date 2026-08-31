@@ -355,11 +355,11 @@ export default function DetailsStep() {
           </button>
         }
       >
+        {/* Just the count. The <legend> below already names the section, and
+            printing "Step 1 of 2 · Your company" above a "Your company"
+            heading said it twice. */}
         <p className="ts-xs -mt-4 mb-6 font-medium text-muted-foreground">
-          {t("form.part", {
-            current: part === "company" ? 1 : 2,
-            name: t(part === "company" ? "form.part.company" : "form.part.admin"),
-          })}
+          {t("form.partShort", { current: part === "company" ? 1 : 2 })}
         </p>
 
         <form onSubmit={onSubmit} noValidate className="space-y-8">

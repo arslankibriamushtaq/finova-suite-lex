@@ -44,6 +44,9 @@
 .tenant-signup h5,
 .tenant-signup h6 {
   margin: 0;
+  /* custom.scss ships an unlayered `h2 { text-align: center; margin-bottom:
+     20px }`, which centred every card heading in this flow. */
+  text-align: start;
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.35;
@@ -285,4 +288,306 @@
 .tenant-signup dd,
 .tenant-signup figure {
   margin: 0;
+}
+
+/* ==================================================================== *
+ * Presentation layer — the shell, the progress rail and the surfaces.
+ *
+ * Everything below is chrome rather than typography, but it lives here for
+ * the same reason the rules above do: these screens share a document with
+ * Bootstrap, so anything that must win is written unlayered and scoped to
+ * `.tenant-signup`. Colour comes from the brand ramp via `--primary`, never
+ * a literal, so the flow re-skins with the rest of the app.
+ * ==================================================================== */
+
+/* --- Shell ----------------------------------------------------------- */
+
+/* A flat page colour makes a public marketing page look like an admin table.
+   Two soft brand washes — one behind the header, one low and to the side —
+   give the column something to sit on. `background-attachment: fixed` keeps
+   them still while the content scrolls, so they read as light rather than as
+   a decoration that slides. Both are colour-mixed against `--primary`, so
+   they follow the theme and disappear correctly in dark mode. */
+.tenant-signup.ts-shell {
+  background-color: var(--color-surface-page);
+  background-image:
+    radial-gradient(
+      68rem 32rem at 50% -8rem,
+      color-mix(in srgb, var(--primary) 10%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      44rem 44rem at 108% 12%,
+      color-mix(in srgb, var(--primary) 5%, transparent),
+      transparent 68%
+    );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Header rides along on scroll. The blur only engages where it is supported;
+   the solid fallback below keeps it legible everywhere else. */
+.tenant-signup .ts-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: var(--surface-card);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--primary) 12%, var(--surface-border));
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .tenant-signup .ts-header {
+    background-color: color-mix(in srgb, var(--surface-card) 82%, transparent);
+    backdrop-filter: blur(12px) saturate(1.4);
+  }
+}
+
+/* --- Surfaces -------------------------------------------------------- */
+
+/* Softer than the original triple shadow: at 45% the brand tint read as a red
+   halo around every card once the theme went red. A near-neutral drop plus a
+   whisper of brand keeps the lift without the glow. */
+.tenant-signup .ts-card {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent),
+    0 10px 26px -20px color-mix(in srgb, var(--primary) 28%, transparent),
+    0 28px 64px -44px color-mix(in srgb, var(--foreground) 26%, transparent);
+}
+
+/* Hairline rule used inside cards and the summary rail. */
+.tenant-signup .ts-divider {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--surface-border) 18%,
+    var(--surface-border) 82%,
+    transparent
+  );
+}
+
+/* --- Hero ------------------------------------------------------------ */
+
+/* Small brand pill above the headline. Gives the marketing screen an opening
+   beat and a place for the "what this is" line without a second heading. */
+.tenant-signup .ts-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* --- Package cards --------------------------------------------------- */
+
+/* Preflight is off, so a bare <button> has no focus ring of its own and the
+   whole-card hit target would be invisible to a keyboard. */
+.tenant-signup .ts-package:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Selected reads at a glance from across the card, not just from the pill at
+   the bottom: the surface itself takes a brand tint. */
+.tenant-signup .ts-package[data-selected="true"] {
+  background-image: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--primary) 8%, transparent),
+    transparent 60%
+  );
+}
+
+/* The bundle keeps its own gradient when selected — steeper, so the top tier
+   still reads as the top tier. */
+.tenant-signup .ts-package[data-bundle="true"][data-selected="true"] {
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--primary) 13%, transparent),
+    transparent 62%
+  );
+}
+
+.tenant-signup .ts-package:active {
+  transform: translateY(0);
+}
+
+/* --- Progress rail --------------------------------------------------- */
+
+/* The connector is a track with a fill on top rather than one line that
+   changes colour, so a completed leg reads as progress made. */
+.tenant-signup .ts-track {
+  position: relative;
+  height: 2px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--surface-border);
+  overflow: hidden;
+}
+
+.tenant-signup .ts-track[data-done="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+}
+
+/* Current step gets a soft halo so the eye lands on it first. */
+.tenant-signup .ts-step-dot[data-state="active"] {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+/* --- Motion ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-signup .ts-package,
+  .tenant-signup .ts-package:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* --- Wrapping inside button-shaped surfaces --------------------------- */
+
+/* overrides.css carries a deliberate safety net:
+ *
+ *     button, .btn, .ant-btn { white-space: nowrap; }
+ *
+ * so a translated label never clips inside a control. That is right for a
+ * control and wrong for a *surface* — and this flow has two buttons that hold
+ * prose rather than a label: the package card (the whole card is the hit
+ * target) and the full-width primary action. Under the global rule the
+ * package description ran out of the card on one line and was cut off.
+ *
+ * `white-space` inherits, so setting it on the card is enough for the text
+ * inside; `overflow-wrap` is the belt-and-braces for a long unbroken token
+ * such as a URL or an Arabic compound. Element + class is (0,2,0) and beats
+ * the bare `button` selector (0,0,1) whichever file lands last.
+ */
+.tenant-signup .ts-package,
+.tenant-signup .ts-submit {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* --- Responsive display, without Tailwind's `hidden` ------------------ */
+
+/* `hidden sm:inline` does not work anywhere in this app: custom.scss declares
+ * an UNLAYERED `.hidden { display: none }`, and unlayered css beats anything
+ * in `@layer utilities` no matter the breakpoint. The step labels were hidden
+ * at every width because of it. Same remedy as the rest of this file — a
+ * `.ts-*` class that Tailwind has no say over.
+ */
+.tenant-signup .ts-sm-up {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .tenant-signup .ts-sm-up {
+    display: inline;
+  }
+}
+
+/* --- Package card, continued ----------------------------------------- */
+
+/* Border alone left the cards looking like table cells on a tinted page.
+   A real (small) shadow makes them read as things you can pick up. */
+.tenant-signup .ts-package {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.tenant-signup .ts-package:hover {
+  box-shadow:
+    0 2px 4px color-mix(in srgb, var(--foreground) 6%, transparent),
+    0 14px 30px -20px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+/* The pick affordance. It was a grey pill, which reads as a disabled control
+   on the one element the whole screen is asking you to click — so unselected
+   is now an outlined action in brand colour, and selected is the filled
+   confirmation of it. */
+.tenant-signup .ts-pick {
+  /* Full width and centred: it is the card's call to action, and a row of
+     cards reads far cleaner with the actions on one baseline than with a
+     pill floating beside the savings badge. */
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5625rem 0.875rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.tenant-signup .ts-package:hover .ts-pick {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.tenant-signup .ts-pick[data-selected="true"],
+.tenant-signup .ts-package:hover .ts-pick[data-selected="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* The annual saving is a selling point, so it gets a pill rather than a line
+   of coloured text that reads as a validation error on a red theme. */
+.tenant-signup .ts-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* --- Summary rail ---------------------------------------------------- */
+
+/* The footnote sat hard against the primary action; it is a caveat, not part
+   of the button. */
+.tenant-signup .ts-rail-note {
+  padding-top: 0.125rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+/* --- Field label ------------------------------------------------------ */
+
+/* The element rule above sets `label { display: block }` as the Bootstrap-proof
+ * baseline — but that is unlayered, so it also beat the `flex justify-between`
+ * utilities FormRow puts on its label. The result was "AddressOptional" with
+ * the hint welded to the end of the label instead of pushed to the far end of
+ * the row. Element + class is (0,2,0), so this wins.
+ */
+.tenant-signup .ts-field-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* The hint should never be squeezed out by a long label. */
+.tenant-signup .ts-field-label > :last-child {
+  flex-shrink: 0;
 }

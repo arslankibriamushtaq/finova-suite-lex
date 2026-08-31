@@ -37,7 +37,10 @@ export default function FormRow({
     <div className={cn("space-y-1.5", className)}>
       <label
         htmlFor={id}
-        className="ts-label flex items-baseline justify-between gap-2 text-foreground"
+        // `ts-field-label` rather than Tailwind's flex utilities: the scoped
+        // `label { display: block }` baseline in tenant-signup.css is unlayered
+        // and would win, gluing the "Optional" hint onto the label text.
+        className="ts-label ts-field-label text-foreground"
       >
         <span>
           {label}

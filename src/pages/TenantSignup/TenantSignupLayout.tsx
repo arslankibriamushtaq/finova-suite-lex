@@ -2,7 +2,7 @@ import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 
-import { Images } from "../../components/Config/Images";
+import BrandLogo from "../../components/shared/BrandLogo";
 import { useLanguage } from "../../hooks/use-language";
 import { languages } from "../../lib/i18n";
 import { cn } from "../../lib/utils";
@@ -73,14 +73,10 @@ export default function TenantSignupLayout() {
 
   return (
     <TenantSignupProvider>
-      <div className="tenant-signup flex min-h-screen flex-col bg-[var(--color-surface-page)] text-foreground">
-        <header className="border-b border-[color-mix(in_srgb,var(--primary)_12%,var(--surface-border))] bg-[var(--surface-card)]">
+      <div className="tenant-signup ts-shell flex min-h-screen flex-col text-foreground">
+        <header className="ts-header">
           <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-[1rem] px-[1.25rem] sm:px-8">
-            <img
-              src={Images.DashboardLogo}
-              alt={t("shell.brandAlt")}
-              className="h-8 w-auto"
-            />
+            <BrandLogo alt={t("shell.brandAlt")} className="h-8 w-auto" />
             <LanguageSwitcher />
           </div>
         </header>
@@ -92,7 +88,7 @@ export default function TenantSignupLayout() {
           )}
         >
           {step ? (
-            <div className="mx-auto mb-8 max-w-2xl">
+            <div className="mx-auto mb-9 max-w-2xl">
               <StepBar current={step} />
             </div>
           ) : null}

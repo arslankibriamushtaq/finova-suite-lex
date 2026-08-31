@@ -24,26 +24,29 @@ export default function StepBar({ current }: { current: TenantSignupStep }) {
         const done = index < currentIndex;
         const active = index === currentIndex;
 
+        const last = index === TENANT_SIGNUP_STEPS.length - 1;
+
         return (
           <li
             key={step}
             aria-current={active ? "step" : undefined}
             className={cn(
-              "flex min-w-0 flex-1 items-center gap-2",
-              index < TENANT_SIGNUP_STEPS.length - 1 && "after:h-px after:flex-1",
-              index < TENANT_SIGNUP_STEPS.length - 1 &&
-                (done
-                  ? "after:bg-[var(--primary)]"
-                  : "after:bg-[var(--surface-border)]")
+              "flex min-w-0 items-center gap-2.5",
+              // The last step owns no connector, so it only claims the width
+              // its label needs and the rails share the rest evenly.
+              last ? "shrink-0" : "flex-1"
             )}
           >
             <span
+              data-state={done ? "done" : active ? "active" : "todo"}
               className={cn(
-                "flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold",
+                "ts-step-dot flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
                 done && "bg-[var(--primary)] text-[var(--primary-foreground)]",
                 active &&
-                  "bg-[color-mix(in_srgb,var(--primary)_14%,transparent)] text-[var(--primary)] ring-1 ring-[var(--primary)]",
-                !done && !active && "bg-[var(--muted)] text-muted-foreground"
+                  "bg-[var(--primary)] text-[var(--primary-foreground)]",
+                !done &&
+                  !active &&
+                  "bg-[var(--muted)] text-muted-foreground ring-1 ring-[var(--surface-border)]"
               )}
             >
               {done ? (
@@ -56,14 +59,30 @@ export default function StepBar({ current }: { current: TenantSignupStep }) {
             <span
               className={cn(
                 "ts-xs truncate font-medium",
-                active ? "text-foreground" : "text-muted-foreground",
+                active
+                  ? "text-foreground"
+                  : done
+                    ? "text-[var(--primary)]"
+                    : "text-muted-foreground",
                 // The labels crowd a phone; the numbered dots carry the meaning
-                // on their own at that width.
-                "hidden sm:inline"
+                // on their own at that width. `ts-sm-up` rather than Tailwind's
+                // `hidden sm:inline` — see tenant-signup.css for why that pair
+                // silently hides at every width in this app.
+                "ts-sm-up"
               )}
             >
               {t(`step.${step}`)}
             </span>
+
+            {!last ? (
+              <span
+                aria-hidden="true"
+                data-done={done}
+                // Visible at every width: with the labels hidden on a phone,
+                // the connectors are what stop the dots bunching together.
+                className="ts-track mx-1"
+              />
+            ) : null}
           </li>
         );
       })}

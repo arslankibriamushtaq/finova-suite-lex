@@ -1,4 +1,4 @@
-import { Check, Loader2, Sparkles } from "lucide-react";
+import { Check, Loader2, Plus, Sparkles, TrendingDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -122,10 +122,14 @@ export default function PricingStep() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-9">
       <header className="mx-auto max-w-2xl text-center">
-        <h1 className="ts-display">{t("pricing.headline")}</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        <span className="ts-eyebrow">
+          <Sparkles className="size-3.5" aria-hidden="true" />
+          {t("pricing.eyebrow")}
+        </span>
+        <h1 className="ts-display mt-4">{t("pricing.headline")}</h1>
+        <p className="mt-3.5 text-sm leading-relaxed text-muted-foreground">
           {t("pricing.sub")}
         </p>
       </header>
@@ -168,7 +172,16 @@ export default function PricingStep() {
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <div className="ts-card space-y-4 rounded-2xl p-[1.25rem]">
-            <h2 className="ts-card-title">{t("pricing.summaryTitle")}</h2>
+            <div className="flex items-center justify-between gap-[0.75rem]">
+              <h2 className="ts-card-title">{t("pricing.summaryTitle")}</h2>
+              {packageCodes.length > 0 ? (
+                <span className="ts-xs rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] px-2 py-0.5 font-semibold text-[var(--primary)]">
+                  {packageCodes.length}
+                </span>
+              ) : null}
+            </div>
+
+            <hr className="ts-divider" />
 
             {packageCodes.length === 0 ? (
               <p className="text-[13px] text-muted-foreground">
@@ -275,17 +288,33 @@ function PackageCard({
         // The whole card is the hit target, so it is a real <button>: keyboard
         // and screen-reader behaviour come free, and there is no invisible
         // checkbox to fall out of sync with it.
-        "ts-package flex h-full flex-col rounded-2xl p-[1.25rem] text-start",
+        "ts-package relative flex h-full flex-col rounded-2xl p-[1.25rem] text-start",
         pkg.bundle && "sm:col-span-2"
       )}
     >
+      {/* Selection has to be legible from the top of the card as well as from
+          the pill at its foot — a grid of five is scanned, not read. */}
+      {selected ? (
+        <span
+          aria-hidden="true"
+          className="absolute end-3 top-3 flex size-5 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]"
+        >
+          <Check className="size-3" />
+        </span>
+      ) : null}
+
       <div className="mb-3 flex items-start justify-between gap-[0.75rem]">
-        <h3 className="ts-card-title min-w-0">
+        <h3 className={cn("ts-card-title min-w-0", selected && "pe-7")}>
           {isArabic ? pkg.nameAr : pkg.nameEn}
         </h3>
 
         {pkg.bundle ? (
-          <span className="ts-xs inline-flex shrink-0 items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] px-2 py-0.5 font-semibold text-[var(--primary)]">
+          <span
+            className={cn(
+              "ts-xs inline-flex shrink-0 items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] px-2 py-0.5 font-semibold text-[var(--primary)]",
+              selected && "me-7"
+            )}
+          >
             <Sparkles className="size-3" aria-hidden="true" />
             {t("pricing.bundleTag")}
           </span>
@@ -304,23 +333,25 @@ function PackageCard({
           </span>
         </div>
 
+        {/* Its own block, so the badge keeps its line instead of flowing up
+            beside the action below it. */}
         {annual && saving > 0 ? (
-          <p className="ts-xs font-medium text-[var(--color-success-text)]">
-            {t("pricing.save", {
-              amount: formatMoney(saving, pkg.currency),
-            })}
-          </p>
+          <div>
+            <span className="ts-save">
+              <TrendingDown className="size-3.5" aria-hidden="true" />
+              {t("pricing.save", {
+                amount: formatMoney(saving, pkg.currency),
+              })}
+            </span>
+          </div>
         ) : null}
 
-        <span
-          className={cn(
-            "ts-xs inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-semibold",
-            selected
-              ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-              : "bg-[var(--muted)] text-foreground"
+        <span className="ts-pick" data-selected={selected}>
+          {selected ? (
+            <Check className="size-3.5" aria-hidden="true" />
+          ) : (
+            <Plus className="size-3.5" aria-hidden="true" />
           )}
-        >
-          {selected ? <Check className="size-3.5" aria-hidden="true" /> : null}
           {selected ? t("pricing.selected") : t("pricing.select")}
         </span>
       </div>

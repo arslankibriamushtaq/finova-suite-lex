@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
-import { Images } from "../../components/Config/Images";
+import BrandLogo from "../../components/shared/BrandLogo";
 import { Input } from "../../components/ui/input";
 import { cn } from "../../lib/utils";
 import {
@@ -287,14 +287,10 @@ function Shell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation("tenantSignup");
 
   return (
-    <div className="tenant-signup flex min-h-screen flex-col bg-[var(--color-surface-page)] text-foreground">
-      <header className="border-b border-[color-mix(in_srgb,var(--primary)_12%,var(--surface-border))] bg-[var(--surface-card)]">
+    <div className="tenant-signup ts-shell flex min-h-screen flex-col text-foreground">
+      <header className="ts-header">
         <div className="mx-auto flex h-16 w-full max-w-2xl items-center px-[1.25rem] sm:px-8">
-          <img
-            src={Images.DashboardLogo}
-            alt={t("shell.brandAlt")}
-            className="h-8 w-auto"
-          />
+          <BrandLogo alt={t("shell.brandAlt")} className="h-8 w-auto" />
         </div>
       </header>
 
