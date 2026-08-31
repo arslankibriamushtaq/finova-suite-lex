@@ -98,7 +98,12 @@
    ========================================================================== */
 
 .page-content-area {
-  padding: 1rem;
+  /* Top is deliberately larger than the sides: the app header sits directly
+     above this box, and at an even 1rem every page title crowded it. The
+     layouts used to repeat this padding inline, which beat the class and made
+     the spacing unfixable from here — they no longer set it, so this is the
+     one place page spacing is decided. */
+  padding: 1.75rem 1rem 1rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -261,7 +266,8 @@
 
 @media (max-width: 480px) {
   .page-content-area {
-    padding: 0.5rem !important;
+    /* Tighter on a phone, but the header still needs clearing. */
+    padding: 1rem 0.5rem 0.5rem !important;
   }
 
   .d-flex.align-items-center.gap-3 {

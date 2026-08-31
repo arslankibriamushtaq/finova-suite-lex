@@ -70,10 +70,9 @@ const Layout = () => {
           <DasbhboardHeader />
           {location == "Los" && <HeadingHeader />}
           <div
-            className="page-content-area pt-0"
+            className="page-content-area"
             style={{
               backgroundColor: themeBuilder?.appBackgroundColor,
-              padding: "1rem",
               minHeight: "94vh",
             }}
           >

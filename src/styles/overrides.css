@@ -197,3 +197,32 @@ html body .form-check-input.is-valid:checked,
 html body .was-validated .form-check-input:valid:checked {
   background-color: #AB1920 !important;
 }
+
+/* --- Links take the brand, not Bootstrap's blue -----------------------------
+   Bootstrap colours every bare <a> from `--bs-link-color` (its own blue),
+   unlayered — so a Tailwind `text-[var(--primary)]` on a link loses no matter
+   the specificity. Rather than fight it per link, point Bootstrap's own
+   variables at the ramp. `:root:root` outranks Bootstrap's `:root`, which is
+   declared later in the bundle. */
+:root, :root:root {
+  --bs-link-color: var(--brand-600);
+  --bs-link-color-rgb: 171, 25, 32;
+  --bs-link-hover-color: var(--brand-700);
+  --bs-link-hover-color-rgb: 141, 22, 28;
+}
+
+/* --- Dialog and card headings read from the start ---------------------------
+   custom.scss carries an unlayered `h2 { text-align: center }`. shadcn's
+   DialogTitle, AlertDialogTitle and CardTitle all render an h2, so every modal
+   in the app centred its title over left-aligned content. Scoped to the slots
+   so the rule keeps working wherever a page genuinely wants a centred h2. */
+[data-slot="dialog-title"],
+[data-slot="alert-dialog-title"],
+[data-slot="card-title"],
+[data-slot="dialog-description"],
+[data-slot="alert-dialog-description"],
+[data-slot="card-description"] {
+  /* `inherit` rather than `start`, so a title still follows a container that
+     genuinely asks to be centred. */
+  text-align: inherit;
+}

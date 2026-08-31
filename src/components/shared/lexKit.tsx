@@ -36,17 +36,24 @@ export const LexPageHeader = ({
   subtitle?: string;
   children?: React.ReactNode;
 }) => (
-  <div className="mb-3 pb-2 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+  // Spacing uses arbitrary values on purpose: Bootstrap ships `.mb-3` / `.pb-2`
+  // unlayered with different values, so a plain Tailwind class here would be
+  // silently overridden. `text-dark` was doing the same kind of damage — it
+  // pinned the title to near-black, so every one of these headers stayed dark
+  // grey in dark mode.
+  <div className="mb-[1.5rem] flex flex-wrap items-center justify-between gap-3 border-b border-[var(--surface-border)] pb-[0.875rem]">
     <div className="min-w-0">
-      <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+      <h3 className="mb-0 flex items-center gap-2.5 font-bold text-foreground">
         <span className="pro-head-badge">
           <Icon className="h-4 w-4" />
         </span>
         {title}
       </h3>
-      {subtitle && <p className="mb-0 mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+      {subtitle && (
+        <p className="mb-0 mt-1.5 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+      )}
     </div>
-    {children && <div className="d-flex align-items-center gap-2">{children}</div>}
+    {children && <div className="flex items-center gap-2">{children}</div>}
   </div>
 );
 

@@ -45,8 +45,13 @@
 .tenant-signup h6 {
   margin: 0;
   /* custom.scss ships an unlayered `h2 { text-align: center; margin-bottom:
-     20px }`, which centred every card heading in this flow. */
-  text-align: start;
+     20px }`, which centred every card heading in this flow.
+
+     `inherit`, not `start`: a heading should follow whatever its container
+     asks for. Pinning it to `start` beat the `text-center` on the pricing
+     hero's parent, so the headline alone sat left while the eyebrow and
+     sub-copy above and below it stayed centred. */
+  text-align: inherit;
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.35;

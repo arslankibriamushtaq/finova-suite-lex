@@ -71,7 +71,7 @@ const location=window.location.pathname
           <DasbhboardHeader />
           <div
             className="page-content-area"
-            style={location=="/profile"?{ backgroundColor: themeBuilder?.appBackgroundColor, height:"92vh", padding: "1rem" }:{backgroundColor: themeBuilder?.appBackgroundColor, padding: "1rem"}}
+            style={location=="/profile"?{ backgroundColor: themeBuilder?.appBackgroundColor, height:"92vh" }:{backgroundColor: themeBuilder?.appBackgroundColor}}
           >
             <Outlet />
           </div>

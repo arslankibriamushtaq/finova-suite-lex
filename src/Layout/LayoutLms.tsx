@@ -63,7 +63,7 @@ const LayoutLms = () => {
           <DasbhboardHeader />
           <div
             className="page-content-area"
-            style={{ backgroundColor: themeBuilder?.appBackgroundColor, padding: "1rem" }}
+            style={{ backgroundColor: themeBuilder?.appBackgroundColor }}
           >
             <Outlet />
           </div>
