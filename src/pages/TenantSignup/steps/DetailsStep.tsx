@@ -644,10 +644,10 @@ export default function DetailsStep() {
               {t("form.next")}
             </SubmitButton>
           ) : (
-            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+            <div className="ts-action-row flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button
                 type="button"
-                className="ts-link ts-xs sm:me-auto"
+                className="ts-back"
                 onClick={() => {
                   setPart("company");
                   window.scrollTo({ top: 0, behavior: "smooth" });
