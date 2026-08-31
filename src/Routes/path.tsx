@@ -7,6 +7,22 @@ import RoutetoDash from "../components/DashboardHeader/RoutetoDash";
 import LandingDashboardPage from "../components/Dashboard/LandingDashboardPage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import TenantSignupLayout from "../pages/TenantSignup/TenantSignupLayout";
+import PricingStep from "../pages/TenantSignup/steps/PricingStep";
+import DetailsStep from "../pages/TenantSignup/steps/DetailsStep";
+import PaymentStep from "../pages/TenantSignup/steps/PaymentStep";
+import PaymentReturnStep from "../pages/TenantSignup/steps/PaymentReturnStep";
+import ProvisioningStep from "../pages/TenantSignup/steps/ProvisioningStep";
+import ActivationPage from "../pages/TenantSignup/ActivationPage";
+import PlatformDashboard from "../pages/Platform/PlatformDashboard";
+import PlatformTenants from "../pages/Platform/PlatformTenants";
+import PlatformTenantDetail from "../pages/Platform/PlatformTenantDetail";
+import PlatformPackages from "../pages/Platform/PlatformPackages";
+import PlatformInvoices from "../pages/Platform/PlatformInvoices";
+import TenantProfile from "../pages/TenantPortal/TenantProfile";
+import TenantSubscription from "../pages/TenantPortal/TenantSubscription";
+import TenantEntitlements from "../pages/TenantPortal/TenantEntitlements";
+import TenantInvoices from "../pages/TenantPortal/TenantInvoices";
 import ThirdPartyDashboard from "../pages/ThirdPartyDashboard/ThirdPartyDashboard";
 import ServicesList from "../pages/ThirdPartyDashboard/ServicesList";
 import ServicesApis from "../pages/ThirdPartyDashboard/ServicesApis";
@@ -577,6 +593,34 @@ export const router = createBrowserRouter(
       element: <FinancialStatements />,
     },
 
+    // Tenant self-signup — the public purchase journey a company lands on to
+    // buy a workspace. Public for the same reason the applicant journey below
+    // is: <PublicRoute> would bounce a signed-in employee to the dashboard,
+    // which would stop them ever showing a prospect the pricing page.
+    {
+      path: "tenant",
+      element: <TenantSignupLayout />,
+      children: [
+        { index: true, element: <PricingStep /> },
+        { path: "details", element: <DetailsStep /> },
+        { path: "payment", element: <PaymentStep /> },
+        // BurqPay returns the customer here; configured server-side as the
+        // checkout return URL.
+        { path: "payment/return", element: <PaymentReturnStep /> },
+        { path: "provisioning", element: <ProvisioningStep /> },
+        { path: "*", element: <NotFound /> },
+      ],
+    },
+
+    // Reached from the invitation email, days later and usually on another
+    // device. The backend builds this URL from PLATFORM_WEB_BASE_URL +
+    // PLATFORM_SET_PASSWORD_PATH — moving this path means moving that config,
+    // or every invitation already sent points at a 404.
+    {
+      path: "activate",
+      element: <ActivationPage />,
+    },
+
     // Business (SME/KYB) onboarding — public on purpose. Deliberately NOT wrapped
     // in <PublicRoute>: that guard bounces anyone holding an admin token to the
     // dashboard, which would lock a signed-in back-office user out of the
@@ -823,6 +867,22 @@ export const router = createBrowserRouter(
           path: "",
           element: <Layout />,
           children: [
+            // Superadmin console — `/platform/**` reads across every tenant and
+            // is gated on `platform.*` Casbin objects no tenant role holds. The
+            // sidebar shows this group to `super_admin` only.
+            { path: "/Platform/Dashboard", element: <PlatformDashboard /> },
+            { path: "/Platform/Tenants", element: <PlatformTenants /> },
+            { path: "/Platform/Tenants/:tenantId", element: <PlatformTenantDetail /> },
+            { path: "/Platform/Packages", element: <PlatformPackages /> },
+            { path: "/Platform/Invoices", element: <PlatformInvoices /> },
+
+            // Tenant billing portal — scoped to the caller's own `tenant_id`
+            // claim. No tenant id appears in any of these paths, deliberately.
+            { path: "/TenantPortal/Profile", element: <TenantProfile /> },
+            { path: "/TenantPortal/Subscription", element: <TenantSubscription /> },
+            { path: "/TenantPortal/Entitlements", element: <TenantEntitlements /> },
+            { path: "/TenantPortal/Invoices", element: <TenantInvoices /> },
+
             { path: "/LOS/sales/IBFT", element: <IBFT /> },
             { path: "/LOS/sales/MobileTopup", element: <MobileTopup /> },
             { path: "/LOS/sales/BusBooking", element: <BusBooking /> },

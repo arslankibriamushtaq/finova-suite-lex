@@ -4,6 +4,7 @@
 @import "./assets/scss/custom.scss";
 @import "./styles/rtl.css";
 @import "./styles/business-onboarding.css";
+@import "./styles/tenant-signup.css";
 
 /* Custom dark mode variant */
 @custom-variant dark (&:is(.dark *));

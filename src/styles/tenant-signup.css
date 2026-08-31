@@ -1,0 +1,288 @@
+/* ------------------------------------------------------------------ *
+ * Public tenant self-signup — scoped typography contract
+ *
+ * Same hazard as the business onboarding flow, same remedy. These screens
+ * render in a document that also loads Bootstrap 5, whose reboot styles bare
+ * elements globally and UNLAYERED. Tailwind v4 emits utilities inside
+ * `@layer utilities`, and unlayered css beats layered css regardless of
+ * specificity — so on a bare <h1>, <legend>, <button> or <input>, Bootstrap
+ * wins and the Tailwind text-* class silently does nothing.
+ *
+ * Every rule below is unlayered and scoped to `.tenant-signup`:
+ *
+ *   1. Element rules (0,1,1) set the baseline Bootstrap would otherwise own.
+ *   2. Where an element needs a different size, it gets a `.ts-*` class
+ *      (0,2,0) — outranks the element rule, and is not a Tailwind utility so
+ *      it survives.
+ *
+ * Colour, spacing and layout stay plain Tailwind, EXCEPT where Bootstrap ships
+ * a colliding `!important` utility of its own: `.text-primary`, `.bg-primary`,
+ * `.border-primary` (Bootstrap blue), bare `.border`, and `.p-3/.p-4/.p-5`
+ * with different values. Inside this flow those are written as arbitrary
+ * values — `p-[1rem]`, `text-[var(--primary)]`, `border-[1px]` — which
+ * generate class names Bootstrap has no equivalent for.
+ *
+ * A separate stylesheet from business-onboarding.css on purpose: the two flows
+ * are different modules with different audiences, and this one needs display
+ * type (pricing) the applicant journey has no use for.
+ * ------------------------------------------------------------------ */
+
+.tenant-signup {
+  /* Bootstrap makes controls inherit their font-size, so the container's own
+     size is what buttons and inputs end up with. 14px matches shadcn. */
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Headings -------------------------------------------------------- */
+
+.tenant-signup h1,
+.tenant-signup h2,
+.tenant-signup h3,
+.tenant-signup h4,
+.tenant-signup h5,
+.tenant-signup h6 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+/* The marketing headline on the pricing screen — the one piece of display
+   type in the flow. */
+.tenant-signup .ts-display {
+  font-size: 1.875rem;
+  font-weight: 680;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+@media (min-width: 768px) {
+  .tenant-signup .ts-display {
+    font-size: 2.25rem;
+  }
+}
+
+/* Screen title on every step after pricing. */
+.tenant-signup .ts-title {
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.tenant-signup .ts-card-title {
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+/* A package price. Tabular figures so the five cards' prices line up. */
+.tenant-signup .ts-price {
+  font-size: 1.75rem;
+  font-weight: 680;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Every other number — quote lines, totals, the amount on the payment screen.
+   Tabular figures are the whole point: a column of prices that does not align
+   reads as sloppy on the one screen where trust matters most. */
+.tenant-signup .ts-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.tenant-signup .ts-total {
+  font-size: 1.25rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Form primitives ------------------------------------------------- */
+
+.tenant-signup fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Bootstrap floats <legend> and blows it up to 1.5rem. */
+.tenant-signup legend,
+.tenant-signup .ts-legend {
+  float: none;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--foreground);
+}
+
+.tenant-signup label {
+  display: block;
+  margin: 0;
+}
+
+/* 16px on phones keeps iOS from zooming the viewport on focus; 14px from the
+   tablet breakpoint up matches the rest of the app's controls. */
+.tenant-signup input,
+.tenant-signup textarea,
+.tenant-signup select {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+  .tenant-signup input,
+  .tenant-signup textarea,
+  .tenant-signup select {
+    font-size: 0.875rem;
+  }
+}
+
+/* Public-facing forms get a taller control than the dense admin tables do. */
+.tenant-signup input:not([type="file"]):not([type="checkbox"]),
+.tenant-signup [data-slot="select-trigger"] {
+  height: 2.75rem;
+}
+
+/* Chrome paints autofilled fields pale blue, which fights the theme and makes
+   a finished form look broken. Repaint them as normal fields. */
+.tenant-signup input:-webkit-autofill,
+.tenant-signup input:-webkit-autofill:hover,
+.tenant-signup input:-webkit-autofill:focus,
+.tenant-signup select:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-card) inset;
+  box-shadow: 0 0 0 1000px var(--surface-card) inset;
+  caret-color: var(--foreground);
+  /* The only reliable way to stop the UA repainting on blur. */
+  transition: background-color 100000s ease-in-out 0s;
+}
+
+/* --- Size overrides where the inherited 14px is wrong ---------------- */
+
+.tenant-signup .ts-xs {
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+}
+
+.tenant-signup .ts-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.tenant-signup .ts-submit {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* --- Buttons --------------------------------------------------------- */
+
+/* Inline text actions. Without Tailwind's preflight — which this project
+   disables — a bare <button> keeps the UA's `color: buttontext`, so these
+   render near-black instead of brand red. Declared here rather than as
+   utilities so the result is not at the mercy of whichever unlayered rule
+   loads last. */
+.tenant-signup .ts-link {
+  color: var(--primary);
+  font-weight: 500;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.tenant-signup .ts-link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.tenant-signup .ts-link:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Bootstrap's `.btn:disabled { opacity: .65 }` is unlayered and would fight
+   shadcn's own disabled treatment on the primary action. */
+.tenant-signup [data-slot="button"]:disabled {
+  opacity: 0.55;
+}
+
+/* --- Surfaces -------------------------------------------------------- */
+
+/* The frame every screen shares. Lifted with a real shadow, because these
+   cards float on an empty marketing page rather than sitting in a grid. */
+.tenant-signup .ts-card {
+  background-color: var(--surface-card);
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--surface-border));
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent),
+    0 12px 32px -18px color-mix(in srgb, var(--primary) 45%, transparent),
+    0 24px 60px -40px color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+
+/* A selectable package. The whole card is the hit target, so it needs its own
+   hover and selected states rather than relying on a checkbox's. */
+.tenant-signup .ts-package {
+  background-color: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.tenant-signup .ts-package:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--surface-border));
+  transform: translateY(-1px);
+}
+
+.tenant-signup .ts-package[data-selected="true"] {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 1px var(--primary),
+    0 14px 34px -22px color-mix(in srgb, var(--primary) 65%, transparent);
+}
+
+/* The "everything" tier reads as the top of the ladder, not a sixth peer. */
+.tenant-signup .ts-package[data-bundle="true"] {
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--primary) 7%, transparent),
+    transparent 55%
+  );
+}
+
+/* --- Prose ----------------------------------------------------------- */
+
+.tenant-signup p {
+  margin-bottom: 0;
+}
+
+/* Bootstrap indents every list by a physical `padding-left: 2rem`, which
+   outranks Tailwind's logical `ps-*` and does not mirror in RTL. Most lists
+   here are layout, not prose — so they start flush, and the genuinely
+   bulleted ones opt back in with `.ts-list`. */
+.tenant-signup ul,
+.tenant-signup ol {
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.tenant-signup .ts-list {
+  padding-inline-start: 1.125rem;
+}
+
+/* Reboot also hangs a 1rem bottom margin off these. */
+.tenant-signup dl,
+.tenant-signup dd,
+.tenant-signup figure {
+  margin: 0;
+}

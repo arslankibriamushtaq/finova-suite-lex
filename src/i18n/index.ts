@@ -45,6 +45,7 @@ import walletQr from "./locales/walletQr";
 import permissions from "./locales/permissions";
 import crypto from "./locales/crypto";
 import lex from "./locales/lex";
+import tenantSignup from "./locales/tenantSignup";
 // <-- register new module locale files here (keep alphabetical)
 
 const modules: ModuleLocale[] = [
@@ -86,6 +87,7 @@ const modules: ModuleLocale[] = [
   permissions,
   crypto,
   lex,
+  tenantSignup,
 ];
 
 export const moduleNamespaces: string[] = modules.map((m) => m.namespace);

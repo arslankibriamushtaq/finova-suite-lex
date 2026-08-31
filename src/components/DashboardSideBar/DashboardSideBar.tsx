@@ -42,6 +42,8 @@ import {
   Coins,
   Bitcoin,
   BrainCircuit,
+  Building2,
+  ReceiptText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -98,6 +100,11 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#6366f1" },
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
+  // Tenant provisioning: the platform console (cross-tenant, super admin only)
+  // and the tenant's own billing portal. Two separate top-level groups on
+  // purpose — one is a register of customers, the other is a bill.
+  "tenant management": { Icon: Building2, color: "#0ea5e9" },
+  "my subscription": { Icon: ReceiptText, color: "#a855f7" },
 };
 
 const DEFAULT_MI_COLOR = "#C81D25";
@@ -111,6 +118,16 @@ const getModuleTheme = (label?: string) =>
 const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   Dashboard: "dashboard",
   "Notification Orchestrator": "notificationOrchestrator",
+  "Tenant Management": "tenantManagement",
+  "Platform Dashboard": "platformDashboard",
+  Tenants: "tenants",
+  "Packages & Pricing": "packagesPricing",
+  "Platform Invoices": "platformInvoices",
+  "My Subscription": "mySubscription",
+  "Company Profile": "companyProfile",
+  "Plan & Packages": "planPackages",
+  Entitlements: "entitlements",
+  "Billing & Invoices": "billingInvoices",
   "Customer Management": "customerManagement",
   Users: "users",
   "Onboarding Steps": "onboardingSteps",
@@ -2469,6 +2486,82 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     },
   ].filter(Boolean);
 
+  /**
+   * Tenant provisioning — two groups, never one.
+   *
+   * `platform.*` endpoints read across every tenant; `tenant-portal.*` scope to
+   * the caller's own `tenant_id` claim. Merging them into a single menu would
+   * leave one Casbin policy between a tenant admin and everybody else's
+   * revenue, so the console is super-admin-only and the portal is hidden from
+   * the super admin (who has no tenant of their own to bill).
+   */
+  const platformTenantModule = isSuperAdmin && {
+    label: "Tenant Management",
+    Link: "/Platform/Tenants",
+    active: pathname.startsWith("/Platform"),
+    menu: [
+      {
+        label: "Platform Dashboard",
+        Link: "Dashboard",
+        LinkLable: "/Platform",
+        active: pathname === "/Platform/Dashboard",
+      },
+      {
+        label: "Tenants",
+        Link: "Tenants",
+        LinkLable: "/Platform",
+        active: pathname.startsWith("/Platform/Tenants"),
+      },
+      {
+        label: "Packages & Pricing",
+        Link: "Packages",
+        LinkLable: "/Platform",
+        active: pathname.startsWith("/Platform/Packages"),
+      },
+      {
+        label: "Platform Invoices",
+        Link: "Invoices",
+        LinkLable: "/Platform",
+        active: pathname.startsWith("/Platform/Invoices"),
+      },
+    ],
+  };
+
+  // The CORE package carries the portal permissions, so every provisioned
+  // tenant admin can reach these on day one — no extra gate beyond "not the
+  // platform operator".
+  const tenantPortalModule = !isSuperAdmin && {
+    label: "My Subscription",
+    Link: "/TenantPortal/Subscription",
+    active: pathname.startsWith("/TenantPortal"),
+    menu: [
+      {
+        label: "Company Profile",
+        Link: "Profile",
+        LinkLable: "/TenantPortal",
+        active: pathname === "/TenantPortal/Profile",
+      },
+      {
+        label: "Plan & Packages",
+        Link: "Subscription",
+        LinkLable: "/TenantPortal",
+        active: pathname.startsWith("/TenantPortal/Subscription"),
+      },
+      {
+        label: "Entitlements",
+        Link: "Entitlements",
+        LinkLable: "/TenantPortal",
+        active: pathname === "/TenantPortal/Entitlements",
+      },
+      {
+        label: "Billing & Invoices",
+        Link: "Invoices",
+        LinkLable: "/TenantPortal",
+        active: pathname.startsWith("/TenantPortal/Invoices"),
+      },
+    ],
+  };
+
   const walletItems: any[] = [
     hasAccess("DASHBOARD") && {
       label: "Dashboard",
@@ -2855,6 +2948,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // gates and active-state rules are exactly what they were inside LMS —
     // only `submenu` became `menu`, which is what the top level renders from.
     ...accountingItems,
+    platformTenantModule,
+    tenantPortalModule,
     // hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK", "LEX"]) &&
     {
       label: "Financing",
