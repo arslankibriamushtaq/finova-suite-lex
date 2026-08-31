@@ -1,3 +1,4 @@
+import { Component, type ReactNode } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
 import { Badge } from "../ui/badge";
@@ -26,6 +27,35 @@ export const TenancyStatusBadge = ({ status }: { status?: string | null }) => (
 );
 
 /**
+ * qrcode.react THROWS when the payload will not fit the chosen error-correction
+ * level, and a throw during render unmounts the whole tree — one long TLV would
+ * take the entire invoices page down rather than just losing the code. ZATCA
+ * payloads carry the seller name, VAT number, timestamp and both totals, so
+ * they run long by nature.
+ *
+ * A boundary keeps that failure local: the invoice still renders, and the code
+ * is replaced by a note rather than a blank square that looks like a bug.
+ */
+class QrBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    if (this.state.failed) {
+      return (
+        <span className="rounded-[2px] border border-[var(--surface-border)] px-2 py-1 text-[11px] text-muted-foreground">
+          QR unavailable
+        </span>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+/**
  * The ZATCA QR.
  *
  * `zatcaQr` is a Base64-encoded TLV payload, generated once when the invoice was
@@ -36,19 +66,37 @@ export const TenancyStatusBadge = ({ status }: { status?: string | null }) => (
 export const ZatcaQr = ({ payload, size = 128 }: { payload?: string | null; size?: number }) => {
   if (!payload) return null;
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="rounded-md bg-white p-2">
-        <QRCodeSVG value={payload} size={size} level="M" />
+    <QrBoundary>
+      <div className="flex flex-col items-center gap-1">
+        {/* The white plate is required: a QR scans from dark-on-light, so it
+            must not inherit a dark surface. */}
+        <div className="rounded-[2px] border border-[var(--surface-border)] bg-white p-2">
+          {/* Level L carries the most data for a given size. The payload is a
+              fixed TLV we cannot shorten, so capacity is the constraint that
+              matters, not redundancy. */}
+          <QRCodeSVG value={payload} size={size} level="L" />
+        </div>
+        <span className="text-[11px] text-muted-foreground">ZATCA</span>
       </div>
-      <span className="text-[11px] text-muted-foreground">ZATCA</span>
-    </div>
+    </QrBoundary>
   );
 };
 
-const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="flex items-center justify-between gap-4 border-b border-border/60 py-2 text-sm last:border-b-0">
-    <span className="shrink-0 text-muted-foreground">{label}</span>
-    <span className="min-w-0 break-words text-end font-medium text-foreground">{value ?? "—"}</span>
+/** One label over its value. Grouped into blocks rather than strung across the
+ *  full width: on a wide modal a justify-between row leaves the value so far
+ *  from its label that the pair stops reading as a pair.
+ */
+const Field = ({ label, value }: { label: string; value?: React.ReactNode }) => (
+  <div className="min-w-0">
+    <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      {label}
+    </div>
+    {/* Nullish coalescing only catches null/undefined, so a field the API
+        returns as an empty string printed as nothing at all — which is how
+        Seller VAT, Buyer VAT and Due came out blank instead of as a dash. */}
+    <div className="mt-0.5 break-words text-sm font-medium text-foreground">
+      {value === null || value === undefined || value === "" ? "—" : value}
+    </div>
   </div>
 );
 
@@ -58,77 +106,105 @@ const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
  * as given.
  */
 export const InvoiceDocument = ({ invoice }: { invoice: Invoice }) => (
-  <div className="space-y-4">
-    <div className="flex flex-wrap items-start justify-between gap-4">
+  <div className="space-y-5">
+    {/* Identity band. The QR sits inline with the number rather than opposite
+        it: opposite, its 128px height set the row and left a block of dead
+        space under the badges. */}
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))] bg-[color-mix(in_srgb,var(--primary)_4%,var(--surface-card))] p-3">
       <div className="min-w-0">
-        <div className="font-mono text-sm font-semibold">{invoice.invoiceNo}</div>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
+        <div className="font-mono text-base font-semibold text-foreground">{invoice.invoiceNo}</div>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
           <TenancyStatusBadge status={invoice.status} />
           <Badge variant="outline" className="border-border font-medium">
             {invoice.invoiceType}
           </Badge>
         </div>
       </div>
-      <ZatcaQr payload={invoice.zatcaQr} />
+      <ZatcaQr payload={invoice.zatcaQr} size={84} />
     </div>
 
-    <div className="grid gap-x-6 gap-y-0 md:grid-cols-2">
-      <Row label="Seller" value={invoice.sellerName} />
-      <Row label="Seller VAT" value={invoice.sellerVatNumber} />
-      <Row label="Buyer" value={invoice.buyerName} />
-      <Row label="Buyer VAT" value={invoice.buyerVatNumber} />
-      <Row label="Issued" value={invoice.issueDate} />
-      <Row label="Due" value={invoice.dueDate} />
+    {/* Who, and when. Seller and buyer are separate parties, so they get
+        separate blocks instead of six rows a reader has to pair up. */}
+    <div className="grid gap-3 sm:grid-cols-2">
+      <div className="space-y-3 rounded-[2px] border border-[var(--surface-border)] p-3">
+        <Field label="Seller" value={invoice.sellerName} />
+        <Field label="Seller VAT" value={invoice.sellerVatNumber} />
+      </div>
+      <div className="space-y-3 rounded-[2px] border border-[var(--surface-border)] p-3">
+        <Field label="Buyer" value={invoice.buyerName} />
+        <Field label="Buyer VAT" value={invoice.buyerVatNumber} />
+      </div>
     </div>
 
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-sm">
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="Issued" value={invoice.issueDate} />
+      <Field label="Due" value={invoice.dueDate} />
+    </div>
+
+    <div className="overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
+      <table className="w-full min-w-[640px] border-collapse text-sm">
         <thead>
-          <tr className="border-b border-border text-start text-xs uppercase text-muted-foreground">
-            <th className="py-2 text-start font-medium">#</th>
-            <th className="py-2 text-start font-medium">Description</th>
-            <th className="py-2 text-end font-medium">Qty</th>
-            <th className="py-2 text-end font-medium">Unit</th>
-            <th className="py-2 text-end font-medium">Subtotal</th>
-            <th className="py-2 text-end font-medium">VAT</th>
-            <th className="py-2 text-end font-medium">Total</th>
+          <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
+            <th className="px-3 py-2.5 text-start font-semibold">#</th>
+            <th className="px-3 py-2.5 text-start font-semibold">Description</th>
+            <th className="px-3 py-2.5 text-end font-semibold">Qty</th>
+            <th className="px-3 py-2.5 text-end font-semibold">Unit</th>
+            <th className="px-3 py-2.5 text-end font-semibold">Subtotal</th>
+            <th className="px-3 py-2.5 text-end font-semibold">VAT</th>
+            <th className="px-3 py-2.5 text-end font-semibold">Total</th>
           </tr>
         </thead>
         <tbody>
           {invoice.lines?.map((line) => (
-            <tr key={line.lineNo} className="border-b border-border/60">
-              <td className="py-2">{line.lineNo}</td>
-              <td className="py-2">
-                <div>{line.descriptionEn}</div>
+            <tr
+              key={line.lineNo}
+              className="border-t border-[var(--surface-border)] odd:bg-[var(--theme-table-row-alt)]"
+            >
+              <td className="px-3 py-2.5 text-muted-foreground">{line.lineNo}</td>
+              <td className="px-3 py-2.5">
+                <div className="font-medium text-foreground">{line.descriptionEn}</div>
                 <div dir="rtl" className="text-xs text-muted-foreground">
                   {line.descriptionAr}
                 </div>
               </td>
-              <td className="py-2 text-end">{line.quantity}</td>
-              <td className="py-2 text-end">{money(line.unitPrice)}</td>
-              <td className="py-2 text-end">{money(line.lineSubtotal)}</td>
-              <td className="py-2 text-end">{money(line.lineVatAmount)}</td>
-              <td className="py-2 text-end font-medium">{money(line.lineTotal)}</td>
+              <td className="px-3 py-2.5 text-end tabular-nums">{line.quantity}</td>
+              <td className="px-3 py-2.5 text-end tabular-nums">{money(line.unitPrice)}</td>
+              <td className="px-3 py-2.5 text-end tabular-nums">{money(line.lineSubtotal)}</td>
+              <td className="px-3 py-2.5 text-end tabular-nums">{money(line.lineVatAmount)}</td>
+              <td className="px-3 py-2.5 text-end font-semibold tabular-nums">
+                {money(line.lineTotal)}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
 
-    <div className="ms-auto w-full max-w-xs">
-      <Row label="Subtotal" value={money(invoice.subtotal, invoice.currency)} />
-      <Row
-        label={`VAT (${(Number(invoice.vatRate || 0) * 100).toFixed(0)}%)`}
-        value={money(invoice.vatAmount, invoice.currency)}
-      />
-      <Row
-        label="Total"
-        value={
-          <span className="text-base font-semibold">
+    {/* Totals read as a receipt: labels and figures adjacent, the payable last
+        and heaviest. */}
+    <div className="flex justify-end">
+      <dl className="w-full max-w-xs space-y-2 rounded-[2px] border border-[var(--surface-border)] p-3">
+        <div className="flex items-baseline justify-between gap-4 text-sm">
+          <dt className="text-muted-foreground">Subtotal</dt>
+          <dd className="tabular-nums font-medium text-foreground">
+            {money(invoice.subtotal, invoice.currency)}
+          </dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-4 text-sm">
+          <dt className="text-muted-foreground">
+            VAT ({(Number(invoice.vatRate || 0) * 100).toFixed(0)}%)
+          </dt>
+          <dd className="tabular-nums font-medium text-foreground">
+            {money(invoice.vatAmount, invoice.currency)}
+          </dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-4 border-t border-[var(--surface-border)] pt-2">
+          <dt className="text-sm font-semibold text-foreground">Total</dt>
+          <dd className="text-lg font-bold tabular-nums text-[var(--primary)]">
             {money(invoice.totalAmount, invoice.currency)}
-          </span>
-        }
-      />
+          </dd>
+        </div>
+      </dl>
     </div>
   </div>
 );
