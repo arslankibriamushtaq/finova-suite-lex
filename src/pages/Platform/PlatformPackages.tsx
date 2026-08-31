@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Boxes, Loader2, Package, Pencil, Plus, Tag } from "lucide-react";
 
@@ -31,6 +31,15 @@ import {
 } from "../../redux/apis/apisTenancyAdmin";
 
 const PACKAGE_CODE_RE = /^[A-Z][A-Z0-9_]{1,49}$/;
+
+/**
+ * BurqPay refuses a single checkout above this. The binding figure is not one
+ * package but the dearest thing a buyer can assemble — every package on sale,
+ * billed annually, with VAT — so that is what the pricing dialog checks. Price
+ * above it and the buyer completes the whole funnel and is refused at payment.
+ */
+const CHECKOUT_CEILING = 100000;
+const VAT_MULTIPLIER = 1.15;
 
 /**
  * The catalogue and the price list.
@@ -85,6 +94,31 @@ const PlatformPackages = () => {
   useEffect(() => {
     load();
   }, []);
+
+  /**
+   * The worst basket a buyer could take to checkout if this edit were saved:
+   * every package on sale, annually, with VAT — with the edited package priced
+   * at what is currently typed. Withdrawn packages are excluded because nobody
+   * can add one to a new quote.
+   */
+  const worstCaseCheckout = useMemo(() => {
+    // The package being priced right now — an existing one in the pricing
+    // dialog, or the one being created.
+    const editedCode = pricing?.packageCode ?? (createOpen ? newCode.trim().toUpperCase() : null);
+    if (!editedCode) return 0;
+
+    const typed = Number(annualPrice);
+    const edited = Number.isFinite(typed) ? typed : 0;
+
+    // Withdrawn packages are excluded: nobody can add one to a new quote.
+    const others = rows
+      .filter((p) => p.active && p.packageCode !== editedCode)
+      .reduce((sum, p) => sum + p.annualPrice, 0);
+
+    return (others + edited) * VAT_MULTIPLIER;
+  }, [rows, pricing, createOpen, newCode, annualPrice]);
+
+  const overCeiling = worstCaseCheckout > CHECKOUT_CEILING;
 
   const fail = (error: unknown, fallback: string) => {
     const e = toTenancyError(error, fallback);
@@ -389,6 +423,16 @@ const PlatformPackages = () => {
                 unusable in a billing dispute six months later.
               </p>
             </div>
+
+            {overCeiling && (
+              <div className="rounded-md border border-amber-500/50 bg-amber-500/5 p-2 text-xs">
+                <strong>Above the checkout ceiling.</strong> Everything on sale, billed annually
+                with VAT, comes to {money(worstCaseCheckout, pricing?.currency)} — and the payment
+                provider refuses a single checkout above{" "}
+                {money(CHECKOUT_CEILING, pricing?.currency)}. A buyer taking the full set would
+                complete the whole funnel and be refused at payment.
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPricing(null)}>
@@ -556,6 +600,13 @@ const PlatformPackages = () => {
                 />
               </div>
             </div>
+            {overCeiling && (
+              <div className="rounded-md border border-amber-500/50 bg-amber-500/5 p-2 text-xs">
+                <strong>Above the checkout ceiling.</strong> With this package on sale, everything
+                billed annually with VAT comes to {money(worstCaseCheckout, "SAR")} — and the
+                payment provider refuses a single checkout above {money(CHECKOUT_CEILING, "SAR")}.
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>
