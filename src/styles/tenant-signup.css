@@ -691,3 +691,79 @@
     min-width: 15rem;
   }
 }
+
+/* --- Billing cycle switch --------------------------------------------- */
+
+/* Radii are declared here rather than with `rounded-*`, because index.css maps
+ * every radius token to 2px for the admin UI (`--radius-lg: 2px` and friends).
+ * That is right for dense tables and wrong for a marketing page, where this
+ * control is one of the first things a buyer touches — under the global tokens
+ * it rendered as a flat grey rectangle.
+ */
+.tenant-signup .ts-cycle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3125rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 5%, var(--muted));
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--surface-border));
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.tenant-signup .ts-cycle-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--muted-foreground);
+  background: transparent;
+  transition:
+    color 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.tenant-signup .ts-cycle-btn:hover:not([data-active="true"]) {
+  color: var(--foreground);
+}
+
+/* The selected side is filled in brand rather than raised in white: on a
+   tinted page a white thumb reads as a gap, not as a selection. */
+.tenant-signup .ts-cycle-btn[data-active="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  box-shadow: 0 2px 10px -3px color-mix(in srgb, var(--primary) 60%, transparent);
+}
+
+.tenant-signup .ts-cycle-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-signup .ts-cycle-btn {
+    transition: none;
+  }
+}
+
+/* Marketing surfaces want a real corner for the same reason the switch does:
+   `rounded-2xl` resolves to 2px under the app's radius tokens, which left the
+   pricing cards and every step card looking like table cells. */
+.tenant-signup .ts-card,
+.tenant-signup .ts-package {
+  border-radius: 0.875rem;
+}
+
+/* The language switcher is the same control as the cycle switch, so it wears
+   the same clothes one size down. */
+.tenant-signup .ts-cycle--sm {
+  padding: 0.25rem;
+}
+
+.tenant-signup .ts-cycle--sm .ts-cycle-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}

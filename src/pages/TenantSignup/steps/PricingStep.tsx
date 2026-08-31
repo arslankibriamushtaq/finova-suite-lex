@@ -233,20 +233,16 @@ function CycleToggle({
     <div
       role="group"
       aria-label={t("pricing.cycleLabel")}
-      className="flex items-center gap-0.5 rounded-xl bg-muted p-1"
+      className="ts-cycle"
     >
       {cycles.map((cycle) => (
         <button
           key={cycle}
           type="button"
           aria-pressed={value === cycle}
+          data-active={value === cycle}
           onClick={() => onChange(cycle)}
-          className={cn(
-            "rounded-lg px-[1rem] py-2 text-[13px] font-medium transition-colors",
-            value === cycle
-              ? "bg-[var(--surface-card)] text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
-          )}
+          className="ts-cycle-btn"
         >
           {t(`pricing.cycle.${cycle}`)}
         </button>

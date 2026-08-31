@@ -25,7 +25,7 @@ function LanguageSwitcher() {
     <div
       role="group"
       aria-label={t("shell.language")}
-      className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5"
+      className="ts-cycle ts-cycle--sm"
     >
       {languages.map((language) => {
         const active = language.code === currentLanguage.code;
@@ -35,12 +35,8 @@ function LanguageSwitcher() {
             type="button"
             onClick={() => setLanguage(language)}
             aria-pressed={active}
-            className={cn(
-              "ts-xs rounded-md px-2.5 py-1.5 font-medium transition-colors",
-              active
-                ? "bg-[var(--surface-card)] text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            )}
+            data-active={active}
+            className="ts-cycle-btn"
           >
             {language.nativeName}
           </button>
