@@ -4,15 +4,7 @@ import { WifiOff } from "lucide-react";
 import Loader from "../Loader/Loader";
 import { startSsoLogin } from "../../auth/startSsoLogin";
 
-interface LoginProps {
-  /**
-   * Which realm to sign into. Set to "TENANT" by the /tenant/login route for
-   * workspace administrators; left unset everywhere else.
-   */
-  context?: "TENANT";
-}
-
-const Login: React.FC<LoginProps> = ({ context: contextProp }) => {
+const Login: React.FC = () => {
   const started = useRef(false);
   const { t } = useTranslation("common");
   const [errorInfo, setErrorInfo] = useState<{
@@ -22,13 +14,12 @@ const Login: React.FC<LoginProps> = ({ context: contextProp }) => {
 
   useEffect(() => {
     // A second run — StrictMode's double-invoke in dev, or a re-mount — would
-    // issue a second `login-url` call whose redirect overwrites the first. When
-    // the two disagree about `context` the browser lands on the wrong realm, so
+    // issue a second `login-url` call whose redirect overwrites the first, so
     // fire once per mount and let startSsoLogin guard the rest.
     if (started.current) return;
     started.current = true;
 
-    startSsoLogin(contextProp).catch((err: any) => {
+    startSsoLogin().catch((err: any) => {
       // A missing HTTP response (server unreachable, DNS/"name resolution"
       // failure, offline, or timeout) is a connectivity problem — surface a
       // friendly, localized message instead of the raw browser/axios error.
@@ -44,7 +35,7 @@ const Login: React.FC<LoginProps> = ({ context: contextProp }) => {
           : err?.response?.data?.message || t("signInFailed"),
       });
     });
-  }, [t, contextProp]);
+  }, [t]);
 
   if (errorInfo) {
     return (

@@ -621,7 +621,7 @@ export const router = createBrowserRouter(
     {
       path: "tenant/login",
       element: <LayoutLogin />,
-      children: [{ path: "", element: <Login context="TENANT" /> }],
+      children: [{ path: "", element: <Login /> }],
     },
 
     // Reached from the invitation email, days later and usually on another

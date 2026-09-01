@@ -1,19 +1,15 @@
 import axios from "axios";
 
 /**
- * Which realm Keycloak signs the user into is decided by this one parameter and
- * nowhere else: `context=TENANT` yields a PlatformRealm/tenant-portal URL, where
- * workspace administrators live, and omitting it keeps CompanyRealm/react-frontend
- * for customers and the superadmin. The callback needs no matching change — the
- * server remembers the realm against the `state` it issues here.
+ * Every caller signs into the same realm: `login-url` is asked without a
+ * `context`, which keeps CompanyRealm/react-frontend. The callback needs no
+ * matching change — the server remembers the realm against the `state` it
+ * issues here.
  *
- * A workspace administrator sent to the context-less URL gets Keycloak's
- * `user_not_found`, however correct their password: their account is simply in
- * the other realm. That makes a stray second call expensive — the later
- * `window.location.href` wins, so one context-less caller silently undoes a
- * correct one. Hence a single entry point, and the guard below.
+ * A stray second call is expensive: the later `window.location.href` wins and
+ * overwrites the pending navigation. Hence a single entry point, and the guard
+ * below.
  */
-export type SsoContext = "TENANT";
 
 /**
  * Set once the browser is committed to leaving for Keycloak. A second call —
@@ -25,7 +21,7 @@ let navigating = false;
 
 export const isSsoLoginStarted = (): boolean => navigating;
 
-export async function startSsoLogin(context?: SsoContext): Promise<void> {
+export async function startSsoLogin(): Promise<void> {
   if (navigating) return;
   navigating = true;
 
@@ -35,7 +31,6 @@ export async function startSsoLogin(context?: SsoContext): Promise<void> {
       {
         params: {
           redirect_uri: `${window.location.origin}/callback`,
-          ...(context ? { context } : {}),
         },
       }
     );
