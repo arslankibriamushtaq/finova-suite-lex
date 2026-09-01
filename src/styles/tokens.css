@@ -1283,8 +1283,11 @@ html.dark [data-testid^="expander-button-"] {
   color: var(--foreground) !important;
   fill: var(--foreground) !important;
 }
-html.dark [data-testid^="expander-button-"] svg,
-html.dark [data-testid^="expander-button-"] svg path {
+/* Only the svg, never its paths. react-data-table's icon is two paths — the
+   chevron, which carries no fill and so inherits this one, and a bounding box
+   declared `fill="none"`. Forcing fill on every path overrode that none and
+   painted the 24x24 box solid, which is how the arrow became a white square. */
+html.dark [data-testid^="expander-button-"] svg {
   fill: currentColor !important;
 }
 html.dark [data-testid^="expander-button-"]:hover:enabled {
