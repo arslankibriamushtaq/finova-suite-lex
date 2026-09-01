@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { Building2 } from "lucide-react";
 
 import { Skeleton } from "../../components/ui/skeleton";
+import { formatDate } from "../../components/shared/detailKitUtils";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import { TenancyStatusBadge } from "../../components/shared/tenancyKit";
 import {
@@ -11,11 +12,27 @@ import {
   type TenantResponse,
 } from "../../redux/apis/apisTenancyAdmin";
 
-const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="flex items-center justify-between gap-4 border-b border-border/60 py-2 text-sm last:border-b-0">
-    <span className="shrink-0 text-muted-foreground">{label}</span>
-    <span className="min-w-0 break-words text-end font-medium text-foreground">{value ?? "—"}</span>
+/**
+ * Label over value, not label-left/value-right. Ten rows of the second kind on
+ * a wide card leave the value stranded far from its label, and the customer is
+ * reading their own details rather than comparing a column of figures.
+ */
+const Field = ({ label, value }: { label: string; value?: React.ReactNode }) => (
+  <div className="min-w-0">
+    <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      {label}
+    </div>
+    <div className="mt-0.5 break-words text-sm font-medium text-foreground">
+      {value === null || value === undefined || value === "" ? "—" : value}
+    </div>
   </div>
+);
+
+const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <section className="pro-card p-4">
+    <h2 className="mb-3 text-sm font-semibold text-foreground">{title}</h2>
+    <div className="grid gap-3 sm:grid-cols-2">{children}</div>
+  </section>
 );
 
 /**
@@ -44,13 +61,13 @@ const TenantProfile = () => {
 
   return (
     <div>
-      <LexPageHeader icon={Building2} title={profile.companyName} subtitle={profile.tenantCode}>
+      <LexPageHeader icon={Building2} title={profile.companyName} subtitle={<span className="font-mono text-xs tracking-tight">{profile.tenantCode}</span>}>
         <TenancyStatusBadge status={profile.status} />
       </LexPageHeader>
 
       {profile.status === "SUSPENDED" && (
-        <div className="mb-3 rounded-lg border border-orange-500/50 bg-orange-500/5 p-3 text-sm">
-          <div className="fw-semibold">Your workspace is suspended.</div>
+        <div className="mb-3 rounded-[2px] border border-[color-mix(in_srgb,var(--color-warning)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-warning)_8%,transparent)] p-3 text-sm">
+          <div className="font-semibold">Your workspace is suspended.</div>
           <div className="mt-1">{profile.suspensionReason || "No reason was recorded."}</div>
           <div className="mt-2 text-muted-foreground">
             Settle any outstanding invoice or contact support to have it lifted. Nothing has been
@@ -59,22 +76,65 @@ const TenantProfile = () => {
         </div>
       )}
 
-      <div className="rounded-lg border border-border bg-card p-3" style={{ maxWidth: 640 }}>
-        <Row
-          label="Name (AR)"
-          value={profile.companyNameAr ? <span dir="rtl">{profile.companyNameAr}</span> : "—"}
-        />
-        <Row label="CR number" value={profile.crNumber} />
-        <Row label="VAT number" value={profile.vatNumber} />
-        <Row
-          label="Country / City"
-          value={[profile.countryCode, profile.city].filter(Boolean).join(" · ") || "—"}
-        />
-        <Row label="Email" value={profile.companyEmail} />
-        <Row label="Phone" value={profile.companyPhone} />
-        <Row label="Website" value={profile.website} />
-        <Row label="Administrator" value={profile.adminEmail} />
-        <Row label="Customer since" value={profile.activatedAt || profile.createdAt} />
+      {/* Three groups rather than one column of ten rows: who the company is,
+          how to reach it, and the account's own references. */}
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Card title="Company">
+          <Field
+            label="Name (AR)"
+            value={
+              profile.companyNameAr ? (
+                <span dir="rtl" className="inline-block">
+                  {profile.companyNameAr}
+                </span>
+              ) : null
+            }
+          />
+          <Field
+            label="Country / City"
+            value={[profile.countryCode, profile.city].filter(Boolean).join(" · ")}
+          />
+          <Field
+            label="CR number"
+            value={
+              profile.crNumber ? (
+                <span className="font-mono text-xs">{profile.crNumber}</span>
+              ) : null
+            }
+          />
+          <Field
+            label="VAT number"
+            value={
+              profile.vatNumber ? (
+                <span className="font-mono text-xs">{profile.vatNumber}</span>
+              ) : null
+            }
+          />
+        </Card>
+
+        <Card title="Contact">
+          <Field label="Email" value={profile.companyEmail} />
+          <Field label="Phone" value={profile.companyPhone} />
+          <Field label="Website" value={profile.website} />
+          <Field label="Administrator" value={profile.adminEmail} />
+        </Card>
+
+        <div className="lg:col-span-2">
+          <Card title="Account">
+            <Field
+              label="Customer since"
+              value={formatDate(profile.activatedAt || profile.createdAt)}
+            />
+            {/* The id support will ask for. Mono and selectable so it can be
+                read down a phone or copied without transcription errors. */}
+            <Field
+              label="Tenant ID"
+              value={
+                <span className="select-all font-mono text-xs">{profile.tenantId}</span>
+              }
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { CreditCard, Loader2 } from "lucide-react";
+import { Boxes, CalendarClock, CreditCard, Loader2, Repeat } from "lucide-react";
 
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "../../components/ui/dialog";
 import { Skeleton } from "../../components/ui/skeleton";
+import { formatDate } from "../../components/shared/detailKitUtils";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import { TenancyStatusBadge } from "../../components/shared/tenancyKit";
 import { money } from "../../components/shared/tenancyKitUtils";
@@ -150,51 +151,157 @@ const TenantSubscription = () => {
           finishing — this page fills in within a minute or two.
         </p>
       ) : (
-        <div className="row g-3">
-          <div className="col-12 col-lg-6">
-            <div className="rounded-lg border border-border bg-card p-3">
-              <Row label="Subscription" value={<span className="font-mono text-xs">{subscription.subscriptionNo}</span>} />
+        <>
+          {/* What the customer is paying and until when, before any of the
+              plan's paperwork. */}
+          <div className="dashboard-stats mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="stat-card stat-card--emerald">
+              <div className="stat-card__row">
+                <span className="stat-card__title">Recurring</span>
+                <span className="stat-card__icon">
+                  <CreditCard strokeWidth={2} />
+                </span>
+              </div>
+              <div className="stat-card__value-row">
+                <p className="stat-card__value">
+                  {money(subscription.recurringAmount, subscription.currency)}
+                </p>
+              </div>
+            </div>
+            <div className="stat-card stat-card--indigo">
+              <div className="stat-card__row">
+                <span className="stat-card__title">Billing cycle</span>
+                <span className="stat-card__icon">
+                  <Repeat strokeWidth={2} />
+                </span>
+              </div>
+              <div className="stat-card__value-row">
+                <p className="stat-card__value">{subscription.billingCycle}</p>
+              </div>
+            </div>
+            <div className="stat-card stat-card--violet">
+              <div className="stat-card__row">
+                <span className="stat-card__title">Renews on</span>
+                <span className="stat-card__icon">
+                  <CalendarClock strokeWidth={2} />
+                </span>
+              </div>
+              <div className="stat-card__value-row">
+                <p className="stat-card__value">
+                  {formatDate(subscription.currentPeriodEnd)}
+                </p>
+              </div>
+            </div>
+            <div className="stat-card stat-card--amber">
+              <div className="stat-card__row">
+                <span className="stat-card__title">Packages</span>
+                <span className="stat-card__icon">
+                  <Boxes strokeWidth={2} />
+                </span>
+              </div>
+              <div className="stat-card__value-row">
+                <p className="stat-card__value">{subscription.items?.length ?? 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-2">
+            <section className="pro-card p-4">
+              <h2 className="mb-3 text-sm font-semibold">Plan</h2>
+              <Row
+                label="Subscription"
+                value={
+                  <span className="select-all font-mono text-xs">
+                    {subscription.subscriptionNo}
+                  </span>
+                }
+              />
               <Row label="Status" value={<TenancyStatusBadge status={subscription.status} />} />
-              <Row label="Billing cycle" value={subscription.billingCycle} />
-              <Row label="Current period" value={`${subscription.currentPeriodStart} → ${subscription.currentPeriodEnd}`} />
-              <Row label="Recurring" value={money(subscription.recurringAmount, subscription.currency)} />
+              <Row
+                label="Current period"
+                value={`${formatDate(subscription.currentPeriodStart)} → ${formatDate(
+                  subscription.currentPeriodEnd
+                )}`}
+              />
               <div className="flex items-center justify-between gap-4 py-2 text-sm">
-                <span className="text-muted-foreground">Auto-renew</span>
+                <div className="min-w-0">
+                  <div className="text-muted-foreground">Auto-renew</div>
+                  {/* The consequence, not just the state — this is the switch
+                      that decides whether the workspace keeps running. */}
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    {subscription.autoRenew
+                      ? `Renews automatically on ${formatDate(subscription.currentPeriodEnd)}.`
+                      : "Your plan will end at the close of this period."}
+                  </div>
+                </div>
                 <Switch
                   checked={subscription.autoRenew}
                   disabled={busy}
                   onCheckedChange={toggleAutoRenew}
                 />
               </div>
-            </div>
-          </div>
+            </section>
 
-          <div className="col-12 col-lg-6">
-            <div className="rounded-lg border border-border bg-card p-3">
-              <div className="mb-2 text-sm font-semibold">Your packages</div>
-              {subscription.items?.map((item) => (
-                <Row
-                  key={item.packageCode}
-                  label={item.packageCode}
-                  value={`${money(item.unitPrice, subscription.currency)} × ${item.quantity}`}
-                />
-              ))}
-            </div>
+            <section className="pro-card p-4">
+              <h2 className="mb-3 text-sm font-semibold">Your packages</h2>
+              <div className="grid gap-2">
+                {subscription.items?.map((item) => {
+                  // The catalogue is already loaded for the change dialog, so
+                  // the line can carry the name the customer bought rather than
+                  // the code we happen to store it under.
+                  const pkg = catalog.find((c) => c.packageCode === item.packageCode);
+                  return (
+                    <div
+                      key={item.packageCode}
+                      className="flex items-center justify-between gap-3 rounded-[2px] border border-[var(--surface-border)] p-2.5"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-medium text-foreground">
+                          {pkg?.nameEn || item.packageCode}
+                        </div>
+                        <div className="font-mono text-[11px] text-muted-foreground">
+                          {item.packageCode}
+                        </div>
+                      </div>
+                      <div className="shrink-0 text-end">
+                        <div className="text-sm font-semibold tabular-nums text-foreground">
+                          {money(item.unitPrice, subscription.currency)}
+                        </div>
+                        {item.quantity > 1 ? (
+                          <div className="text-[11px] text-muted-foreground">
+                            × {item.quantity}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
 
             {history.length > 1 && (
-              <div className="mt-3 rounded-lg border border-border bg-card p-3">
-                <div className="mb-2 text-sm font-semibold">Plan history</div>
-                {history.map((h) => (
-                  <Row
-                    key={h.subscriptionId}
-                    label={`${h.subscriptionNo} · ${h.status}`}
-                    value={`${h.currentPeriodStart} → ${h.currentPeriodEnd}`}
-                  />
-                ))}
-              </div>
+              <section className="pro-card p-4 lg:col-span-2">
+                <h2 className="mb-3 text-sm font-semibold">Plan history</h2>
+                <div className="grid gap-2">
+                  {history.map((h) => (
+                    <div
+                      key={h.subscriptionId}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-[var(--surface-border)] p-2.5 text-sm"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono text-xs">{h.subscriptionNo}</span>
+                        <TenancyStatusBadge status={h.status} />
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(h.currentPeriodStart)} → {formatDate(h.currentPeriodEnd)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
             )}
           </div>
-        </div>
+        </>
       )}
 
       <Dialog open={changeOpen} onOpenChange={setChangeOpen}>
@@ -208,9 +315,9 @@ const TenantSubscription = () => {
               date does not change.
             </DialogDescription>
           </DialogHeader>
-          <div className="d-grid gap-2" style={{ maxHeight: 320, overflowY: "auto" }}>
+          <div className="grid max-h-[20rem] gap-2 overflow-y-auto">
             {catalog.map((p) => (
-              <label key={p.packageCode} className="d-flex align-items-start gap-2 text-sm">
+              <label key={p.packageCode} className="flex items-start gap-2 text-sm">
                 <Checkbox
                   checked={selected.includes(p.packageCode)}
                   onCheckedChange={(checked) =>
@@ -220,7 +327,7 @@ const TenantSubscription = () => {
                   }
                 />
                 <span>
-                  <span className="fw-medium">{p.nameEn}</span>
+                  <span className="font-medium">{p.nameEn}</span>
                   {currentCodes.includes(p.packageCode) && (
                     <Badge variant="outline" className="ms-1 border-border text-[10px]">
                       current
