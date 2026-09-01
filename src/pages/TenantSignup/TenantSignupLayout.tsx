@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
@@ -14,14 +15,20 @@ import { TenantSignupProvider } from "./TenantSignupContext";
  * How wide each step's column runs.
  *
  * Pricing is a marketing page — five cards side by side plus a summary rail —
- * and needs the full width. Details carries the same rail beside a form, so it
- * needs room for two columns but not six cards: 64rem seats a ~40rem form, the
- * 20rem rail and the gutter between them without stretching the fields to an
- * uncomfortable line length. Payment and setup are a single column of status.
+ * and needs the full width.
+ *
+ * Details is the widest of the lot. At 64rem it seated one column of fields
+ * beside the rail, which on any modern screen meant a tall form running past
+ * the fold with several hundred pixels of empty page either side of it. 92rem
+ * seats three columns of fields and the rail, turning that height into width
+ * the display already had. Individual fields never get wider than a column, so
+ * line length stays comfortable.
+ *
+ * Payment and setup are a single column of status.
  */
 const STEP_WIDTH: Record<string, string> = {
   pricing: "max-w-6xl",
-  details: "max-w-5xl",
+  details: "max-w-[92rem]",
 };
 
 const DEFAULT_WIDTH = "max-w-2xl";
@@ -76,11 +83,25 @@ export default function TenantSignupLayout() {
   const step = stepForRoute(pathname);
   const columnWidth = (step && STEP_WIDTH[step]) ?? DEFAULT_WIDTH;
 
+  // A router navigation keeps the window's scroll offset. Pricing is a long
+  // page, so anyone who scrolled to the packages and continued arrived at the
+  // details form already scrolled past the step bar and into the middle of it —
+  // looking, on first sight, like a broken page. Jump, don't smooth-scroll:
+  // this is a new screen, not a move within one.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [pathname]);
+
   return (
     <TenantSignupProvider>
       <div className="tenant-signup ts-shell flex min-h-screen flex-col text-foreground">
         <header className="ts-header">
-          <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-[1rem] px-[1.25rem] sm:px-8">
+          <div
+            className={cn(
+              "mx-auto flex h-16 w-full items-center justify-between gap-[1rem] px-[1.25rem] sm:px-8",
+              columnWidth
+            )}
+          >
             <BrandLogo alt={t("shell.brandAlt")} className="h-8 w-auto" />
             <LanguageSwitcher />
           </div>
@@ -88,12 +109,12 @@ export default function TenantSignupLayout() {
 
         <main
           className={cn(
-            "mx-auto w-full flex-1 px-[1.25rem] py-10 sm:px-8 sm:py-14",
+            "mx-auto w-full flex-1 px-[1.25rem] py-8 sm:px-8 sm:py-10",
             columnWidth
           )}
         >
           {step ? (
-            <div className="mx-auto mb-9 max-w-2xl">
+            <div className="mx-auto mb-7 max-w-2xl">
               <StepBar current={step} />
             </div>
           ) : null}

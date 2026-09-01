@@ -78,6 +78,7 @@ const tenantSignup: ModuleLocale = {
     "form.sub":
       "We use this to raise your invoice and to create the first administrator of your workspace.",
     "form.company.legend": "Your company",
+    "form.more.toggle": "Address, phone and other details",
     "form.admin.legend": "You",
     "form.admin.hint": "The person filling this in is not always the owner, so we record both.",
     "form.companyName": "Company name",
@@ -124,7 +125,8 @@ const tenantSignup: ModuleLocale = {
     "payment.sub": "Your card is charged once; your subscription starts today.",
     "payment.amountDue": "Amount due",
     "payment.reference": "Reference {{ref}}",
-    "payment.holdsUntil": "This price is held until {{date}}.",
+    "payment.referenceLabel": "Reference",
+    "payment.holdLabel": "Price held until",
     "payment.opening": "Opening a secure payment session…",
     "payment.confirming": "Verifying your payment…",
     "payment.checkoutFailed": "We could not open a payment session. Please try again in a moment.",
@@ -259,6 +261,7 @@ const tenantSignup: ModuleLocale = {
     "form.sub":
       "Ces informations servent à établir votre facture et à créer le premier administrateur de votre espace.",
     "form.company.legend": "Votre entreprise",
+    "form.more.toggle": "Adresse, téléphone et autres informations",
     "form.admin.legend": "Vous",
     "form.admin.hint":
       "La personne qui remplit ce formulaire n'est pas toujours le propriétaire : nous enregistrons les deux.",
@@ -305,7 +308,8 @@ const tenantSignup: ModuleLocale = {
     "payment.sub": "Votre carte est débitée une fois ; votre abonnement commence aujourd'hui.",
     "payment.amountDue": "Montant dû",
     "payment.reference": "Référence {{ref}}",
-    "payment.holdsUntil": "Ce prix est garanti jusqu'au {{date}}.",
+    "payment.referenceLabel": "Référence",
+    "payment.holdLabel": "Prix garanti jusqu'au",
     "payment.opening": "Ouverture d'une session de paiement sécurisée…",
     "payment.confirming": "Vérification de votre paiement…",
     "payment.checkoutFailed":
@@ -437,6 +441,7 @@ const tenantSignup: ModuleLocale = {
     "form.back": "رجوع",
     "form.sub": "نستخدم هذه البيانات لإصدار فاتورتك ولإنشاء أول مسؤول لمساحة عملك.",
     "form.company.legend": "شركتك",
+    "form.more.toggle": "العنوان والهاتف وتفاصيل أخرى",
     "form.admin.legend": "بياناتك",
     "form.admin.hint": "من يعبّئ النموذج ليس دائماً المالك، لذا نسجّل الاثنين.",
     "form.companyName": "اسم الشركة",
@@ -482,7 +487,8 @@ const tenantSignup: ModuleLocale = {
     "payment.sub": "تُخصم من بطاقتك مرة واحدة، ويبدأ اشتراكك اليوم.",
     "payment.amountDue": "المبلغ المستحق",
     "payment.reference": "الرقم المرجعي {{ref}}",
-    "payment.holdsUntil": "هذا السعر محجوز حتى {{date}}.",
+    "payment.referenceLabel": "الرقم المرجعي",
+    "payment.holdLabel": "السعر محفوظ حتى",
     "payment.opening": "جارٍ فتح جلسة دفع آمنة…",
     "payment.confirming": "جارٍ التحقق من عملية الدفع…",
     "payment.checkoutFailed": "تعذّر فتح جلسة دفع. حاول مرة أخرى بعد قليل.",

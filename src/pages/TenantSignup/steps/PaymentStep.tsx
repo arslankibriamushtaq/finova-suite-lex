@@ -1,4 +1,4 @@
-import { ExternalLink, Loader2, Lock } from "lucide-react";
+import { Clock, ExternalLink, Loader2, Lock } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -122,25 +122,37 @@ export default function PaymentStep() {
   return (
     <StepCard title={t("payment.title")} description={t("payment.sub")}>
       <div className="space-y-6">
-        <dl className="rounded-xl bg-[var(--muted)] p-[1rem]">
-          <div className="flex items-baseline justify-between gap-[1rem]">
-            <dt className="text-[13px] text-muted-foreground">
-              {t("payment.amountDue")}
-            </dt>
-            <dd className="ts-total text-foreground">
+        {/* The last thing the buyer reads before they leave for a hosted
+            checkout on someone else's domain, so it states the figure, what it
+            is against, and how long it stands. Two bands rather than four rows
+            of equal weight: the amount is the decision, the reference and the
+            hold are the small print under it. */}
+        <dl className="ts-pay-panel">
+          <div className="ts-pay-head">
+            <dt className="ts-caps">{t("payment.amountDue")}</dt>
+            <dd className="ts-pay-total">
               {formatMoney(summary.totalAmount, summary.currency)}
             </dd>
           </div>
-          <div className="mt-2 flex items-baseline justify-between gap-[1rem]">
-            <dt className="ts-xs text-muted-foreground">
-              {t("payment.reference", { ref: summary.referenceNo })}
-            </dt>
-            {summary.expiresAt ? (
-              <dd className="ts-xs text-muted-foreground">
-                {t("payment.holdsUntil", {
-                  date: formatDateTime(summary.expiresAt),
-                })}
+
+          <div className="ts-pay-meta">
+            <div className="min-w-0">
+              <dt className="ts-caps">{t("payment.referenceLabel")}</dt>
+              {/* Monospace because this is the string a buyer reads back to
+                  support over the phone. */}
+              <dd className="mt-1 break-all font-mono text-[13px] text-foreground">
+                {summary.referenceNo}
               </dd>
+            </div>
+
+            {summary.expiresAt ? (
+              <div className="min-w-0 sm:text-end">
+                <dt className="ts-caps">{t("payment.holdLabel")}</dt>
+                <dd className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-foreground sm:justify-end">
+                  <Clock className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  {formatDateTime(summary.expiresAt)}
+                </dd>
+              </div>
             ) : null}
           </div>
         </dl>
@@ -190,7 +202,7 @@ export default function PaymentStep() {
           </SubmitButton>
         )}
 
-        <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+        <p className="flex items-center justify-center gap-1.5 border-t border-[var(--surface-border)] pt-4 text-xs text-muted-foreground">
           <Lock className="size-3 shrink-0" aria-hidden="true" />
           {t("shell.support")}
         </p>

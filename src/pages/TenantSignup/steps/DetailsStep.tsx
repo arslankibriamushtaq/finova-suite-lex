@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -110,6 +111,10 @@ export default function DetailsStep() {
   // Which half of the form is on screen. Both halves live in the same state,
   // so moving between them keeps every answer.
   const [part, setPart] = useState<"company" | "admin">("company");
+  // The optional half of the company form. Closed to begin with, because most
+  // buyers have nothing to add there and an eleven-field wall is what made this
+  // screen scroll.
+  const [moreOpen, setMoreOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -216,10 +221,16 @@ export default function DetailsStep() {
   ];
 
   /** Part one is done when nothing it owns is wrong. */
+  // Website is the only optional company field that can fail validation, and it
+  // lives inside the collapsed group. An error nobody can see is an error
+  // nobody can fix, so a failure opens the group that holds it.
+  const OPTIONAL_COMPANY_FIELDS: (keyof FormState)[] = ["website"];
+
   const goToAdmin = () => {
     const found = validateCompany();
     setErrors(found);
     setFormError(null);
+    if (OPTIONAL_COMPANY_FIELDS.some((field) => found[field])) setMoreOpen(true);
     if (Object.keys(found).length > 0) return;
     setPart("admin");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -241,7 +252,10 @@ export default function DetailsStep() {
       setFormError(null);
       // An error the buyer cannot see is an error they cannot fix: if anything
       // in part one failed, that is where they are taken.
-      if (COMPANY_FIELDS.some((field) => found[field])) setPart("company");
+      if (COMPANY_FIELDS.some((field) => found[field])) {
+        setPart("company");
+        if (OPTIONAL_COMPANY_FIELDS.some((field) => found[field])) setMoreOpen(true);
+      }
       return;
     }
 
@@ -344,10 +358,11 @@ export default function DetailsStep() {
     // Form and running total side by side from `lg` up, the same shape as the
     // pricing screen. Below that the rail drops under the form rather than
     // squeezing both into a phone's width.
-    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
       <StepCard
         title={part === "company" ? t("form.title") : t("form.title.admin")}
         description={part === "company" ? t("form.sub") : t("form.sub.admin")}
+        meta={t("form.partShort", { current: part === "company" ? 1 : 2 })}
         aside={
           <button
             type="button"
@@ -358,73 +373,90 @@ export default function DetailsStep() {
           </button>
         }
       >
-        {/* Just the count. The <legend> below already names the section, and
-            printing "Step 1 of 2 · Your company" above a "Your company"
-            heading said it twice. */}
-        <p className="ts-xs -mt-4 mb-6 font-medium text-muted-foreground">
-          {t("form.partShort", { current: part === "company" ? 1 : 2 })}
-        </p>
-
-        <form onSubmit={onSubmit} noValidate className="space-y-8">
+        <form onSubmit={onSubmit} noValidate className="space-y-6">
           {/* Only the current half is rendered. The answers live in `form`,
               outside the fieldsets, so unmounting one loses nothing. */}
           {part === "company" ? (
-            <fieldset className="space-y-4">
-              <legend className="ts-legend mb-1">{t("form.company.legend")}</legend>
+            <fieldset>
+              {/* The card title already says "Tell us about your company", so
+                  a visible legend repeated it and cost a row. */}
+              <legend className="sr-only">{t("form.company.legend")}</legend>
 
-              <FormRow
-                id="companyName"
-                label={t("form.companyName")}
-                required
-                error={errors.companyName}
-              >
-                <Input
+              {/* Three of these eleven fields are required; the other eight are
+                  things most buyers leave blank. Showing all eleven at once
+                  made the first screen of a paid signup look like paperwork,
+                  and ran well past the fold on any laptop.
+
+                  What is asked up front is what we cannot invoice without: who
+                  you are, where you are, where the invoice goes, and the two
+                  registration numbers that decide what the invoice can legally
+                  carry. The rest is one click away and keeps its value if it is
+                  opened, filled and closed again — the answers live in form
+                  state, not in the markup. */}
+              <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2 min-[1400px]:grid-cols-3">
+                <FormRow
                   id="companyName"
-                  value={form.companyName}
-                  autoComplete="organization"
-                  aria-invalid={Boolean(errors.companyName)}
-                  onChange={(e) => set("companyName", e.target.value)}
-                />
-              </FormRow>
-
-              <FormRow id="companyNameAr" label={t("form.companyNameAr")}>
-                <Input
-                  id="companyNameAr"
-                  dir="rtl"
-                  value={form.companyNameAr}
-                  onChange={(e) => set("companyNameAr", e.target.value)}
-                />
-              </FormRow>
-
-              <FormRow id="countryCode" label={t("form.countryCode")} required>
-                <Select
-                  value={form.countryCode}
-                  onValueChange={(value) => set("countryCode", value)}
+                  label={t("form.companyName")}
+                  required
+                  error={errors.companyName}
+                  className="sm:col-span-2"
                 >
-                  <SelectTrigger id="countryCode">
-                    <SelectValue placeholder={t("common.select")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countryOptions.map((country, index) => (
-                      <SelectItem
-                        key={country.code}
-                        value={country.code}
-                        // A hairline under the pinned regional block, so it
-                        // reads as "these first" rather than a broken sort.
-                        className={cn(
-                          country.priority &&
-                            !countryOptions[index + 1]?.priority &&
-                            "border-b border-[var(--surface-border)]"
-                        )}
-                      >
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormRow>
+                  <Input
+                    id="companyName"
+                    value={form.companyName}
+                    autoComplete="organization"
+                    aria-invalid={Boolean(errors.companyName)}
+                    onChange={(e) => set("companyName", e.target.value)}
+                  />
+                </FormRow>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+                <FormRow id="countryCode" label={t("form.countryCode")} required>
+                  <Select
+                    value={form.countryCode}
+                    onValueChange={(value) => set("countryCode", value)}
+                  >
+                    <SelectTrigger id="countryCode">
+                      <SelectValue placeholder={t("common.select")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countryOptions.map((country, index) => (
+                        <SelectItem
+                          key={country.code}
+                          value={country.code}
+                          // A hairline under the pinned regional block, so it
+                          // reads as "these first" rather than a broken sort.
+                          className={cn(
+                            country.priority &&
+                              !countryOptions[index + 1]?.priority &&
+                              "border-b border-[var(--surface-border)]"
+                          )}
+                        >
+                          {country.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormRow>
+
+                <FormRow
+                  id="companyEmail"
+                  label={t("form.companyEmail")}
+                  required
+                  hint={t("form.companyEmail.hint")}
+                  error={errors.companyEmail}
+                >
+                  <Input
+                    id="companyEmail"
+                    type="email"
+                    dir="ltr"
+                    autoComplete="email"
+                    value={form.companyEmail}
+                    aria-invalid={Boolean(errors.companyEmail)}
+                    aria-describedby="companyEmail-hint"
+                    onChange={(e) => set("companyEmail", e.target.value)}
+                  />
+                </FormRow>
+
                 <FormRow
                   id="crNumber"
                   label={t("form.crNumber")}
@@ -440,9 +472,9 @@ export default function DetailsStep() {
                     aria-invalid={Boolean(errors.crNumber)}
                     aria-describedby="crNumber-hint"
                     // Separators and Arabic-Indic numerals are normalised as
-                    // they are typed, so a pasted "1010-101010" or a
-                    // keyboard's ١٠١٠١٠١٠١٠ becomes a valid CR instead of an
-                    // error the buyer cannot see the cause of.
+                    // they are typed, so a pasted "1010-101010" or a keyboard
+                    // sending Arabic-Indic digits becomes a valid CR instead of
+                    // an error the buyer cannot see the cause of.
                     onChange={(e) => set("crNumber", normalizeDigits(e.target.value))}
                   />
                 </FormRow>
@@ -466,86 +498,102 @@ export default function DetailsStep() {
                 </FormRow>
               </div>
 
-              <FormRow
-                id="companyEmail"
-                label={t("form.companyEmail")}
-                required
-                hint={t("form.companyEmail.hint")}
-                error={errors.companyEmail}
-              >
-                <Input
-                  id="companyEmail"
-                  type="email"
-                  dir="ltr"
-                  autoComplete="email"
-                  value={form.companyEmail}
-                  aria-invalid={Boolean(errors.companyEmail)}
-                  aria-describedby="companyEmail-hint"
-                  onChange={(e) => set("companyEmail", e.target.value)}
-                />
-              </FormRow>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormRow id="companyPhone" label={t("form.companyPhone")}>
-                  <Input
-                    id="companyPhone"
-                    type="tel"
-                    dir="ltr"
-                    autoComplete="tel"
-                    value={form.companyPhone}
-                    onChange={(e) => set("companyPhone", e.target.value)}
+              <div className="ts-more">
+                <button
+                  type="button"
+                  className="ts-more-trigger"
+                  aria-expanded={moreOpen}
+                  aria-controls="company-more"
+                  onClick={() => setMoreOpen((open) => !open)}
+                >
+                  <ChevronDown
+                    className={cn("size-4 shrink-0 transition-transform", moreOpen && "rotate-180")}
+                    aria-hidden="true"
                   />
-                </FormRow>
+                  <span className="min-w-0 flex-1 text-start">{t("form.more.toggle")}</span>
+                  <span className="ts-xs shrink-0 font-normal text-muted-foreground">
+                    {t("common.optional")}
+                  </span>
+                </button>
 
-                <FormRow id="website" label={t("form.website")} error={errors.website}>
-                  <Input
-                    id="website"
-                    type="url"
-                    dir="ltr"
-                    placeholder="https://"
-                    value={form.website}
-                    aria-invalid={Boolean(errors.website)}
-                    onChange={(e) => set("website", e.target.value)}
-                  />
-                </FormRow>
-              </div>
+                {moreOpen ? (
+                  <div
+                    id="company-more"
+                    className="grid gap-x-4 gap-y-3.5 pt-4 sm:grid-cols-2 min-[1400px]:grid-cols-3"
+                  >
+                    <FormRow id="companyNameAr" label={t("form.companyNameAr")}>
+                      <Input
+                        id="companyNameAr"
+                        dir="rtl"
+                        value={form.companyNameAr}
+                        onChange={(e) => set("companyNameAr", e.target.value)}
+                      />
+                    </FormRow>
 
-              <FormRow id="addressLine" label={t("form.addressLine")}>
-                <Input
-                  id="addressLine"
-                  autoComplete="street-address"
-                  value={form.addressLine}
-                  onChange={(e) => set("addressLine", e.target.value)}
-                />
-              </FormRow>
+                    <FormRow id="companyPhone" label={t("form.companyPhone")}>
+                      <Input
+                        id="companyPhone"
+                        type="tel"
+                        dir="ltr"
+                        autoComplete="tel"
+                        value={form.companyPhone}
+                        onChange={(e) => set("companyPhone", e.target.value)}
+                      />
+                    </FormRow>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormRow id="city" label={t("form.city")}>
-                  <Input
-                    id="city"
-                    autoComplete="address-level2"
-                    value={form.city}
-                    onChange={(e) => set("city", e.target.value)}
-                  />
-                </FormRow>
+                    <FormRow id="website" label={t("form.website")} error={errors.website}>
+                      <Input
+                        id="website"
+                        type="url"
+                        dir="ltr"
+                        placeholder="https://"
+                        value={form.website}
+                        aria-invalid={Boolean(errors.website)}
+                        onChange={(e) => set("website", e.target.value)}
+                      />
+                    </FormRow>
 
-                <FormRow id="postalCode" label={t("form.postalCode")}>
-                  <Input
-                    id="postalCode"
-                    inputMode="numeric"
-                    autoComplete="postal-code"
-                    value={form.postalCode}
-                    onChange={(e) => set("postalCode", e.target.value)}
-                  />
-                </FormRow>
+                    <FormRow id="city" label={t("form.city")}>
+                      <Input
+                        id="city"
+                        autoComplete="address-level2"
+                        value={form.city}
+                        onChange={(e) => set("city", e.target.value)}
+                      />
+                    </FormRow>
+
+                    <FormRow id="addressLine" label={t("form.addressLine")}>
+                      <Input
+                        id="addressLine"
+                        autoComplete="street-address"
+                        value={form.addressLine}
+                        onChange={(e) => set("addressLine", e.target.value)}
+                      />
+                    </FormRow>
+
+                    <FormRow id="postalCode" label={t("form.postalCode")}>
+                      <Input
+                        id="postalCode"
+                        inputMode="numeric"
+                        autoComplete="postal-code"
+                        value={form.postalCode}
+                        onChange={(e) => set("postalCode", e.target.value)}
+                      />
+                    </FormRow>
+                  </div>
+                ) : null}
               </div>
             </fieldset>
           ) : (
-            <fieldset className="space-y-4">
-              <legend className="ts-legend mb-1">{t("form.admin.legend")}</legend>
-              <p className="ts-xs -mt-2 text-muted-foreground">{t("form.admin.hint")}</p>
+            <fieldset className="space-y-3.5">
+              <legend className="sr-only">{t("form.admin.legend")}</legend>
+              <p className="ts-xs text-muted-foreground">{t("form.admin.hint")}</p>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              {/* One grid, not three stacked ones: split into pairs, the six
+                  fields left holes wherever a pair did not divide into the
+                  column count. Six fields fill two rows at three columns and
+                  three rows at two, with nothing stranded. */}
+              <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2 min-[1400px]:grid-cols-3">
                 <FormRow
                   id="adminFirstName"
                   label={t("form.adminFirstName")}
@@ -569,28 +617,26 @@ export default function DetailsStep() {
                     onChange={(e) => set("adminLastName", e.target.value)}
                   />
                 </FormRow>
-              </div>
 
-              <FormRow
-                id="adminEmail"
-                label={t("form.adminEmail")}
-                required
-                hint={t("form.adminEmail.hint")}
-                error={errors.adminEmail}
-              >
-                <Input
+                <FormRow
                   id="adminEmail"
-                  type="email"
-                  dir="ltr"
-                  autoComplete="email"
-                  value={form.adminEmail}
-                  aria-invalid={Boolean(errors.adminEmail)}
-                  aria-describedby="adminEmail-hint"
-                  onChange={(e) => set("adminEmail", e.target.value)}
-                />
-              </FormRow>
+                  label={t("form.adminEmail")}
+                  required
+                  hint={t("form.adminEmail.hint")}
+                  error={errors.adminEmail}
+                >
+                  <Input
+                    id="adminEmail"
+                    type="email"
+                    dir="ltr"
+                    autoComplete="email"
+                    value={form.adminEmail}
+                    aria-invalid={Boolean(errors.adminEmail)}
+                    aria-describedby="adminEmail-hint"
+                    onChange={(e) => set("adminEmail", e.target.value)}
+                  />
+                </FormRow>
 
-              <div className="grid gap-4 sm:grid-cols-2">
                 <FormRow id="adminMobile" label={t("form.adminMobile")}>
                   <Input
                     id="adminMobile"
@@ -610,33 +656,33 @@ export default function DetailsStep() {
                     onChange={(e) => set("adminJobTitle", e.target.value)}
                   />
                 </FormRow>
-              </div>
 
-              {/* Required server-side ("Tell us your relationship to the
-                  company"), so it is marked as such here — the field defaults
-                  to a value, but labelling it Optional would be a lie. */}
-              <FormRow
-                id="adminRelationship"
-                label={t("form.adminRelationship")}
-                required
-                error={errors.adminRelationship}
-              >
-                <Select
-                  value={form.adminRelationship}
-                  onValueChange={(value) => set("adminRelationship", value as AdminRelationship)}
+                {/* Required server-side ("Tell us your relationship to the
+                    company"), so it is marked as such here — the field defaults
+                    to a value, but labelling it Optional would be a lie. */}
+                <FormRow
+                  id="adminRelationship"
+                  label={t("form.adminRelationship")}
+                  required
+                  error={errors.adminRelationship}
                 >
-                  <SelectTrigger id="adminRelationship">
-                    <SelectValue placeholder={t("common.select")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ADMIN_RELATIONSHIPS.map((relationship) => (
-                      <SelectItem key={relationship} value={relationship}>
-                        {t(`relationship.${relationship}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormRow>
+                  <Select
+                    value={form.adminRelationship}
+                    onValueChange={(value) => set("adminRelationship", value as AdminRelationship)}
+                  >
+                    <SelectTrigger id="adminRelationship">
+                      <SelectValue placeholder={t("common.select")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ADMIN_RELATIONSHIPS.map((relationship) => (
+                        <SelectItem key={relationship} value={relationship}>
+                          {t(`relationship.${relationship}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormRow>
+              </div>
             </fieldset>
           )}
 
