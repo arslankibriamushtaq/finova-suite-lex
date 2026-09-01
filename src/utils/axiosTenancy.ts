@@ -2,7 +2,7 @@ import Axios from "axios";
 
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { clearSessionAndRedirect, refreshAccessToken } from "./authRefresh";
 
 /**
  * Authenticated client for `tenant-provisioning-service`.
@@ -31,16 +31,28 @@ axiosTenancy.interceptors.request.use((reqConfig) => {
 
 axiosTenancy.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // 401 here means no readable `tenant_id` claim or a dead token: re-login,
-    // never retry. A 403 is a missing Casbin policy and is the screen's to
-    // render — the menu row should already have been hidden.
-    if (error?.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      store.dispatch(setToken({ token: "" }));
-      window.location.href = "/login";
+  async (error) => {
+    // A 403 is a missing Casbin policy and is the screen's to render — the menu
+    // row should already have been hidden. Only a 401 is ours to act on.
+    if (error?.response?.status !== 401) return Promise.reject(error);
+
+    const original = error.config;
+
+    // Access tokens last an hour, so the common 401 is simply an aged-out
+    // token: refresh once and replay. `_retry` bounds that to a single attempt,
+    // so a token the server keeps refusing ends in logout rather than a loop.
+    if (original && !original._retry) {
+      original._retry = true;
+
+      const token = await refreshAccessToken();
+      if (token) {
+        original.headers = { ...original.headers, Authorization: `Bearer ${token}` };
+        return axiosTenancy(original);
+      }
     }
+
+    // The refresh failed or was already spent: the session is genuinely over.
+    clearSessionAndRedirect();
     return Promise.reject(error);
   }
 );

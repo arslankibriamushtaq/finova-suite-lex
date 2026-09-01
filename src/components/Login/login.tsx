@@ -1,10 +1,19 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { WifiOff } from "lucide-react";
 import Loader from "../Loader/Loader";
+import { startSsoLogin } from "../../auth/startSsoLogin";
 
-const Login: React.FC = () => {
+interface LoginProps {
+  /**
+   * Which realm to sign into. Set to "TENANT" by the /tenant/login route for
+   * workspace administrators; left unset everywhere else.
+   */
+  context?: "TENANT";
+}
+
+const Login: React.FC<LoginProps> = ({ context: contextProp }) => {
+  const started = useRef(false);
   const { t } = useTranslation("common");
   const [errorInfo, setErrorInfo] = useState<{
     message: string;
@@ -12,35 +21,30 @@ const Login: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    const initSsoLogin = async () => {
-      try {
-        const ssoBaseUrl = import.meta.env.VITE_API_BASE_URL;
-        const res = await axios.get(
-          `${ssoBaseUrl}/identity-service/api/v1/auth/sso/login-url?redirect_uri=${window.location.origin}/callback`
-        );
-        const { authUrl, state } = res.data.data;
-        sessionStorage.setItem("sso_state", state);
-        window.location.href = authUrl;
-      } catch (err: any) {
-        // A missing HTTP response (server unreachable, DNS/"name resolution"
-        // failure, offline, or timeout) is a connectivity problem — surface a
-        // friendly, localized message instead of the raw browser/axios error.
-        const isNetwork =
-          (typeof navigator !== "undefined" && navigator.onLine === false) ||
-          err?.code === "ERR_NETWORK" ||
-          err?.code === "ECONNABORTED" ||
-          !err?.response;
-        setErrorInfo({
-          isNetwork,
-          message: isNetwork
-            ? t("networkError")
-            : err?.response?.data?.message || t("signInFailed"),
-        });
-      }
-    };
+    // A second run — StrictMode's double-invoke in dev, or a re-mount — would
+    // issue a second `login-url` call whose redirect overwrites the first. When
+    // the two disagree about `context` the browser lands on the wrong realm, so
+    // fire once per mount and let startSsoLogin guard the rest.
+    if (started.current) return;
+    started.current = true;
 
-    initSsoLogin();
-  }, [t]);
+    startSsoLogin(contextProp).catch((err: any) => {
+      // A missing HTTP response (server unreachable, DNS/"name resolution"
+      // failure, offline, or timeout) is a connectivity problem — surface a
+      // friendly, localized message instead of the raw browser/axios error.
+      const isNetwork =
+        (typeof navigator !== "undefined" && navigator.onLine === false) ||
+        err?.code === "ERR_NETWORK" ||
+        err?.code === "ECONNABORTED" ||
+        !err?.response;
+      setErrorInfo({
+        isNetwork,
+        message: isNetwork
+          ? t("networkError")
+          : err?.response?.data?.message || t("signInFailed"),
+      });
+    });
+  }, [t, contextProp]);
 
   if (errorInfo) {
     return (

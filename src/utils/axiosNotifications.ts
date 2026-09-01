@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Axios from "axios";
 
 import { attachAcceptLanguage } from "./acceptLanguage";
+import { redirectToLogin } from "./redirectToLogin";
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_NOTIFICATION_URL || import.meta.env.VITE_API_BASE_URL,
 });
@@ -35,7 +36,7 @@ axios.interceptors.response.use(
       void clearAdminSession();
       
       // Redirect to login page
-      window.location.href = "/login";
+      redirectToLogin();
     }
 
     // 400 errors are handled entirely by component-level toast.promise

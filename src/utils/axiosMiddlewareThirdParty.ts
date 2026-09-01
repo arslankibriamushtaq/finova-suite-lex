@@ -3,6 +3,7 @@ import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axiosMiddlewareThirdParty = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/middleware-third-party`,
@@ -32,7 +33,7 @@ axiosMiddlewareThirdParty.interceptors.response.use(
 
       void clearAdminSession();
 
-      window.location.href = "/login";
+      redirectToLogin();
     }
 
     if (status === 422 && data?.errors) {

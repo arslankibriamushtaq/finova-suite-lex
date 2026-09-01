@@ -2,6 +2,7 @@ import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axiosOnboardingService = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/onboarding-service`,
@@ -22,7 +23,7 @@ axiosOnboardingService.interceptors.response.use(
   async (error) => {
     if (error?.response?.status === 401) {
       void clearAdminSession();
-      window.location.href = "/login";
+      redirectToLogin();
     }
     return Promise.reject(error);
   }

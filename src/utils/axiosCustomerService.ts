@@ -3,6 +3,7 @@ import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axiosCustomerService = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/customer-service`,
@@ -28,7 +29,7 @@ axiosCustomerService.interceptors.response.use(
 
     if (status === 401) {
       void clearAdminSession();
-      window.location.href = "/login";
+      redirectToLogin();
     }
 
     if (status === 500) {

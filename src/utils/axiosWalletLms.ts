@@ -2,6 +2,7 @@ import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { clearAdminSession } from "./adminSession";
 import { v4 as uuidv4 } from 'uuid'
+import { redirectToLogin } from "./redirectToLogin";
  
 const axiosWalletLms = Axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_WALLET_LMS_URLL,
@@ -46,7 +47,7 @@ axiosWalletLms.interceptors.response.use(
       void clearAdminSession();
       
       // Redirect to login page
-      window.location.href = "/login";
+      redirectToLogin();
     }
     return Promise.reject(error);
   },

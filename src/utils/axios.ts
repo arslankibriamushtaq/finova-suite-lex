@@ -4,6 +4,7 @@ import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -36,7 +37,7 @@ axios.interceptors.response.use(
 
       void clearAdminSession();
 
-      window.location.href = "/login";
+      redirectToLogin();
     }
     // }
     if (status === 422) {

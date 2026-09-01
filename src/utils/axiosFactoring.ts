@@ -4,6 +4,7 @@ import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 const axiosFactoring = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}`,
 });
@@ -70,10 +71,8 @@ axiosFactoring.interceptors.response.use(
       void clearAdminSession();
       
       // Redirect to login page
-      if(window.location.pathname !== "/login"){
-        toast.error("Session expired, redirecting to login...");
-        window.location.href = "/login";
-      }
+      toast.error("Session expired, redirecting to login...");
+      redirectToLogin();
     }
     
     return Promise.reject(error);

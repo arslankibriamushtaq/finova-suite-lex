@@ -3,6 +3,7 @@ import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axiosRiskService = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/risk-service`,
@@ -28,7 +29,7 @@ axiosRiskService.interceptors.response.use(
 
     if (status === 401) {
       void clearAdminSession();
-      window.location.href = "/login";
+      redirectToLogin();
     }
 
     if (status === 500) {

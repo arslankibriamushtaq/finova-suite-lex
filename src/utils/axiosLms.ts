@@ -4,6 +4,7 @@ import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 const axiosLms = Axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   // withCredentials: true,
@@ -49,7 +50,7 @@ axiosLms.interceptors.response.use(
       void clearAdminSession();
       
       // Redirect to login page
-      window.location.href = "/login";
+      redirectToLogin();
     }
     
     return Promise.reject(error);

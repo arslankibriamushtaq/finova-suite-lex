@@ -4,6 +4,7 @@ import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_WEBPAGES_URL,
@@ -51,7 +52,7 @@ axios.interceptors.response.use(
       
       void clearAdminSession();
       
-      window.location.href = "/login";
+      redirectToLogin();
     }
   
     if (status === 422) {

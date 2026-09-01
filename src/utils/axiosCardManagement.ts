@@ -3,6 +3,7 @@ import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
 import toast from "react-hot-toast";
+import { redirectToLogin } from "./redirectToLogin";
 
 const axiosCardManagement = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/card-service`,
@@ -29,7 +30,7 @@ axiosCardManagement.interceptors.response.use(
     if (status === 401) {
       toast.error("Session expired, please login again.");
       void clearAdminSession();
-      window.location.href = "/login";
+      redirectToLogin();
     }
     // Business-rule / validation / conflict errors surface the API message.
     if ((status === 400 || status === 409 || status === 422 || status === 500) && data?.message) {

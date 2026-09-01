@@ -2,6 +2,7 @@ import Axios, { type AxiosInstance } from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
+import { redirectToLogin } from "./redirectToLogin";
 
 /**
  * LEX — the agentic decisioning layer. Five services, one client factory.
@@ -74,7 +75,7 @@ const createLexClient = (service: string, fallbackMount: string): AxiosInstance 
         localStorage.removeItem("token");
         localStorage.removeItem("userData");
         store.dispatch(setToken({ token: "" }));
-        window.location.href = "/login";
+        redirectToLogin();
       }
       return Promise.reject(error);
     }

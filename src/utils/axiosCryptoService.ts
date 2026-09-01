@@ -2,6 +2,7 @@ import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
+import { redirectToLogin } from "./redirectToLogin";
 
 /**
  * crypto-service (port 8102, `crypto_db`), mounted on the gateway at
@@ -37,7 +38,7 @@ axiosCryptoService.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("userData");
       store.dispatch(setToken({ token: "" }));
-      window.location.href = "/login";
+      redirectToLogin();
     }
 
     // Deliberately no toast on 500, unlike the older service clients. Every

@@ -2,6 +2,7 @@ import Axios from "axios";
 import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { clearAdminSession } from "./adminSession";
+import { redirectToLogin } from "./redirectToLogin";
  
 const axiosCms = Axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_BASE_CMS_URL,
@@ -33,7 +34,7 @@ axiosCms.interceptors.response.use(
       void clearAdminSession();
       
       // Redirect to login page
-      window.location.href = "/login";
+      redirectToLogin();
     }
     return Promise.reject(error);
   },
