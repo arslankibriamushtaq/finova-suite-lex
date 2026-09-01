@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Boxes, Loader2, Package, Pencil, Plus, Tag } from "lucide-react";
+import {
+  Boxes,
+  Info,
+  LayoutGrid,
+  Loader2,
+  Package,
+  Pencil,
+  Plus,
+  Rows3,
+  Tag,
+} from "lucide-react";
 
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -20,6 +30,7 @@ import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import { money } from "../../components/shared/tenancyKitUtils";
+import { cn } from "../../lib/utils";
 import {
   createPackage,
   getPlatformPackages,
@@ -77,6 +88,29 @@ const PlatformPackages = () => {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [newCode, setNewCode] = useState("");
+
+  /**
+   * List or cards. Remembered per browser, because it is a reading preference
+   * rather than page state — a catalogue you scan for prices wants the list,
+   * one you scan for what each package contains wants the cards.
+   */
+  const [view, setView] = useState<"list" | "grid">(() => {
+    try {
+      return localStorage.getItem("platform.packages.view") === "list" ? "list" : "grid";
+    } catch {
+      // Private windows and blocked site data both throw on read.
+      return "grid";
+    }
+  });
+
+  const changeView = (next: "list" | "grid") => {
+    setView(next);
+    try {
+      localStorage.setItem("platform.packages.view", next);
+    } catch {
+      /* Not being able to remember it is not worth failing over. */
+    }
+  };
 
   const load = async () => {
     setIsLoading(true);
@@ -258,6 +292,41 @@ const PlatformPackages = () => {
         title="Packages & Pricing"
         subtitle="Everything the platform sells, withdrawn packages included."
       >
+        <div
+          role="group"
+          aria-label="View"
+          className="flex items-center gap-0.5 rounded-[2px] border border-[var(--surface-border)] p-0.5"
+        >
+          <button
+            type="button"
+            aria-pressed={view === "list"}
+            title="List view"
+            onClick={() => changeView("list")}
+            className={cn(
+              "flex h-7 w-8 items-center justify-center rounded-[2px] transition-colors",
+              view === "list"
+                ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                : "text-muted-foreground hover:bg-[var(--muted)] hover:text-foreground"
+            )}
+          >
+            <Rows3 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            aria-pressed={view === "grid"}
+            title="Card view"
+            onClick={() => changeView("grid")}
+            className={cn(
+              "flex h-7 w-8 items-center justify-center rounded-[2px] transition-colors",
+              view === "grid"
+                ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                : "text-muted-foreground hover:bg-[var(--muted)] hover:text-foreground"
+            )}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+        </div>
+
         <Button
           size="sm"
           onClick={() => {
@@ -270,10 +339,15 @@ const PlatformPackages = () => {
         </Button>
       </LexPageHeader>
 
-      <p className="mb-3 text-sm text-muted-foreground">
-        A price change applies to <strong>new quotes only</strong>. Every existing subscription
-        stores the unit prices it was sold at, so no customer's bill moves.
-      </p>
+      {/* The one rule an operator needs before touching a price, so it reads as
+          a notice rather than as a line of grey prose above a list. */}
+      <div className="mb-3 flex items-start gap-2.5 rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_18%,var(--surface-border))] bg-[color-mix(in_srgb,var(--primary)_5%,var(--surface-card))] p-3 text-sm">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--primary)]" aria-hidden="true" />
+        <span>
+          A price change applies to <strong>new quotes only</strong>. Every existing subscription
+          stores the unit prices it was sold at, so no customer's bill moves.
+        </span>
+      </div>
 
       {isLoading && rows.length === 0 ? (
         <div className="grid gap-2">
@@ -284,13 +358,30 @@ const PlatformPackages = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={Package} text="The catalogue is empty." />
       ) : (
-        <div className="grid gap-2">
+        <div className={cn("grid gap-3", view === "grid" && "sm:grid-cols-2 xl:grid-cols-3")}>
           {rows.map((p) => (
-            <div key={p.packageCode} className="pro-card p-3">
-              <div className="flex flex-wrap items-start justify-between gap-2">
+            <div
+              key={p.packageCode}
+              className={cn(
+                "pro-card flex flex-col p-4 transition-opacity",
+                !p.active && "opacity-65"
+              )}
+            >
+              {/* Three columns, not a left stack with an empty right half:
+                  identity, then the prices in a column of their own so they
+                  line up down the catalogue and can be compared by scanning,
+                  then the actions. Grants move to their own row underneath —
+                  the bundle grants twenty modules and they were pushing the
+                  whole row out of shape. */}
+              <div
+                className={cn(
+                  "grid gap-x-6 gap-y-3",
+                  view === "list" && "lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center"
+                )}
+              >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold">{p.nameEn}</span>
+                    <span className="text-[15px] font-semibold text-foreground">{p.nameEn}</span>
                     <span className="font-mono text-xs text-muted-foreground">{p.packageCode}</span>
                     {p.bundle && (
                       <Badge variant="outline" className="border-border text-[10px]">
@@ -308,26 +399,61 @@ const PlatformPackages = () => {
                       {p.active ? "on sale" : "withdrawn"}
                     </Badge>
                   </div>
-                  <div dir="rtl" className="text-xs text-muted-foreground">
-                    {p.nameAr}
-                  </div>
-                  <div className="mt-1 text-sm">
-                    {money(p.monthlyPrice, p.currency)} / month ·{" "}
-                    {money(p.annualPrice, p.currency)} / year
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {p.moduleCodes?.map((m) => (
-                      <Badge
-                        key={m}
-                        variant="outline"
-                        className="border-border font-mono text-[10px]"
-                      >
-                        {m}
-                      </Badge>
-                    ))}
-                  </div>
+                  {/* `inline-block` so the RTL box hugs the name. As a block it
+                      spanned the row and right-aligned the Arabic into the
+                      middle of the empty space, which read as a layout fault. */}
+                  {p.nameAr ? (
+                    <span
+                      dir="rtl"
+                      className="mt-1 inline-block text-xs text-muted-foreground"
+                    >
+                      {p.nameAr}
+                    </span>
+                  ) : null}
+
+                  {p.descriptionEn ? (
+                    <p className="mt-1.5 line-clamp-2 max-w-prose text-xs leading-relaxed text-muted-foreground">
+                      {p.descriptionEn}
+                    </p>
+                  ) : null}
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+
+                {/* Its own column, right-aligned and tabular, so monthly reads
+                    down one line and annual down another. */}
+                <div
+                  className={cn(
+                    "flex items-baseline gap-6",
+                    view === "list" && "lg:min-w-[13rem] lg:flex-col lg:items-end lg:gap-1"
+                  )}
+                >
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="text-base font-semibold tabular-nums text-foreground">
+                      {money(p.monthlyPrice, p.currency)}
+                    </span>
+                    <span className="w-10 text-xs text-muted-foreground">/ mo</span>
+                  </span>
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="text-base font-semibold tabular-nums text-foreground">
+                      {money(p.annualPrice, p.currency)}
+                    </span>
+                    <span className="w-10 text-xs text-muted-foreground">/ yr</span>
+                  </span>
+                </div>
+                {/* In a card the actions get their own block: three equal
+                    buttons on one line, the switch below a rule. Inline in the
+                    list, where there is width for them beside the prices. */}
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    view === "grid" && "flex-col items-stretch gap-2.5"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex items-center gap-2",
+                      view === "grid" && "grid grid-cols-3"
+                    )}
+                  >
                   <Button
                     size="sm"
                     variant="outline"
@@ -366,16 +492,53 @@ const PlatformPackages = () => {
                   >
                     Modules
                   </Button>
-                  <div className="flex items-center gap-1">
+                  </div>
+
+                  {/* The switch is the one control here that changes what
+                      customers can buy, so it is separated from the three that
+                      only open a dialog — by a rule in a card, by a divider in
+                      the list. */}
+                  <div
+                    className={cn(
+                      "flex items-center gap-2",
+                      view === "grid"
+                        ? "border-t border-[var(--surface-border)] pt-2.5"
+                        : "border-s border-[var(--surface-border)] ps-3"
+                    )}
+                  >
                     <Switch
+                      id={`on-sale-${p.packageCode}`}
                       checked={p.active}
                       disabled={busy}
                       onCheckedChange={() => toggleActive(p)}
                     />
-                    <span className="text-xs text-muted-foreground">on sale</span>
+                    <Label
+                      htmlFor={`on-sale-${p.packageCode}`}
+                      className="cursor-pointer text-xs font-medium text-muted-foreground"
+                    >
+                      {p.active ? "On sale" : "Withdrawn"}
+                    </Label>
                   </div>
                 </div>
               </div>
+
+              {/* Full width and below the fold of the row: the bundle grants
+                  twenty codes, and inline they distorted every other column. */}
+              {p.moduleCodes?.length ? (
+                <div className="mt-auto flex flex-wrap items-center gap-1.5 border-t border-[var(--surface-border)] pt-3">
+                  <span className="me-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Grants
+                  </span>
+                  {p.moduleCodes.map((m) => (
+                    <span
+                      key={m}
+                      className="rounded-[3px] bg-[color-mix(in_srgb,var(--primary)_7%,var(--muted))] px-1.5 py-0.5 font-mono text-[10px] leading-4 text-foreground"
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
           ))}
         </div>
