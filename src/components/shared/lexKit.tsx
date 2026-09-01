@@ -33,7 +33,8 @@ export const LexPageHeader = ({
 }: {
   icon: LucideIcon;
   title: string;
-  subtitle?: string;
+  /** Text, or a node where the sub-line carries a code, a chip or a link. */
+  subtitle?: React.ReactNode;
   children?: React.ReactNode;
 }) => (
   // Spacing uses arbitrary values on purpose: Bootstrap ships `.mb-3` / `.pb-2`

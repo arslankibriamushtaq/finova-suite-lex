@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AlertTriangle, Banknote, Building2, Loader2, RefreshCw } from "lucide-react";
+import {
+  AlertTriangle,
+  Banknote,
+  Building2,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  PauseCircle,
+  RefreshCw,
+  type LucideIcon,
+} from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -22,72 +32,54 @@ import { getTenantStats, toTenancyError, type TenantStats } from "../../redux/ap
  */
 
 /**
- * One statistic, on the app's shared `.pro-tile` surface so this page matches
- * the Lex and tenancy screens rather than inventing a card of its own.
+ * One statistic, on the shared `stat-card` the wallet dashboard uses, so the
+ * two consoles look like one product.
  *
  * `share` is the client's own arithmetic — the endpoint sends counts, never
- * percentages — so the denominator is passed explicitly and the bar is omitted
- * where a tile is not honestly a share of anything. An empty track would read
- * as 0%, which is a different claim.
+ * percentages — so the denominator is passed explicitly and the chip is omitted
+ * where a tile is not honestly a share of anything. "0% of total" on a figure
+ * that is a share of nothing is a different claim from saying nothing.
  */
 const StatTile = ({
   label,
   value,
   denominator,
   to,
-  alarm,
+  theme,
+  icon,
 }: {
   label: string;
   value: number;
   denominator?: number;
   to?: string;
-  alarm?: boolean;
+  /** One of the shared stat-card themes in DashboardOverview.css. */
+  theme: string;
+  icon: LucideIcon;
 }) => {
   const share =
     denominator != null && denominator > 0 ? (value / denominator) * 100 : null;
 
-  const body = (
-    <div
-      className={cn(
-        "pro-tile flex h-full flex-col gap-1.5 transition-colors",
-        alarm &&
-          "border-[color-mix(in_srgb,var(--color-warning)_45%,transparent)] bg-[color-mix(in_srgb,var(--color-warning)_7%,var(--surface-card))]",
-        to && !alarm && "hover:bg-[color-mix(in_srgb,var(--primary)_7%,var(--surface-card))]",
-        to && alarm && "hover:bg-[color-mix(in_srgb,var(--color-warning)_12%,var(--surface-card))]"
-      )}
-    >
-      <span className="pro-tile__label flex items-center gap-1.5">
-        {alarm ? (
-          <AlertTriangle
-            className="h-3.5 w-3.5 shrink-0 text-[var(--color-warning)]"
-            aria-hidden="true"
-          />
-        ) : null}
-        {label}
-      </span>
+  const Icon = icon;
 
-      <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-semibold leading-tight tabular-nums text-foreground">
-          {value}
+  const body = (
+    <div className={cn("stat-card h-full", `stat-card--${theme}`)}>
+      <div className="stat-card__row">
+        <span className="stat-card__title">{label}</span>
+        <span className="stat-card__icon">
+          <Icon strokeWidth={2} />
         </span>
+      </div>
+      <div className="stat-card__value-row">
+        <p className="stat-card__value">{value}</p>
         {share !== null ? (
-          <span className="text-xs tabular-nums text-muted-foreground">
-            {share.toFixed(0)}%
+          <span
+            className="stat-card__chip"
+            title={`${share.toFixed(1)}% of all tenants`}
+          >
+            {share.toFixed(0)}% of total
           </span>
         ) : null}
       </div>
-
-      {share !== null ? (
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full transition-[width]"
-            style={{
-              width: `${Math.min(100, share)}%`,
-              backgroundColor: alarm ? "var(--color-warning)" : "var(--primary)",
-            }}
-          />
-        </div>
-      ) : null}
     </div>
   );
 
@@ -139,44 +131,62 @@ const PlatformDashboard = () => {
       </LexPageHeader>
 
       {isLoading && !stats ? (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[86px] w-full" />
+            <Skeleton key={i} className="h-[104px] w-full" />
           ))}
         </div>
       ) : stats ? (
         <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+          {/* `dashboard-stats` is what scopes the per-theme tint in
+              DashboardOverview.css, so it stays even though the grid is
+              Tailwind's. */}
+          <div className="dashboard-stats grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <StatTile
               label="Total tenants"
               value={stats.totalTenants}
               to="/Platform/Tenants"
+              theme="emerald"
+              icon={Building2}
             />
             <StatTile
               label="Active"
               value={stats.activeTenants}
               denominator={stats.totalTenants}
               to="/Platform/Tenants?status=ACTIVE"
+              theme="indigo"
+              icon={CheckCircle2}
             />
             <StatTile
               label="Suspended"
               value={stats.suspendedTenants}
               denominator={stats.totalTenants}
               to="/Platform/Tenants?status=SUSPENDED"
+              theme="cyan"
+              icon={PauseCircle}
             />
+            {/* Amber and rose carry the two alarms: a tenant stuck mid-SAGA and
+                a signup that took money and delivered nothing. */}
             <StatTile
               label="Provisioning"
               value={stats.provisioningTenants}
               denominator={stats.totalTenants}
               to="/Platform/Tenants?status=PROVISIONING"
-              alarm={stats.provisioningTenants > 0}
+              theme="amber"
+              icon={Loader2}
             />
-            <StatTile label="Pending signups" value={stats.pendingSignups} />
+            <StatTile
+              label="Pending signups"
+              value={stats.pendingSignups}
+              theme="violet"
+              icon={Clock}
+            />
             <StatTile
               label="Failed signups"
               value={stats.failedSignups}
               to="/Platform/Tenants?status=FAILED"
-              alarm={stats.failedSignups > 0}
+              theme="rose"
+              icon={AlertTriangle}
             />
           </div>
 

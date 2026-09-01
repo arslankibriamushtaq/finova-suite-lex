@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, Building2, Loader2, PauseCircle, PlayCircle, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Banknote,
+  Building2,
+  CalendarClock,
+  FileText,
+  Loader2,
+  PauseCircle,
+  PlayCircle,
+  Repeat,
+  XCircle,
+} from "lucide-react";
 
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -20,6 +31,7 @@ import {
 import { Skeleton } from "../../components/ui/skeleton";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import { TenancyStatusBadge } from "../../components/shared/tenancyKit";
+import { formatDate, formatDateTime } from "../../components/shared/detailKitUtils";
 import { money } from "../../components/shared/tenancyKitUtils";
 import {
   cancelTenant,
@@ -170,7 +182,7 @@ const PlatformTenantDetail = () => {
 
   if (isLoading && !overview) {
     return (
-      <div className="d-grid gap-2">
+      <div className="grid gap-2">
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-48 w-full" />
       </div>
@@ -180,7 +192,7 @@ const PlatformTenantDetail = () => {
   if (!tenant) {
     return (
       <div>
-        <Link to="/Platform/Tenants" className="text-decoration-none text-sm">
+        <Link to="/Platform/Tenants" className="no-underline text-sm">
           <ArrowLeft className="me-1 inline h-4 w-4" />
           Back to tenants
         </Link>
@@ -193,13 +205,24 @@ const PlatformTenantDetail = () => {
 
   return (
     <div>
-      <Link to="/Platform/Tenants" className="text-decoration-none text-sm">
-        <ArrowLeft className="me-1 inline h-4 w-4" />
+      <Link
+        to="/Platform/Tenants"
+        className="mb-3 inline-flex items-center gap-1.5 rounded-[2px] px-2 py-1 text-xs font-medium text-muted-foreground no-underline transition-colors hover:bg-[var(--muted)] hover:text-foreground"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back to tenants
       </Link>
 
-      <LexPageHeader icon={Building2} title={tenant.companyName} subtitle={tenant.tenantCode}>
-        <div className="d-flex flex-wrap align-items-center gap-2">
+      <LexPageHeader
+        icon={Building2}
+        title={tenant.companyName}
+        // Just the code, set in mono. The label said out loud what the shape
+        // already says, and on a two-line header that is one line too many.
+        subtitle={
+          <span className="font-mono text-xs tracking-tight">{tenant.tenantCode}</span>
+        }
+      >
+        <div className="flex flex-wrap items-center gap-2">
           <TenancyStatusBadge status={tenant.status} />
           {/* Suspend is legal only from ACTIVE — anything else is a 422. */}
           {tenant.status === "ACTIVE" && (
@@ -235,14 +258,66 @@ const PlatformTenantDetail = () => {
       )}
 
       {tenant.status === "SUSPENDED" && tenant.suspensionReason && (
-        <div className="mb-3 rounded-lg border border-orange-500/50 bg-orange-500/5 p-3 text-sm">
+        <div className="mb-3 rounded-[2px] border border-[color-mix(in_srgb,var(--color-warning)_50%,transparent)] bg-[color-mix(in_srgb,var(--color-warning)_8%,transparent)] p-3 text-sm">
           <strong>Suspended:</strong> {tenant.suspensionReason}
         </div>
       )}
 
-      <div className="row g-3">
-        <div className="col-12 col-lg-6">
-          <div className="rounded-lg border border-border bg-card p-3">
+      {/* The commercial facts first. These are the three numbers anyone opening
+          a tenant is here for, so they lead rather than sitting eight rows down
+          a list of contact details. */}
+      {/* The wallet dashboard's stat cards, reused rather than re-invented —
+          `dashboard-stats` is what scopes their per-theme tint, so the wrapper
+          keeps that class even though the grid is Tailwind's. No sparkline:
+          these four are point-in-time facts with no series behind them, and a
+          drawn line would be inventing one. */}
+      <div className="dashboard-stats mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          {
+            title: "Recurring",
+            value: money(overview?.recurringAmount, overview?.currency),
+            theme: "emerald",
+            icon: Repeat,
+          },
+          {
+            title: "Lifetime billed",
+            value: money(overview?.lifetimeBilled, overview?.currency),
+            theme: "indigo",
+            icon: Banknote,
+          },
+          {
+            title: "Invoices",
+            value: overview?.invoiceCount ?? "—",
+            theme: "violet",
+            icon: FileText,
+          },
+          {
+            title: "Period ends",
+            value: formatDate(overview?.currentPeriodEnd),
+            theme: "amber",
+            icon: CalendarClock,
+          },
+        ].map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.title} className={`stat-card stat-card--${stat.theme}`}>
+              <div className="stat-card__row">
+                <span className="stat-card__title">{stat.title}</span>
+                <span className="stat-card__icon">
+                  <Icon strokeWidth={2} />
+                </span>
+              </div>
+              <div className="stat-card__value-row">
+                <p className="stat-card__value">{stat.value}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <div>
+          <div className="pro-card p-3">
             <div className="mb-1 text-sm font-semibold">Company</div>
             <Row
               label="Name (AR)"
@@ -257,14 +332,14 @@ const PlatformTenantDetail = () => {
             <Row label="Phone" value={tenant.companyPhone} />
             <Row label="Website" value={tenant.website} />
             <Row label="Admin" value={tenant.adminEmail} />
-            <Row label="Created" value={tenant.createdAt} />
-            <Row label="Activated" value={tenant.activatedAt} />
+            <Row label="Created" value={formatDateTime(tenant.createdAt)} />
+            <Row label="Activated" value={formatDateTime(tenant.activatedAt)} />
           </div>
         </div>
 
-        <div className="col-12 col-lg-6">
-          <div className="rounded-lg border border-border bg-card p-3">
-            <div className="mb-1 d-flex align-items-center justify-content-between">
+        <div>
+          <div className="pro-card p-3">
+            <div className="mb-1 flex items-center justify-between gap-2">
               <div className="text-sm font-semibold">Subscription</div>
               <Button
                 size="sm"
@@ -280,24 +355,31 @@ const PlatformTenantDetail = () => {
             </div>
             <Row label="Number" value={overview?.subscriptionNo} />
             <Row label="Status" value={<TenancyStatusBadge status={overview?.subscriptionStatus} />} />
-            <Row label="Period ends" value={overview?.currentPeriodEnd} />
-            <Row label="Recurring" value={money(overview?.recurringAmount, overview?.currency)} />
-            <Row label="Invoices" value={overview?.invoiceCount} />
-            <Row label="Lifetime billed" value={money(overview?.lifetimeBilled, overview?.currency)} />
+            <Row label="Period ends" value={formatDate(overview?.currentPeriodEnd)} />
           </div>
 
-          <div className="mt-3 rounded-lg border border-border bg-card p-3">
-            <div className="mb-2 text-sm font-semibold">
-              Entitled modules
-              <span className="ms-2 fw-normal text-xs text-muted-foreground">
-                what this customer can actually reach
+          <div className="pro-card mt-3 p-3">
+            <div className="mb-1 flex flex-wrap items-baseline gap-2">
+              <span className="text-sm font-semibold">Entitled modules</span>
+              <span className="rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]">
+                {overview?.entitledModules?.length ?? 0}
               </span>
             </div>
-            <div className="d-flex flex-wrap gap-1">
+            <p className="mb-2.5 text-xs text-muted-foreground">
+              What this customer can actually reach.
+            </p>
+            {/* Soft brand chips rather than outlined boxes: fourteen hard
+                rectangles read as a wall, and these are labels, not controls.
+                Mono stays — they are codes, and the shared prefixes only line
+                up in a fixed pitch. */}
+            <div className="flex flex-wrap gap-1.5">
               {(overview?.entitledModules || []).map((m) => (
-                <Badge key={m} variant="outline" className="border-border font-mono text-[11px]">
+                <span
+                  key={m}
+                  className="rounded-[3px] bg-[color-mix(in_srgb,var(--primary)_7%,var(--muted))] px-2 py-1 font-mono text-[11px] leading-none text-foreground"
+                >
                   {m}
-                </Badge>
+                </span>
               ))}
               {!overview?.entitledModules?.length && (
                 <span className="text-sm text-muted-foreground">None yet.</span>
@@ -353,7 +435,7 @@ const PlatformTenantDetail = () => {
               reversible, suspend instead.
             </DialogDescription>
           </DialogHeader>
-          <div className="d-grid gap-2">
+          <div className="grid gap-2">
             <div>
               <Label htmlFor="cancel-reason">Reason shown to the customer</Label>
               <Textarea
@@ -402,9 +484,9 @@ const PlatformTenantDetail = () => {
               renewal date does not move.
             </DialogDescription>
           </DialogHeader>
-          <div className="d-grid gap-2" style={{ maxHeight: 320, overflowY: "auto" }}>
+          <div className="grid gap-2" style={{ maxHeight: 320, overflowY: "auto" }}>
             {packages.map((p) => (
-              <label key={p.packageCode} className="d-flex align-items-start gap-2 text-sm">
+              <label key={p.packageCode} className="flex items-start gap-2 text-sm">
                 <Checkbox
                   checked={selected.includes(p.packageCode)}
                   onCheckedChange={(checked) =>
@@ -414,7 +496,7 @@ const PlatformTenantDetail = () => {
                   }
                 />
                 <span>
-                  <span className="fw-medium">{p.nameEn}</span>{" "}
+                  <span className="font-medium">{p.nameEn}</span>{" "}
                   <span className="font-mono text-xs text-muted-foreground">{p.packageCode}</span>
                   {!p.active && (
                     <Badge variant="outline" className="ms-1 border-border text-[10px]">
