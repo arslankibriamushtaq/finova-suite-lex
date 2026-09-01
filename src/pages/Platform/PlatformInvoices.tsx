@@ -4,6 +4,12 @@ import { FileText } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -108,8 +114,8 @@ const PlatformInvoices = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={FileText} text="No invoices match this filter." />
       ) : (
-        <div className="overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
-          <table className="w-full min-w-[760px] text-sm">
+        <div className="no-table overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
+          <table className="w-full min-w-[860px] text-sm">
             <thead>
               <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
                 <th className="px-3 py-2.5 text-start font-semibold">Invoice</th>
@@ -118,6 +124,7 @@ const PlatformInvoices = () => {
                 <th className="px-3 py-2.5 text-start font-semibold">Issued</th>
                 <th className="px-3 py-2.5 text-end font-semibold">Total</th>
                 <th className="px-3 py-2.5 text-start font-semibold">Status</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -134,6 +141,33 @@ const PlatformInvoices = () => {
                   <td className="px-3 py-2.5 text-end">{money(inv.totalAmount, inv.currency)}</td>
                   <td className="px-3 py-2.5">
                     <TenancyStatusBadge status={inv.status} />
+                  </td>
+                  {/* Same row-action control as the register: the row opens the
+                      document, and this is what says so. */}
+                  <td className="px-3 py-2.5">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          className="dropdown-toggle"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Select
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openInvoice(inv);
+                          }}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          View invoice
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
@@ -158,7 +192,7 @@ const PlatformInvoices = () => {
             breakpoint-prefixed one — so a plain `max-w-3xl` left the dialog
             capped at 512px and the invoice clipped. */}
         <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
+          <DialogHeader className="no-print">
             {/* Clear of the close button in the corner. */}
             <DialogTitle className="pe-8">Invoice {open?.invoiceNo}</DialogTitle>
           </DialogHeader>
@@ -166,7 +200,7 @@ const PlatformInvoices = () => {
               scroll container, and the close button is positioned against it —
               so scrolling the dialog carried the only way out of it off the
               top of the screen. */}
-          <div className="max-h-[70vh] overflow-y-auto pe-1">
+          <div className="print-area max-h-[70vh] overflow-y-auto pe-1">
             {open && <InvoiceDocument invoice={open} />}
           </div>
         </DialogContent>

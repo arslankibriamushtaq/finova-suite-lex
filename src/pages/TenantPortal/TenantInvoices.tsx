@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FileText, Printer } from "lucide-react";
+import { Eye, FileText, Printer } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
+import { formatDate } from "../../components/shared/detailKitUtils";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import TablePager from "../../components/shared/TablePager";
 import { InvoiceDocument, TenancyStatusBadge } from "../../components/shared/tenancyKit";
@@ -67,7 +74,7 @@ const TenantInvoices = () => {
       <LexPageHeader icon={FileText} title="Billing & Invoices" subtitle="Every invoice we have issued you." />
 
       {isLoading && rows.length === 0 ? (
-        <div className="d-grid gap-2">
+        <div className="grid gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -75,30 +82,64 @@ const TenantInvoices = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={FileText} text="No invoices yet." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-[620px] text-sm">
-            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
-              <tr>
-                <th className="p-2 text-start font-medium">Invoice</th>
-                <th className="p-2 text-start font-medium">Type</th>
-                <th className="p-2 text-start font-medium">Issued</th>
-                <th className="p-2 text-end font-medium">Total</th>
-                <th className="p-2 text-start font-medium">Status</th>
+        <div className="no-table overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
+          <table className="w-full min-w-[800px] border-collapse text-sm">
+            {/* The brand header the rest of the product's tables carry. */}
+            <thead>
+              <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
+                <th className="px-3 py-2.5 text-start font-semibold">Invoice</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Type</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Issued</th>
+                <th className="px-3 py-2.5 text-end font-semibold">Total</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Status</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((inv) => (
                 <tr
                   key={inv.invoiceId}
-                  className="cursor-pointer border-t border-border/60 hover:bg-muted/30"
+                  className="group cursor-pointer border-t border-[var(--surface-border)] transition-colors odd:bg-[var(--theme-table-row-alt)] hover:bg-[var(--theme-table-row-hover)]"
                   onClick={() => openInvoice(inv)}
                 >
-                  <td className="p-2 font-mono text-xs">{inv.invoiceNo}</td>
-                  <td className="p-2">{inv.invoiceType}</td>
-                  <td className="p-2">{inv.issueDate}</td>
-                  <td className="p-2 text-end">{money(inv.totalAmount, inv.currency)}</td>
-                  <td className="p-2">
+                  <td className="px-3 py-2.5 font-mono text-xs">{inv.invoiceNo}</td>
+                  <td className="px-3 py-2.5">{inv.invoiceType}</td>
+                  <td className="px-3 py-2.5">{formatDate(inv.issueDate)}</td>
+                  <td className="px-3 py-2.5 text-end font-medium tabular-nums">
+                    {money(inv.totalAmount, inv.currency)}
+                  </td>
+                  <td className="px-3 py-2.5">
                     <TenancyStatusBadge status={inv.status} />
+                  </td>
+                  {/* The row opens the document, but nothing said so. The same
+                      Select trigger the other tables use — `dropdown-toggle`
+                      inside the `no-table` wrapper is what puts it under the
+                      app's unified rule for row actions, so it carries no
+                      colour or caret of its own. */}
+                  <td className="px-3 py-2.5">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          className="dropdown-toggle"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Select
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openInvoice(inv);
+                          }}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          View invoice
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
@@ -121,7 +162,7 @@ const TenantInvoices = () => {
         {/* `sm:max-w-3xl` — DialogContent ships `sm:max-w-lg`, which an
             unprefixed `max-w-3xl` does not override. */}
         <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
+          <DialogHeader className="no-print">
             {/* The print action sits beside the title but clear of the close
                 button in the corner. */}
             <DialogTitle className="flex items-center justify-between gap-2 pe-8">
@@ -134,7 +175,7 @@ const TenantInvoices = () => {
           </DialogHeader>
           {/* The document scrolls, not the dialog — the close button is
               positioned against DialogContent and would scroll away with it. */}
-          <div className="max-h-[70vh] overflow-y-auto pe-1">
+          <div className="print-area max-h-[70vh] overflow-y-auto pe-1">
             {open && <InvoiceDocument invoice={open} />}
           </div>
         </DialogContent>
