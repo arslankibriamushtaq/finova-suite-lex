@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FileText, Loader2, Printer } from "lucide-react";
+import { FileText, Printer } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
 import { LexPageHeader } from "../../components/shared/lexKit";
+import TablePager from "../../components/shared/TablePager";
 import { InvoiceDocument, TenancyStatusBadge } from "../../components/shared/tenancyKit";
 import { money } from "../../components/shared/tenancyKitUtils";
 import {
@@ -16,7 +17,6 @@ import {
   type Invoice,
 } from "../../redux/apis/apisTenancyAdmin";
 
-const PAGE_SIZE = 20;
 
 /**
  * The portal's real value: the documents this customer's accountant files.
@@ -28,6 +28,7 @@ const PAGE_SIZE = 20;
 const TenantInvoices = () => {
   const [rows, setRows] = useState<Invoice[]>([]);
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState<Invoice | null>(null);
@@ -35,10 +36,10 @@ const TenantInvoices = () => {
   const load = useCallback(async (nextPage: number, append: boolean) => {
     setIsLoading(true);
     try {
-      const data = await getMyInvoices({ page: nextPage, size: PAGE_SIZE });
+      const data = await getMyInvoices({ page: nextPage, size: pageSize });
       setRows((prev) => (append ? [...prev, ...data] : data));
       setPage(nextPage);
-      setHasMore(data.length === PAGE_SIZE);
+      setHasMore(data.length === pageSize);
     } catch (error) {
       toast.error(toTenancyError(error, "Could not load your invoices.").message);
       if (!append) setRows([]);
@@ -46,7 +47,7 @@ const TenantInvoices = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   useEffect(() => {
     load(0, false);
@@ -106,14 +107,15 @@ const TenantInvoices = () => {
         </div>
       )}
 
-      {hasMore && (
-        <div className="mt-3 text-center">
-          <Button variant="outline" size="sm" disabled={isLoading} onClick={() => load(page + 1, true)}>
-            {isLoading && <Loader2 className="me-1 h-4 w-4 animate-spin" />}
-            Load more
-          </Button>
-        </div>
-      )}
+      <TablePager
+        page={page}
+        pageSize={pageSize}
+        count={rows.length}
+        hasMore={hasMore}
+        isLoading={isLoading}
+        onPageChange={(next) => load(next, false)}
+        onPageSizeChange={setPageSize}
+      />
 
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
         {/* `sm:max-w-3xl` — DialogContent ships `sm:max-w-lg`, which an

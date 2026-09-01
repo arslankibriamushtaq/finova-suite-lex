@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Building2, ChevronDown, Eye, Loader2, RefreshCw, Search } from "lucide-react";
+import { Building2, ChevronDown, Eye, RefreshCw, Search } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import {
@@ -13,6 +13,7 @@ import {
 import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
 import { SearchField } from "../../components/shared/filterKit";
+import TablePager from "../../components/shared/TablePager";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import { TenancyStatusBadge } from "../../components/shared/tenancyKit";
 import { cn } from "../../lib/utils";
@@ -24,13 +25,12 @@ import {
   type TenantStatus,
 } from "../../redux/apis/apisTenancyAdmin";
 
-const PAGE_SIZE = 20;
 
 /**
  * The register of customers.
  *
- * Paging is "load more", not a numbered pager: the endpoint answers with a bare
- * array and no total count, so page numbers would need a total that never
+ * Paging is previous/next, not a numbered pager: the endpoint answers with a
+ * bare array and no total count, so page numbers would need a total that never
  * arrives. A short page means the end.
  */
 const PlatformTenants = () => {
@@ -42,6 +42,7 @@ const PlatformTenants = () => {
   const [submittedQuery, setSubmittedQuery] = useState(searchParams.get("query") || "");
   const [rows, setRows] = useState<TenantResponse[]>([]);
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,11 +54,11 @@ const PlatformTenants = () => {
           query: submittedQuery,
           status,
           page: nextPage,
-          size: PAGE_SIZE,
+          size: pageSize,
         });
         setRows((prev) => (append ? [...prev, ...data] : data));
         setPage(nextPage);
-        setHasMore(data.length === PAGE_SIZE);
+        setHasMore(data.length === pageSize);
       } catch (error) {
         toast.error(toTenancyError(error, "Could not load tenants.").message);
         if (!append) setRows([]);
@@ -66,7 +67,7 @@ const PlatformTenants = () => {
         setIsLoading(false);
       }
     },
-    [submittedQuery, status]
+    [submittedQuery, status, pageSize]
   );
 
   useEffect(() => {
@@ -170,7 +171,7 @@ const PlatformTenants = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={Building2} text="No tenants match this filter." />
       ) : (
-        <div className="overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
+        <div className="no-table overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
           <table className="w-full min-w-[940px] border-collapse text-sm">
             {/* Same header treatment the LMS and antd tables get elsewhere:
                 the brand fill from --theme-table-background-color with white
@@ -212,17 +213,15 @@ const PlatformTenants = () => {
                   <td className="px-3 py-2.5">
                     <TenancyStatusBadge status={t.status} />
                   </td>
-                  {/* The same row-action control the LMS tables use: a brand
-                      "Select" trigger holding whatever this row can do. Details
-                      is the only action the register offers today. */}
+                  {/* The same row-action control the LMS tables use. The look
+                      comes from the app's unified rule for action triggers, not
+                      from classes here — `dropdown-toggle` inside a `.no-table`
+                      wrapper is the hook that rule matches for a plain table,
+                      which is why the button carries no colour of its own. */}
                   <td className="px-3 py-2.5">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button
-                          size="sm"
-                          className="gap-1.5 rounded-[2px] text-white hover:opacity-90"
-                          style={{ backgroundColor: "var(--color-action)" }}
-                        >
+                        <Button size="sm" className="dropdown-toggle gap-1.5">
                           Select
                           <ChevronDown className="h-3.5 w-3.5" />
                         </Button>
@@ -245,14 +244,15 @@ const PlatformTenants = () => {
         </div>
       )}
 
-      {hasMore && (
-        <div className="mt-3 text-center">
-          <Button variant="outline" size="sm" disabled={isLoading} onClick={() => load(page + 1, true)}>
-            {isLoading && <Loader2 className="me-1 h-4 w-4 animate-spin" />}
-            Load more
-          </Button>
-        </div>
-      )}
+      <TablePager
+        page={page}
+        pageSize={pageSize}
+        count={rows.length}
+        hasMore={hasMore}
+        isLoading={isLoading}
+        onPageChange={(next) => load(next, false)}
+        onPageSizeChange={setPageSize}
+      />
     </div>
   );
 };
