@@ -1003,7 +1003,7 @@ export const router = createBrowserRouter(
             },
             {
               path: "/LOS/Wallet/Home",
-              element: <WalletHome />,
+              element: <LandingDashboardPage />,
             },
             {
               path: "/LOS/NoAccess",
