@@ -480,6 +480,27 @@ body,
   padding-right: 14px !important;
   line-height: 1 !important;
 }
+/* ---------------------------------------------------------------------------
+   Section heading inside a card.
+
+   This exists because a Tailwind class cannot do the job. custom.scss carries
+   an unlayered `h2 { text-align: center; margin-bottom: 20px }`, and with
+   preflight off Bootstrap's unlayered `h2` sizing applies too. Both beat
+   `text-sm` and `text-start` outright — layered CSS loses to unlayered CSS
+   whatever its specificity — so card titles across the tenant portal rendered
+   as large centred headings over left-aligned fields. Declared here, unlayered,
+   alongside the rest of the card pattern.
+--------------------------------------------------------------------------- */
+.pro-card-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-align: start;
+  color: var(--foreground);
+}
+
 .pro-head-badge {
   display: inline-flex;
   align-items: center;

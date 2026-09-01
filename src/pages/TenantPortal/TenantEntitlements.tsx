@@ -36,7 +36,7 @@ const TenantEntitlements = () => {
       ) : (
         <section className="pro-card p-4">
           <div className="mb-1 flex flex-wrap items-baseline gap-2">
-            <h2 className="text-sm font-semibold text-foreground">Modules</h2>
+            <h2 className="pro-card-title">Modules</h2>
             <span className="rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)]">
               {modules.length}
             </span>

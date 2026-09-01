@@ -207,7 +207,7 @@ const TenantSubscription = () => {
 
           <div className="grid gap-3 lg:grid-cols-2">
             <section className="pro-card p-4">
-              <h2 className="mb-3 text-sm font-semibold">Plan</h2>
+              <h2 className="pro-card-title mb-3">Plan</h2>
               <Row
                 label="Subscription"
                 value={
@@ -243,7 +243,7 @@ const TenantSubscription = () => {
             </section>
 
             <section className="pro-card p-4">
-              <h2 className="mb-3 text-sm font-semibold">Your packages</h2>
+              <h2 className="pro-card-title mb-3">Your packages</h2>
               <div className="grid gap-2">
                 {subscription.items?.map((item) => {
                   // The catalogue is already loaded for the change dialog, so
@@ -281,7 +281,7 @@ const TenantSubscription = () => {
 
             {history.length > 1 && (
               <section className="pro-card p-4 lg:col-span-2">
-                <h2 className="mb-3 text-sm font-semibold">Plan history</h2>
+                <h2 className="pro-card-title mb-3">Plan history</h2>
                 <div className="grid gap-2">
                   {history.map((h) => (
                     <div
