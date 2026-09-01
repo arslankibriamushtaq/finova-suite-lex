@@ -151,13 +151,22 @@ const PlatformInvoices = () => {
       )}
 
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        {/* A twenty-line invoice is taller than the viewport, so the document
-            scrolls inside the dialog rather than running off the bottom. */}
-        <DialogContent className="max-h-[88vh] max-w-3xl overflow-y-auto">
+        {/* `sm:max-w-3xl`, not `max-w-3xl`: DialogContent's own class carries
+            `sm:max-w-lg`, and an unprefixed utility does not override a
+            breakpoint-prefixed one — so a plain `max-w-3xl` left the dialog
+            capped at 512px and the invoice clipped. */}
+        <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Invoice {open?.invoiceNo}</DialogTitle>
+            {/* Clear of the close button in the corner. */}
+            <DialogTitle className="pe-8">Invoice {open?.invoiceNo}</DialogTitle>
           </DialogHeader>
-          {open && <InvoiceDocument invoice={open} />}
+          {/* The document scrolls, not the dialog. DialogContent is itself the
+              scroll container, and the close button is positioned against it —
+              so scrolling the dialog carried the only way out of it off the
+              top of the screen. */}
+          <div className="max-h-[70vh] overflow-y-auto pe-1">
+            {open && <InvoiceDocument invoice={open} />}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

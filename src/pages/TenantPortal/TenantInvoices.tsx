@@ -116,17 +116,25 @@ const TenantInvoices = () => {
       )}
 
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="max-w-3xl">
+        {/* `sm:max-w-3xl` — DialogContent ships `sm:max-w-lg`, which an
+            unprefixed `max-w-3xl` does not override. */}
+        <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="d-flex align-items-center justify-content-between gap-2">
-              <span>Invoice {open?.invoiceNo}</span>
+            {/* The print action sits beside the title but clear of the close
+                button in the corner. */}
+            <DialogTitle className="flex items-center justify-between gap-2 pe-8">
+              <span className="min-w-0 truncate">Invoice {open?.invoiceNo}</span>
               <Button size="sm" variant="outline" onClick={() => window.print()}>
                 <Printer className="me-1 h-4 w-4" />
                 Print
               </Button>
             </DialogTitle>
           </DialogHeader>
-          {open && <InvoiceDocument invoice={open} />}
+          {/* The document scrolls, not the dialog — the close button is
+              positioned against DialogContent and would scroll away with it. */}
+          <div className="max-h-[70vh] overflow-y-auto pe-1">
+            {open && <InvoiceDocument invoice={open} />}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
