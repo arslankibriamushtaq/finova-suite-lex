@@ -54,12 +54,18 @@ export default function TablePager({
     totalRows != null && totalRows > 0 ? Math.ceil(totalRows / pageSize) : null;
   const lastPage = totalPages != null ? totalPages - 1 : null;
 
-  // With a total, show a window of pages around the current one. Without,
-  // the only page known to exist is the one on screen.
+  /**
+   * Which page numbers to offer.
+   *
+   * With a total it is a window around the current page, as any pager does.
+   * Without one, every page up to the current is known to exist — you reached
+   * this one through them — and `hasMore` proves there is one more. So the
+   * strip fills in as you go rather than claiming a length nobody reported.
+   */
   const pageNumbers: number[] = (() => {
-    if (totalPages == null) return [page];
-    const start = Math.max(0, Math.min(page - 2, totalPages - 5));
-    return Array.from({ length: Math.min(5, totalPages) }, (_, i) => start + i);
+    const known = totalPages ?? page + (hasMore ? 2 : 1);
+    const start = Math.max(0, Math.min(page - 2, known - 5));
+    return Array.from({ length: Math.min(5, known) }, (_, i) => start + i);
   })();
 
   const first = page === 0;

@@ -30,7 +30,7 @@ const PlatformInvoices = () => {
   const [status, setStatus] = useState<InvoiceStatus | "">("");
   const [rows, setRows] = useState<Invoice[]>([]);
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState<Invoice | null>(null);

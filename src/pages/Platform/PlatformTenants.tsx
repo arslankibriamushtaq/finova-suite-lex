@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Building2, ChevronDown, Eye, RefreshCw, Search } from "lucide-react";
+import { Building2, Eye, RefreshCw, Search } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import {
@@ -42,7 +42,7 @@ const PlatformTenants = () => {
   const [submittedQuery, setSubmittedQuery] = useState(searchParams.get("query") || "");
   const [rows, setRows] = useState<TenantResponse[]>([]);
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -221,9 +221,12 @@ const PlatformTenants = () => {
                   <td className="px-3 py-2.5">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button size="sm" className="dropdown-toggle gap-1.5">
+                        {/* No icon of our own: `dropdown-toggle` is a Bootstrap
+                            class and draws its own caret through ::after.
+                            Adding a lucide chevron as well put two carets on
+                            the button. */}
+                        <Button size="sm" className="dropdown-toggle">
                           Select
-                          <ChevronDown className="h-3.5 w-3.5" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
