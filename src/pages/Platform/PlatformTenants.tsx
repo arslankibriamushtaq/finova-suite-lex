@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Building2, Loader2, RefreshCw, Search } from "lucide-react";
+import { Building2, ChevronDown, Eye, Loader2, RefreshCw, Search } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
 import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
 import { SearchField } from "../../components/shared/filterKit";
@@ -28,6 +34,7 @@ const PAGE_SIZE = 20;
  * arrives. A short page means the end.
  */
 const PlatformTenants = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const status = (searchParams.get("status") || "") as TenantStatus | "";
 
@@ -164,7 +171,7 @@ const PlatformTenants = () => {
         <EmptyState icon={Building2} text="No tenants match this filter." />
       ) : (
         <div className="overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
-          <table className="w-full min-w-[820px] border-collapse text-sm">
+          <table className="w-full min-w-[940px] border-collapse text-sm">
             {/* Same header treatment the LMS and antd tables get elsewhere:
                 the brand fill from --theme-table-background-color with white
                 labels, so this page reads as part of the same product. */}
@@ -176,6 +183,7 @@ const PlatformTenants = () => {
                 <th className="px-3 py-2.5 text-start font-semibold">Admin</th>
                 <th className="px-3 py-2.5 text-start font-semibold">City</th>
                 <th className="px-3 py-2.5 text-start font-semibold">Status</th>
+                <th className="px-3 py-2.5 text-start font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -203,6 +211,32 @@ const PlatformTenants = () => {
                   <td className="px-3 py-2.5">{t.city || "—"}</td>
                   <td className="px-3 py-2.5">
                     <TenancyStatusBadge status={t.status} />
+                  </td>
+                  {/* The same row-action control the LMS tables use: a brand
+                      "Select" trigger holding whatever this row can do. Details
+                      is the only action the register offers today. */}
+                  <td className="px-3 py-2.5">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          className="gap-1.5 rounded-[2px] text-white hover:opacity-90"
+                          style={{ backgroundColor: "var(--color-action)" }}
+                        >
+                          Select
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={() => navigate(`/Platform/Tenants/${t.tenantId}`)}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          View details
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
