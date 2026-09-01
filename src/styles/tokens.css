@@ -1259,6 +1259,38 @@ html.dark .rdt_TableCell {
   color: var(--foreground) !important;
   border-color: var(--surface-border) !important;
 }
+/* The expanded detail panel. react-data-table paints it from its own JS theme,
+   whose default background is white — and it is the one rdt_* class this block
+   never covered, so every expanded row stayed a white slab in dark mode with
+   pale text on it. The inner div is targeted too: the panel content is the
+   caller's, and it inherits rather than setting its own ground. */
+html.dark .rdt_ExpanderRow,
+html.dark .rdt_ExpanderRow > div {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+
+/* The expand/collapse chevron. react-data-table sets BOTH color and fill on
+   this button from its light theme, and the icon inherits the fill — so
+   overriding colour alone left a near-black arrow on a near-black cell. The
+   generic dark rule for buttons in a cell also gave it a chip background and
+   a border, which a bare chevron should not have. Targeted by the data-testid
+   react-data-table generates, since the button carries no class of its own. */
+html.dark [data-testid^="expander-button-"] {
+  background-color: transparent !important;
+  border: 0 !important;
+  color: var(--foreground) !important;
+  fill: var(--foreground) !important;
+}
+html.dark [data-testid^="expander-button-"] svg,
+html.dark [data-testid^="expander-button-"] svg path {
+  fill: currentColor !important;
+}
+html.dark [data-testid^="expander-button-"]:hover:enabled {
+  background-color: var(--theme-table-row-hover) !important;
+}
+
 html.dark .rdt_Pagination {
   background-color: var(--surface-card) !important;
   color: var(--foreground) !important;
