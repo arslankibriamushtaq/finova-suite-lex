@@ -1,7 +1,7 @@
 import { Loader2, MailCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   getSignupStatus,
@@ -44,7 +44,14 @@ export default function ProvisioningStep() {
   const { t } = useTranslation("tenantSignup");
   const navigate = useNavigate();
 
-  const [referenceNo] = useState(getReferenceNo);
+  const [searchParams] = useSearchParams();
+
+  // As on the return page, a `ref` on the URL wins over session storage: the
+  // gateway's hand-back carries one, and it is the only reference a buyer whose
+  // storage was never written has.
+  const [referenceNo] = useState(
+    () => searchParams.get("ref") || getReferenceNo()
+  );
   const [summary] = useState(getSummary);
 
   const [status, setStatus] = useState<SignupStatus | null>(null);

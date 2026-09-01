@@ -132,6 +132,8 @@ const tenantSignup: ModuleLocale = {
       "This quote has expired and prices may have changed. Please start again to see today's price.",
     "payment.invalidState":
       "This signup has already been paid or cancelled. Let's check where it stands.",
+    "payment.aboveGatewayLimit":
+      "This amount is above the single-payment limit our payment provider accepts. Please start again and choose monthly billing or fewer modules.",
     "payment.payAmount": "Pay {{amount}}",
     "payment.leavingNote":
       "You will be taken to our payment provider to enter your card details, then brought back here.",
@@ -312,6 +314,8 @@ const tenantSignup: ModuleLocale = {
       "Ce devis a expiré et les prix ont pu changer. Recommencez pour voir le prix du jour.",
     "payment.invalidState":
       "Cette inscription est déjà payée ou annulée. Vérifions où elle en est.",
+    "payment.aboveGatewayLimit":
+      "Ce montant dépasse la limite par paiement acceptée par notre prestataire. Recommencez en choisissant la facturation mensuelle ou moins de modules.",
     "payment.payAmount": "Payer {{amount}}",
     "payment.leavingNote":
       "Vous allez être redirigé vers notre prestataire de paiement pour saisir votre carte, puis ramené ici.",
@@ -485,6 +489,8 @@ const tenantSignup: ModuleLocale = {
     "payment.quoteExpired":
       "انتهت صلاحية هذا العرض وقد تكون الأسعار تغيّرت. ابدأ من جديد لعرض سعر اليوم.",
     "payment.invalidState": "تم دفع هذا الطلب أو إلغاؤه مسبقاً. لنتحقق من حالته.",
+    "payment.aboveGatewayLimit":
+      "هذا المبلغ يتجاوز الحد الأقصى للدفعة الواحدة لدى مزوّد الدفع. ابدأ من جديد واختر الفوترة الشهرية أو عدداً أقل من الوحدات.",
     "payment.payAmount": "ادفع {{amount}}",
     "payment.leavingNote":
       "سيتم نقلك إلى مزوّد الدفع لإدخال بيانات بطاقتك، ثم إعادتك إلى هنا.",

@@ -612,6 +612,17 @@ export const router = createBrowserRouter(
       ],
     },
 
+    // Workspace administrator sign-in. A separate route from /login purely so
+    // the realm is chosen by the screen the user came to: this one asks the
+    // server for a PlatformRealm/tenant-portal URL, /login stays on
+    // CompanyRealm for customers and the superadmin. It cannot be decided from
+    // the email — the same address can exist in both realms.
+    {
+      path: "tenant/login",
+      element: <LayoutLogin />,
+      children: [{ path: "", element: <Login context="TENANT" /> }],
+    },
+
     // Reached from the invitation email, days later and usually on another
     // device. The backend builds this URL from PLATFORM_WEB_BASE_URL +
     // PLATFORM_SET_PASSWORD_PATH — moving this path means moving that config,

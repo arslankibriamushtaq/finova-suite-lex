@@ -13,6 +13,7 @@ import {
   getSignupId,
   getSummary,
   setOrderId,
+  setReferenceNo,
 } from "../../../utils/tenantSignupSession";
 import StatusMessage from "../components/StatusMessage";
 import StepCard from "../components/StepCard";
@@ -58,6 +59,12 @@ export default function PaymentReturnStep() {
       return;
     }
 
+    // The reference may have arrived only on the URL — the gateway hands the
+    // browser back with `?ref=`, and that redirect can land in a context where
+    // session storage was never written. Persist it so the provisioning screen
+    // and the failure card have it without threading it through the route.
+    setReferenceNo(referenceNo);
+
     let live = true;
     let timer: number | undefined;
 
@@ -67,7 +74,10 @@ export default function PaymentReturnStep() {
         if (!live) return;
 
         if (status.paid) {
-          navigate(TENANT_SIGNUP_ROUTES.provisioning, { replace: true });
+          navigate(
+            `${TENANT_SIGNUP_ROUTES.provisioning}?ref=${encodeURIComponent(referenceNo)}`,
+            { replace: true }
+          );
           return;
         }
 

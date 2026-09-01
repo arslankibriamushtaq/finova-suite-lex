@@ -44,9 +44,9 @@ export default function PaymentStep() {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [opening, setOpening] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [terminal, setTerminal] = useState<"expired" | "invalidState" | null>(
-    null
-  );
+  const [terminal, setTerminal] = useState<
+    "expired" | "invalidState" | "aboveLimit" | null
+  >(null);
 
   // React StrictMode mounts effects twice in development; without this the
   // screen would open two checkouts on every load.
@@ -94,6 +94,13 @@ export default function PaymentStep() {
             setTerminal("invalidState");
             setMessage(t("payment.invalidState"));
             break;
+          case "TENANCY.PAYMENT.AMOUNT_ABOVE_GATEWAY_LIMIT":
+            // The basket is worth more than BurqPay will take in one checkout.
+            // A fresh key buys nothing — only a smaller selection or monthly
+            // billing can, so this offers the form rather than a retry.
+            setTerminal("aboveLimit");
+            setMessage(t("payment.aboveGatewayLimit"));
+            break;
           default:
             setMessage(error.message);
         }
@@ -140,7 +147,7 @@ export default function PaymentStep() {
 
         {message ? <StatusMessage>{message}</StatusMessage> : null}
 
-        {terminal === "expired" ? (
+        {terminal === "expired" || terminal === "aboveLimit" ? (
           <SubmitButton
             type="button"
             onClick={() => navigate(TENANT_SIGNUP_ROUTES.pricing)}
