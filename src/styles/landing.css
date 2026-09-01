@@ -1,0 +1,684 @@
+/* ==========================================================================
+ * Public landing page.
+ *
+ * Same discipline as tenant-signup.css and for the same reason: this page
+ * renders in a document that also loads Bootstrap 5, whose reboot styles bare
+ * elements globally and UNLAYERED — and unlayered css beats anything Tailwind
+ * emits in `@layer utilities`, whatever the specificity. So every rule here is
+ * unlayered and scoped to `.fin-landing`, and anything that must win is a
+ * `.ln-*` class rather than a utility.
+ *
+ * Colour comes from the brand ramp via the tokens, never a literal, so the page
+ * re-skins with the rest of the product.
+ * ========================================================================== */
+
+.fin-landing {
+  background: var(--surface-card);
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.fin-landing h1,
+.fin-landing h2,
+.fin-landing h3,
+.fin-landing h4 {
+  margin: 0;
+  /* custom.scss centres bare h2 app-wide; inherit so a section decides. */
+  text-align: inherit;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.fin-landing p {
+  margin: 0;
+}
+
+.fin-landing ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fin-landing a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- Rhythm ------------------------------------------------------------ */
+
+.fin-landing .ln-section {
+  padding: 5.5rem 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .fin-landing .ln-section {
+    padding: 3.5rem 1.25rem;
+  }
+}
+
+.fin-landing .ln-wrap {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.fin-landing .ln-narrow {
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+/* --- Type -------------------------------------------------------------- */
+
+.fin-landing .ln-display {
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.fin-landing .ln-h2 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.fin-landing .ln-lead {
+  font-size: clamp(1rem, 1.6vw, 1.175rem);
+  line-height: 1.65;
+  color: var(--muted-foreground);
+}
+
+.fin-landing .ln-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* The one place the brand colour carries a headline word. */
+.fin-landing .ln-accent {
+  color: var(--primary);
+}
+
+/* --- Header ------------------------------------------------------------ */
+
+.fin-landing .ln-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/* Only once the page has moved — a bordered bar over the hero looks stuck on. */
+.fin-landing .ln-header[data-stuck="true"] {
+  background: color-mix(in srgb, var(--surface-card) 85%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--primary) 12%, var(--surface-border));
+  box-shadow: 0 1px 20px -12px color-mix(in srgb, var(--foreground) 40%, transparent);
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .fin-landing .ln-header[data-stuck="true"] {
+    backdrop-filter: blur(14px) saturate(1.4);
+  }
+}
+
+.fin-landing .ln-navlink {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  transition: color 150ms ease;
+}
+
+.fin-landing .ln-navlink:hover {
+  color: var(--foreground);
+}
+
+/* --- Buttons ----------------------------------------------------------- */
+
+.fin-landing .ln-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 3rem;
+  padding-inline: 1.5rem;
+  border-radius: 0.625rem;
+  border: 1px solid transparent;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.fin-landing .ln-btn--primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 8px 22px -12px color-mix(in srgb, var(--primary) 80%, transparent);
+}
+
+.fin-landing .ln-btn--primary:hover {
+  background: var(--brand-600, var(--primary));
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -12px color-mix(in srgb, var(--primary) 85%, transparent);
+}
+
+.fin-landing .ln-btn--ghost {
+  background: var(--surface-card);
+  color: var(--foreground);
+  border-color: var(--surface-border);
+}
+
+.fin-landing .ln-btn--ghost:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--surface-border));
+  transform: translateY(-1px);
+}
+
+.fin-landing .ln-btn--sm {
+  height: 2.375rem;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.fin-landing .ln-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* --- Hero -------------------------------------------------------------- */
+
+.fin-landing .ln-hero {
+  position: relative;
+  isolation: isolate;
+  padding: 7rem 1.25rem 5.5rem;
+  /* Only the base plate now — the colour above it comes from the animated
+     aurora, and doubling the two washes turned the top of the page pink. */
+  background: var(--surface-card);
+  overflow: hidden;
+}
+
+/* A fine grid, faded out at the edges. Blurred blobs read as a consumer app;
+   a drafting grid reads as infrastructure, which is what this is. */
+.fin-landing .ln-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--primary) 8%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--primary) 8%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 68px 68px;
+  /* Faded so the grid is felt at the top and gone by the copy. */
+  -webkit-mask-image: radial-gradient(72% 60% at 50% 0%, #000 20%, transparent 78%);
+  mask-image: radial-gradient(72% 60% at 50% 0%, #000 20%, transparent 78%);
+}
+
+/* --- Cards ------------------------------------------------------------- */
+
+.fin-landing .ln-card {
+  position: relative;
+  height: 100%;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.fin-landing .ln-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--surface-border));
+  box-shadow: 0 18px 40px -26px color-mix(in srgb, var(--primary) 60%, transparent);
+}
+
+.fin-landing .ln-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* --- Stats ------------------------------------------------------------- */
+
+.fin-landing .ln-stat {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+/* --- Steps ------------------------------------------------------------- */
+
+/* The rail behind the numbered steps. Drawn on the container so it sits under
+   every step, and hidden below lg where the steps stack. */
+.fin-landing .ln-steps {
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .fin-landing .ln-steps::before {
+    content: "";
+    position: absolute;
+    top: 1.5rem;
+    inset-inline: 12%;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--primary) 35%, transparent) 15%,
+      color-mix(in srgb, var(--primary) 35%, transparent) 85%,
+      transparent
+    );
+  }
+}
+
+.fin-landing .ln-step__num {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+/* --- Closing band ------------------------------------------------------ */
+
+.fin-landing .ln-band {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #ffffff;
+  background:
+    radial-gradient(
+      40rem 20rem at 50% -6rem,
+      color-mix(in srgb, #ffffff 22%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(135deg, var(--brand-500, #c81d25), var(--brand-800, #6e1418));
+}
+
+.fin-landing .ln-band h2,
+.fin-landing .ln-band p {
+  color: #ffffff;
+}
+
+/* --- Footer ------------------------------------------------------------ */
+
+.fin-landing .ln-footer {
+  border-top: 1px solid var(--surface-border);
+  background: color-mix(in srgb, var(--primary) 3%, var(--surface-card));
+}
+
+/* ==========================================================================
+   Scroll reveal
+   ==========================================================================
+   Driven by an IntersectionObserver in the page, which flips `data-revealed`
+   once an element has been seen. Deliberately one-way: re-hiding on scroll-up
+   makes a page feel broken when you go back for something you already read.
+
+   The starting state is only applied when JS has marked the root as observing.
+   If the observer never runs — an old browser, a thrown effect — the content
+   stays visible rather than being permanently invisible. */
+
+.fin-landing[data-reveal="on"] [data-reveal-item] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.fin-landing[data-reveal="on"] [data-reveal-item][data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Motion is decoration here; the page must read identically without it. */
+@media (prefers-reduced-motion: reduce) {
+  .fin-landing[data-reveal="on"] [data-reveal-item] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .fin-landing .ln-card:hover,
+  .fin-landing .ln-btn:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Professional pass
+   ========================================================================== */
+
+/* A small capitalised label above each section heading. Cheap structure: it
+   tells a skimming reader where they are without another heading level. */
+.fin-landing .ln-kicker {
+  display: block;
+  margin-bottom: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* Enterprise pages are calm. A 3px hop on every card reads as a toy, so the
+   lift is halved and the shadow carries the state instead. */
+.fin-landing .ln-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px -24px color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.fin-landing .ln-btn--primary:hover,
+.fin-landing .ln-btn--ghost:hover {
+  transform: none;
+}
+
+/* Cards in a row should end level regardless of copy length. */
+.fin-landing .ln-card h3 {
+  font-size: 1.0625rem;
+  letter-spacing: -0.015em;
+}
+
+/* A hairline above the card that marks it as one of a numbered set. */
+.fin-landing .ln-card--ruled::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  inset-inline: 1.5rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--primary),
+    color-mix(in srgb, var(--primary) 15%, transparent)
+  );
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.fin-landing .ln-card--ruled:hover::before {
+  opacity: 1;
+}
+
+/* --- Footer ------------------------------------------------------------ */
+
+.fin-landing .ln-foot-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.875rem;
+}
+
+.fin-landing .ln-foot-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  transition: color 150ms ease;
+}
+
+.fin-landing .ln-foot-link:hover {
+  color: var(--primary);
+}
+
+
+
+/* ==========================================================================
+   Animated hero background
+   ==========================================================================
+   Three layers, back to front: an aurora of slow brand gradients, a technical
+   grid that drifts over it, and the copy.
+
+   The aurora is what an image would have been. It is built from the brand ramp
+   so it can never clash, weighs nothing to download, and cannot go stale. The
+   pieces are deliberately large, slow and low-contrast — small bright shapes
+   moving quickly read as a game; hundred-second sweeps read as depth. */
+
+.fin-landing .ln-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fin-landing .ln-aurora span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  /* One heavy blur is cheaper than many small shapes and gives the wash its
+     softness. Composited on the GPU, so it costs nothing per frame. */
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.fin-landing .ln-aurora span:nth-child(1) {
+  width: 46rem;
+  height: 34rem;
+  top: -14rem;
+  inset-inline-start: -10rem;
+  opacity: 0.62;
+  background: radial-gradient(
+    circle at 40% 40%,
+    color-mix(in srgb, var(--brand-500, #c81d25) 50%, transparent),
+    transparent 68%
+  );
+  animation: ln-aurora-a 16s ease-in-out infinite alternate;
+}
+
+.fin-landing .ln-aurora span:nth-child(2) {
+  width: 38rem;
+  height: 30rem;
+  top: -6rem;
+  inset-inline-end: -8rem;
+  opacity: 0.55;
+  background: radial-gradient(
+    circle at 60% 40%,
+    color-mix(in srgb, var(--brand-300, #e49da0) 55%, transparent),
+    transparent 70%
+  );
+  animation: ln-aurora-b 21s ease-in-out infinite alternate;
+}
+
+.fin-landing .ln-aurora span:nth-child(3) {
+  width: 42rem;
+  height: 26rem;
+  bottom: -16rem;
+  inset-inline-start: 28%;
+  opacity: 0.45;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--brand-700, #8d161c) 45%, transparent),
+    transparent 72%
+  );
+  animation: ln-aurora-c 18s ease-in-out infinite alternate;
+}
+
+/* Translate and scale only — no colour or opacity animation, which would make
+   the whole thing pulse like a loading state. */
+@keyframes ln-aurora-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(14rem, 6rem, 0) scale(1.28);
+  }
+}
+
+@keyframes ln-aurora-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+  to {
+    transform: translate3d(-13rem, 7rem, 0) scale(0.82);
+  }
+}
+
+@keyframes ln-aurora-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.96);
+  }
+  to {
+    transform: translate3d(-11rem, -6rem, 0) scale(1.3);
+  }
+}
+
+/* The grid creeps upward — slowly enough that it is felt rather than watched.
+   It reads as throughput, which is the right association for a platform that
+   moves money. */
+.fin-landing .ln-grid {
+  animation: ln-grid-drift 9s linear infinite;
+}
+
+@keyframes ln-grid-drift {
+  to {
+    background-position:
+      0 -68px,
+      0 -68px;
+  }
+}
+
+/* Motion is decoration; the hero must read identically standing still. */
+@media (prefers-reduced-motion: reduce) {
+  .fin-landing .ln-aurora span,
+  .fin-landing .ln-grid {
+    animation: none;
+  }
+}
+
+/* --- Trust rails ------------------------------------------------------------
+   Bootstrap still owns bare <ul>, so the reset is explicit rather than assumed
+   from a utility class. */
+.fin-landing .ln-trust {
+  /* Clear of the action row, and separated from it by a rule so it reads as a
+     statement of its own rather than fine print under the buttons. */
+  margin: 3.5rem 0 0;
+  padding: 2rem 0 0;
+  border-top: 1px solid
+    color-mix(in srgb, var(--primary) 12%, var(--surface-border));
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.fin-landing .ln-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 15%, var(--surface-border));
+  border-radius: 999px;
+  /* Translucent over the aurora rather than a flat fill, so the moving
+     background stays visible through the row. */
+  background: color-mix(in srgb, var(--surface-card) 72%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+
+.fin-landing .ln-trust-dot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+/* A soft beam crossing the hero. The aurora is ambient — pleasant, but a
+   visitor who glances for three seconds can miss it entirely. The sweep is
+   periodic and directional, so it is read as motion immediately. */
+.fin-landing .ln-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 45%;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--brand-400, #d96368) 16%, transparent) 45%,
+    color-mix(in srgb, var(--brand-200, #edc7c9) 22%, transparent) 55%,
+    transparent
+  );
+  filter: blur(26px);
+  animation: ln-sweep 11s ease-in-out infinite;
+}
+
+@keyframes ln-sweep {
+  0% {
+    inset-inline-start: -50%;
+    opacity: 0;
+  }
+  15%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    inset-inline-start: 105%;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fin-landing .ln-hero::after {
+    animation: none;
+    inset-inline-start: 28%;
+    opacity: 0.6;
+  }
+}

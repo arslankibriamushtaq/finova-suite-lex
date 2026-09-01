@@ -5,6 +5,7 @@ import LayoutDashboard from "../Layout/LayoutDashboard";
 import LayoutInvestor from "../Layout/LayoutInvestor";
 import RoutetoDash from "../components/DashboardHeader/RoutetoDash";
 import LandingDashboardPage from "../components/Dashboard/LandingDashboardPage";
+import LandingHome from "../pages/Landing/LandingHome";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import TenantSignupLayout from "../pages/TenantSignup/TenantSignupLayout";
@@ -565,7 +566,7 @@ export const router = createBrowserRouter(
     // },
     {
       path: "",
-      element: <ManagementForm />,
+      element: <LandingHome />,
     },
 
     {
