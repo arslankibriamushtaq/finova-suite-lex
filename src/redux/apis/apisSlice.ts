@@ -2,6 +2,22 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { ApisState } from "./apisInterface";
 
+// Login writes the caller's permission modules to localStorage, but the Redux
+// copy is not in the redux-persist whitelist (rootReducer.ts) — so a page
+// refresh left `permissions: []` and every gated sidebar module disappeared
+// even though the session was still valid. Seed the slice from the same
+// localStorage copy the login wrote. REHYDRATE will not clobber it: the key
+// is not persisted, so autoMergeLevel1 keeps this initial value.
+const storedPermissions = (): any[] => {
+  try {
+    const raw = localStorage.getItem("permissions");
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 const initialState: ApisState = {
   isError: false,
   isSuccess: false,
@@ -68,7 +84,7 @@ const initialState: ApisState = {
   nid: "",
   crNumber: "",
   refreshToken: "",
-  permissions: [],
+  permissions: storedPermissions(),
   collapsed: false,
   selectedPromiseApplication: null,
 };
@@ -208,7 +224,9 @@ export const authSlice = createSlice({
   // persisted session — readable by the next person on a shared machine.
   // Prefer `clearSession()` in src/utils/session.ts over dispatching this
   // directly; it also purges the persisted copy.
-  resetSession: () => initialState,
+  // `initialState` is built once at module load, so it still carries the
+  // permissions seeded from storage at boot. Logout must not hand those back.
+  resetSession: () => ({ ...initialState, permissions: [] }),
   },
 });
 

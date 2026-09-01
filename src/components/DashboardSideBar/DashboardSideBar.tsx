@@ -1511,8 +1511,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
 
         // Every child of this group is a lending policy, so the group follows
         // the same permission — otherwise a role without it opens an empty
-        // dropdown instead of not seeing one.
-        hasAccess("POLICY_READ") && {
+        // dropdown instead of not seeing one. POLICY_READ alone is not enough:
+        // it is the platform's Casbin-policy module, granted to tenant admins
+        // who have no lending access at all, and it was pulling the whole LMS
+        // group into their sidebar. Require the lending module too.
+        hasAccess("LENDING_READ") &&
+          hasAccess("POLICY_READ") && {
           label: "Setting",
           Link: "notification",
           img: Images.SettingsIcon,
@@ -3078,7 +3082,11 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             },
           ].filter(Boolean),
         },
-        hasAccess(["LENDING", "COLLECTIONS", "LEDGER", "RISK", "PRODUCT", "POLICY"]) && lmsModule,
+        // Only the modules LMS actually serves. RISK, PRODUCT and POLICY used to
+        // be in this list, but they are shared/platform modules a tenant admin
+        // holds without any lending access — that alone put the whole LMS group
+        // in their sidebar. The rows inside are gated individually anyway.
+        hasAccess(["LENDING", "COLLECTIONS", "LEDGER"]) && lmsModule,
         // Every row inside LEX is gated, so a role with none of them would get
         // an empty parent that opens onto nothing.
         lexModule.menu.length > 0 && lexModule,
@@ -3087,15 +3095,41 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     hasAccess("MIDDLEWARE") && connectorModule,
   ].filter(Boolean);
 
+  // A group whose children are all gated away still holds a NON-EMPTY array:
+  // `hasAccess(...) && {...}` leaves `false` in place rather than removing the
+  // entry. So `item.menu ? renderSubmenu(...)` drew the group header — e.g. a
+  // role with no LMS permissions still saw "LMS" — with an empty dropdown
+  // behind it. Count the descendants that actually survive gating instead.
+  const hasVisibleChildren = (item: any): boolean => {
+    const children = [
+      ...(Array.isArray(item?.submenu) ? item.submenu : []),
+      ...(Array.isArray(item?.menu) ? item.menu : []),
+    ].filter(Boolean);
+    if (children.length === 0) return false;
+    return children.some((child: any) => {
+      const grandchildren = [
+        ...(Array.isArray(child?.submenu) ? child.submenu : []),
+        ...(Array.isArray(child?.menu) ? child.menu : []),
+      ].filter(Boolean);
+      // No surviving grandchildren means this child is a leaf link, which is
+      // itself a reason to keep the group.
+      return grandchildren.length === 0 ? true : hasVisibleChildren(child);
+    });
+  };
+
   // Recursively render menu items at any depth: an item with its own
   // `menu`/`submenu` becomes a (nested) dropdown; otherwise it's a leaf link.
   const renderMenuItems = (items: any[], keyPrefix: string): any =>
     (items || []).filter(Boolean).map((it: any, i: number) => {
       const key = `${keyPrefix}-${i}`;
       const nested =
-        (Array.isArray(it.submenu) && it.submenu.length > 0 && it.submenu) ||
-        (Array.isArray(it.menu) && it.menu.length > 0 && it.menu) ||
+        (Array.isArray(it.submenu) && it.submenu.filter(Boolean).length > 0 && it.submenu) ||
+        (Array.isArray(it.menu) && it.menu.filter(Boolean).length > 0 && it.menu) ||
         null;
+      // A nested group left with nothing visible is dropped entirely rather
+      // than falling through to the leaf branch, which would turn it into a
+      // link to a page the role cannot open.
+      if (nested && !hasVisibleChildren(it)) return null;
       if (nested) {
         const isAnyChildActive = nested.some((c: any) => c && c.active);
         const isOpen =
@@ -3245,7 +3279,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               {walletItems.map((item, index) => (
                 <React.Fragment key={index}>
                   {!item ? null : item.menu ? (
-                    renderSubmenu(item, index)
+                    hasVisibleChildren(item) ? renderSubmenu(item, index) : null
                   ) : (
                     <div
                       className="menu-items css-12w9als"
