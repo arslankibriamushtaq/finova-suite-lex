@@ -4,13 +4,20 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   Activity,
+  AlertTriangle,
   ChevronDown,
+  CircleCheck,
+  CircleX,
+  Clock,
   Eye,
+  FileQuestion,
+  Headset,
   HelpCircle,
   Inbox,
   LayoutDashboard,
   PauseCircle,
   RefreshCw,
+  UserSearch,
 } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
@@ -415,12 +422,14 @@ const LexOverview = () => {
       <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <LexMetricTile
           label={t("dash.tile.referred")}
+          icon={Inbox}
           value={counts?.allIngested}
           hint={t("dash.tile.referredHint")}
           loading={isLoading && !counts}
         />
         <LexMetricTile
           label={t("dash.tile.approved")}
+          icon={CircleCheck}
           value={counts?.approved}
           denominator={total}
           tone="emerald"
@@ -428,6 +437,7 @@ const LexOverview = () => {
         />
         <LexMetricTile
           label={t("dash.tile.declined")}
+          icon={CircleX}
           value={counts?.declined}
           denominator={total}
           tone="red"
@@ -435,6 +445,7 @@ const LexOverview = () => {
         />
         <LexMetricTile
           label={t("dash.tile.humanReview")}
+          icon={UserSearch}
           value={counts?.humanReview}
           denominator={total}
           tone="amber"
@@ -442,6 +453,7 @@ const LexOverview = () => {
         />
         <LexMetricTile
           label={t("dash.tile.customerSupport")}
+          icon={Headset}
           value={counts?.returned}
           denominator={total}
           hint={t("dash.tile.customerSupportHint")}
@@ -449,6 +461,7 @@ const LexOverview = () => {
         />
         <LexMetricTile
           label={t("dash.tile.nearBreach")}
+          icon={Clock}
           value={counts?.nearBreach}
           denominator={total}
           tone="amber"
@@ -456,6 +469,7 @@ const LexOverview = () => {
         />
         <LexMetricTile
           label={t("dash.tile.criticalBreach")}
+          icon={AlertTriangle}
           value={counts?.criticalBreach}
           denominator={total}
           tone="red"
@@ -465,6 +479,7 @@ const LexOverview = () => {
             each one falling through to the Supervisor queue. */}
         <LexMetricTile
           label={t("dash.tile.unrecognized")}
+          icon={FileQuestion}
           value={counts?.unrecognizedCode}
           denominator={total}
           tone="amber"

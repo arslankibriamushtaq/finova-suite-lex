@@ -574,6 +574,143 @@ body,
   font-variant-numeric: tabular-nums;
   color: #AB1920;
 }
+/* ---------------------------------------------------------------------------
+   Dashboard KPI card — the LEX and SLA counts.
+
+   The same treatment as the wallet KPI cards: a tint mixed from the card's own
+   tone, a badged icon, and a figure sized to be read first. Eight tiles that
+   differ only in their text are a table pretending to be a dashboard; the tone
+   and the icon are what let a reader find "critical breach" without reading all
+   eight labels.
+
+   Every colour is mixed from --c, set inline from the tone. Mixing against
+   --surface-card rather than white means the same rules hold in dark mode.
+--------------------------------------------------------------------------- */
+.lex-kpi {
+  --c: #94a3b8;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 116px;
+  padding: 15px 16px 14px;
+  /* Room for the badge in the top corner. */
+  padding-inline-end: 64px;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--c) 26%, var(--surface-card));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--c) 15%, var(--surface-card)) 0%,
+    color-mix(in srgb, var(--c) 3%, var(--surface-card)) 100%
+  );
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--c) 55%, transparent);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.lex-kpi:hover {
+  border-color: color-mix(in srgb, var(--c) 52%, var(--surface-card));
+  box-shadow: 0 14px 26px -12px color-mix(in srgb, var(--c) 60%, transparent);
+}
+
+.lex-kpi__icon {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--c) 20%, var(--surface-card));
+  color: color-mix(in srgb, var(--c) 80%, var(--foreground));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 24%, transparent);
+}
+.lex-kpi__icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.lex-kpi__label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--c) 40%, var(--muted-foreground));
+}
+.lex-kpi__hint {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-inline-start: 4px;
+  vertical-align: -1px;
+  opacity: 0.6;
+}
+
+.lex-kpi__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+/* Tinted from the tile tone, so the share belongs to the figure beside it
+   rather than floating as grey text. */
+.lex-kpi__share {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 16%, var(--surface-card));
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--c) 75%, var(--foreground));
+}
+
+/* Pushed to the bottom, so a tile with a two-line label still lines its bar up
+   with the rest of the row. */
+.lex-kpi__track {
+  position: relative;
+  margin-top: auto;
+  padding-top: 12px;
+}
+.lex-kpi__track::before {
+  content: "";
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 16%, var(--muted));
+}
+.lex-kpi__fill {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  height: 4px;
+  min-width: 4px;
+  border-radius: 999px;
+  background: var(--c);
+  transition: width 0.3s ease;
+}
+
+html.dark .lex-kpi,
+.dark .lex-kpi {
+  border-color: color-mix(in srgb, var(--c) 32%, var(--surface-card));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--c) 20%, var(--surface-card)) 0%,
+    color-mix(in srgb, var(--c) 6%, var(--surface-card)) 100%
+  );
+}
+html.dark .lex-kpi__label,
+.dark .lex-kpi__label {
+  color: color-mix(in srgb, var(--c) 30%, var(--muted-foreground));
+}
+
 html.dark .pro-tile,
 .dark .pro-tile {
   border-color: color-mix(in srgb, #C81D25 20%, var(--surface-border));

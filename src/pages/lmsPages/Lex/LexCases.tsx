@@ -3,14 +3,19 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
+  AlertTriangle,
   ChevronDown,
+  Clock,
   Eye,
+  FileQuestion,
   HelpCircle,
   Inbox,
   PauseCircle,
   RefreshCw,
+  ShieldAlert,
   SlidersHorizontal,
   UserCheck,
+  UserX,
 } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
@@ -35,9 +40,9 @@ import { TONES, formatMoney } from "../../../components/shared/detailKitUtils";
 import {
   LexNotice,
   LexPageHeader,
+  LexMetricTile,
   LexSearch,
   LexStatusBadge,
-  LexTile,
 } from "../../../components/shared/lexKit";
 import { cn } from "../../../lib/utils";
 import { LEX_PERMISSIONS } from "../../../hooks/useProductPermissions";
@@ -532,23 +537,38 @@ const LexCases = () => {
           separate board: breach counts here exclude stopped clocks and
           untracked cases, so they are the ones that need someone now. */}
       {counts && (
-        <div className="mb-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
-          <LexTile label={t("case.count.nearBreach")} value={counts.nearBreach} />
-          <LexTile label={t("case.count.criticalBreach")} value={counts.criticalBreach} />
-          <LexTile
+        <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <LexMetricTile
+            label={t("case.count.nearBreach")}
+            icon={Clock}
+            value={counts.nearBreach}
+            tone="amber"
+          />
+          <LexMetricTile
+            label={t("case.count.criticalBreach")}
+            icon={AlertTriangle}
+            value={counts.criticalBreach}
+            tone="red"
+          />
+          <LexMetricTile
             label={t("case.count.unassigned")}
+            icon={UserX}
             value={counts.unassigned}
             hint={t("case.count.unassignedHint")}
           />
-          <LexTile
+          <LexMetricTile
             label={t("case.count.beyondDelegation")}
+            icon={ShieldAlert}
             value={counts.beyondDelegation}
             hint={t("case.count.beyondDelegationHint")}
+            tone="amber"
           />
-          <LexTile
+          <LexMetricTile
             label={t("case.count.unrecognizedCode")}
+            icon={FileQuestion}
             value={counts.unrecognizedCode}
             hint={t("case.count.unrecognizedHint")}
+            tone="amber"
           />
         </div>
       )}

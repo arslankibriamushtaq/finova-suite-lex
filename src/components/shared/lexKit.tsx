@@ -2,6 +2,7 @@ import React from "react";
 import { AlertTriangle, Ban, Info, type LucideIcon } from "lucide-react";
 
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { SearchField } from "./filterKit";
 import {
   Select,
@@ -261,45 +262,62 @@ export const LexMetricTile = ({
   value,
   denominator,
   hint,
-  tone = "sky",
+  icon: Icon,
+  tone = "slate",
   loading,
 }: {
   label: string;
-  value?: number | null;
+  /** A count, or an already-formatted figure such as "2h 15m". */
+  value?: React.ReactNode;
   denominator?: number | null;
   hint?: string;
+  icon?: LucideIcon;
   tone?: keyof typeof TONE_HEX | string;
   loading?: boolean;
 }) => {
+  // A share is only meaningful over a raw count. A formatted duration is not a
+  // numerator, so a tile holding one gets no bar rather than a wrong one.
   const share =
-    value != null && denominator != null && denominator > 0 ? (value / denominator) * 100 : null;
+    typeof value === "number" && denominator != null && denominator > 0
+      ? (value / denominator) * 100
+      : null;
 
   return (
-    <div className={cn("pro-tile flex flex-col gap-1.5", hint && "cursor-help")} title={hint}>
-      <span className="pro-tile__label">{label}</span>
+    <div
+      // Border, gradient, badge, share pill and bar are all mixed from one
+      // custom property, so a tile can never end up part one colour and part
+      // another — and a new tone needs a hex, not a stylesheet edit.
+      style={{ "--c": TONE_HEX[tone as string] || TONE_HEX.slate } as React.CSSProperties}
+      className={cn("lex-kpi", hint && "cursor-help")}
+      title={hint}
+    >
+      {Icon ? (
+        <span className="lex-kpi__icon" aria-hidden="true">
+          <Icon />
+        </span>
+      ) : null}
+
+      <span className="lex-kpi__label">
+        {label}
+        {/* The hint is a native tooltip, invisible until hovered. The mark is
+            what tells a reader there is one to hover. */}
+        {hint ? <Info className="lex-kpi__hint" aria-hidden="true" /> : null}
+      </span>
+
       {loading ? (
-        <span className="block h-[18px] w-16 animate-pulse rounded-[2px] bg-muted-foreground/20" />
+        <span className="mt-2 block h-8 w-24 animate-pulse rounded-[2px] bg-muted-foreground/20" />
       ) : (
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-bold leading-tight tabular-nums text-foreground">
-            {value ?? "—"}
-          </span>
-          {share !== null && (
-            <span className="text-xs text-muted-foreground">{share.toFixed(1)}%</span>
-          )}
+        <div className="mt-1.5 flex items-baseline gap-2">
+          <span className="lex-kpi__value">{value ?? "—"}</span>
+          {share !== null && <span className="lex-kpi__share">{share.toFixed(1)}%</span>}
         </div>
       )}
+
       {/* No denominator means no bar. An empty track would read as 0%, which is
           a different claim from "this is not a share of anything". */}
       {share !== null && (
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full transition-[width]"
-            style={{
-              width: `${Math.min(100, share)}%`,
-              backgroundColor: TONE_HEX[tone as string] || TONE_HEX.sky,
-            }}
-          />
+        <div className="lex-kpi__track">
+          <div className="lex-kpi__fill" style={{ width: `${Math.min(100, share)}%` }} />
         </div>
       )}
     </div>
@@ -313,15 +331,21 @@ export const LexMetricTile = ({
  * does nothing is worse.
  */
 export const LexUnavailableFilter = ({ label, title }: { label: string; title: string }) => (
-  <button
+  // A shadcn Button rather than a bare one, purely so it carries
+  // data-slot="button": that attribute is what the app's filter-bar rules match
+  // to pin every control in a .pro-card.p-3 row to 34px. As a plain button with
+  // h-10 it stood 6px taller than the search field, the sort select and Refresh
+  // beside it.
+  <Button
     type="button"
+    variant="outline"
     disabled
     title={title}
-    className="flex h-10 cursor-not-allowed items-center gap-1.5 rounded-lg border border-dashed border-border bg-muted/30 px-3 text-sm text-muted-foreground"
+    className="cursor-not-allowed gap-1.5 border-dashed bg-muted/30 font-normal text-muted-foreground"
   >
     <Ban className="h-3.5 w-3.5" />
     {label}
-  </button>
+  </Button>
 );
 
 /* ------------------------------------------------------------------ */

@@ -5,11 +5,16 @@ import toast from "react-hot-toast";
 import {
   AlertTriangle,
   ChevronDown,
+  CircleSlash,
+  Clock,
   Eye,
   Gauge,
   GitBranch,
   ListOrdered,
+  PauseCircle,
   RefreshCw,
+  ShieldCheck,
+  Timer,
 } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
@@ -255,6 +260,7 @@ const LexSlaBoard = () => {
       <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <LexMetricTile
           label={t("board.tile.withinSla")}
+          icon={ShieldCheck}
           value={snapshot?.withinSla}
           denominator={snapshot?.inFlight}
           tone="emerald"
@@ -263,6 +269,7 @@ const LexSlaBoard = () => {
         />
         <LexMetricTile
           label={t("board.tile.criticalBreach")}
+          icon={AlertTriangle}
           value={snapshot?.criticalBreach}
           denominator={snapshot?.inFlight}
           tone="red"
@@ -270,6 +277,7 @@ const LexSlaBoard = () => {
         />
         <LexMetricTile
           label={t("board.tile.nearBreach")}
+          icon={Clock}
           value={snapshot?.nearBreach}
           denominator={snapshot?.inFlight}
           tone="amber"
@@ -277,6 +285,7 @@ const LexSlaBoard = () => {
         />
         <LexMetricTile
           label={t("board.tile.stoppedClock")}
+          icon={PauseCircle}
           value={snapshot?.stoppedClock}
           denominator={snapshot?.inFlight}
           hint={t("board.tile.stoppedClockHint")}
@@ -284,6 +293,7 @@ const LexSlaBoard = () => {
         />
         <LexMetricTile
           label={t("board.tile.notTracked")}
+          icon={CircleSlash}
           value={snapshot?.notTracked}
           denominator={snapshot?.inFlight}
           tone="amber"
@@ -292,8 +302,9 @@ const LexSlaBoard = () => {
         />
         {/* Null when nothing is in flight — "—", never a zero that reads as
             instant processing. */}
-        <LexTile
+        <LexMetricTile
           label={t("board.tile.averageInFlight")}
+          icon={Timer}
           value={formatMinutes(snapshot?.averageMinutesInFlight)}
           hint={t("board.onClockHint")}
           loading={isLoading}
