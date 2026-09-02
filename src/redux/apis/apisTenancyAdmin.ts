@@ -23,12 +23,7 @@ import type { BillingCycle, CatalogPackage } from "./apisTenantProvisioning";
 // Types
 // ---------------------------------------------------------------------------
 
-export type TenantStatus =
-  | "PROVISIONING"
-  | "ACTIVE"
-  | "SUSPENDED"
-  | "CANCELLED"
-  | "FAILED";
+export type TenantStatus = "PROVISIONING" | "ACTIVE" | "SUSPENDED" | "CANCELLED" | "FAILED";
 
 export const TENANT_STATUSES: TenantStatus[] = [
   "PROVISIONING",
@@ -118,13 +113,7 @@ export interface PackageChangeResult {
 
 export type InvoiceStatus = "DRAFT" | "ISSUED" | "PAID" | "VOID" | "REFUNDED";
 
-export const INVOICE_STATUSES: InvoiceStatus[] = [
-  "DRAFT",
-  "ISSUED",
-  "PAID",
-  "VOID",
-  "REFUNDED",
-];
+export const INVOICE_STATUSES: InvoiceStatus[] = ["DRAFT", "ISSUED", "PAID", "VOID", "REFUNDED"];
 
 export type InvoiceType = "SUBSCRIPTION" | "RENEWAL" | "UPGRADE" | "CREDIT_NOTE";
 
@@ -202,10 +191,105 @@ export const isForbidden = (err: unknown): boolean =>
 // Calls — console (`platform.*`)
 // ---------------------------------------------------------------------------
 
-const unwrap = <T,>(res: AxiosResponse<{ data: T }>): T => res.data?.data;
+const unwrap = <T>(res: AxiosResponse<{ data: T }>): T => res.data?.data;
 
 export function getTenantStats(): Promise<TenantStats> {
   return axiosTenancy.get("/platform/tenants/stats").then(unwrap<TenantStats>);
+}
+
+// ---------------------------------------------------------------------------
+// Superadmin dashboard
+// ---------------------------------------------------------------------------
+
+/**
+ * A fixed window, not a trailing one.
+ *
+ * LAST_WEEK is the previous Monday-to-Sunday rather than "the last 7 days", so
+ * two operators opening the console on different days of the same week read the
+ * same numbers off it.
+ */
+export type DashboardPeriod = "TODAY" | "LAST_WEEK" | "LAST_MONTH" | "THIS_YEAR";
+
+export interface DashboardProduct {
+  packageCode: string;
+  nameEn: string;
+  nameAr: string;
+  bundle: boolean;
+  /**
+   * Tenants on an ACTIVE subscription that includes this package.
+   *
+   * A tenant on the everything-tier is on every module, so BUNDLE_ALL's tenants
+   * are ALREADY counted in each module's figure. Adding them again double-counts
+   * the same companies. Its money is not folded in the same way — the bundle
+   * keeps its own slice of the pie and its own key in byPackage.
+   */
+  activeTenants: number;
+  /** Paid invoice revenue on this package's lines, inside the window. */
+  sales: number;
+}
+
+export interface DashboardRevenueMonth {
+  /** "YYYY-MM". */
+  month: string;
+  total: number;
+  /** Only the packages that sold that month; a missing key is zero. */
+  byPackage: Record<string, number>;
+}
+
+export interface PlatformDashboard {
+  range: { from: string; to: string; preset: DashboardPeriod | null };
+  currency: string;
+
+  tenants: {
+    total: number;
+    active: number;
+    suspended: number;
+    provisioning: number;
+    cancelled: number;
+    failed: number;
+    onboardedInRange: number;
+  };
+
+  funnel: {
+    leads: number;
+    opportunities: number;
+    inProgress: number;
+    won: number;
+    lost: number;
+    byStatus: Record<string, number>;
+  };
+
+  products: DashboardProduct[];
+  totalSales: number;
+  /** All-time, annual plans already divided by 12. Do NOT divide again. */
+  monthlyRecurringRevenue: number;
+  /** Zero-filled and chronological, so every bar can be drawn as it comes. */
+  revenue: DashboardRevenueMonth[];
+}
+
+/**
+ * One call draws the whole page.
+ *
+ * `from`/`to` win over `period` server-side, so the two are mutually
+ * exclusive here as well — sending both is a request whose meaning depends on
+ * a precedence rule the reader of this code should not have to know.
+ *
+ * Dates are plain YYYY-MM-DD. Days are cut in the platform's reporting zone,
+ * not the browser's, so a timestamp would be answering a question nobody asked.
+ */
+export function getPlatformDashboard(params: {
+  period?: DashboardPeriod;
+  from?: string;
+  to?: string;
+}): Promise<PlatformDashboard> {
+  const query =
+    params.from && params.to
+      ? { from: params.from, to: params.to }
+      : params.period
+        ? { period: params.period }
+        : {};
+
+  return axiosTenancy.get("/platform/dashboard", { params: query }).then(unwrap<PlatformDashboard>);
 }
 
 /**
@@ -319,10 +403,7 @@ export function updatePackagePricing(
 }
 
 /** Hides it from the public catalog; existing subscribers keep it. */
-export function setPackageActive(
-  packageCode: string,
-  active: boolean
-): Promise<PlatformPackage> {
+export function setPackageActive(packageCode: string, active: boolean): Promise<PlatformPackage> {
   return axiosTenancy
     .post(
       `/platform/packages/${encodeURIComponent(packageCode)}/${active ? "activate" : "deactivate"}`

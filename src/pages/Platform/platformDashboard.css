@@ -1,0 +1,419 @@
+/* ==========================================================================
+   Superadmin dashboard
+
+   Scoped to `.pf-dash`. Bootstrap and custom.scss are both loaded and both
+   unlayered, so a bare label, input or h2 in here is already styled by
+   something that outranks any Tailwind utility — which is why the rules below
+   state what look redundant.
+   ========================================================================== */
+
+/* The filter row: radios then the two pickers, right-aligned, wrapping to a
+   second line on a narrow screen rather than squeezing the pickers. */
+.pf-dash .pf-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 1.25rem;
+}
+
+/* antd draws its picker as a square-cornered field. The mock rounds both
+   pickers into pills to match the radios beside them, and the app already
+   pins every picker in a filter row to 34px. */
+.pf-dash .pf-filter .ant-picker {
+  width: 8.75rem;
+  border-radius: 999px;
+  border-color: var(--surface-border);
+}
+
+.pf-dash .pf-filter .ant-picker-focused {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.pf-dash .pf-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.pf-dash .pf-radio input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* --- The overview grid ---------------------------------------------------
+   Twelve columns so a hero can be four wide, a tile two, and the sales panel
+   four — proportions the mock sets and a repeat(auto-fit) grid cannot.
+   ------------------------------------------------------------------------ */
+
+.pf-dash .pf-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 700px) {
+  .pf-dash .pf-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .pf-dash .pf-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+/* --- Hero ---------------------------------------------------------------- */
+
+.pf-dash .pf-hero {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.125rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f4593f 0%, var(--brand-500) 100%);
+  color: #ffffff;
+}
+
+@media (min-width: 700px) {
+  .pf-dash .pf-hero {
+    grid-column: span 6;
+  }
+}
+
+@media (min-width: 1200px) {
+  .pf-dash .pf-hero {
+    grid-column: span 4;
+  }
+}
+
+.pf-dash .pf-hero__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pf-dash .pf-hero__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pf-dash .pf-hero__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pf-dash .pf-hero__value {
+  margin: 0.25rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pushed to the foot so the hero matches the tile row's height without the
+   funnel numbers floating in the middle of it. */
+.pf-dash .pf-hero__split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+}
+
+.pf-dash .pf-hero__sublabel {
+  display: block;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pf-dash .pf-hero__subvalue {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Plain tiles --------------------------------------------------------- */
+
+.pf-dash .pf-tile {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 8.5rem;
+  padding: 1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--foreground) 4%, var(--surface-card)) 0%,
+    var(--surface-card) 60%
+  );
+}
+
+@media (min-width: 700px) {
+  .pf-dash .pf-tile {
+    grid-column: span 2;
+  }
+}
+
+.pf-dash .pf-tile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--muted-foreground);
+}
+
+.pf-dash .pf-tile__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pf-dash .pf-tile__label {
+  margin-top: auto;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.pf-dash .pf-tile__value {
+  margin-top: 0.125rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+/* --- Dark card ----------------------------------------------------------- */
+
+.pf-dash .pf-dark {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.125rem;
+  border-radius: 10px;
+  background: #2b2f36;
+  color: #ffffff;
+}
+
+@media (min-width: 700px) {
+  .pf-dash .pf-dark {
+    grid-column: span 4;
+  }
+}
+
+.pf-dash .pf-dark__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pf-dash .pf-dark__label {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pf-dash .pf-dark__value {
+  margin: 0.25rem 0 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.pf-dash .pf-dark__icon svg {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pf-dash .pf-dark__split {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+}
+
+.pf-dash .pf-dark__sublabel {
+  display: block;
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.pf-dash .pf-dark__subvalue {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Sales panel --------------------------------------------------------- */
+
+.pf-dash .pf-panel {
+  grid-column: span 2;
+  padding: 1rem 1.125rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: var(--surface-card);
+}
+
+@media (min-width: 700px) {
+  .pf-dash .pf-panel {
+    grid-column: span 6;
+  }
+}
+
+@media (min-width: 1200px) {
+  .pf-dash .pf-panel--sales {
+    /* Spans both rows of tiles beside it, as in the mock. */
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+}
+
+.pf-dash .pf-panel__label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.pf-dash .pf-panel__amount {
+  margin: 0.125rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+.pf-dash .pf-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.pf-dash .pf-pie__chart {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+/* --- Legends ------------------------------------------------------------- */
+
+.pf-dash .pf-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-dash .pf-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+.pf-dash .pf-legend__dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+}
+
+.pf-dash .pf-legend--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* --- Bottom row ---------------------------------------------------------- */
+
+.pf-dash .pf-bottom {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 1000px) {
+  .pf-dash .pf-bottom {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+}
+
+.pf-dash .pf-revenue__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.pf-dash .pf-series {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.pf-dash .pf-donut__title {
+  margin: 0 0 0.5rem;
+  /* custom.scss centres every bare h2 from outside Tailwind's layers, which is
+     what this one wants — but it enlarges it too, so the size is stated. */
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.pf-dash .pf-empty {
+  margin: 1.5rem 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+/* --- Chart text ----------------------------------------------------------
+   The month labels came out in assorted colours: something unlayered in the
+   bundle paints SVG text, and recharts sets its tick colour through a fill
+   attribute, which an unlayered rule outranks. Stated here, scoped, so the
+   axis reads as one axis.
+   ------------------------------------------------------------------------ */
+.pf-dash .recharts-cartesian-axis-tick text,
+.pf-dash .recharts-text {
+  fill: var(--muted-foreground);
+}
+
+/* The sales panel is the tallest thing in its column, and its chart should
+   use the height rather than leaving the legend stranded at the bottom. */
+.pf-dash .pf-panel--sales {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-dash .pf-pie {
+  flex: 1;
+  align-items: center;
+}
