@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, FileText, Printer } from "lucide-react";
+import { Eye, FileText, Printer, RefreshCw } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import {
@@ -15,6 +15,7 @@ import { EmptyState } from "../../components/shared/detailKit";
 import { formatDate } from "../../components/shared/detailKitUtils";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import TablePager from "../../components/shared/TablePager";
+import TableView from "../../components/TableView/TableView";
 import { InvoiceDocument, TenancyStatusBadge } from "../../components/shared/tenancyKit";
 import { money } from "../../components/shared/tenancyKitUtils";
 import {
@@ -24,6 +25,8 @@ import {
   type Invoice,
 } from "../../redux/apis/apisTenancyAdmin";
 
+/** A row is an invoice plus the register's own line number. */
+type Row = Invoice & { Sr: number };
 
 /**
  * The portal's real value: the documents this customer's accountant files.
@@ -40,21 +43,24 @@ const TenantInvoices = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState<Invoice | null>(null);
 
-  const load = useCallback(async (nextPage: number, append: boolean) => {
-    setIsLoading(true);
-    try {
-      const data = await getMyInvoices({ page: nextPage, size: pageSize });
-      setRows((prev) => (append ? [...prev, ...data] : data));
-      setPage(nextPage);
-      setHasMore(data.length === pageSize);
-    } catch (error) {
-      toast.error(toTenancyError(error, "Could not load your invoices.").message);
-      if (!append) setRows([]);
-      setHasMore(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [pageSize]);
+  const load = useCallback(
+    async (nextPage: number, append: boolean) => {
+      setIsLoading(true);
+      try {
+        const data = await getMyInvoices({ page: nextPage, size: pageSize });
+        setRows((prev) => (append ? [...prev, ...data] : data));
+        setPage(nextPage);
+        setHasMore(data.length === pageSize);
+      } catch (error) {
+        toast.error(toTenancyError(error, "Could not load your invoices.").message);
+        if (!append) setRows([]);
+        setHasMore(false);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [pageSize]
+  );
 
   useEffect(() => {
     load(0, false);
@@ -69,9 +75,86 @@ const TenantInvoices = () => {
     }
   };
 
+  /**
+   * The register's own table, not a hand-rolled one.
+   *
+   * TableView is what every other list in the product renders, so reusing it is
+   * what makes this page look like the rest rather than an approximation that
+   * drifts. Its pager is switched off: it needs a row total to say "showing 1
+   * to 10 of 40", and /tenant-portal/invoices answers with a bare array — no
+   * count, no page metadata. TablePager below numbers only the pages it can
+   * prove exist instead of stating a total nobody sent.
+   */
+  const columns = [
+    { name: "#", selector: (row: Row) => row.Sr, width: "60px" },
+    {
+      name: "Invoice",
+      cell: (row: Row) => <span className="font-mono text-xs">{row.invoiceNo}</span>,
+    },
+    { name: "Type", selector: (row: Row) => row.invoiceType },
+    { name: "Issued", selector: (row: Row) => formatDate(row.issueDate) },
+    {
+      name: "Total",
+      cell: (row: Row) => (
+        <span className="font-medium tabular-nums">{money(row.totalAmount, row.currency)}</span>
+      ),
+    },
+    { name: "Status", cell: (row: Row) => <TenancyStatusBadge status={row.status} /> },
+    {
+      name: "Action",
+      width: "10%",
+      cell: (row: Row) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" className="dropdown-toggle">
+              Select
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem className="gap-2" onClick={() => openInvoice(row)}>
+              <Eye className="h-3.5 w-3.5" />
+              View invoice
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // The row number is the position in the whole list, not on this page, so it
+  // keeps counting across pages the way a register's does.
+  const mapped: Row[] = rows.map((inv, index) => ({
+    ...inv,
+    Sr: page * pageSize + index + 1,
+  }));
+
   return (
     <div>
-      <LexPageHeader icon={FileText} title="Billing & Invoices" subtitle="Every invoice we have issued you." />
+      <LexPageHeader
+        icon={FileText}
+        title="Billing & Invoices"
+        subtitle="Every invoice we have issued you."
+      />
+
+      {/* The register pages all carry a control row above the table, and its
+          absence here is most of why this one looked like a different product.
+
+          It holds what this endpoint actually supports. The console's invoice
+          list filters by status; /tenant-portal/invoices takes only page and
+          size, so there is no status filter to offer — and one that filtered
+          the page in the browser would silently hide rows that are simply on
+          another page, which is worse than not having it. */}
+      <div className="no-card mb-3 flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs text-muted-foreground">
+          {rows.length > 0
+            ? `Showing ${rows.length} invoice${rows.length === 1 ? "" : "s"}`
+            : "No invoices yet"}
+        </span>
+        <Button size="sm" variant="outline" onClick={() => load(page, false)} disabled={isLoading}>
+          <RefreshCw className={`me-1 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
+      </div>
 
       {isLoading && rows.length === 0 ? (
         <div className="grid gap-2">
@@ -82,69 +165,8 @@ const TenantInvoices = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={FileText} text="No invoices yet." />
       ) : (
-        <div className="no-table overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
-          <table className="w-full min-w-[800px] border-collapse text-sm">
-            {/* The brand header the rest of the product's tables carry. */}
-            <thead>
-              <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
-                <th className="px-3 py-2.5 text-start font-semibold">Invoice</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Type</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Issued</th>
-                <th className="px-3 py-2.5 text-end font-semibold">Total</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Status</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((inv) => (
-                <tr
-                  key={inv.invoiceId}
-                  className="group cursor-pointer border-t border-[var(--surface-border)] transition-colors odd:bg-[var(--theme-table-row-alt)] hover:bg-[var(--theme-table-row-hover)]"
-                  onClick={() => openInvoice(inv)}
-                >
-                  <td className="px-3 py-2.5 font-mono text-xs">{inv.invoiceNo}</td>
-                  <td className="px-3 py-2.5">{inv.invoiceType}</td>
-                  <td className="px-3 py-2.5">{formatDate(inv.issueDate)}</td>
-                  <td className="px-3 py-2.5 text-end font-medium tabular-nums">
-                    {money(inv.totalAmount, inv.currency)}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <TenancyStatusBadge status={inv.status} />
-                  </td>
-                  {/* The row opens the document, but nothing said so. The same
-                      Select trigger the other tables use — `dropdown-toggle`
-                      inside the `no-table` wrapper is what puts it under the
-                      app's unified rule for row actions, so it carries no
-                      colour or caret of its own. */}
-                  <td className="px-3 py-2.5">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          size="sm"
-                          className="dropdown-toggle"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Select
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          className="gap-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openInvoice(inv);
-                          }}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          View invoice
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="pro-card overflow-hidden">
+          <TableView header={columns} data={mapped} isLoading={isLoading} paginationShow={false} />
         </div>
       )}
 

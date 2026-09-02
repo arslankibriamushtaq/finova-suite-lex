@@ -60,6 +60,15 @@ const TenantSubscription = () => {
     [subscription]
   );
 
+  const adding = useMemo(
+    () => selected.filter((code) => !currentCodes.includes(code)),
+    [selected, currentCodes]
+  );
+  const removing = useMemo(
+    () => currentCodes.filter((code) => !selected.includes(code)),
+    [selected, currentCodes]
+  );
+
   const load = async () => {
     try {
       setSubscription(await getMySubscription());
@@ -131,7 +140,11 @@ const TenantSubscription = () => {
 
   return (
     <div>
-      <LexPageHeader icon={CreditCard} title="Plan & Packages" subtitle="What you are subscribed to today.">
+      <LexPageHeader
+        icon={CreditCard}
+        title="Plan & Packages"
+        subtitle="What you are subscribed to today."
+      >
         {subscription && (
           <Button
             size="sm"
@@ -187,9 +200,7 @@ const TenantSubscription = () => {
                 </span>
               </div>
               <div className="stat-card__value-row">
-                <p className="stat-card__value">
-                  {formatDate(subscription.currentPeriodEnd)}
-                </p>
+                <p className="stat-card__value">{formatDate(subscription.currentPeriodEnd)}</p>
               </div>
             </div>
             <div className="stat-card stat-card--amber">
@@ -268,9 +279,7 @@ const TenantSubscription = () => {
                           {money(item.unitPrice, subscription.currency)}
                         </div>
                         {item.quantity > 1 ? (
-                          <div className="text-[11px] text-muted-foreground">
-                            × {item.quantity}
-                          </div>
+                          <div className="text-[11px] text-muted-foreground">× {item.quantity}</div>
                         ) : null}
                       </div>
                     </div>
@@ -305,49 +314,117 @@ const TenantSubscription = () => {
       )}
 
       <Dialog open={changeOpen} onOpenChange={setChangeOpen}>
-        <DialogContent>
+        {/* sm:max-w-2xl — DialogContent ships sm:max-w-lg, which an unprefixed
+            max-w does not override. */}
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Change your plan</DialogTitle>
             <DialogDescription>
-              What you tick <strong>is</strong> your plan — unticking a package removes it. Adding
-              one charges the difference plus VAT to your card on file immediately and raises an
-              invoice. Removing one is credited at your next renewal, not refunded now. Your renewal
-              date does not change.
+              Tick what you want your plan to be. What is ticked when you confirm{" "}
+              <strong>is</strong> your plan.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid max-h-[20rem] gap-2 overflow-y-auto">
-            {catalog.map((p) => (
-              <label key={p.packageCode} className="flex items-start gap-2 text-sm">
-                <Checkbox
-                  checked={selected.includes(p.packageCode)}
-                  onCheckedChange={(checked) =>
-                    setSelected((prev) =>
-                      checked ? [...prev, p.packageCode] : prev.filter((c) => c !== p.packageCode)
-                    )
-                  }
-                />
-                <span>
-                  <span className="font-medium">{p.nameEn}</span>
-                  {currentCodes.includes(p.packageCode) && (
-                    <Badge variant="outline" className="ms-1 border-border text-[10px]">
-                      current
-                    </Badge>
-                  )}
-                  <div dir="rtl" className="text-xs text-muted-foreground">
-                    {p.nameAr}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {money(p.monthlyPrice, p.currency)} / month
-                  </div>
-                </span>
-              </label>
-            ))}
+
+          {/* The rules were one paragraph of five sentences above a list nobody
+              had read yet. Adding and removing behave differently and cost
+              differently, so they are two lines, side by side, and they sit
+              where the decision is rather than above it. */}
+          <div className="grid gap-2 sm:grid-cols-2">
+            <p className="rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--primary)_5%,transparent)] p-2.5 text-xs leading-relaxed">
+              <span className="font-semibold text-foreground">Adding a package</span> charges the
+              difference plus VAT to your card on file straight away, and raises an invoice.
+            </p>
+            <p className="rounded-[2px] border border-[var(--surface-border)] bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] p-2.5 text-xs leading-relaxed">
+              <span className="font-semibold text-foreground">Removing one</span> is credited at
+              your next renewal rather than refunded now. Your renewal date does not move.
+            </p>
           </div>
+
+          <div className="grid max-h-[20rem] gap-2 overflow-y-auto pe-1">
+            {catalog.map((p) => {
+              const ticked = selected.includes(p.packageCode);
+              const current = currentCodes.includes(p.packageCode);
+
+              return (
+                <label
+                  key={p.packageCode}
+                  data-ticked={ticked}
+                  // The whole row is the target. A 16px checkbox beside four
+                  // lines of text is a small thing to hit for a decision that
+                  // charges a card.
+                  className="flex cursor-pointer items-center gap-3 rounded-[2px] border border-[var(--surface-border)] p-3 transition-colors hover:border-[color-mix(in_srgb,var(--primary)_40%,var(--surface-border))] data-[ticked=true]:border-[var(--primary)] data-[ticked=true]:bg-[color-mix(in_srgb,var(--primary)_4%,transparent)]"
+                >
+                  <Checkbox
+                    checked={ticked}
+                    onCheckedChange={(checked) =>
+                      setSelected((prev) =>
+                        checked ? [...prev, p.packageCode] : prev.filter((c) => c !== p.packageCode)
+                      )
+                    }
+                  />
+
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-sm font-semibold text-foreground">{p.nameEn}</span>
+                      {current && (
+                        <Badge variant="outline" className="border-border text-[10px]">
+                          current
+                        </Badge>
+                      )}
+                      {/* What this tick would DO, not what it is. The badge
+                          above says where you are; this says where you are
+                          going, and it is the only thing that costs money. */}
+                      {!current && ticked && (
+                        <Badge className="bg-[var(--primary)] text-[10px] text-white">adding</Badge>
+                      )}
+                      {current && !ticked && (
+                        <Badge variant="outline" className="border-border text-[10px] line-through">
+                          removing
+                        </Badge>
+                      )}
+                    </span>
+                    <span dir="rtl" className="mt-0.5 block text-xs text-muted-foreground">
+                      {p.nameAr}
+                    </span>
+                  </span>
+
+                  <span className="shrink-0 text-end">
+                    <span className="block text-sm font-semibold tabular-nums text-foreground">
+                      {money(p.monthlyPrice, p.currency)}
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground">per month</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          {/* What changed, in one line. Counting ticks against the current plan
+              is arithmetic the reader would otherwise do themselves, across a
+              list they have just scrolled. No prices: the amount charged is a
+              proration the server works out, and a figure invented here would
+              be a number the invoice then contradicts. */}
+          <p className="text-xs text-muted-foreground" role="status">
+            {adding.length === 0 && removing.length === 0
+              ? "No changes yet — your plan is as it was."
+              : [
+                  adding.length > 0 ? `Adding ${adding.length}` : null,
+                  removing.length > 0 ? `removing ${removing.length}` : null,
+                ]
+                  .filter(Boolean)
+                  .join(", ") + " — the exact amount is calculated when you confirm."}
+          </p>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setChangeOpen(false)}>
               Keep my plan
             </Button>
-            <Button disabled={busy || selected.length === 0} onClick={applyChange}>
+            <Button
+              disabled={
+                busy || selected.length === 0 || (adding.length === 0 && removing.length === 0)
+              }
+              onClick={applyChange}
+            >
               {busy && <Loader2 className="me-1 h-4 w-4 animate-spin" />}
               Confirm and pay any difference
             </Button>

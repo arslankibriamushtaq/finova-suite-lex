@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FileText } from "lucide-react";
+import { Eye, FileText } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
 import {
@@ -9,16 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../../components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { Skeleton } from "../../components/ui/skeleton";
 import { EmptyState } from "../../components/shared/detailKit";
 import { LexPageHeader } from "../../components/shared/lexKit";
 import TablePager from "../../components/shared/TablePager";
+import TableView from "../../components/TableView/TableView";
 import { InvoiceDocument, TenancyStatusBadge } from "../../components/shared/tenancyKit";
 import { money } from "../../components/shared/tenancyKitUtils";
 import {
@@ -30,8 +26,10 @@ import {
   type InvoiceStatus,
 } from "../../redux/apis/apisTenancyAdmin";
 
-
 /** Every invoice the platform has raised, across every tenant. */
+/** A row is an invoice plus the register's own line number. */
+type Row = Invoice & { Sr: number };
+
 const PlatformInvoices = () => {
   const [status, setStatus] = useState<InvoiceStatus | "">("");
   const [rows, setRows] = useState<Invoice[]>([]);
@@ -75,9 +73,65 @@ const PlatformInvoices = () => {
     }
   };
 
+  /**
+   * The register's own table, as on Tenants and the tenant portal.
+   *
+   * The pager stays off: TableView needs a row total to say "showing 1 to 10 of
+   * 40", and /platform/invoices answers with a bare array. TablePager below
+   * numbers only the pages it can prove exist.
+   */
+  const columns = [
+    { name: "#", selector: (row: Row) => row.Sr, width: "60px" },
+    {
+      name: "Invoice",
+      cell: (row: Row) => <span className="font-mono text-xs">{row.invoiceNo}</span>,
+    },
+    { name: "Type", selector: (row: Row) => row.invoiceType },
+    { name: "Buyer", selector: (row: Row) => row.buyerName || "—" },
+    { name: "Issued", selector: (row: Row) => row.issueDate },
+    {
+      name: "Total",
+      cell: (row: Row) => (
+        <span className="font-medium tabular-nums">{money(row.totalAmount, row.currency)}</span>
+      ),
+    },
+    { name: "Status", cell: (row: Row) => <TenancyStatusBadge status={row.status} /> },
+    {
+      name: "Action",
+      width: "10%",
+      cell: (row: Row) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            {/* No icon of our own: `dropdown-toggle` is a Bootstrap class and
+                draws its own caret through ::after. */}
+            <Button size="sm" className="dropdown-toggle">
+              Select
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem className="gap-2" onClick={() => openInvoice(row)}>
+              <Eye className="h-3.5 w-3.5" />
+              View invoice
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // The line number counts across pages, the way a register's does.
+  const mapped: Row[] = rows.map((invoice, index) => ({
+    ...invoice,
+    Sr: page * pageSize + index + 1,
+  }));
+
   return (
     <div>
-      <LexPageHeader icon={FileText} title="Platform Invoices" subtitle="Every invoice raised, across every tenant." />
+      <LexPageHeader
+        icon={FileText}
+        title="Platform Invoices"
+        subtitle="Every invoice raised, across every tenant."
+      />
 
       <div
         role="group"
@@ -114,65 +168,8 @@ const PlatformInvoices = () => {
       ) : rows.length === 0 ? (
         <EmptyState icon={FileText} text="No invoices match this filter." />
       ) : (
-        <div className="no-table overflow-x-auto rounded-[2px] border border-[color-mix(in_srgb,var(--primary)_14%,var(--surface-border))]">
-          <table className="w-full min-w-[860px] text-sm">
-            <thead>
-              <tr className="bg-[var(--theme-table-background-color)] text-xs uppercase tracking-wide text-white">
-                <th className="px-3 py-2.5 text-start font-semibold">Invoice</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Type</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Buyer</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Issued</th>
-                <th className="px-3 py-2.5 text-end font-semibold">Total</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Status</th>
-                <th className="px-3 py-2.5 text-start font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((inv) => (
-                <tr
-                  key={inv.invoiceId}
-                  className="cursor-pointer border-t border-[var(--surface-border)] transition-colors odd:bg-[var(--theme-table-row-alt)] hover:bg-[var(--theme-table-row-hover)]"
-                  onClick={() => openInvoice(inv)}
-                >
-                  <td className="px-3 py-2.5 font-mono text-xs">{inv.invoiceNo}</td>
-                  <td className="px-3 py-2.5">{inv.invoiceType}</td>
-                  <td className="px-3 py-2.5">{inv.buyerName}</td>
-                  <td className="px-3 py-2.5">{inv.issueDate}</td>
-                  <td className="px-3 py-2.5 text-end">{money(inv.totalAmount, inv.currency)}</td>
-                  <td className="px-3 py-2.5">
-                    <TenancyStatusBadge status={inv.status} />
-                  </td>
-                  {/* Same row-action control as the register: the row opens the
-                      document, and this is what says so. */}
-                  <td className="px-3 py-2.5">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          size="sm"
-                          className="dropdown-toggle"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Select
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          className="gap-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openInvoice(inv);
-                          }}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          View invoice
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="pro-card overflow-hidden">
+          <TableView header={columns} data={mapped} isLoading={isLoading} paginationShow={false} />
         </div>
       )}
 
