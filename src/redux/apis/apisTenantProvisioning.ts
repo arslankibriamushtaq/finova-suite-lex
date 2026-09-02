@@ -20,12 +20,7 @@ import axiosTenantProvisioning from "../../utils/axiosTenantProvisioning";
 export type BillingCycle = "MONTHLY" | "ANNUAL";
 
 export type AdminRelationship =
-  | "OWNER"
-  | "DIRECTOR"
-  | "AUTHORIZED_SIGNATORY"
-  | "EMPLOYEE"
-  | "CONSULTANT"
-  | "OTHER";
+  "OWNER" | "DIRECTOR" | "AUTHORIZED_SIGNATORY" | "EMPLOYEE" | "CONSULTANT" | "OTHER";
 
 export const ADMIN_RELATIONSHIPS: AdminRelationship[] = [
   "OWNER",
@@ -127,6 +122,100 @@ export interface SignupRequest {
   locale: string;
 }
 
+/**
+ * What every wizard call answers with.
+ *
+ * Two fields drive routing on a resume — `emailVerified` and `adminProvided`
+ * say which step the buyer is actually up to, which is more trustworthy than a
+ * counter this app kept.
+ *
+ * The stored form fields come back only once `emailVerified` is true; before
+ * that they are null. A company email is guessable, so an unverified read is
+ * deliberately answered with step-1 fields only. That is a disclosure rule, not
+ * a bug: keep what the buyer typed in local state for the session, and treat
+ * the server copy as what a *verified* resume gets back.
+ */
+export interface SignupDraft {
+  signupId: string;
+  referenceNo: string;
+  status: SignupStatus | "DRAFT";
+
+  emailVerified: boolean;
+  adminProvided: boolean;
+
+  billingCycle: BillingCycle;
+  packageCodes: string[];
+  subtotal: number;
+  vatAmount: number;
+  totalAmount: number;
+  currency: string;
+  expiresAt: string | null;
+
+  companyName: string | null;
+  companyEmail: string | null;
+  crNumber: string | null;
+  companyNameAr: string | null;
+  vatNumber: string | null;
+  countryCode: string | null;
+  city: string | null;
+  addressLine: string | null;
+  postalCode: string | null;
+  companyPhone: string | null;
+  website: string | null;
+
+  adminFirstName: string | null;
+  adminLastName: string | null;
+  adminEmail: string | null;
+  adminMobile: string | null;
+  adminJobTitle: string | null;
+  adminRelationship: AdminRelationship | null;
+}
+
+/** Step 1 — the company, and the plan chosen on the pricing page. */
+export interface DraftRequest {
+  companyName: string;
+  companyEmail: string;
+  crNumber?: string;
+  billingCycle: BillingCycle;
+  packageCodes: string[];
+  locale: string;
+}
+
+/** Step 3 — everything about the company that is not its identity. */
+export interface CompanyPatch {
+  countryCode: string;
+  vatNumber?: string;
+  companyNameAr?: string;
+  companyPhone?: string;
+  website?: string;
+  city?: string;
+  addressLine?: string;
+  postalCode?: string;
+}
+
+/** Step 4 — the person filling the form, who becomes the first administrator. */
+export interface AdminPatch {
+  adminFirstName: string;
+  adminLastName?: string;
+  adminEmail: string;
+  adminMobile?: string;
+  adminJobTitle?: string;
+  adminRelationship: AdminRelationship;
+}
+
+/**
+ * An emailed verification code.
+ *
+ * `resendsRemaining` and the 60-second cooldown drive the resend button: a
+ * button that can be pressed into a throttle is a button that collects errors.
+ */
+export interface OtpChallenge {
+  challengeId: string;
+  maskedEmail: string;
+  expiresInSeconds: number;
+  resendsRemaining: number;
+}
+
 export interface CheckoutSession {
   paymentId: string;
   /** Shown on the return page; it is what support will ask for. */
@@ -178,6 +267,15 @@ export type TenantSignupErrorCode =
   | "TENANCY.TENANT.DUPLICATE_EMAIL"
   | "TENANCY.SIGNUP.QUOTE_EXPIRED"
   | "TENANCY.SIGNUP.INVALID_STATE"
+  | "TENANCY.SIGNUP.NOT_DRAFT"
+  | "TENANCY.SIGNUP.EMAIL_NOT_VERIFIED"
+  | "TENANCY.SIGNUP.EMAIL_ALREADY_VERIFIED"
+  | "TENANCY.SIGNUP.INCOMPLETE"
+  | "TENANCY.SIGNUP.NOT_REOPENABLE"
+  | "TENANCY.OTP.INVALID"
+  | "TENANCY.OTP.EXPIRED"
+  | "TENANCY.OTP.MISMATCHED_CHALLENGE"
+  | "TENANCY.OTP.RESEND_THROTTLED"
   | "TENANCY.PAYMENT.CHECKOUT_FAILED"
   | "TENANCY.PAYMENT.AMOUNT_ABOVE_GATEWAY_LIMIT"
   | "TENANCY.ACTIVATION.TOKEN_INVALID"
@@ -213,10 +311,7 @@ interface RejectedRequest {
   };
 }
 
-export const toTenantSignupError = (
-  err: unknown,
-  fallbackMessage: string
-): TenantSignupError => {
+export const toTenantSignupError = (err: unknown, fallbackMessage: string): TenantSignupError => {
   const response = (err as RejectedRequest)?.response;
 
   // No response at all — offline, DNS failure, or the gateway is down.
@@ -239,13 +334,11 @@ export const toTenantSignupError = (
 // Calls
 // ---------------------------------------------------------------------------
 
-const unwrap = <T,>(res: AxiosResponse<{ data: T }>): T => res.data?.data;
+const unwrap = <T>(res: AxiosResponse<{ data: T }>): T => res.data?.data;
 
 /** Screen 1 — what is on sale. CORE is deliberately absent; it ships free. */
 export function getCatalogPackages(): Promise<CatalogPackage[]> {
-  return axiosTenantProvisioning
-    .get("/public/catalog/packages")
-    .then(unwrap<CatalogPackage[]>);
+  return axiosTenantProvisioning.get("/public/catalog/packages").then(unwrap<CatalogPackage[]>);
 }
 
 /**
@@ -256,9 +349,102 @@ export function getQuote(payload: {
   packageCodes: string[];
   billingCycle: BillingCycle;
 }): Promise<Quote> {
+  return axiosTenantProvisioning.post("/public/catalog/quote", payload).then(unwrap<Quote>);
+}
+
+// ---------------------------------------------------------------------------
+// The wizard — four steps over one server-side draft
+// ---------------------------------------------------------------------------
+
+/**
+ * Step 1 — open a signup, or resume the one this company email already has.
+ *
+ * Called again with the same company email this RESUMES rather than creating a
+ * second draft: same signupId, same reference. It also clears the email
+ * verification on the way, because a company address is guessable and a
+ * verified tick must not be inheritable by whoever retypes it.
+ *
+ * The idempotency key is generated once when the wizard opens and reused on
+ * retry, so a double-click or a flaky network returns the original draft.
+ */
+export function createDraft(payload: DraftRequest, idempotencyKey: string): Promise<SignupDraft> {
   return axiosTenantProvisioning
-    .post("/public/catalog/quote", payload)
-    .then(unwrap<Quote>);
+    .post("/public/signups/draft", payload, {
+      headers: { "X-Idempotency-Key": idempotencyKey },
+    })
+    .then(unwrap<SignupDraft>);
+}
+
+/**
+ * Reads a draft back after a refresh.
+ *
+ * Before the company address is proven this answers with step-1 fields only,
+ * so a caller must not treat missing fields as "the buyer left them blank".
+ */
+export function getDraft(signupId: string): Promise<SignupDraft> {
+  return axiosTenantProvisioning.get(`/public/signups/draft/${signupId}`).then(unwrap<SignupDraft>);
+}
+
+/** Step 2a — email a six-digit code to the company address. */
+export function sendEmailOtp(signupId: string): Promise<OtpChallenge> {
+  return axiosTenantProvisioning
+    .post(`/public/signups/${signupId}/email-otp`)
+    .then(unwrap<OtpChallenge>);
+}
+
+/**
+ * Step 2b — prove the company address.
+ *
+ * `challengeId` is bound to this signup and this address; a code issued for
+ * another draft is refused with TENANCY.OTP.MISMATCHED_CHALLENGE.
+ */
+export function verifyEmailOtp(
+  signupId: string,
+  payload: { challengeId: string; code: string }
+): Promise<SignupDraft> {
+  return axiosTenantProvisioning
+    .post(`/public/signups/${signupId}/email-otp/verify`, payload)
+    .then(unwrap<SignupDraft>);
+}
+
+/** Step 3 — the rest of the company. No email here; it is verified by now. */
+export function patchCompany(signupId: string, payload: CompanyPatch): Promise<SignupDraft> {
+  return axiosTenantProvisioning
+    .patch(`/public/signups/${signupId}/company`, payload)
+    .then(unwrap<SignupDraft>);
+}
+
+/** Step 4 — you. Refused with EMAIL_NOT_VERIFIED if step 2 was skipped. */
+export function patchAdmin(signupId: string, payload: AdminPatch): Promise<SignupDraft> {
+  return axiosTenantProvisioning
+    .patch(`/public/signups/${signupId}/admin`, payload)
+    .then(unwrap<SignupDraft>);
+}
+
+/** Re-prices the draft after a trip back to the pricing page. */
+export function patchSelection(
+  signupId: string,
+  payload: { packageCodes: string[]; billingCycle: BillingCycle }
+): Promise<SignupDraft> {
+  return axiosTenantProvisioning
+    .patch(`/public/signups/${signupId}/selection`, payload)
+    .then(unwrap<SignupDraft>);
+}
+
+/**
+ * Leaves the wizard: the draft becomes payable and the 72-hour quote window
+ * restarts here. The returned amount is what will be charged — render that,
+ * never a recalculated total.
+ */
+export function submitSignup(signupId: string): Promise<Signup> {
+  return axiosTenantProvisioning.post(`/public/signups/${signupId}/submit`).then(unwrap<Signup>);
+}
+
+/** Back into the wizard to fix a typo, while no checkout has been opened. */
+export function reopenSignup(signupId: string): Promise<SignupDraft> {
+  return axiosTenantProvisioning
+    .post(`/public/signups/${signupId}/reopen`)
+    .then(unwrap<SignupDraft>);
 }
 
 /**
@@ -267,11 +453,12 @@ export function getQuote(payload: {
  *
  * `idempotencyKey` is generated once per form render and reused on retry, so a
  * double-click cannot produce two payable signups.
+ *
+ * @deprecated The one-shot endpoint. It cannot verify a company email, so
+ * the signups it creates are unpayable wherever
+ * platform.signup.require-verified-email is on. Use the draft wizard above.
  */
-export function createSignup(
-  payload: SignupRequest,
-  idempotencyKey: string
-): Promise<Signup> {
+export function createSignup(payload: SignupRequest, idempotencyKey: string): Promise<Signup> {
   return axiosTenantProvisioning
     .post("/public/signups", payload, {
       headers: { "X-Idempotency-Key": idempotencyKey },
@@ -346,7 +533,5 @@ export function activateTenant(payload: {
   token: string;
   password: string;
 }): Promise<ActivationResult> {
-  return axiosTenantProvisioning
-    .post("/activation", payload)
-    .then(unwrap<ActivationResult>);
+  return axiosTenantProvisioning.post("/activation", payload).then(unwrap<ActivationResult>);
 }

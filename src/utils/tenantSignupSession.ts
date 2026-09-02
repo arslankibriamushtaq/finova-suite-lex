@@ -63,6 +63,46 @@ const remove = (key: string): void => {
   }
 };
 
+/**
+ * The draft handle, in localStorage rather than sessionStorage.
+ *
+ * The wizard saves to the server at every step, and the point of that is that a
+ * closed tab costs nothing — which only holds if the handle outlives the tab.
+ * Everything else here stays session-scoped: two tabs buying two workspaces
+ * must not overwrite one another's reference number, and only the draft is
+ * meant to be picked up again tomorrow.
+ *
+ * Read defensively. A stale id from a signup that has since been paid or
+ * expired is answered with an error by the server, and the wizard clears it
+ * then — which is the only way to know, since nothing here can tell a live
+ * draft from a dead one.
+ */
+const DRAFT_KEY = "tenantSignup.draftId";
+
+export const getDraftId = (): string | null => {
+  try {
+    return window.localStorage.getItem(DRAFT_KEY);
+  } catch {
+    return null;
+  }
+};
+
+export const setDraftId = (id: string): void => {
+  try {
+    window.localStorage.setItem(DRAFT_KEY, id);
+  } catch {
+    /* Storage unavailable — the wizard still works within a single page life. */
+  }
+};
+
+export const clearDraftId = (): void => {
+  try {
+    window.localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* ignore */
+  }
+};
+
 export const getSignupId = (): string | null => read(KEYS.signupId);
 export const setSignupId = (id: string): void => write(KEYS.signupId, id);
 
@@ -130,6 +170,7 @@ export const resetIdempotencyKey = (): string => {
 
 /** Clears everything — used when a signup reaches a terminal dead end. */
 export const clearTenantSignupSession = (): void => {
+  clearDraftId();
   Object.values(KEYS).forEach(remove);
 };
 

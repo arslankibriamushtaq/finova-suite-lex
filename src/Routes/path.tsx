@@ -10,7 +10,7 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import TenantSignupLayout from "../pages/TenantSignup/TenantSignupLayout";
 import PricingStep from "../pages/TenantSignup/steps/PricingStep";
-import DetailsStep from "../pages/TenantSignup/steps/DetailsStep";
+import BusinessInfoStep from "../pages/TenantSignup/steps/BusinessInfoStep";
 import PaymentStep from "../pages/TenantSignup/steps/PaymentStep";
 import PaymentReturnStep from "../pages/TenantSignup/steps/PaymentReturnStep";
 import ProvisioningStep from "../pages/TenantSignup/steps/ProvisioningStep";
@@ -603,7 +603,7 @@ export const router = createBrowserRouter(
       element: <TenantSignupLayout />,
       children: [
         { index: true, element: <PricingStep /> },
-        { path: "details", element: <DetailsStep /> },
+        { path: "details", element: <BusinessInfoStep /> },
         { path: "payment", element: <PaymentStep /> },
         // BurqPay returns the customer here; configured server-side as the
         // checkout return URL.
