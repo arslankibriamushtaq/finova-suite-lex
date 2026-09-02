@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import {getDashboardStatistics } from "../../redux/apis/apisCrud";
 import BarChart from "../Dashboard/BarChart";
 import { Col, Card, DatePicker } from "antd";
-import dayjs from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import DashboardOverview from "./DashboardOverview";
 import DashboardRecentApplications from "./DashboardRecentApplications";
 import { useTranslation } from "react-i18next";
@@ -12,8 +12,8 @@ const LandingDashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<any>();
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
-  const [fromDate, setFromDate] = useState<any>(null);
-  const [toDate, setToDate] = useState<any>(null);
+  const [fromDate, setFromDate] = useState<Dayjs | null>(null);
+  const [toDate, setToDate] = useState<Dayjs | null>(null);
 
   const getStatistics = async () => {
     setLoading(true);
@@ -33,17 +33,43 @@ const LandingDashboardPage = () => {
     }
   }
   
-  const handleFromDateChange = (date: any) => {
+  const handleFromDateChange = (date: Dayjs | null) => {
     setFromDate(date);
   };
 
-  const handleToDateChange = (date: any) => {
+  const handleToDateChange = (date: Dayjs | null) => {
     setToDate(date);
   };
 
+  /**
+   * What the two pickers will accept.
+   *
+   * Only half of this was enforced before: To could not precede From, but From
+   * could be moved past To, which left an inverted range that was still sent to
+   * the API. Both ends are now bounded by the other.
+   *
+   * Neither end accepts a future date. These are counts of applications that
+   * already exist, so a range running into next year returns exactly what one
+   * ending today returns — an empty result the reader has no way to explain.
+   */
+  const isFuture = (day: Dayjs) => day.isAfter(dayjs().endOf("day"));
+
+  const disabledFromDate = (current: Dayjs) =>
+    !!current &&
+    (isFuture(current) || (toDate ? current.isAfter(dayjs(toDate).endOf("day")) : false));
+
+  const disabledToDate = (current: Dayjs) =>
+    !!current &&
+    (isFuture(current) || (fromDate ? current.isBefore(dayjs(fromDate).startOf("day")) : false));
+
+  // The pickers cannot produce this, but state set any other way can, and an
+  // inverted range is a request with no useful answer.
+  const rangeInvalid = !!fromDate && !!toDate && dayjs(fromDate).isAfter(dayjs(toDate), "day");
+
   useEffect(() => {
+    if (rangeInvalid) return;
     getStatistics();
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, rangeInvalid]);
  
   return (
     <>
@@ -62,6 +88,7 @@ const LandingDashboardPage = () => {
                   placeholder={t("home.selectFromDate")}
                   style={{ width: "100%" }}
                   format="YYYY-MM-DD"
+                  disabledDate={disabledFromDate}
                 />
               </div>
               <div style={{ minWidth: "180px" }}>
@@ -74,15 +101,19 @@ const LandingDashboardPage = () => {
                   placeholder={t("home.selectToDate")}
                   style={{ width: "100%" }}
                   format="YYYY-MM-DD"
-                  disabledDate={(current) => {
-                    if (fromDate) {
-                      return current && current < dayjs(fromDate).startOf('day');
-                    }
-                    return false;
-                  }}
+                  disabledDate={disabledToDate}
                 />
               </div>
             </div>
+            {rangeInvalid && (
+              <p
+                role="alert"
+                className="mb-0 mt-2 text-end"
+                style={{ fontSize: "13px", color: "var(--destructive)" }}
+              >
+                {t("home.invalidRange")}
+              </p>
+            )}
           </div>
          
           <DashboardOverview applicationData={dashboardData} loading={loading}/>

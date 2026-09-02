@@ -55,6 +55,7 @@ const dashboard: ModuleLocale = {
     // === Dashboard home & widgets (owned module) ===
     // Landing dashboard page — date filters
     "home.selectFromDate": "Select From Date",
+    "home.invalidRange": "The From date cannot be later than the To date.",
     "home.selectToDate": "Select To Date",
 
     // Dashboard overview — stat cards
@@ -566,6 +567,7 @@ const dashboard: ModuleLocale = {
 
     // === Dashboard home & widgets (owned module) ===
     "home.selectFromDate": "Sélectionner la date de début",
+    "home.invalidRange": "La date de début ne peut pas être postérieure à la date de fin.",
     "home.selectToDate": "Sélectionner la date de fin",
 
     "overview.totalApplied": "Total des demandes soumises",
@@ -1038,6 +1040,7 @@ const dashboard: ModuleLocale = {
 
     // === Dashboard home & widgets (owned module) ===
     "home.selectFromDate": "اختر تاريخ البداية",
+    "home.invalidRange": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية.",
     "home.selectToDate": "اختر تاريخ النهاية",
 
     "overview.totalApplied": "إجمالي الطلبات المقدمة",
