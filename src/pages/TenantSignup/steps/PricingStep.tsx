@@ -1,7 +1,7 @@
 import { Boxes, Check, Loader2, Plus, TrendingDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
   getCatalogPackages,
@@ -12,7 +12,6 @@ import {
   type Quote,
 } from "../../../redux/apis/apisTenantProvisioning";
 import { getCurrentLanguage } from "../../../utils/acceptLanguage";
-import { clearTenantSignupSession } from "../../../utils/tenantSignupSession";
 import { Skeleton } from "../../../components/ui/skeleton";
 import StatusMessage from "../components/StatusMessage";
 import SubmitButton from "../components/SubmitButton";
@@ -35,34 +34,17 @@ export default function PricingStep() {
 
   const { packageCodes, billingCycle, setSelection } = useTenantSignup();
 
-  const location = useLocation();
-  const reset = useRef(false);
-
-  /**
-   * Landing here starts a new signup.
+  /*
+   * Nothing is cleared here.
    *
-   * The draft handle, the basket, the frozen quote and the idempotency key
-   * all go, so the pricing page is always the beginning of something rather
-   * than the middle of whatever was abandoned last week. Without this a stale
-   * draft sent the buyer straight past the form they came back to correct.
-   *
-   * Nothing is lost by it: a draft is resumed server-side by its company
-   * email, so someone who genuinely wants their old one back gets it by
-   * typing the same address in part one — which is the documented way in, and
-   * the only one that re-proves the address rather than inheriting a tick.
-   *
-   * A navigation carrying state.resume is the wizard stepping back to change
-   * the plan, not a fresh arrival, so that one keeps the basket it is about
-   * to edit.
+   * This screen used to wipe the draft on arrival, so that typing /tenant into
+   * the address bar mid-signup — or coming back to change a package — threw
+   * away everything already filled in. Starting fresh is a decision the
+   * *landing page* makes, on the click that means "I want to buy this", and it
+   * clears the session itself before writing the plan. Every other way of
+   * reaching this URL is somebody stepping back inside a signup they are still
+   * in the middle of.
    */
-  useEffect(() => {
-    if (reset.current) return;
-    reset.current = true;
-    if ((location.state as { resume?: boolean } | null)?.resume) return;
-
-    clearTenantSignupSession();
-    setSelection([], "MONTHLY");
-  }, [location.state, setSelection]);
 
   const [packages, setPackages] = useState<CatalogPackage[] | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);

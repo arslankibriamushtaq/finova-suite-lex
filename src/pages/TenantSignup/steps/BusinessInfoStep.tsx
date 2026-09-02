@@ -32,8 +32,10 @@ import { normalizeDigits } from "../digits";
 import {
   clearDraftId,
   getDraftId,
+  getFormDraft,
   getIdempotencyKey,
   setDraftId,
+  setFormDraft,
 } from "../../../utils/tenantSignupSession";
 import { DEFAULT_COUNTRY_CODE, getCountryOptions } from "../countries";
 import FormRow from "../components/FormRow";
@@ -137,7 +139,13 @@ export default function BusinessInfoStep() {
   // this alias keeps the rest of the file reading as it did.
   const part = wizardPart;
   const setPart = setWizardPart;
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  // Seeded from storage, and spread over EMPTY_FORM rather than used as-is: a
+  // draft written by an older build may be missing a field this one reads, and
+  // an undefined value in a controlled input turns it uncontrolled.
+  const [form, setForm] = useState<FormState>(() => ({
+    ...EMPTY_FORM,
+    ...(getFormDraft<Partial<FormState>>() ?? {}),
+  }));
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -160,6 +168,17 @@ export default function BusinessInfoStep() {
     setForm((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [key]: undefined }));
   };
+
+  /**
+   * Persist what has been typed.
+   *
+   * Every keystroke, because the alternative is deciding which ones matter —
+   * and the write is a few hundred bytes to a synchronous store the browser
+   * already keeps in memory.
+   */
+  useEffect(() => {
+    setFormDraft(form);
+  }, [form]);
 
   /** Nothing to buy means nothing to price — the plan is chosen next door. */
   useEffect(() => {
@@ -202,18 +221,17 @@ export default function BusinessInfoStep() {
           }
         }
 
-        // An unverified draft resumes at part ONE, not at the code screen.
+        // Always part one, whatever the draft already holds.
         //
-        // Two reasons, and the second is the bug this fixes. A challenge only
-        // exists for as long as the page that requested it, so a resumed verify
-        // screen had a code field, a Continue button and nothing behind either
-        // of them. And the server discloses only step-1 fields until the
-        // address is proven — so part one is the one screen whose contents we
-        // can actually show. Continuing from there re-sends the code, which is
-        // the documented path back in.
-        if (!found.emailVerified) setPart("company");
-        else if (!found.adminProvided) setPart("details");
-        else setPart("you");
+        // Opening at the furthest step reached looks like a shortcut and reads
+        // as a skip: someone who has just chosen a plan and pressed Continue
+        // lands on "Company Details" with two steps behind them they never saw.
+        // The wizard walks forward instead, each screen carrying what was typed
+        // into it before.
+        //
+        // It is also the only screen we can be sure of: the server discloses
+        // nothing but step-1 fields until the company address is proven.
+        setPart("company");
       })
       .catch(() => {
         // Paid, expired, or simply gone. Nothing here can tell which, and a
@@ -234,6 +252,21 @@ export default function BusinessInfoStep() {
     setCooldown(RESEND_COOLDOWN_SECONDS);
   }, []);
 
+  /**
+   * Whether part one still says what the draft was opened with.
+   *
+   * Re-submitting it is what clears the server's verification, so an untouched
+   * pass through this screen should not cost a code. Compared against the draft
+   * rather than a flag, because the buyer may have edited a field and changed
+   * it back.
+   */
+  const companyUnchanged =
+    !!draft &&
+    draft.emailVerified &&
+    (draft.companyName ?? "") === form.companyName.trim() &&
+    (draft.companyEmail ?? "") === form.companyEmail.trim() &&
+    (draft.crNumber ?? "") === form.crNumber.trim();
+
   // --- part 1: the company, and the plan ---------------------------------
   const submitCompany = async () => {
     const found: Errors = {};
@@ -248,6 +281,15 @@ export default function BusinessInfoStep() {
 
     setErrors(found);
     if (Object.keys(found).length > 0) return;
+
+    // Nothing changed and the address is already proven, so the code screen is
+    // skipped: re-opening the draft would drop the verification and email a
+    // code to prove something already proven. The rail still lists the step,
+    // marked done — which is what it is.
+    if (companyUnchanged) {
+      setPart("details");
+      return;
+    }
 
     setBusy(true);
     setFormError(null);
@@ -291,6 +333,13 @@ export default function BusinessInfoStep() {
   const submitCode = async () => {
     if (!draft) return;
 
+    // Already proven, and no code outstanding: this screen is showing the
+    // buyer where they are, not asking them for anything.
+    if (draft.emailVerified && !challenge) {
+      setPart("details");
+      return;
+    }
+
     // No challenge means no code has been sent yet — which is a state the
     // buyer can reach by reloading. Send one rather than failing silently: a
     // primary action that does nothing at all is the worst kind of bug,
@@ -322,7 +371,16 @@ export default function BusinessInfoStep() {
       });
       setDraft(verified);
       setForm((current) => mergeDraft(current, verified));
-      setPart(verified.adminProvided ? "you" : "details");
+      // The next part, not the furthest one reached.
+      //
+      // This skipped to Your Details whenever the draft already carried an
+      // administrator — which is exactly what someone stepping back to correct
+      // something has. They would press Continue expecting the screen they had
+      // just left, and be thrown past it.
+      //
+      // adminProvided still decides where a RESUMED session opens: that is a
+      // question about a visit, not about a click.
+      setPart("details");
     } catch (error) {
       const failure = toTenantSignupError(error, t("common.error.generic"));
       switch (failure.code) {
@@ -464,12 +522,8 @@ export default function BusinessInfoStep() {
   const goBack = () => {
     setFormError(null);
     setErrors({});
-    // state.resume marks this as a step back inside the flow rather than a
-    // fresh arrival, so the pricing page keeps the basket instead of
-    // clearing it.
-    if (part === "company") {
-      navigate(TENANT_SIGNUP_ROUTES.pricing, { state: { resume: true } });
-    } else if (part === "you") setPart("details");
+    if (part === "company") navigate(TENANT_SIGNUP_ROUTES.pricing);
+    else if (part === "you") setPart("details");
     else setPart("company");
   };
 

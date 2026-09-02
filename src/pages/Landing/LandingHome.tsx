@@ -23,7 +23,7 @@ import {
   type CatalogPackage,
 } from "../../redux/apis/apisTenantProvisioning";
 import { formatMoney } from "../TenantSignup/format";
-import { setSelection } from "../../utils/tenantSignupSession";
+import { clearTenantSignupSession, setSelection } from "../../utils/tenantSignupSession";
 import heroImage from "../../assets/images/landing/hero.jpg";
 import aboutImage from "../../assets/images/landing/experience.jpg";
 import bandImage from "../../assets/images/landing/intro.jpg";
@@ -425,12 +425,35 @@ const LandingHome = () => {
     )}&body=${encodeURIComponent(`Please add ${address} to the Finova newsletter.`)}`;
   };
 
+  /**
+   * Every way into the signup from this page.
+   *
+   * The pricing cards ran through choosePlan and cleared the session; the hero
+   * and the closing band were plain anchors, so those two walked straight into
+   * whatever half-finished signup was still in storage. Any click here means
+   * "start buying", so all of them clear.
+   *
+   * The clear runs even for a modifier-click that opens a new tab: localStorage
+   * is shared between tabs, and the intent of the button does not change with
+   * how it was pressed. Only a plain left click is turned into a router
+   * navigation — the rest are left to the browser so opening in a new tab
+   * still works.
+   */
+  const startSignup = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    clearTenantSignupSession();
+
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+    event.preventDefault();
+    navigate("/tenant");
+  };
+
   const choosePlan = (pkg: CatalogPackage) => {
+    // Coming in from the marketing page starts a new signup, so whatever was
+    // typed into an abandoned one goes first. The order matters: clearing after
+    // writing the selection would take the selection with it.
+    clearTenantSignupSession();
     setSelection({ packageCodes: [pkg.packageCode], billingCycle: cycle });
-    // Carrying `resume` stops the pricing page clearing its stored selection on
-    // arrival — which it does for any fresh visit, and which would otherwise
-    // wipe the package this click just wrote a line before.
-    navigate("/tenant", { state: { resume: true } });
+    navigate("/tenant");
   };
 
   /** Staggers a group so a row of cards arrives in sequence, not as a block. */
@@ -494,7 +517,11 @@ const LandingHome = () => {
             {/* One action, not two. A second button beside it splits the
                 attention the design deliberately puts on this one. */}
             <div className="mt-9" data-reveal-item style={stagger(2)}>
-              <a className="ln-btn ln-btn--primary ln-btn--pill" href="/tenant">
+              <a
+                className="ln-btn ln-btn--primary ln-btn--pill"
+                href="/tenant"
+                onClick={startSignup}
+              >
                 Subscribe Today And Start Lending
                 <span className="ln-btn__badge" aria-hidden="true">
                   <ArrowRight />
@@ -679,7 +706,11 @@ const LandingHome = () => {
               <p className="ln-body">
                 Our plans are priced live. Open the signup to see today&apos;s prices.
               </p>
-              <a className="ln-btn ln-btn--primary ln-btn--pill mt-6" href="/tenant">
+              <a
+                className="ln-btn ln-btn--primary ln-btn--pill mt-6"
+                href="/tenant"
+                onClick={startSignup}
+              >
                 See pricing
                 <span className="ln-btn__badge" aria-hidden="true">
                   <ArrowRight />

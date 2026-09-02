@@ -103,6 +103,47 @@ export const clearDraftId = (): void => {
   }
 };
 
+/**
+ * What the buyer has typed, kept across a refresh.
+ *
+ * The wizard saves to the server at every step, but the server withholds every
+ * stored field until the company address is verified — so before that point a
+ * refresh would lose the form even though the draft behind it survived. This is
+ * what fills that gap.
+ *
+ * In localStorage rather than sessionStorage because the draft handle beside it
+ * is, and a handle that outlives the tab pointing at a form that does not is the
+ * worst of both. It holds company and contact details, so it is cleared
+ * whenever a new signup starts rather than left to accumulate.
+ */
+const FORM_KEY = "tenantSignup.form";
+
+export const getFormDraft = <T>(): T | null => {
+  try {
+    const raw = window.localStorage.getItem(FORM_KEY);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    // Unreadable or not JSON — a stale shape from an older build included.
+    return null;
+  }
+};
+
+export const setFormDraft = (value: unknown): void => {
+  try {
+    window.localStorage.setItem(FORM_KEY, JSON.stringify(value));
+  } catch {
+    /* Storage full or unavailable — the wizard still works within a page life. */
+  }
+};
+
+export const clearFormDraft = (): void => {
+  try {
+    window.localStorage.removeItem(FORM_KEY);
+  } catch {
+    /* ignore */
+  }
+};
+
 export const getSignupId = (): string | null => read(KEYS.signupId);
 export const setSignupId = (id: string): void => write(KEYS.signupId, id);
 
@@ -171,6 +212,7 @@ export const resetIdempotencyKey = (): string => {
 /** Clears everything — used when a signup reaches a terminal dead end. */
 export const clearTenantSignupSession = (): void => {
   clearDraftId();
+  clearFormDraft();
   Object.values(KEYS).forEach(remove);
 };
 
