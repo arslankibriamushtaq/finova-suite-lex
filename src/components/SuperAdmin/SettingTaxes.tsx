@@ -53,11 +53,13 @@ const getInitialValues = (productData) => {
             value: slab.value,
           })) || [],
       };
-    } else {
-        `⚠️ Unmatched fee type found: `,
-        item.productApplicationTaxes
-      );
     }
+    // An else branch here logged unmatched fee types. The logging call was
+    // removed but its arguments and closing parenthesis were left behind,
+    // which made this file unparseable — so the dev server refused to serve
+    // it, and TypeScript stopped at the syntax phase for the WHOLE project,
+    // reporting no type errors anywhere. Dropping the orphaned statement is
+    // what the removal should have done.
   });
 
   return values;
