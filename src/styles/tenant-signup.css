@@ -87,15 +87,6 @@
   letter-spacing: -0.01em;
 }
 
-/* A package price. Tabular figures so the five cards' prices line up. */
-.tenant-signup .ts-price {
-  font-size: 1.75rem;
-  font-weight: 680;
-  line-height: 1.1;
-  letter-spacing: -0.025em;
-  font-variant-numeric: tabular-nums;
-}
-
 /* Every other number — quote lines, totals, the amount on the payment screen.
    Tabular figures are the whole point: a column of prices that does not align
    reads as sloppy on the one screen where trust matters most. */
@@ -250,38 +241,6 @@
     0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent),
     0 12px 32px -18px color-mix(in srgb, var(--primary) 45%, transparent),
     0 24px 60px -40px color-mix(in srgb, var(--foreground) 30%, transparent);
-}
-
-/* A selectable package. The whole card is the hit target, so it needs its own
-   hover and selected states rather than relying on a checkbox's. */
-.tenant-signup .ts-package {
-  background-color: var(--surface-card);
-  border: 1px solid var(--surface-border);
-  transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease,
-    transform 120ms ease;
-}
-
-.tenant-signup .ts-package:hover {
-  border-color: color-mix(in srgb, var(--primary) 40%, var(--surface-border));
-  transform: translateY(-1px);
-}
-
-.tenant-signup .ts-package[data-selected="true"] {
-  border-color: var(--primary);
-  box-shadow:
-    0 0 0 1px var(--primary),
-    0 14px 34px -22px color-mix(in srgb, var(--primary) 65%, transparent);
-}
-
-/* The "everything" tier reads as the top of the ladder, not a sixth peer. */
-.tenant-signup .ts-package[data-bundle="true"] {
-  background-image: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--primary) 7%, transparent),
-    transparent 55%
-  );
 }
 
 /* --- Prose ----------------------------------------------------------- */
@@ -624,69 +583,13 @@
 
 /* --- Package cards --------------------------------------------------- */
 
-/* Preflight is off, so a bare <button> has no focus ring of its own and the
-   whole-card hit target would be invisible to a keyboard. */
-.tenant-signup .ts-package:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Selected reads at a glance from across the card, not just from the pill at
-   the bottom: the surface itself takes a brand tint. */
-.tenant-signup .ts-package[data-selected="true"] {
-  background-image: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--primary) 8%, transparent),
-    transparent 60%
-  );
-}
-
-/* The bundle keeps its own gradient when selected — steeper, so the top tier
-   still reads as the top tier. */
-.tenant-signup .ts-package[data-bundle="true"][data-selected="true"] {
-  background-image: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--primary) 13%, transparent),
-    transparent 62%
-  );
-}
-
-.tenant-signup .ts-package:active {
-  transform: translateY(0);
-}
-
 /* --- Motion ---------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .tenant-signup .ts-package,
-  .tenant-signup .ts-package:hover {
-    transition: none;
-    transform: none;
-  }
-}
 
 /* --- Wrapping inside button-shaped surfaces --------------------------- */
 
 /* overrides.css carries a deliberate safety net:
  *
  *     button, .btn, .ant-btn { white-space: nowrap; }
- *
- * so a translated label never clips inside a control. That is right for a
- * control and wrong for a *surface* — and this flow has two buttons that hold
- * prose rather than a label: the package card (the whole card is the hit
- * target) and the full-width primary action. Under the global rule the
- * package description ran out of the card on one line and was cut off.
- *
- * `white-space` inherits, so setting it on the card is enough for the text
- * inside; `overflow-wrap` is the belt-and-braces for a long unbroken token
- * such as a URL or an Arabic compound. Element + class is (0,2,0) and beats
- * the bare `button` selector (0,0,1) whichever file lands last.
- */
-.tenant-signup .ts-package,
-.tenant-signup .ts-submit {
-  white-space: normal;
-  overflow-wrap: break-word;
-}
 
 /* --- Responsive display, without Tailwind's `hidden` ------------------ */
 
@@ -707,70 +610,6 @@
 }
 
 /* --- Package card, continued ----------------------------------------- */
-
-/* Border alone left the cards looking like table cells on a tinted page.
-   A real (small) shadow makes them read as things you can pick up. */
-.tenant-signup .ts-package {
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent);
-}
-
-.tenant-signup .ts-package:hover {
-  box-shadow:
-    0 2px 4px color-mix(in srgb, var(--foreground) 6%, transparent),
-    0 14px 30px -20px color-mix(in srgb, var(--primary) 40%, transparent);
-}
-
-/* The pick affordance. It was a grey pill, which reads as a disabled control
-   on the one element the whole screen is asking you to click — so unselected
-   is now an outlined action in brand colour, and selected is the filled
-   confirmation of it. */
-.tenant-signup .ts-pick {
-  /* Full width and centred: it is the card's call to action, and a row of
-     cards reads far cleaner with the actions on one baseline than with a
-     pill floating beside the savings badge. */
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.5625rem 0.875rem;
-  border-radius: 0.5rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--primary);
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    color 120ms ease;
-}
-
-.tenant-signup .ts-package:hover .ts-pick {
-  background: color-mix(in srgb, var(--primary) 8%, transparent);
-  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
-}
-
-.tenant-signup .ts-pick[data-selected="true"],
-.tenant-signup .ts-package:hover .ts-pick[data-selected="true"] {
-  color: var(--primary-foreground);
-  background: var(--primary);
-  border-color: var(--primary);
-}
-
-/* The annual saving is a selling point, so it gets a pill rather than a line
-   of coloured text that reads as a validation error on a red theme. */
-.tenant-signup .ts-save {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3125rem;
-  padding: 0.1875rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
-}
 
 /* --- Summary rail ---------------------------------------------------- */
 
@@ -1070,14 +909,6 @@
   }
 }
 
-/* Marketing surfaces want a real corner for the same reason the switch does:
-   `rounded-2xl` resolves to 2px under the app's radius tokens, which left the
-   pricing cards and every step card looking like table cells. */
-.tenant-signup .ts-card,
-.tenant-signup .ts-package {
-  border-radius: 0.875rem;
-}
-
 /* The language switcher is the same control as the cycle switch, so it wears
    the same clothes one size down. */
 .tenant-signup .ts-cycle--sm {
@@ -1301,4 +1132,511 @@
   accent-color: var(--primary);
   flex: 0 0 auto;
   cursor: pointer;
+}
+
+/* ==========================================================================
+   The finish screen
+   ========================================================================== */
+
+.tenant-signup .ts-finish {
+  max-width: 34rem;
+  margin-inline: auto;
+  padding-block: 3rem 2rem;
+  text-align: center;
+}
+
+/* The tick is drawn from two elements so each can be timed separately: the ring
+   expands, and only once it has settled does the tick arrive. One element doing
+   both would have to share a single easing, and the tick would appear while the
+   ring was still moving — which reads as a glitch rather than a confirmation. */
+.tenant-signup .ts-finish__mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--ts-done);
+  color: #ffffff;
+  animation: ts-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* A halo that expands once and fades — a single pulse, not a loop. A finished
+   thing that keeps pulsing looks like it is still working. */
+.tenant-signup .ts-finish__mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--ts-done);
+  animation: ts-halo 900ms 260ms ease-out both;
+}
+
+.tenant-signup .ts-finish__mark svg {
+  width: 40px;
+  height: 40px;
+  stroke-width: 3;
+  animation: ts-tick 320ms 280ms ease-out both;
+}
+
+@keyframes ts-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ts-tick {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ts-halo {
+  from {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+.tenant-signup .ts-finish__title {
+  margin: 1.75rem 0 0;
+  text-align: center;
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.tenant-signup .ts-finish__body {
+  margin: 0.875rem auto 0;
+  max-width: 30rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+.tenant-signup .ts-finish__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 2.5rem;
+  margin: 1.75rem 0 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--foreground) 3%, var(--surface-card));
+}
+
+.tenant-signup .ts-finish__meta dt {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tenant-signup .ts-finish__meta dd {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  word-break: break-all;
+  color: var(--foreground);
+}
+
+.tenant-signup .ts-finish__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 13rem;
+  height: 2.75rem;
+  margin-top: 1.75rem;
+  padding-inline: 1.5rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background 0.16s ease;
+}
+
+.tenant-signup .ts-finish__cta:hover {
+  background: var(--brand-600);
+  color: #ffffff;
+}
+
+.tenant-signup .ts-finish__note {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* ==========================================================================
+   The verification code
+   ========================================================================== */
+
+/* Centred in a panel of its own. The code is transcribed digit by digit from
+   another screen, and a bare field in a form reads as one more thing to fill in
+   rather than the single thing this step is waiting for. */
+.tenant-signup .ts-verify {
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: 1.75rem 1.5rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--foreground) 2.5%, var(--surface-card));
+  text-align: center;
+}
+
+.tenant-signup .ts-verify__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.tenant-signup .ts-verify__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tenant-signup .ts-verify__sub {
+  margin: 0 0 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: var(--muted-foreground);
+}
+
+.tenant-signup .ts-verify__sub strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* Monospace, so six digits sit on an even rhythm and a transposition is
+   visible. Tracking wide enough to read as separate characters without the
+   markup cost of six inputs — which would also break paste and autofill. */
+.tenant-signup .ts-verify input {
+  width: 100%;
+  height: 3.25rem !important;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 1.5rem !important;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  /* The tracking is applied after each glyph, including the last, so the run
+     sits visibly off-centre without pulling it back. */
+  text-indent: 0.5em;
+  text-align: center;
+}
+
+.tenant-signup .ts-verify__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.875rem;
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   Package cards
+   ========================================================================== */
+
+/* A <button>, so every child that would normally be a block has to say so:
+   a button's contents are laid out as inline by default, and the browser also
+   refuses to make the button itself a grid container in some engines. Spans
+   throughout for the same reason — a <div> inside a <button> is invalid. */
+.tenant-signup .ts-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* A floor, not a fixed height: cards still stretch to the tallest in the row,
+     but a short description no longer leaves a card that reads as unfinished
+     next to the action pinned under it. */
+  min-height: 27rem;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: var(--surface-card);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.tenant-signup .ts-plan:hover {
+  box-shadow: 0 18px 38px -30px rgba(0, 0, 0, 0.5);
+}
+
+/* Selection has to be legible from across a grid of five, so it moves the
+   card's whole outline rather than only the pill at its foot. */
+.tenant-signup .ts-plan[data-selected="true"] {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.tenant-signup .ts-plan:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* --- The red head -------------------------------------------------------- */
+
+.tenant-signup .ts-plan__head {
+  position: relative;
+  display: block;
+  padding: 1.5rem 1.25rem 2.25rem;
+  background: var(--primary);
+  color: #ffffff;
+  text-align: center;
+}
+
+.tenant-signup .ts-plan__name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.tenant-signup .ts-plan__cycle {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tenant-signup .ts-plan__price {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Sits on the seam: red against red above the line, a red disc against white
+   below it. */
+.tenant-signup .ts-plan__mark {
+  position: absolute;
+  bottom: -1.5rem;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.tenant-signup .ts-plan__mark svg {
+  width: 21px;
+  height: 21px;
+}
+
+/* --- The ribbon ---------------------------------------------------------- */
+
+.tenant-signup .ts-plan__ribbon {
+  position: absolute;
+  z-index: 2;
+  top: 1.5rem;
+  inset-inline-start: -3.25rem;
+  width: 12rem;
+  padding-block: 4px;
+  background: var(--brand-800);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+  /* Clipped by the card's own overflow, so the bar's ends never show. */
+  transform: rotate(-45deg);
+}
+
+[dir="rtl"] .tenant-signup .ts-plan__ribbon {
+  transform: rotate(45deg);
+}
+
+/* --- The white body ------------------------------------------------------ */
+
+.tenant-signup .ts-plan__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2.25rem 1.25rem 1.25rem;
+}
+
+.tenant-signup .ts-plan__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tenant-signup .ts-plan__list > span {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.tenant-signup .ts-plan__list svg {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  margin-top: 3px;
+  color: var(--primary);
+}
+
+.tenant-signup .ts-plan__save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Bottom-aligned, so cards whose descriptions run to different lengths still
+   line their actions up. */
+.tenant-signup .ts-plan__pick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  align-self: center;
+  margin-top: auto;
+  min-width: 11rem;
+  height: 2.375rem;
+  padding-inline: 1.25rem;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--primary);
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+}
+
+.tenant-signup .ts-plan__pick[data-selected="true"] {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.tenant-signup .ts-plan:hover .ts-plan__pick:not([data-selected="true"]) {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+/* ==========================================================================
+   Package details table
+   ========================================================================== */
+
+.tenant-signup .ts-packages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.tenant-signup .ts-packages__title {
+  margin: 0;
+  /* custom.scss centres every bare h2 from outside Tailwind's layers. */
+  text-align: start;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+/* The table scrolls inside its own box rather than widening the page. Six
+   columns of money do not fit a phone, and a horizontally scrolling document is
+   worse than a horizontally scrolling table. */
+.tenant-signup .ts-packages__scroll {
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+.tenant-signup .ts-packages__table {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.tenant-signup .ts-packages__table thead th {
+  padding: 0.75rem 1rem;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.tenant-signup .ts-packages__table tbody td {
+  padding: 0.8125rem 1rem;
+  border-block-end: 1px solid var(--surface-border);
+  color: var(--foreground);
+  vertical-align: top;
+}
+
+.tenant-signup .ts-packages__table tbody tr:nth-child(odd) td {
+  background: color-mix(in srgb, var(--foreground) 2.5%, var(--surface-card));
+}
+
+/* The description is the only column that wraps; the rest are short enough to
+   stay on one line, and letting them wrap makes the row heights ragged. */
+.tenant-signup .ts-packages__detail {
+  min-width: 16rem;
+  color: var(--muted-foreground);
+}
+
+.tenant-signup .ts-packages__empty td {
+  color: var(--muted-foreground);
+}
+
+.tenant-signup .ts-packages__table tfoot th,
+.tenant-signup .ts-packages__table tfoot td {
+  padding: 0.8125rem 1rem;
+  border-block-start: 2px solid var(--surface-border);
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tenant-signup .ts-packages__table tfoot th {
+  text-align: start;
 }

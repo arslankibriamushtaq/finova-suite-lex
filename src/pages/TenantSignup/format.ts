@@ -58,3 +58,28 @@ export const formatVatRate = (rate: number): string => {
   if (!Number.isFinite(rate)) return "";
   return String(Math.round(rate * 10000) / 100);
 };
+
+/**
+ * A package description, as the bullet list the design draws.
+ *
+ * The catalogue gives one sentence per package and a moduleCodes array. The
+ * codes are identity-service internals — DASHBOARD, BLOCK_CODE — and the
+ * contract says as much: show the description, not the codes. But the design
+ * wants a list, and the description already IS a list, written with commas.
+ *
+ * So this splits what the server sent rather than inventing anything: each
+ * clause becomes a line, the trailing full stop goes, and a sentence with no
+ * commas simply comes back as one item.
+ */
+export const descriptionPoints = (description: string | null | undefined): string[] => {
+  if (!description) return [];
+
+  return description
+    .replace(/\.\s*$/, "")
+    .split(/,\s*/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    // The last clause usually reads "x and y"; leaving the conjunction in keeps
+    // it a sentence fragment rather than turning it into a false pair.
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1));
+};

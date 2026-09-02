@@ -1,4 +1,4 @@
-import { Check, Loader2, Plus, Sparkles, TrendingDown } from "lucide-react";
+import { Boxes, Check, Loader2, Plus, TrendingDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -14,11 +14,9 @@ import {
 import { getCurrentLanguage } from "../../../utils/acceptLanguage";
 import { clearTenantSignupSession } from "../../../utils/tenantSignupSession";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { cn } from "../../../lib/utils";
-import QuoteLines from "../components/QuoteLines";
 import StatusMessage from "../components/StatusMessage";
 import SubmitButton from "../components/SubmitButton";
-import { formatMoney } from "../format";
+import { descriptionPoints, formatMoney } from "../format";
 import { TENANT_SIGNUP_ROUTES } from "../navigation";
 import { useTenantSignup } from "../TenantSignupContext";
 
@@ -174,22 +172,26 @@ export default function PricingStep() {
     );
   };
 
+  /**
+   * The product name for a quote line.
+   *
+   * A quote line carries a description, not a name, and CORE is not in the
+   * catalogue at all — it is appended server-side and never sold as a card. So
+   * this falls back to the line's own code rather than rendering nothing.
+   */
+  const nameFor = (code: string): string => {
+    const found = packages?.find((pkg) => pkg.packageCode === code);
+    if (!found) return code;
+    return isArabic ? found.nameAr : found.nameEn;
+  };
+
   const onContinue = () => {
     setSelection(packageCodes, billingCycle);
     navigate(TENANT_SIGNUP_ROUTES.details);
   };
 
   return (
-    <div className="space-y-9">
-      <header className="mx-auto max-w-2xl text-center">
-        <span className="ts-eyebrow">
-          <Sparkles className="size-3.5" aria-hidden="true" />
-          {t("pricing.eyebrow")}
-        </span>
-        <h1 className="ts-display mt-4">{t("pricing.headline")}</h1>
-        <p className="mt-3.5 text-sm leading-relaxed text-muted-foreground">{t("pricing.sub")}</p>
-      </header>
-
+    <div className="space-y-6">
       <div className="flex justify-center">
         <CycleToggle value={billingCycle} onChange={(cycle) => setSelection(packageCodes, cycle)} />
       </div>
@@ -205,62 +207,127 @@ export default function PricingStep() {
         </StatusMessage>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="grid gap-[1rem] sm:grid-cols-2">
-          {packages
-            ? packages.map((pkg) => (
-                <PackageCard
-                  key={pkg.packageCode}
-                  pkg={pkg}
-                  isArabic={isArabic}
-                  billingCycle={billingCycle}
-                  selected={packageCodes.includes(pkg.packageCode)}
-                  onToggle={() => onTogglePackage(pkg)}
-                />
-              ))
-            : [0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="ts-skeleton h-56" />)}
+      <div className="grid gap-[1rem] sm:grid-cols-2 xl:grid-cols-3">
+        {packages
+          ? packages.map((pkg) => (
+              <PackageCard
+                key={pkg.packageCode}
+                pkg={pkg}
+                isArabic={isArabic}
+                billingCycle={billingCycle}
+                selected={packageCodes.includes(pkg.packageCode)}
+                onToggle={() => onTogglePackage(pkg)}
+              />
+            ))
+          : [0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="ts-skeleton h-56" />)}
+      </div>
+
+      {/* --- What is in the basket ------------------------------------------
+          Every figure here is the server's. VAT is calculated per line and
+          rounded before summing, because ZATCA rejects an invoice whose printed
+          lines do not add up to its total — so a browser applying 15% to the
+          subtotal would disagree with the invoice by a halala on some
+          selections. Nothing in this table is computed locally. */}
+      <section className="ts-packages">
+        <h2 className="ts-packages__title">{t("pricing.tableTitle")}</h2>
+
+        <div className="ts-packages__scroll">
+          <table className="ts-packages__table">
+            <thead>
+              <tr>
+                <th scope="col">{t("pricing.col.product")}</th>
+                <th scope="col">{t("pricing.col.details")}</th>
+                <th scope="col">{t("pricing.col.cycle")}</th>
+                <th scope="col" className="text-end">
+                  {t("pricing.col.price")}
+                </th>
+                <th scope="col" className="text-end">
+                  {t("pricing.col.taxes")}
+                </th>
+                <th scope="col" className="text-end">
+                  {t("pricing.col.total")}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {quote && !quoting && packageCodes.length > 0 ? (
+                // Rendered in the order the server sent them: CORE is appended
+                // last at zero, and it is shown rather than filtered because
+                // the buyer should see exactly what the invoice will say.
+                quote.lines.map((line) => (
+                  <tr key={line.packageCode}>
+                    <td className="font-semibold">{nameFor(line.packageCode)}</td>
+                    <td className="ts-packages__detail">
+                      {isArabic ? line.descriptionAr : line.descriptionEn}
+                    </td>
+                    <td>{t(`pricing.cycle.${quote.billingCycle}`)}</td>
+                    <td className="ts-num text-end">
+                      {formatMoney(line.lineSubtotal, quote.currency)}
+                    </td>
+                    <td className="ts-num text-end">
+                      {formatMoney(line.lineVatAmount, quote.currency)}
+                    </td>
+                    <td className="ts-num text-end font-semibold">
+                      {formatMoney(line.lineTotal, quote.currency)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="ts-packages__empty">
+                  {/* Dashes rather than a message: the row is a placeholder for
+                      the shape of what is coming, and the buyer is already
+                      looking at the cards that fill it. */}
+                  <td>—</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td className="text-end">—</td>
+                  <td className="text-end">—</td>
+                  <td className="text-end">—</td>
+                </tr>
+              )}
+            </tbody>
+
+            {quote && !quoting && packageCodes.length > 0 && (
+              <tfoot>
+                <tr>
+                  <th scope="row" colSpan={3}>
+                    {t("quote.total")}
+                  </th>
+                  <td className="ts-num text-end">{formatMoney(quote.subtotal, quote.currency)}</td>
+                  <td className="ts-num text-end">
+                    {formatMoney(quote.vatAmount, quote.currency)}
+                  </td>
+                  <td className="ts-num text-end">
+                    {formatMoney(quote.totalAmount, quote.currency)}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
+          </table>
         </div>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="ts-card space-y-4 rounded-2xl p-[1.25rem]">
-            <div className="flex items-center justify-between gap-[0.75rem]">
-              <h2 className="ts-card-title">{t("pricing.summaryTitle")}</h2>
-              {packageCodes.length > 0 ? (
-                <span className="ts-xs rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] px-2 py-0.5 font-semibold text-[var(--primary)]">
-                  {packageCodes.length}
-                </span>
-              ) : null}
-            </div>
+        {quoteError ? <StatusMessage>{quoteError}</StatusMessage> : null}
 
-            <hr className="ts-divider" />
+        {quoting && packageCodes.length > 0 ? (
+          <p role="status" className="ts-xs flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+            {t("quote.pricing")}
+          </p>
+        ) : null}
 
-            {packageCodes.length === 0 ? (
-              <p className="text-[13px] text-muted-foreground">{t("pricing.summaryEmpty")}</p>
-            ) : quoteError ? (
-              <StatusMessage>{quoteError}</StatusMessage>
-            ) : quote && !quoting ? (
-              <QuoteLines quote={quote} />
-            ) : (
-              <p
-                role="status"
-                className="flex items-center gap-2 text-[13px] text-muted-foreground"
-              >
-                <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
-                {t("quote.pricing")}
-              </p>
-            )}
+        <p className="ts-xs text-muted-foreground">{t("pricing.coreIncluded")}</p>
+      </section>
 
-            <SubmitButton
-              type="button"
-              onClick={onContinue}
-              disabled={packageCodes.length === 0 || !quote || quoting}
-            >
-              {t("pricing.continue")}
-            </SubmitButton>
-
-            <p className="ts-xs text-muted-foreground">{t("pricing.coreIncluded")}</p>
-          </div>
-        </aside>
+      <div className="flex justify-end">
+        <SubmitButton
+          type="button"
+          onClick={onContinue}
+          disabled={packageCodes.length === 0 || !quote || quoting}
+          className="w-full sm:w-auto sm:min-w-40"
+        >
+          {t("pricing.continue")}
+        </SubmitButton>
       </div>
     </div>
   );
@@ -316,6 +383,8 @@ function PackageCard({
   // them — hardcoding it would go stale the moment pricing moves.
   const saving = pkg.monthlyPrice * 12 - pkg.annualPrice;
 
+  const points = descriptionPoints(isArabic ? pkg.descriptionAr : pkg.descriptionEn);
+
   return (
     <button
       type="button"
@@ -323,77 +392,61 @@ function PackageCard({
       aria-pressed={selected}
       data-selected={selected}
       data-bundle={pkg.bundle}
-      className={cn(
-        // The whole card is the hit target, so it is a real <button>: keyboard
-        // and screen-reader behaviour come free, and there is no invisible
-        // checkbox to fall out of sync with it.
-        "ts-package relative flex h-full flex-col rounded-2xl p-[1.25rem] text-start",
-        pkg.bundle && "sm:col-span-2"
-      )}
+      // The whole card is the hit target, so it is a real <button>: keyboard
+      // and screen-reader behaviour come free, and there is no invisible
+      // checkbox to fall out of sync with it.
+      className="ts-plan"
     >
-      {/* Selection has to be legible from the top of the card as well as from
-          the pill at its foot — a grid of five is scanned, not read. */}
-      {selected ? (
-        <span
-          aria-hidden="true"
-          className="absolute end-3 top-3 flex size-5 items-center justify-center rounded-full bg-[var(--primary)] text-[var(--primary-foreground)]"
-        >
-          <Check className="size-3" />
+      {/* The everything-tier is the recommended one by construction — it is the
+          only package that contains the others — so the ribbon follows the
+          catalogue rather than a hardcoded position in the grid. */}
+      {pkg.bundle && <span className="ts-plan__ribbon">{t("pricing.bundleTag")}</span>}
+
+      <span className="ts-plan__head">
+        <span className="ts-plan__name">{isArabic ? pkg.nameAr : pkg.nameEn}</span>
+        <span className="ts-plan__cycle">
+          {annual ? t("pricing.perYear") : t("pricing.perMonth")}
         </span>
-      ) : null}
+        <span className="ts-plan__price ts-num">{formatMoney(price, pkg.currency)}</span>
 
-      <div className="mb-3 flex items-start justify-between gap-[0.75rem]">
-        <h3 className={cn("ts-card-title min-w-0", selected && "pe-7")}>
-          {isArabic ? pkg.nameAr : pkg.nameEn}
-        </h3>
+        <span className="ts-plan__mark" aria-hidden="true">
+          <Boxes />
+        </span>
+      </span>
 
-        {pkg.bundle ? (
-          <span
-            className={cn(
-              "ts-xs inline-flex shrink-0 items-center gap-1 rounded-full bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] px-2 py-0.5 font-semibold text-[var(--primary)]",
-              selected && "me-7"
-            )}
-          >
-            <Sparkles className="size-3" aria-hidden="true" />
-            {t("pricing.bundleTag")}
-          </span>
-        ) : null}
-      </div>
-
-      <p className="ts-xs mb-4 leading-relaxed text-muted-foreground">
-        {isArabic ? pkg.descriptionAr : pkg.descriptionEn}
-      </p>
-
-      <div className="mt-auto space-y-3">
-        <div className="flex items-baseline gap-1.5">
-          <span className="ts-price">{formatMoney(price, pkg.currency)}</span>
-          <span className="ts-xs text-muted-foreground">
-            {annual ? t("pricing.perYear") : t("pricing.perMonth")}
-          </span>
-        </div>
-
-        {/* Its own block, so the badge keeps its line instead of flowing up
-            beside the action below it. */}
-        {annual && saving > 0 ? (
-          <div>
-            <span className="ts-save">
-              <TrendingDown className="size-3.5" aria-hidden="true" />
-              {t("pricing.save", {
-                amount: formatMoney(saving, pkg.currency),
-              })}
+      <span className="ts-plan__body">
+        {/* The catalogue's own sentence, split on its commas. The moduleCodes
+            array would be a truer list but it is identity-service internals —
+            DASHBOARD, BLOCK_CODE — and the contract says to show the
+            description instead. */}
+        <span className="ts-plan__list">
+          {points.map((point) => (
+            <span key={point}>
+              <Check aria-hidden="true" />
+              {point}
             </span>
-          </div>
+          ))}
+        </span>
+
+        {annual && saving > 0 ? (
+          <span className="ts-plan__save">
+            <TrendingDown className="size-3.5" aria-hidden="true" />
+            {t("pricing.save", { amount: formatMoney(saving, pkg.currency) })}
+          </span>
         ) : null}
 
-        <span className="ts-pick" data-selected={selected}>
+        {/* Not "Subscribe Now": this card adds to a basket that is priced and
+            paid for two screens later, and a button that says otherwise makes
+            a promise the next click does not keep. */}
+        <span className="ts-plan__pick" data-selected={selected}>
           {selected ? (
-            <Check className="size-3.5" aria-hidden="true" />
+            <Check className="size-4" aria-hidden="true" />
           ) : (
-            <Plus className="size-3.5" aria-hidden="true" />
+            <Plus className="size-4" aria-hidden="true" />
           )}
           {selected ? t("pricing.selected") : t("pricing.select")}
         </span>
-      </div>
+      </span>
     </button>
   );
 }

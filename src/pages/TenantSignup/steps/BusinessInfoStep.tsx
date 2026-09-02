@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
+import { MailCheck, ShieldCheck } from "lucide-react";
 
 import { Input } from "../../../components/ui/input";
 import {
@@ -70,8 +70,6 @@ const CODE_PATTERN = /^\d{6}$/;
 /** The gateway's own cooldown, mirrored so the button cannot be pressed into it. */
 const RESEND_COOLDOWN_SECONDS = 60;
 
-type Part = "company" | "verify" | "details" | "you";
-
 type FormState = {
   companyName: string;
   companyEmail: string;
@@ -133,9 +131,12 @@ export default function BusinessInfoStep() {
   const { t } = useTranslation("tenantSignup");
   const navigate = useNavigate();
 
-  const { packageCodes, billingCycle, acceptSignup } = useTenantSignup();
+  const { packageCodes, billingCycle, acceptSignup, wizardPart, setWizardPart } = useTenantSignup();
 
-  const [part, setPart] = useState<Part>("company");
+  // The part lives in the context so the rail beside this screen can name it;
+  // this alias keeps the rest of the file reading as it did.
+  const part = wizardPart;
+  const setPart = setWizardPart;
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
@@ -219,7 +220,7 @@ export default function BusinessInfoStep() {
         // handle that no longer opens anything is worse than none.
         clearDraftId();
       });
-  }, [billingCycle, packageCodes]);
+  }, [billingCycle, packageCodes, setPart]);
 
   /** The resend cooldown, mirrored from the gateway's own throttle. */
   useEffect(() => {
@@ -567,11 +568,20 @@ export default function BusinessInfoStep() {
           </h2>
 
           {part === "verify" ? (
-            <div className="max-w-md">
-              <p className="ts-xs mb-3.5 text-muted-foreground">
-                {challenge
-                  ? t("wizard.verify.sub", { email: challenge.maskedEmail || form.companyEmail })
-                  : t("wizard.verify.send")}
+            <div className="ts-verify">
+              <span className="ts-verify__icon" aria-hidden="true">
+                <MailCheck />
+              </span>
+
+              <p className="ts-verify__sub">
+                {challenge ? (
+                  <>
+                    {t("wizard.verify.sub", { email: "" }).replace(/\s*\.$/, "")}{" "}
+                    <strong dir="ltr">{challenge.maskedEmail || form.companyEmail}</strong>
+                  </>
+                ) : (
+                  t("wizard.verify.send")
+                )}
               </p>
 
               <FormRow id="code" label={t("wizard.verify.code")} required error={errors.code}>
@@ -581,7 +591,7 @@ export default function BusinessInfoStep() {
                   dir="ltr"
                   maxLength={6}
                   autoComplete="one-time-code"
-                  className="ts-otp"
+                  placeholder="000000"
                   disabled={!challenge}
                   value={code}
                   aria-invalid={Boolean(errors.code)}
@@ -594,7 +604,7 @@ export default function BusinessInfoStep() {
 
               {/* Driven off the gateway's own counters, so the button is never
                   pressable into a throttle it will be refused by. */}
-              <div className="mt-3 flex flex-wrap items-center gap-3">
+              <div className="ts-verify__foot">
                 <button
                   type="button"
                   className="ts-link ts-xs"

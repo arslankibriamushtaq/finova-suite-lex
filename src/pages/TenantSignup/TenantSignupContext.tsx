@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 import type { BillingCycle, Signup } from "../../redux/apis/apisTenantProvisioning";
 import {
@@ -32,11 +25,24 @@ import {
  * so a refresh anywhere in the flow does not strand someone who has paid.
  */
 
+/** Which part of the details wizard is on screen — the rail names them all. */
+export type WizardPart = "company" | "verify" | "details" | "you";
+
 interface TenantSignupContextType {
   packageCodes: string[];
   billingCycle: BillingCycle;
   setSelection: (packageCodes: string[], billingCycle: BillingCycle) => void;
   togglePackage: (code: string) => void;
+
+  /**
+   * The wizard's current part, lifted out of the step so the rail can name it.
+   *
+   * The rail lists the four parts as steps of their own, and it is rendered by
+   * the layout — a sibling of the screen that owns the state, not its parent.
+   * This is the smallest thing that can be shared to join them up.
+   */
+  wizardPart: WizardPart;
+  setWizardPart: (part: WizardPart) => void;
 
   /** The frozen quote — the amount that WILL be charged. Never recomputed. */
   summary: StoredSignupSummary | null;
@@ -44,32 +50,25 @@ interface TenantSignupContextType {
   acceptSignup: (signup: Signup) => void;
 }
 
-const TenantSignupContext = createContext<TenantSignupContextType | undefined>(
-  undefined
-);
+const TenantSignupContext = createContext<TenantSignupContextType | undefined>(undefined);
 
 export function TenantSignupProvider({ children }: { children: ReactNode }) {
   const [selection, setSelectionState] = useState(() => {
     const stored = getSelection();
     return {
       packageCodes: stored?.packageCodes ?? [],
-      billingCycle: (stored?.billingCycle === "ANNUAL"
-        ? "ANNUAL"
-        : "MONTHLY") as BillingCycle,
+      billingCycle: (stored?.billingCycle === "ANNUAL" ? "ANNUAL" : "MONTHLY") as BillingCycle,
     };
   });
 
-  const [summary, setSummaryState] = useState<StoredSignupSummary | null>(() =>
-    getSummary()
-  );
+  const [wizardPart, setWizardPart] = useState<WizardPart>("company");
 
-  const setSelection = useCallback(
-    (packageCodes: string[], billingCycle: BillingCycle) => {
-      setSelectionState({ packageCodes, billingCycle });
-      persistSelection({ packageCodes, billingCycle });
-    },
-    []
-  );
+  const [summary, setSummaryState] = useState<StoredSignupSummary | null>(() => getSummary());
+
+  const setSelection = useCallback((packageCodes: string[], billingCycle: BillingCycle) => {
+    setSelectionState({ packageCodes, billingCycle });
+    persistSelection({ packageCodes, billingCycle });
+  }, []);
 
   const togglePackage = useCallback((code: string) => {
     setSelectionState((current) => {
@@ -109,17 +108,15 @@ export function TenantSignupProvider({ children }: { children: ReactNode }) {
       billingCycle: selection.billingCycle,
       setSelection,
       togglePackage,
+      wizardPart,
+      setWizardPart,
       summary,
       acceptSignup,
     }),
-    [selection, setSelection, togglePackage, summary, acceptSignup]
+    [selection, setSelection, togglePackage, wizardPart, summary, acceptSignup]
   );
 
-  return (
-    <TenantSignupContext.Provider value={value}>
-      {children}
-    </TenantSignupContext.Provider>
-  );
+  return <TenantSignupContext.Provider value={value}>{children}</TenantSignupContext.Provider>;
 }
 
 export function useTenantSignup(): TenantSignupContextType {

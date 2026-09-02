@@ -1,4 +1,4 @@
-import { Loader2, MailCheck } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -33,11 +33,7 @@ const POLL_CEILING_MS = 90_000;
  * without it the poll would stop on a status that is neither done nor failed,
  * and the spinner would never resolve.
  */
-const IN_FLIGHT: SignupStatus[] = [
-  "PAYMENT_IN_PROGRESS",
-  "PAID",
-  "PROVISIONING",
-];
+const IN_FLIGHT: SignupStatus[] = ["PAYMENT_IN_PROGRESS", "PAID", "PROVISIONING"];
 const TERMINAL_DEAD_END: SignupStatus[] = ["EXPIRED", "CANCELLED"];
 
 export default function ProvisioningStep() {
@@ -49,12 +45,11 @@ export default function ProvisioningStep() {
   // As on the return page, a `ref` on the URL wins over session storage: the
   // gateway's hand-back carries one, and it is the only reference a buyer whose
   // storage was never written has.
-  const [referenceNo] = useState(
-    () => searchParams.get("ref") || getReferenceNo()
-  );
+  const [referenceNo] = useState(() => searchParams.get("ref") || getReferenceNo());
   const [summary] = useState(getSummary);
 
   const [status, setStatus] = useState<SignupStatus | null>(null);
+  const [tenantId, setTenantId] = useState<string | null>(null);
   const [failureReason, setFailureReason] = useState<string | null>(null);
   const [stalled, setStalled] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +71,7 @@ export default function ProvisioningStep() {
         if (!live) return;
 
         setStatus(signup.status);
+        setTenantId(signup.tenantId ?? null);
         setFailureReason(signup.failureReason);
         setError(null);
 
@@ -116,24 +112,43 @@ export default function ProvisioningStep() {
   const reference = t("prov.reference", { ref: referenceNo });
 
   // --- Done ---------------------------------------------------------------
-  // COMPLETED does NOT mean they can sign in: the tenant stays inactive until
-  // the activation link is redeemed. So there is no "go to login" button here
-  // — the inbox instruction is the loudest thing on the screen.
+  // The activation link is still what turns the account on, so the inbox
+  // instruction stays the loudest thing here and the sign-in button sits under
+  // it as the secondary action.
   if (status === "COMPLETED") {
     return (
-      <StepCard title={t("prov.done.title")}>
-        <div className="space-y-5 text-center">
-          <MailCheck
-            className="mx-auto size-10 text-[var(--primary)]"
-            aria-hidden="true"
-          />
-          <p className="text-sm leading-relaxed text-foreground">
-            {t("prov.done.body", { email: summary?.adminEmail ?? "" })}
-          </p>
-          <p className="ts-xs text-muted-foreground">{t("prov.done.note")}</p>
-          <p className="ts-xs ts-num text-muted-foreground">{reference}</p>
-        </div>
-      </StepCard>
+      <div className="ts-finish">
+        {/* Drawn rather than an icon glyph: the ring and the tick are two
+            elements, so each can be timed on its own and the tick can land
+            after the ring has finished expanding. */}
+        <span className="ts-finish__mark" aria-hidden="true">
+          <Check />
+        </span>
+
+        <h1 className="ts-finish__title">{t("prov.done.title")}</h1>
+        <p className="ts-finish__body">
+          {t("prov.done.body", { email: summary?.adminEmail ?? "" })}
+        </p>
+
+        <dl className="ts-finish__meta">
+          <div>
+            <dt>{t("prov.reference.label")}</dt>
+            <dd className="ts-num">{referenceNo}</dd>
+          </div>
+          {tenantId && (
+            <div>
+              <dt>{t("prov.tenantId")}</dt>
+              <dd className="ts-num select-all">{tenantId}</dd>
+            </div>
+          )}
+        </dl>
+
+        <a className="ts-finish__cta" href="/login">
+          {t("prov.done.signIn")}
+        </a>
+
+        <p className="ts-finish__note">{t("prov.done.note")}</p>
+      </div>
     );
   }
 
@@ -142,12 +157,8 @@ export default function ProvisioningStep() {
     return (
       <StepCard title={t("prov.failed.title")}>
         <div className="space-y-4">
-          {failureReason ? (
-            <StatusMessage>{failureReason}</StatusMessage>
-          ) : null}
-          <StatusMessage tone="info">
-            {t("prov.failed.refund", { ref: referenceNo })}
-          </StatusMessage>
+          {failureReason ? <StatusMessage>{failureReason}</StatusMessage> : null}
+          <StatusMessage tone="info">{t("prov.failed.refund", { ref: referenceNo })}</StatusMessage>
         </div>
       </StepCard>
     );
@@ -156,14 +167,8 @@ export default function ProvisioningStep() {
   // --- Dead ends -----------------------------------------------------------
   if (status && TERMINAL_DEAD_END.includes(status)) {
     return (
-      <StepCard
-        title={t("prov.terminal.title")}
-        description={t("prov.terminal.body")}
-      >
-        <SubmitButton
-          type="button"
-          onClick={() => navigate(TENANT_SIGNUP_ROUTES.pricing)}
-        >
+      <StepCard title={t("prov.terminal.title")} description={t("prov.terminal.body")}>
+        <SubmitButton type="button" onClick={() => navigate(TENANT_SIGNUP_ROUTES.pricing)}>
           {t("payment.startOver")}
         </SubmitButton>
       </StepCard>
@@ -174,9 +179,7 @@ export default function ProvisioningStep() {
   if (stalled) {
     return (
       <StepCard title={t("prov.stalled.title")}>
-        <StatusMessage tone="warning">
-          {t("prov.stalled.body", { ref: referenceNo })}
-        </StatusMessage>
+        <StatusMessage tone="warning">{t("prov.stalled.body", { ref: referenceNo })}</StatusMessage>
       </StepCard>
     );
   }
@@ -192,9 +195,7 @@ export default function ProvisioningStep() {
           aria-label={t("prov.title")}
         />
         <p className="ts-xs ts-num text-muted-foreground">{reference}</p>
-        {error ? (
-          <p className="ts-xs text-muted-foreground">{error}</p>
-        ) : null}
+        {error ? <p className="ts-xs text-muted-foreground">{error}</p> : null}
       </div>
     </StepCard>
   );
