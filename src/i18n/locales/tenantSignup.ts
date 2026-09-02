@@ -47,14 +47,17 @@ const tenantSignup: ModuleLocale = {
     "wizard.verify.resendsLeft": "{{count}} resend(s) left",
     "wizard.verify.sent": "A new code is on its way.",
     "wizard.verify.noneLeft": "No resends left. Contact us if the code never arrives.",
-    "wizard.you.hint": "You become this workspace's first administrator. Use your own address — it is what you will sign in with.",
+    "wizard.you.hint":
+      "You become this workspace's first administrator. Use your own address — it is what you will sign in with.",
     "wizard.you.email": "Your sign-in email",
-    "wizard.you.sameAsCompany": "This is the company address. Your sign-in email should be personal — a shared alias cannot log anyone in.",
+    "wizard.you.sameAsCompany":
+      "This is the company address. Your sign-in email should be personal — a shared alias cannot log anyone in.",
     "wizard.terms": "I accept & agree to the Terms and Conditions",
     "wizard.terms.required": "Please accept the terms and conditions to continue.",
     "wizard.resumed": "We picked up the signup you already had for this company email.",
     "wizard.error.code": "Enter the 6-digit code from the email.",
-    "wizard.error.expiredDraft": "This signup is no longer open. Please start again from the pricing page.",
+    "wizard.error.expiredDraft":
+      "This signup is no longer open. Please start again from the pricing page.",
     "prov.reference.label": "Reference",
     "prov.tenantId": "Tenant ID",
     "prov.done.signIn": "Sign in to continue",
@@ -251,7 +254,8 @@ const tenantSignup: ModuleLocale = {
     "wizard.section.verify": "Vérifiez votre e-mail",
     "wizard.section.company": "Détails de l'entreprise",
     "wizard.section.you": "Vos informations",
-    "wizard.verify.sub": "Nous avons envoyé un code à 6 chiffres à {{email}}. Saisissez-le pour continuer.",
+    "wizard.verify.sub":
+      "Nous avons envoyé un code à 6 chiffres à {{email}}. Saisissez-le pour continuer.",
     "wizard.verify.sentTo": "Nous avons envoyé un code à 6 chiffres à",
     "wizard.verify.code": "Code de vérification",
     "wizard.verify.send": "Envoyer le code",
@@ -259,15 +263,19 @@ const tenantSignup: ModuleLocale = {
     "wizard.verify.resendIn": "Renvoyer dans {{seconds}} s",
     "wizard.verify.resendsLeft": "{{count}} renvoi(s) restant(s)",
     "wizard.verify.sent": "Un nouveau code est en route.",
-    "wizard.verify.noneLeft": "Plus de renvois disponibles. Contactez-nous si le code n'arrive pas.",
-    "wizard.you.hint": "Vous devenez le premier administrateur de cet espace. Utilisez votre propre adresse : c'est avec elle que vous vous connecterez.",
+    "wizard.verify.noneLeft":
+      "Plus de renvois disponibles. Contactez-nous si le code n'arrive pas.",
+    "wizard.you.hint":
+      "Vous devenez le premier administrateur de cet espace. Utilisez votre propre adresse : c'est avec elle que vous vous connecterez.",
     "wizard.you.email": "Votre e-mail de connexion",
-    "wizard.you.sameAsCompany": "C'est l'adresse de l'entreprise. Votre e-mail de connexion doit être personnel : un alias partagé ne permet pas de se connecter.",
+    "wizard.you.sameAsCompany":
+      "C'est l'adresse de l'entreprise. Votre e-mail de connexion doit être personnel : un alias partagé ne permet pas de se connecter.",
     "wizard.terms": "J'accepte les conditions générales",
     "wizard.terms.required": "Veuillez accepter les conditions générales pour continuer.",
     "wizard.resumed": "Nous avons repris l'inscription déjà ouverte pour cette adresse.",
     "wizard.error.code": "Saisissez le code à 6 chiffres reçu par e-mail.",
-    "wizard.error.expiredDraft": "Cette inscription n'est plus ouverte. Recommencez depuis la page des tarifs.",
+    "wizard.error.expiredDraft":
+      "Cette inscription n'est plus ouverte. Recommencez depuis la page des tarifs.",
     "prov.reference.label": "Référence",
     "prov.tenantId": "Identifiant du locataire",
     "prov.done.signIn": "Se connecter",
@@ -470,9 +478,11 @@ const tenantSignup: ModuleLocale = {
     "wizard.verify.resendsLeft": "متبقٍ {{count}} إعادة إرسال",
     "wizard.verify.sent": "تم إرسال رمز جديد.",
     "wizard.verify.noneLeft": "لا توجد محاولات إرسال متبقية. تواصل معنا إذا لم يصلك الرمز.",
-    "wizard.you.hint": "ستصبح أول مسؤول لمساحة العمل هذه. استخدم بريدك الشخصي فهو ما ستسجّل الدخول به.",
+    "wizard.you.hint":
+      "ستصبح أول مسؤول لمساحة العمل هذه. استخدم بريدك الشخصي فهو ما ستسجّل الدخول به.",
     "wizard.you.email": "بريد تسجيل الدخول الخاص بك",
-    "wizard.you.sameAsCompany": "هذا هو بريد الشركة. يجب أن يكون بريد الدخول شخصيًا؛ البريد المشترك لا يصلح لتسجيل الدخول.",
+    "wizard.you.sameAsCompany":
+      "هذا هو بريد الشركة. يجب أن يكون بريد الدخول شخصيًا؛ البريد المشترك لا يصلح لتسجيل الدخول.",
     "wizard.terms": "أوافق على الشروط والأحكام",
     "wizard.terms.required": "يرجى الموافقة على الشروط والأحكام للمتابعة.",
     "wizard.resumed": "استأنفنا التسجيل المفتوح لهذا البريد الإلكتروني.",
@@ -581,11 +591,9 @@ const tenantSignup: ModuleLocale = {
     "payment.aboveGatewayLimit":
       "هذا المبلغ يتجاوز الحد الأقصى للدفعة الواحدة لدى مزوّد الدفع. ابدأ من جديد واختر الفوترة الشهرية أو عدداً أقل من الوحدات.",
     "payment.payAmount": "ادفع {{amount}}",
-    "payment.leavingNote":
-      "سيتم نقلك إلى مزوّد الدفع لإدخال بيانات بطاقتك، ثم إعادتك إلى هنا.",
+    "payment.leavingNote": "سيتم نقلك إلى مزوّد الدفع لإدخال بيانات بطاقتك، ثم إعادتك إلى هنا.",
     "payment.confirmingTitle": "جارٍ تأكيد عملية الدفع",
-    "payment.confirmingSub":
-      "يستغرق ذلك ثوانٍ قليلة. أبقِ هذه الصفحة مفتوحة — ولا تدفع مرة أخرى.",
+    "payment.confirmingSub": "يستغرق ذلك ثوانٍ قليلة. أبقِ هذه الصفحة مفتوحة — ولا تدفع مرة أخرى.",
     "payment.notCompletedTitle": "لم تكتمل عملية الدفع",
     "payment.notCompleted":
       "لم نستلم تأكيداً لهذه العملية. لا يبدو أن أي مبلغ قد خُصم — يمكنك المحاولة ببطاقة أخرى.",

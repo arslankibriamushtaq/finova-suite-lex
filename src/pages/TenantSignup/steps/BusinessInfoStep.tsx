@@ -252,21 +252,6 @@ export default function BusinessInfoStep() {
     setCooldown(RESEND_COOLDOWN_SECONDS);
   }, []);
 
-  /**
-   * Whether part one still says what the draft was opened with.
-   *
-   * Re-submitting it is what clears the server's verification, so an untouched
-   * pass through this screen should not cost a code. Compared against the draft
-   * rather than a flag, because the buyer may have edited a field and changed
-   * it back.
-   */
-  const companyUnchanged =
-    !!draft &&
-    draft.emailVerified &&
-    (draft.companyName ?? "") === form.companyName.trim() &&
-    (draft.companyEmail ?? "") === form.companyEmail.trim() &&
-    (draft.crNumber ?? "") === form.crNumber.trim();
-
   // --- part 1: the company, and the plan ---------------------------------
   const submitCompany = async () => {
     const found: Errors = {};
@@ -281,15 +266,6 @@ export default function BusinessInfoStep() {
 
     setErrors(found);
     if (Object.keys(found).length > 0) return;
-
-    // Nothing changed and the address is already proven, so the code screen is
-    // skipped: re-opening the draft would drop the verification and email a
-    // code to prove something already proven. The rail still lists the step,
-    // marked done — which is what it is.
-    if (companyUnchanged) {
-      setPart("details");
-      return;
-    }
 
     setBusy(true);
     setFormError(null);
@@ -332,13 +308,6 @@ export default function BusinessInfoStep() {
   // --- part 2: prove the company address ---------------------------------
   const submitCode = async () => {
     if (!draft) return;
-
-    // Already proven, and no code outstanding: this screen is showing the
-    // buyer where they are, not asking them for anything.
-    if (draft.emailVerified && !challenge) {
-      setPart("details");
-      return;
-    }
 
     // No challenge means no code has been sent yet — which is a state the
     // buyer can reach by reloading. Send one rather than failing silently: a
