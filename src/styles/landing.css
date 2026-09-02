@@ -184,6 +184,11 @@
 /* Near-black on the red cards. White would read as the card's own surface
    showing through; the ink tone is the one already used by the dark bands. */
 .fin-landing .ln-btn--dark {
+  /* The page runs on a 2px corner; this one control does not. On a red card
+     a hard-cornered black rectangle reads as a cut-out rather than a button,
+     and the design softens it. */
+  border-radius: 6px;
+  padding-inline: 1.375rem;
   background: var(--ln-ink);
   border-color: var(--ln-ink);
   color: #ffffff;
@@ -448,7 +453,7 @@
 
 .fin-landing .ln-products {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 @media (min-width: 720px) {
@@ -477,10 +482,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Portrait, as the design draws it. The height is deliberate empty space
-     under the list: it is what lets the action sit on its own at the foot of
-     the card instead of trailing the last bullet. */
-  min-height: 34rem;
+  /* Portrait, as the design draws it, but only just: the height has to leave
+     the action room to sit on its own at the foot of the card without the copy
+     ending a third of the way down a field of red. */
+  min-height: 26rem;
   padding: 2.5rem 2rem;
   border-radius: 2px;
   overflow: hidden;
@@ -647,14 +652,14 @@
 @media (min-width: 640px) {
   .fin-landing .ln-rail > * {
     /* two across, one gap between them */
-    flex-basis: calc((100% - 1.5rem) / 2);
+    flex-basis: calc((100% - 1.25rem) / 2);
   }
 }
 
 @media (min-width: 1024px) {
   .fin-landing .ln-rail > * {
     /* three across, two gaps */
-    flex-basis: calc((100% - 3rem) / 3);
+    flex-basis: calc((100% - 2.5rem) / 3);
   }
 }
 

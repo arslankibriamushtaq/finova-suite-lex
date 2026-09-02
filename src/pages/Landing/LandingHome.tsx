@@ -427,7 +427,10 @@ const LandingHome = () => {
 
   const choosePlan = (pkg: CatalogPackage) => {
     setSelection({ packageCodes: [pkg.packageCode], billingCycle: cycle });
-    navigate("/tenant");
+    // Carrying `resume` stops the pricing page clearing its stored selection on
+    // arrival — which it does for any fresh visit, and which would otherwise
+    // wipe the package this click just wrote a line before.
+    navigate("/tenant", { state: { resume: true } });
   };
 
   /** Staggers a group so a row of cards arrives in sequence, not as a block. */
