@@ -4,44 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 
 import BrandLogo from "../../components/shared/BrandLogo";
-import { useLanguage } from "../../hooks/use-language";
-import { languages } from "../../lib/i18n";
+import { LanguageSwitcher } from "../../components/language-switcher";
 import StepRail from "./components/StepRail";
 import { stepForRoute } from "./navigation";
 import { TenantSignupProvider } from "./TenantSignupContext";
-
-/**
- * Short codes, not native names.
- *
- * The rail beside it is the widest thing in the header, and "Français" next to
- * "العربية" pushed the switch onto a second line on a laptop. Two letters is
- * what the design shows and all anyone needs to recognise their own language.
- */
-function LanguageSwitcher() {
-  const { currentLanguage, setLanguage } = useLanguage();
-  const { t } = useTranslation("tenantSignup");
-
-  return (
-    <div role="group" aria-label={t("shell.language")} className="ts-lang">
-      {languages.map((language) => {
-        const active = language.code === currentLanguage.code;
-        return (
-          <button
-            key={language.code}
-            type="button"
-            onClick={() => setLanguage(language)}
-            aria-pressed={active}
-            data-active={active}
-            className="ts-lang__btn"
-            title={language.nativeName}
-          >
-            {language.code.slice(0, 2).toUpperCase()}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 /**
  * Route element for `/tenant/*` — the public self-signup journey.

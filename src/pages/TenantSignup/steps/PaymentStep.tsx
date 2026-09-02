@@ -3,15 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import {
-  createCheckout,
-  toTenantSignupError,
-} from "../../../redux/apis/apisTenantProvisioning";
-import {
-  getSignupId,
-  getSummary,
-  setOrderId,
-} from "../../../utils/tenantSignupSession";
+import { createCheckout, toTenantSignupError } from "../../../redux/apis/apisTenantProvisioning";
+import { getSignupId, getSummary, setOrderId } from "../../../utils/tenantSignupSession";
 import StatusMessage from "../components/StatusMessage";
 import StepCard from "../components/StepCard";
 import SubmitButton from "../components/SubmitButton";
@@ -44,9 +37,7 @@ export default function PaymentStep() {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [opening, setOpening] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const [terminal, setTerminal] = useState<
-    "expired" | "invalidState" | "aboveLimit" | null
-  >(null);
+  const [terminal, setTerminal] = useState<"expired" | "invalidState" | "aboveLimit" | null>(null);
 
   // React StrictMode mounts effects twice in development; without this the
   // screen would open two checkouts on every load.
@@ -120,7 +111,14 @@ export default function PaymentStep() {
   if (!summary) return null;
 
   return (
-    <StepCard title={t("payment.title")} description={t("payment.sub")}>
+    // A single amount and one button do not need the width of a pricing grid.
+    // Capped and centred, the figure and the action stay in one field of view
+    // instead of sitting at opposite ends of a very wide card.
+    <StepCard
+      title={t("payment.title")}
+      description={t("payment.sub")}
+      className="mx-auto max-w-xl"
+    >
       <div className="space-y-6">
         {/* The last thing the buyer reads before they leave for a hosted
             checkout on someone else's domain, so it states the figure, what it
@@ -130,9 +128,7 @@ export default function PaymentStep() {
         <dl className="ts-pay-panel">
           <div className="ts-pay-head">
             <dt className="ts-caps">{t("payment.amountDue")}</dt>
-            <dd className="ts-pay-total">
-              {formatMoney(summary.totalAmount, summary.currency)}
-            </dd>
+            <dd className="ts-pay-total">{formatMoney(summary.totalAmount, summary.currency)}</dd>
           </div>
 
           <div className="ts-pay-meta">
@@ -160,17 +156,11 @@ export default function PaymentStep() {
         {message ? <StatusMessage>{message}</StatusMessage> : null}
 
         {terminal === "expired" || terminal === "aboveLimit" ? (
-          <SubmitButton
-            type="button"
-            onClick={() => navigate(TENANT_SIGNUP_ROUTES.pricing)}
-          >
+          <SubmitButton type="button" onClick={() => navigate(TENANT_SIGNUP_ROUTES.pricing)}>
             {t("payment.startOver")}
           </SubmitButton>
         ) : terminal === "invalidState" ? (
-          <SubmitButton
-            type="button"
-            onClick={() => navigate(TENANT_SIGNUP_ROUTES.provisioning)}
-          >
+          <SubmitButton type="button" onClick={() => navigate(TENANT_SIGNUP_ROUTES.provisioning)}>
             {t("payment.checkStatus")}
           </SubmitButton>
         ) : opening ? (
@@ -183,18 +173,13 @@ export default function PaymentStep() {
           </p>
         ) : checkoutUrl ? (
           <div className="space-y-3">
-            <SubmitButton
-              type="button"
-              onClick={() => window.location.assign(checkoutUrl)}
-            >
+            <SubmitButton type="button" onClick={() => window.location.assign(checkoutUrl)}>
               <ExternalLink className="size-4" aria-hidden="true" />
               {t("payment.payAmount", {
                 amount: formatMoney(summary.totalAmount, summary.currency),
               })}
             </SubmitButton>
-            <p className="ts-xs text-center text-muted-foreground">
-              {t("payment.leavingNote")}
-            </p>
+            <p className="ts-xs text-center text-muted-foreground">{t("payment.leavingNote")}</p>
           </div>
         ) : (
           <SubmitButton type="button" onClick={() => void openCheckout(true)}>

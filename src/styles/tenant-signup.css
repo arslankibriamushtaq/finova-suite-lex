@@ -347,33 +347,11 @@
 
 /* --- Language switch ---------------------------------------------------- */
 
-.tenant-signup .ts-lang {
-  display: inline-flex;
-  gap: 2px;
-  padding: 2px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--foreground) 7%, transparent);
-}
-
-.tenant-signup .ts-lang__btn {
-  min-width: 34px;
-  padding: 0.25rem 0.5rem;
-  border: 0;
-  border-radius: 3px;
-  background: transparent;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
-}
-
-.tenant-signup .ts-lang__btn[data-active="true"] {
-  background: var(--primary);
-  color: #ffffff;
+/* The shared switcher carries a right margin for the app header it was built
+   for. Here the topbar sets its own gutter, so the extra one reads as the
+   control failing to line up with the logo opposite it. */
+.tenant-signup .lang-switch-btn {
+  margin-inline-end: 0;
 }
 
 /* --- Body: rail beside content ------------------------------------------ */
@@ -1036,59 +1014,6 @@
 /* A section the buyer has finished collapses to a one-line summary rather than
    disappearing. The numbers in the design are a promise about how much is left,
    and a step that vanishes once done breaks it. */
-.tenant-signup .ts-fieldset {
-  padding-block-end: 1.5rem;
-  border-block-end: 1px solid var(--surface-border);
-}
-
-.tenant-signup .ts-fieldset:last-of-type {
-  padding-block-end: 0;
-  border-block-end: 0;
-}
-
-.tenant-signup .ts-fieldset__title {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  margin: 0 0 1rem;
-  /* custom.scss centres every bare h2 from outside Tailwind's layers, and
-     Bootstrap sizes it — both beat a utility class here. */
-  text-align: start;
-  font-size: 0.9375rem;
-  font-weight: 650;
-  line-height: 1.3;
-  color: var(--foreground);
-}
-
-.tenant-signup .ts-fieldset__num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
-  color: var(--primary);
-  font-size: 0.6875rem;
-  font-weight: 700;
-}
-
-.tenant-signup .ts-fieldset[data-state="done"] .ts-fieldset__num {
-  background: var(--primary);
-  color: #ffffff;
-}
-
-.tenant-signup .ts-fieldset[data-state="done"] .ts-fieldset__title {
-  margin-bottom: 0.375rem;
-}
-
-.tenant-signup .ts-fieldset__summary {
-  margin: 0;
-  padding-inline-start: 2rem;
-  font-size: 0.8125rem;
-  color: var(--muted-foreground);
-}
 
 /* The one-time code. Wide tracking and a large size because it is transcribed
    digit by digit from another screen, and a cramped field invites a slip. */
@@ -1320,8 +1245,31 @@
   height: 22px;
 }
 
-.tenant-signup .ts-verify__sub {
+.tenant-signup .ts-verify__title {
+  margin: 0 0 0.5rem;
+  /* custom.scss centres every bare h2 from outside Tailwind layers, which is
+     what this one wants anyway — but it also enlarges it, so the size is
+     stated rather than inherited. */
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+/* The address on its own line, in the weight the sentence above it is not.
+   A masked address is a string of asterisks and one domain: buried mid-
+   sentence it is unreadable, and it is the one thing on this panel the buyer
+   has to check. */
+.tenant-signup .ts-verify__email {
   margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  word-break: break-all;
+  color: var(--foreground);
+}
+
+.tenant-signup .ts-verify__sub {
+  margin: 0 0 0.25rem;
   font-size: 0.8125rem;
   line-height: 1.65;
   color: var(--muted-foreground);

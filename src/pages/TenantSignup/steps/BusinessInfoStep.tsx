@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { MailCheck, ShieldCheck } from "lucide-react";
+import { MailCheck } from "lucide-react";
 
 import { Input } from "../../../components/ui/input";
 import {
@@ -484,290 +484,245 @@ export default function BusinessInfoStep() {
     <form onSubmit={onSubmit} noValidate className="ts-wizard space-y-6">
       {notice && <p className="ts-notice">{notice}</p>}
 
-      {/* --- 1. Business Details ---------------------------------------- */}
-      <section className="ts-fieldset" data-state={part === "company" ? "open" : "done"}>
-        <h2 className="ts-fieldset__title">
-          <span className="ts-fieldset__num">1</span>
-          {t("wizard.section.business")}
-        </h2>
-
-        {part === "company" ? (
-          <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2">
-            <FormRow
+      {/* --- Business details -------------------------------------------- */}
+      {part === "company" && (
+        <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2">
+          <FormRow
+            id="companyName"
+            label={t("form.companyName")}
+            required
+            error={errors.companyName}
+          >
+            <Input
               id="companyName"
-              label={t("form.companyName")}
-              required
-              error={errors.companyName}
-            >
-              <Input
-                id="companyName"
-                autoComplete="organization"
-                value={form.companyName}
-                aria-invalid={Boolean(errors.companyName)}
-                onChange={(e) => set("companyName", e.target.value)}
-              />
-            </FormRow>
+              autoComplete="organization"
+              value={form.companyName}
+              aria-invalid={Boolean(errors.companyName)}
+              onChange={(e) => set("companyName", e.target.value)}
+            />
+          </FormRow>
 
-            <FormRow
+          <FormRow
+            id="companyEmail"
+            label={t("form.companyEmail")}
+            required
+            hint={t("form.companyEmail.hint")}
+            error={errors.companyEmail}
+          >
+            <Input
               id="companyEmail"
-              label={t("form.companyEmail")}
-              required
-              hint={t("form.companyEmail.hint")}
-              error={errors.companyEmail}
-            >
-              <Input
-                id="companyEmail"
-                type="email"
-                dir="ltr"
-                autoComplete="email"
-                value={form.companyEmail}
-                aria-invalid={Boolean(errors.companyEmail)}
-                aria-describedby="companyEmail-hint"
-                onChange={(e) => set("companyEmail", e.target.value)}
-              />
-            </FormRow>
+              type="email"
+              dir="ltr"
+              autoComplete="email"
+              value={form.companyEmail}
+              aria-invalid={Boolean(errors.companyEmail)}
+              aria-describedby="companyEmail-hint"
+              onChange={(e) => set("companyEmail", e.target.value)}
+            />
+          </FormRow>
 
-            <FormRow
+          <FormRow
+            id="crNumber"
+            label={t("form.crNumber")}
+            hint={t("form.crNumber.hint")}
+            error={errors.crNumber}
+            className="sm:col-span-2"
+          >
+            <Input
               id="crNumber"
-              label={t("form.crNumber")}
-              hint={t("form.crNumber.hint")}
-              error={errors.crNumber}
-              className="sm:col-span-2"
-            >
-              <Input
-                id="crNumber"
-                inputMode="numeric"
-                dir="ltr"
-                maxLength={10}
-                value={form.crNumber}
-                aria-invalid={Boolean(errors.crNumber)}
-                aria-describedby="crNumber-hint"
-                // Separators and Arabic-Indic numerals are normalised as they
-                // are typed, so a pasted "1010-101010" becomes a valid CR
-                // instead of an error whose cause is invisible.
-                onChange={(e) => set("crNumber", normalizeDigits(e.target.value))}
-              />
-            </FormRow>
-          </div>
-        ) : (
-          // A fixed separator prints a stray dot whenever one side is
-          // missing, and the server withholds the company name until the
-          // address is verified — so on a resume it printed exactly that.
-          <p className="ts-fieldset__summary" dir="ltr">
-            {[form.companyName, form.companyEmail].filter(Boolean).join(" · ")}
+              inputMode="numeric"
+              dir="ltr"
+              maxLength={10}
+              value={form.crNumber}
+              aria-invalid={Boolean(errors.crNumber)}
+              aria-describedby="crNumber-hint"
+              // Separators and Arabic-Indic numerals are normalised as they
+              // are typed, so a pasted "1010-101010" becomes a valid CR
+              // instead of an error whose cause is invisible.
+              onChange={(e) => set("crNumber", normalizeDigits(e.target.value))}
+            />
+          </FormRow>
+        </div>
+      )}
+
+      {/* --- Verify ------------------------------------------------------- */}
+      {part === "verify" && (
+        <div className="ts-verify">
+          <span className="ts-verify__icon" aria-hidden="true">
+            <MailCheck />
+          </span>
+
+          <h2 className="ts-verify__title">{t("wizard.section.verify")}</h2>
+
+          {/* Two strings, not one with the address interpolated out of it.
+              Blanking {{email}} to move the address onto its own line left the
+              sentence reading "…code to ." — a placeholder hole where a name
+              should be. */}
+          <p className="ts-verify__sub">
+            {challenge ? t("wizard.verify.sentTo") : t("wizard.verify.send")}
           </p>
-        )}
-      </section>
+          {challenge && (
+            <p className="ts-verify__email" dir="ltr">
+              {challenge.maskedEmail || form.companyEmail}
+            </p>
+          )}
 
-      {/* --- 2. Verify -------------------------------------------------- */}
-      {part !== "company" && (
-        <section className="ts-fieldset" data-state={part === "verify" ? "open" : "done"}>
-          <h2 className="ts-fieldset__title">
-            <span className="ts-fieldset__num">2</span>
-            {t("wizard.section.verify")}
-          </h2>
+          <FormRow id="code" label={t("wizard.verify.code")} required error={errors.code}>
+            <Input
+              id="code"
+              inputMode="numeric"
+              dir="ltr"
+              maxLength={6}
+              autoComplete="one-time-code"
+              placeholder="******"
+              disabled={!challenge}
+              value={code}
+              aria-invalid={Boolean(errors.code)}
+              onChange={(e) => {
+                setCode(normalizeDigits(e.target.value).slice(0, 6));
+                setErrors((current) => ({ ...current, code: undefined }));
+              }}
+            />
+          </FormRow>
 
-          {part === "verify" ? (
-            <div className="ts-verify">
-              <span className="ts-verify__icon" aria-hidden="true">
-                <MailCheck />
-              </span>
-
-              <p className="ts-verify__sub">
-                {challenge ? (
-                  <>
-                    {t("wizard.verify.sub", { email: "" }).replace(/\s*\.$/, "")}{" "}
-                    <strong dir="ltr">{challenge.maskedEmail || form.companyEmail}</strong>
-                  </>
-                ) : (
-                  t("wizard.verify.send")
-                )}
-              </p>
-
-              <FormRow id="code" label={t("wizard.verify.code")} required error={errors.code}>
-                <Input
-                  id="code"
-                  inputMode="numeric"
-                  dir="ltr"
-                  maxLength={6}
-                  autoComplete="one-time-code"
-                  placeholder="000000"
-                  disabled={!challenge}
-                  value={code}
-                  aria-invalid={Boolean(errors.code)}
-                  onChange={(e) => {
-                    setCode(normalizeDigits(e.target.value).slice(0, 6));
-                    setErrors((current) => ({ ...current, code: undefined }));
-                  }}
-                />
-              </FormRow>
-
-              {/* Driven off the gateway's own counters, so the button is never
+          {/* Driven off the gateway's own counters, so the button is never
                   pressable into a throttle it will be refused by. */}
-              <div className="ts-verify__foot">
-                <button
-                  type="button"
-                  className="ts-link ts-xs"
-                  disabled={busy || cooldown > 0 || challenge?.resendsRemaining === 0}
-                  onClick={() => void resend()}
-                >
-                  {cooldown > 0
-                    ? t("wizard.verify.resendIn", { seconds: cooldown })
-                    : t("wizard.verify.resend")}
-                </button>
-                {challenge && challenge.resendsRemaining > 0 && (
-                  <span className="ts-xs text-muted-foreground">
-                    {t("wizard.verify.resendsLeft", { count: challenge.resendsRemaining })}
-                  </span>
-                )}
-                {challenge?.resendsRemaining === 0 && (
-                  <span className="ts-xs text-muted-foreground">{t("wizard.verify.noneLeft")}</span>
-                )}
-              </div>
-            </div>
-          ) : (
-            <p className="ts-fieldset__summary inline-flex items-center gap-1.5">
-              <ShieldCheck className="size-4 text-[var(--primary)]" aria-hidden="true" />
-              <span dir="ltr">{form.companyEmail}</span>
-            </p>
-          )}
-        </section>
+          <div className="ts-verify__foot">
+            <button
+              type="button"
+              className="ts-link ts-xs"
+              disabled={busy || cooldown > 0 || challenge?.resendsRemaining === 0}
+              onClick={() => void resend()}
+            >
+              {cooldown > 0
+                ? t("wizard.verify.resendIn", { seconds: cooldown })
+                : t("wizard.verify.resend")}
+            </button>
+            {challenge && challenge.resendsRemaining > 0 && (
+              <span className="ts-xs text-muted-foreground">
+                {t("wizard.verify.resendsLeft", { count: challenge.resendsRemaining })}
+              </span>
+            )}
+            {challenge?.resendsRemaining === 0 && (
+              <span className="ts-xs text-muted-foreground">{t("wizard.verify.noneLeft")}</span>
+            )}
+          </div>
+        </div>
       )}
 
-      {/* --- 3. Company details ----------------------------------------- */}
-      {(part === "details" || part === "you") && (
-        <section className="ts-fieldset" data-state={part === "details" ? "open" : "done"}>
-          <h2 className="ts-fieldset__title">
-            <span className="ts-fieldset__num">3</span>
-            {t("wizard.section.company")}
-          </h2>
+      {/* --- Company details ---------------------------------------------- */}
+      {part === "details" && (
+        <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2 min-[1400px]:grid-cols-3">
+          <FormRow id="countryCode" label={t("form.countryCode")} required>
+            <Select value={form.countryCode} onValueChange={(value) => set("countryCode", value)}>
+              <SelectTrigger id="countryCode">
+                <SelectValue placeholder={t("common.select")} />
+              </SelectTrigger>
+              <SelectContent>
+                {countryOptions.map((country, index) => (
+                  <SelectItem
+                    key={country.code}
+                    value={country.code}
+                    className={cn(
+                      country.priority &&
+                        !countryOptions[index + 1]?.priority &&
+                        "border-b border-[var(--surface-border)]"
+                    )}
+                  >
+                    {country.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormRow>
 
-          {part === "details" ? (
-            <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2 min-[1400px]:grid-cols-3">
-              <FormRow id="countryCode" label={t("form.countryCode")} required>
-                <Select
-                  value={form.countryCode}
-                  onValueChange={(value) => set("countryCode", value)}
-                >
-                  <SelectTrigger id="countryCode">
-                    <SelectValue placeholder={t("common.select")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countryOptions.map((country, index) => (
-                      <SelectItem
-                        key={country.code}
-                        value={country.code}
-                        className={cn(
-                          country.priority &&
-                            !countryOptions[index + 1]?.priority &&
-                            "border-b border-[var(--surface-border)]"
-                        )}
-                      >
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormRow>
+          <FormRow
+            id="vatNumber"
+            label={t("form.vatNumber")}
+            hint={t("form.vatNumber.hint")}
+            error={errors.vatNumber}
+          >
+            <Input
+              id="vatNumber"
+              inputMode="numeric"
+              dir="ltr"
+              maxLength={15}
+              value={form.vatNumber}
+              aria-invalid={Boolean(errors.vatNumber)}
+              aria-describedby="vatNumber-hint"
+              onChange={(e) => set("vatNumber", normalizeDigits(e.target.value))}
+            />
+          </FormRow>
 
-              <FormRow
-                id="vatNumber"
-                label={t("form.vatNumber")}
-                hint={t("form.vatNumber.hint")}
-                error={errors.vatNumber}
-              >
-                <Input
-                  id="vatNumber"
-                  inputMode="numeric"
-                  dir="ltr"
-                  maxLength={15}
-                  value={form.vatNumber}
-                  aria-invalid={Boolean(errors.vatNumber)}
-                  aria-describedby="vatNumber-hint"
-                  onChange={(e) => set("vatNumber", normalizeDigits(e.target.value))}
-                />
-              </FormRow>
+          <FormRow id="companyNameAr" label={t("form.companyNameAr")}>
+            <Input
+              id="companyNameAr"
+              dir="rtl"
+              value={form.companyNameAr}
+              onChange={(e) => set("companyNameAr", e.target.value)}
+            />
+          </FormRow>
 
-              <FormRow id="companyNameAr" label={t("form.companyNameAr")}>
-                <Input
-                  id="companyNameAr"
-                  dir="rtl"
-                  value={form.companyNameAr}
-                  onChange={(e) => set("companyNameAr", e.target.value)}
-                />
-              </FormRow>
+          <FormRow id="companyPhone" label={t("form.companyPhone")}>
+            <Input
+              id="companyPhone"
+              type="tel"
+              dir="ltr"
+              autoComplete="tel"
+              value={form.companyPhone}
+              onChange={(e) => set("companyPhone", e.target.value)}
+            />
+          </FormRow>
 
-              <FormRow id="companyPhone" label={t("form.companyPhone")}>
-                <Input
-                  id="companyPhone"
-                  type="tel"
-                  dir="ltr"
-                  autoComplete="tel"
-                  value={form.companyPhone}
-                  onChange={(e) => set("companyPhone", e.target.value)}
-                />
-              </FormRow>
+          <FormRow id="website" label={t("form.website")} error={errors.website}>
+            <Input
+              id="website"
+              type="url"
+              dir="ltr"
+              placeholder="https://"
+              value={form.website}
+              aria-invalid={Boolean(errors.website)}
+              onChange={(e) => set("website", e.target.value)}
+            />
+          </FormRow>
 
-              <FormRow id="website" label={t("form.website")} error={errors.website}>
-                <Input
-                  id="website"
-                  type="url"
-                  dir="ltr"
-                  placeholder="https://"
-                  value={form.website}
-                  aria-invalid={Boolean(errors.website)}
-                  onChange={(e) => set("website", e.target.value)}
-                />
-              </FormRow>
+          <FormRow id="city" label={t("form.city")}>
+            <Input
+              id="city"
+              autoComplete="address-level2"
+              value={form.city}
+              onChange={(e) => set("city", e.target.value)}
+            />
+          </FormRow>
 
-              <FormRow id="city" label={t("form.city")}>
-                <Input
-                  id="city"
-                  autoComplete="address-level2"
-                  value={form.city}
-                  onChange={(e) => set("city", e.target.value)}
-                />
-              </FormRow>
+          <FormRow
+            id="addressLine"
+            label={t("form.addressLine")}
+            className="sm:col-span-2 min-[1400px]:col-span-2"
+          >
+            <Input
+              id="addressLine"
+              autoComplete="street-address"
+              value={form.addressLine}
+              onChange={(e) => set("addressLine", e.target.value)}
+            />
+          </FormRow>
 
-              <FormRow
-                id="addressLine"
-                label={t("form.addressLine")}
-                className="sm:col-span-2 min-[1400px]:col-span-2"
-              >
-                <Input
-                  id="addressLine"
-                  autoComplete="street-address"
-                  value={form.addressLine}
-                  onChange={(e) => set("addressLine", e.target.value)}
-                />
-              </FormRow>
-
-              <FormRow id="postalCode" label={t("form.postalCode")}>
-                <Input
-                  id="postalCode"
-                  inputMode="numeric"
-                  autoComplete="postal-code"
-                  value={form.postalCode}
-                  onChange={(e) => set("postalCode", e.target.value)}
-                />
-              </FormRow>
-            </div>
-          ) : (
-            <p className="ts-fieldset__summary">
-              {[form.countryCode, form.city].filter(Boolean).join(" · ")}
-            </p>
-          )}
-        </section>
+          <FormRow id="postalCode" label={t("form.postalCode")}>
+            <Input
+              id="postalCode"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              value={form.postalCode}
+              onChange={(e) => set("postalCode", e.target.value)}
+            />
+          </FormRow>
+        </div>
       )}
 
-      {/* --- 4. You ------------------------------------------------------ */}
+      {/* --- You ----------------------------------------------------------- */}
       {part === "you" && (
-        <section className="ts-fieldset" data-state="open">
-          <h2 className="ts-fieldset__title">
-            <span className="ts-fieldset__num">4</span>
-            {t("wizard.section.you")}
-          </h2>
-
+        <>
           {/* Not "administrator details". The admin* prefix names the role this
               person is about to be given, not a third party being asked about —
               and reading it the other way is what locks an owner out of the
@@ -878,7 +833,7 @@ export default function BusinessInfoStep() {
               {errors.terms}
             </p>
           )}
-        </section>
+        </>
       )}
 
       {formError && <StatusMessage>{formError}</StatusMessage>}
