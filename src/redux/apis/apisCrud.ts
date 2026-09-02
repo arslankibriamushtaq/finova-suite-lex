@@ -161,6 +161,27 @@ export function getOnboarding360RiskKyc(customerId: number | string) {
 export function getOnboarding360Documents(customerId: number | string) {
   return axios.get(`${onboarding360Base(customerId)}/documents`);
 }
+/**
+ * Account Timeline — the customer's history as year → month → event buckets.
+ *
+ * Filters intersect server-side; `month` requires `year` (422 otherwise) and
+ * `from`/`to` are inclusive ISO dates. `order` defaults to `asc` (oldest first,
+ * the way the screen renders). Omit everything for the full history.
+ */
+export function getCustomerTimeline(
+  customerId: number | string,
+  params: { year?: number | null; month?: number | null; from?: string | null; to?: string | null; order?: "asc" | "desc" } = {}
+) {
+  const query = new URLSearchParams();
+  if (params.year) query.set("year", String(params.year));
+  if (params.month) query.set("month", String(params.month));
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
+  if (params.order) query.set("order", params.order);
+  const qs = query.toString();
+  return axios.get(`${onboarding360Base(customerId)}/timeline${qs ? `?${qs}` : ""}`);
+}
+
 export function getOnboardingDocumentImage(imagePath: string) {
   let path = imagePath || "";
   // Backend returns the path without the Kong service prefix (e.g. "/api/v1/customers/...").

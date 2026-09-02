@@ -10,7 +10,7 @@ import { getCustomers } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
-import { SaudiRiyal, UserPlus, ShieldOff, Users } from "lucide-react";
+import { SaudiRiyal, UserPlus, ShieldOff, Users, CalendarClock } from "lucide-react";
 import BeneficiariesDialog from "../../pages/lmsPages/Wallet/BeneficiariesDialog";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -300,6 +300,15 @@ const AllCustomers = () => {
         {t("allCustomers.menu.checkBeneficiaries")}
       </Menu.Item>
       )}
+      {canViewCustomer && (
+      <Menu.Item
+        key="accountTimeline"
+        icon={<CalendarClock size={14} />}
+        onClick={() => handleMenuClick("accountTimeline", row)}
+      >
+        {t("timeline.menu.accountTimeline")}
+      </Menu.Item>
+      )}
       {/* <Menu.Item
         key="manageBlockCodes"
         icon={<ShieldOff size={14} />}
@@ -343,6 +352,9 @@ const AllCustomers = () => {
         break;
       case "checkBeneficiaries":
         setBeneficiaryCustomerId(data.id);
+        break;
+      case "accountTimeline":
+        navigate(`/LOS/CustomerManagement/AccountTimeline/${data.id}`);
         break;
       case "logout":
         // Handle force logout action

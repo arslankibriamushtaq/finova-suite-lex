@@ -240,6 +240,28 @@
   --input-placeholder: #94a3b8;
   --input-focus-ring: rgba(15, 23, 42, 0.10);
 
+  /* Account Timeline — one accent per event category, taken from the chart /
+     status ramps so the screen stays inside the brand palette (no stray greens).
+     Tone overrides live here too: a failure or hard block always reads
+     --timeline-negative, a soft block --timeline-warning, whatever its category. */
+  --timeline-onboarding:  var(--chart-4);
+  --timeline-customer:    var(--chart-4);
+  --timeline-auth:        #0ea5e9;
+  --timeline-kyc:         var(--color-info);
+  --timeline-document:    var(--color-info);
+  --timeline-risk:        var(--chart-5);
+  --timeline-fraud:       var(--chart-5);
+  --timeline-block:       var(--color-warning);
+  --timeline-wallet:      var(--color-success);
+  --timeline-transaction: var(--chart-3);
+  --timeline-card:        var(--chart-2);
+  --timeline-loan:        #7c3aed;
+  --timeline-collection:  #0f766e;
+  --timeline-notification: var(--muted-foreground);
+  --timeline-neutral:     var(--muted-foreground);
+  --timeline-negative:    var(--color-error);
+  --timeline-warning:     var(--color-warning);
+
   /* Pure black/white anchors — only use when the design demands true black/white */
   --pure-black: #000000;
   --pure-white: #ffffff;
@@ -271,6 +293,25 @@ html.dark,
   --chart-3: #60a5fa;
   --chart-4: #a78bfa;
   --chart-5: #f472b6;
+
+  /* Account Timeline accents — same roles, lifted for the dark surface. */
+  --timeline-onboarding:  var(--chart-4);
+  --timeline-customer:    var(--chart-4);
+  --timeline-auth:        #38bdf8;
+  --timeline-kyc:         #5eead4;
+  --timeline-document:    #5eead4;
+  --timeline-risk:        var(--chart-5);
+  --timeline-fraud:       var(--chart-5);
+  --timeline-block:       #fbbf24;
+  --timeline-wallet:      var(--brand-400);
+  --timeline-transaction: var(--chart-3);
+  --timeline-card:        var(--chart-2);
+  --timeline-loan:        #a78bfa;
+  --timeline-collection:  #2dd4bf;
+  --timeline-notification: var(--muted-foreground);
+  --timeline-neutral:     var(--muted-foreground);
+  --timeline-negative:    #f87171;
+  --timeline-warning:     #fbbf24;
   /* Single-series chart mark. Validated against the dataviz six checks in
      dark: lightness band, chroma floor, and >= 3:1 contrast vs each surface.
      The light-mode #AB1920 sits below 3:1 on the dark page and is not safe here. */

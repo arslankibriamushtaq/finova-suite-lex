@@ -8,7 +8,7 @@ import { getBusinessesList } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
-import { Users, Lock, ShieldAlert, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Users, Lock, ShieldAlert, AlertTriangle, ShieldCheck, CalendarClock } from "lucide-react";
 import { Tabs } from "../ui/tabs";
 import { Badge } from "../ui/badge";
 import { Button as ShadButton } from "../ui/button";
@@ -216,6 +216,15 @@ const AllBusiness = () => {
           {t("allCustomers.menu.checkBeneficiaries")}
         </Menu.Item>
       )}
+      {canViewCustomer && (
+        <Menu.Item
+          key="accountTimeline"
+          icon={<CalendarClock size={14} />}
+          onClick={() => handleMenuClick("accountTimeline", row)}
+        >
+          {t("timeline.menu.accountTimeline")}
+        </Menu.Item>
+      )}
       {canManageBlocks && (
         <Menu.Item
           key="manageBlocks"
@@ -235,6 +244,9 @@ const AllBusiness = () => {
         break;
       case "checkBeneficiaries":
         setBeneficiaryCustomerId(data.id);
+        break;
+      case "accountTimeline":
+        navigate(`/LOS/CustomerManagement/AccountTimeline/${data.id}`);
         break;
       case "manageBlocks":
         handleBlockButtonClick(data);

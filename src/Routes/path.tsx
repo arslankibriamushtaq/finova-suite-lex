@@ -254,6 +254,7 @@ import WalletTransactionLimits from "../pages/lmsPages/CustomerManagement/Wallet
 import OnboardingUsers from "../pages/lmsPages/CustomerManagement/OnboardingUsers";
 import OnboardingUserDetail from "../pages/lmsPages/CustomerManagement/OnboardingUserDetail";
 import OnboardingStepConfig from "../pages/lmsPages/CustomerManagement/OnboardingStepConfig";
+import AccountTimeline from "../pages/lmsPages/CustomerManagement/AccountTimeline";
 import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
@@ -1276,6 +1277,10 @@ export const router = createBrowserRouter(
             {
               path: "/LOS/CustomerManagement/CustomerDetails/:id",
               element: <Onboarding360 />,
+            },
+            {
+              path: "/LOS/CustomerManagement/AccountTimeline/:id",
+              element: <AccountTimeline />,
             },
             {
               path: "/LOS/CustomerManagement/BusinessDetails/:id",

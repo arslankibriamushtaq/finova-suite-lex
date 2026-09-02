@@ -8,6 +8,7 @@ import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, get
 import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { CalendarClock } from "lucide-react";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -262,6 +263,15 @@ const AllCustomerStatus = () => {
         {t('allCustomerStatus.changeRisk')}
       </Menu.Item>
       )}
+      {canViewCustomer && (
+      <Menu.Item
+        key="accountTimeline"
+        icon={<CalendarClock size={14} />}
+        onClick={() => handleMenuClick("accountTimeline", row)}
+      >
+        {t("timeline.menu.accountTimeline")}
+      </Menu.Item>
+      )}
       {/* <Menu.Item
         key="logout"
         icon={<LogoutOutlined />}
@@ -283,6 +293,9 @@ const AllCustomerStatus = () => {
         setSelectedUserForStatusChange(data);
         setNewStatus(data.status === "active" ? "inactive" : "active");
         setIsChangeStatusModalVisible(true);
+        break;
+      case "accountTimeline":
+        navigate(`/LOS/CustomerManagement/AccountTimeline/${data.id}`);
         break;
       case "changeRisk":
         // Handle change risk action
