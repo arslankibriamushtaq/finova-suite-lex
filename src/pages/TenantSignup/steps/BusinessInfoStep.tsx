@@ -239,7 +239,12 @@ export default function BusinessInfoStep() {
     const found: Errors = {};
     if (!form.companyName.trim()) found.companyName = t("common.error.required");
     if (!EMAIL_PATTERN.test(form.companyEmail.trim())) found.companyEmail = t("error.email");
-    if (form.crNumber && !CR_PATTERN.test(form.crNumber)) found.crNumber = t("error.crNumber");
+    // The commercial registration is asked for up front rather than left to
+    // the optional pile: it is what the invoice is raised against, and a
+    // signup that reaches payment without one produces a document that has to
+    // be reissued.
+    if (!form.crNumber.trim()) found.crNumber = t("common.error.required");
+    else if (!CR_PATTERN.test(form.crNumber)) found.crNumber = t("error.crNumber");
 
     setErrors(found);
     if (Object.keys(found).length > 0) return;
@@ -251,7 +256,7 @@ export default function BusinessInfoStep() {
         {
           companyName: form.companyName.trim(),
           companyEmail: form.companyEmail.trim(),
-          crNumber: form.crNumber.trim() || undefined,
+          crNumber: form.crNumber.trim(),
           billingCycle,
           packageCodes,
           locale: getCurrentLanguage(),
@@ -357,7 +362,8 @@ export default function BusinessInfoStep() {
     if (!draft) return;
 
     const found: Errors = {};
-    if (form.vatNumber && !VAT_PATTERN.test(form.vatNumber)) found.vatNumber = t("error.vatNumber");
+    if (!form.vatNumber.trim()) found.vatNumber = t("common.error.required");
+    else if (!VAT_PATTERN.test(form.vatNumber)) found.vatNumber = t("error.vatNumber");
     if (form.website && !/^https?:\/\//i.test(form.website.trim())) {
       found.website = t("error.website");
     }
@@ -370,7 +376,7 @@ export default function BusinessInfoStep() {
     try {
       const saved = await patchCompany(draft.signupId, {
         countryCode: form.countryCode,
-        vatNumber: form.vatNumber.trim() || undefined,
+        vatNumber: form.vatNumber.trim(),
         companyNameAr: form.companyNameAr.trim() || undefined,
         companyPhone: form.companyPhone.trim() || undefined,
         website: form.website.trim() || undefined,
@@ -524,6 +530,7 @@ export default function BusinessInfoStep() {
           <FormRow
             id="crNumber"
             label={t("form.crNumber")}
+            required
             hint={t("form.crNumber.hint")}
             error={errors.crNumber}
             className="sm:col-span-2"
@@ -639,6 +646,7 @@ export default function BusinessInfoStep() {
           <FormRow
             id="vatNumber"
             label={t("form.vatNumber")}
+            required
             hint={t("form.vatNumber.hint")}
             error={errors.vatNumber}
           >
@@ -784,15 +792,6 @@ export default function BusinessInfoStep() {
               />
             </FormRow>
 
-            <FormRow id="adminJobTitle" label={t("form.adminJobTitle")}>
-              <Input
-                id="adminJobTitle"
-                autoComplete="organization-title"
-                value={form.adminJobTitle}
-                onChange={(e) => set("adminJobTitle", e.target.value)}
-              />
-            </FormRow>
-
             <FormRow
               id="adminRelationship"
               label={t("form.adminRelationship")}
@@ -801,7 +800,10 @@ export default function BusinessInfoStep() {
             >
               <Select
                 value={form.adminRelationship}
-                onValueChange={(value) => set("adminRelationship", value as AdminRelationship)}
+                onValueChange={(value) => {
+                  set("adminRelationship", value as AdminRelationship);
+                  if (value === "OWNER") set("adminJobTitle", "");
+                }}
               >
                 <SelectTrigger id="adminRelationship">
                   <SelectValue placeholder={t("common.select")} />
@@ -815,6 +817,24 @@ export default function BusinessInfoStep() {
                 </SelectContent>
               </Select>
             </FormRow>
+
+            {/* An owner does not hold a job title in the company they own, so
+                the field is not asked for. Anything else — a director, an
+                employee, a consultant — does, and it is what tells support who
+                they are speaking to.
+
+                The stored value is cleared on the way, so a title typed before
+                switching to Owner is not submitted invisibly. */}
+            {form.adminRelationship !== "OWNER" && (
+              <FormRow id="adminJobTitle" label={t("form.adminJobTitle")}>
+                <Input
+                  id="adminJobTitle"
+                  autoComplete="organization-title"
+                  value={form.adminJobTitle}
+                  onChange={(e) => set("adminJobTitle", e.target.value)}
+                />
+              </FormRow>
+            )}
           </div>
 
           <label className="ts-terms">
