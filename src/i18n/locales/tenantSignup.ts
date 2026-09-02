@@ -44,7 +44,6 @@ const tenantSignup: ModuleLocale = {
     "wizard.verify.send": "Send the code",
     "wizard.verify.resend": "Resend code",
     "wizard.verify.resendIn": "Resend in {{seconds}}s",
-    "wizard.verify.resendsLeft": "{{count}} resend(s) left",
     "wizard.verify.sent": "A new code is on its way.",
     "wizard.verify.noneLeft": "No resends left. Contact us if the code never arrives.",
     "wizard.you.hint":
@@ -261,7 +260,6 @@ const tenantSignup: ModuleLocale = {
     "wizard.verify.send": "Envoyer le code",
     "wizard.verify.resend": "Renvoyer le code",
     "wizard.verify.resendIn": "Renvoyer dans {{seconds}} s",
-    "wizard.verify.resendsLeft": "{{count}} renvoi(s) restant(s)",
     "wizard.verify.sent": "Un nouveau code est en route.",
     "wizard.verify.noneLeft":
       "Plus de renvois disponibles. Contactez-nous si le code n'arrive pas.",
@@ -475,7 +473,6 @@ const tenantSignup: ModuleLocale = {
     "wizard.verify.send": "إرسال الرمز",
     "wizard.verify.resend": "إعادة إرسال الرمز",
     "wizard.verify.resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
-    "wizard.verify.resendsLeft": "متبقٍ {{count}} إعادة إرسال",
     "wizard.verify.sent": "تم إرسال رمز جديد.",
     "wizard.verify.noneLeft": "لا توجد محاولات إرسال متبقية. تواصل معنا إذا لم يصلك الرمز.",
     "wizard.you.hint":

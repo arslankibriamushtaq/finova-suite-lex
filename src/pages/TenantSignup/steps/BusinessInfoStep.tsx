@@ -250,6 +250,11 @@ export default function BusinessInfoStep() {
   const requestCode = useCallback(async (signupId: string) => {
     setChallenge(await sendEmailOtp(signupId));
     setCooldown(RESEND_COOLDOWN_SECONDS);
+    // The old code dies the moment a new one is issued, so leaving it in the
+    // field offers a value that can only be rejected — and one that looks, at a
+    // glance, like the form has been filled in for the buyer.
+    setCode("");
+    setErrors((current) => ({ ...current, code: undefined }));
   }, []);
 
   // --- part 1: the company, and the plan ---------------------------------
@@ -615,8 +620,11 @@ export default function BusinessInfoStep() {
             />
           </FormRow>
 
-          {/* Driven off the gateway's own counters, so the button is never
-                  pressable into a throttle it will be refused by. */}
+          {/* The cooldown is mirrored from the gateway so the button cannot be
+              pressed into a throttle that would refuse it. The remaining-sends
+              count is not shown: the server answers with its own sentinel for
+              "no limit", and "2147483647 resends left" tells nobody anything.
+              It still disables at zero, for a deployment that does cap them. */}
           <div className="ts-verify__foot">
             <button
               type="button"
@@ -628,11 +636,6 @@ export default function BusinessInfoStep() {
                 ? t("wizard.verify.resendIn", { seconds: cooldown })
                 : t("wizard.verify.resend")}
             </button>
-            {challenge && challenge.resendsRemaining > 0 && (
-              <span className="ts-xs text-muted-foreground">
-                {t("wizard.verify.resendsLeft", { count: challenge.resendsRemaining })}
-              </span>
-            )}
             {challenge?.resendsRemaining === 0 && (
               <span className="ts-xs text-muted-foreground">{t("wizard.verify.noneLeft")}</span>
             )}
