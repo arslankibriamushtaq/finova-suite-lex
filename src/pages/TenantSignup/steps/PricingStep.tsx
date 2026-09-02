@@ -1,7 +1,7 @@
 import { Check, Loader2, Plus, Sparkles, TrendingDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   getCatalogPackages,
@@ -12,6 +12,7 @@ import {
   type Quote,
 } from "../../../redux/apis/apisTenantProvisioning";
 import { getCurrentLanguage } from "../../../utils/acceptLanguage";
+import { clearTenantSignupSession } from "../../../utils/tenantSignupSession";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { cn } from "../../../lib/utils";
 import QuoteLines from "../components/QuoteLines";
@@ -36,6 +37,35 @@ export default function PricingStep() {
 
   const { packageCodes, billingCycle, setSelection } = useTenantSignup();
 
+  const location = useLocation();
+  const reset = useRef(false);
+
+  /**
+   * Landing here starts a new signup.
+   *
+   * The draft handle, the basket, the frozen quote and the idempotency key
+   * all go, so the pricing page is always the beginning of something rather
+   * than the middle of whatever was abandoned last week. Without this a stale
+   * draft sent the buyer straight past the form they came back to correct.
+   *
+   * Nothing is lost by it: a draft is resumed server-side by its company
+   * email, so someone who genuinely wants their old one back gets it by
+   * typing the same address in part one — which is the documented way in, and
+   * the only one that re-proves the address rather than inheriting a tick.
+   *
+   * A navigation carrying state.resume is the wizard stepping back to change
+   * the plan, not a fresh arrival, so that one keeps the basket it is about
+   * to edit.
+   */
+  useEffect(() => {
+    if (reset.current) return;
+    reset.current = true;
+    if ((location.state as { resume?: boolean } | null)?.resume) return;
+
+    clearTenantSignupSession();
+    setSelection([], "MONTHLY");
+  }, [location.state, setSelection]);
+
   const [packages, setPackages] = useState<CatalogPackage[] | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
 
@@ -57,9 +87,7 @@ export default function PricingStep() {
             .sort((a, b) => a.displayOrder - b.displayOrder)
         )
       )
-      .catch((err) =>
-        setCatalogError(toTenantSignupError(err, t("pricing.error")).message)
-      );
+      .catch((err) => setCatalogError(toTenantSignupError(err, t("pricing.error")).message));
   }, [t]);
 
   useEffect(loadCatalog, [loadCatalog]);
@@ -128,9 +156,7 @@ export default function PricingStep() {
    * catalogue, which is here.
    */
   const onTogglePackage = (pkg: CatalogPackage) => {
-    const bundleCodes = new Set(
-      (packages ?? []).filter((p) => p.bundle).map((p) => p.packageCode)
-    );
+    const bundleCodes = new Set((packages ?? []).filter((p) => p.bundle).map((p) => p.packageCode));
 
     if (packageCodes.includes(pkg.packageCode)) {
       setSelection(
@@ -161,16 +187,11 @@ export default function PricingStep() {
           {t("pricing.eyebrow")}
         </span>
         <h1 className="ts-display mt-4">{t("pricing.headline")}</h1>
-        <p className="mt-3.5 text-sm leading-relaxed text-muted-foreground">
-          {t("pricing.sub")}
-        </p>
+        <p className="mt-3.5 text-sm leading-relaxed text-muted-foreground">{t("pricing.sub")}</p>
       </header>
 
       <div className="flex justify-center">
-        <CycleToggle
-          value={billingCycle}
-          onChange={(cycle) => setSelection(packageCodes, cycle)}
-        />
+        <CycleToggle value={billingCycle} onChange={(cycle) => setSelection(packageCodes, cycle)} />
       </div>
 
       {catalogError ? (
@@ -197,9 +218,7 @@ export default function PricingStep() {
                   onToggle={() => onTogglePackage(pkg)}
                 />
               ))
-            : [0, 1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="ts-skeleton h-56" />
-              ))}
+            : [0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="ts-skeleton h-56" />)}
         </div>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
@@ -216,9 +235,7 @@ export default function PricingStep() {
             <hr className="ts-divider" />
 
             {packageCodes.length === 0 ? (
-              <p className="text-[13px] text-muted-foreground">
-                {t("pricing.summaryEmpty")}
-              </p>
+              <p className="text-[13px] text-muted-foreground">{t("pricing.summaryEmpty")}</p>
             ) : quoteError ? (
               <StatusMessage>{quoteError}</StatusMessage>
             ) : quote && !quoting ? (
@@ -241,9 +258,7 @@ export default function PricingStep() {
               {t("pricing.continue")}
             </SubmitButton>
 
-            <p className="ts-xs text-muted-foreground">
-              {t("pricing.coreIncluded")}
-            </p>
+            <p className="ts-xs text-muted-foreground">{t("pricing.coreIncluded")}</p>
           </div>
         </aside>
       </div>
@@ -262,11 +277,7 @@ function CycleToggle({
   const cycles: BillingCycle[] = ["MONTHLY", "ANNUAL"];
 
   return (
-    <div
-      role="group"
-      aria-label={t("pricing.cycleLabel")}
-      className="ts-cycle"
-    >
+    <div role="group" aria-label={t("pricing.cycleLabel")} className="ts-cycle">
       {cycles.map((cycle) => (
         <button
           key={cycle}

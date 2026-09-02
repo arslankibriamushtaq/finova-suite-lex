@@ -201,7 +201,16 @@ export default function BusinessInfoStep() {
           }
         }
 
-        if (!found.emailVerified) setPart("verify");
+        // An unverified draft resumes at part ONE, not at the code screen.
+        //
+        // Two reasons, and the second is the bug this fixes. A challenge only
+        // exists for as long as the page that requested it, so a resumed verify
+        // screen had a code field, a Continue button and nothing behind either
+        // of them. And the server discloses only step-1 fields until the
+        // address is proven — so part one is the one screen whose contents we
+        // can actually show. Continuing from there re-sends the code, which is
+        // the documented path back in.
+        if (!found.emailVerified) setPart("company");
         else if (!found.adminProvided) setPart("details");
         else setPart("you");
       })
@@ -274,7 +283,25 @@ export default function BusinessInfoStep() {
 
   // --- part 2: prove the company address ---------------------------------
   const submitCode = async () => {
-    if (!draft || !challenge) return;
+    if (!draft) return;
+
+    // No challenge means no code has been sent yet — which is a state the
+    // buyer can reach by reloading. Send one rather than failing silently: a
+    // primary action that does nothing at all is the worst kind of bug,
+    // because there is nothing on screen to report.
+    if (!challenge) {
+      setBusy(true);
+      setFormError(null);
+      try {
+        await requestCode(draft.signupId);
+      } catch (error) {
+        setFormError(toTenantSignupError(error, t("common.error.generic")).message);
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
     if (!CODE_PATTERN.test(code)) {
       setErrors({ code: t("wizard.error.code") });
       return;
@@ -430,8 +457,12 @@ export default function BusinessInfoStep() {
   const goBack = () => {
     setFormError(null);
     setErrors({});
-    if (part === "company") navigate(TENANT_SIGNUP_ROUTES.pricing);
-    else if (part === "you") setPart("details");
+    // state.resume marks this as a step back inside the flow rather than a
+    // fresh arrival, so the pricing page keeps the basket instead of
+    // clearing it.
+    if (part === "company") {
+      navigate(TENANT_SIGNUP_ROUTES.pricing, { state: { resume: true } });
+    } else if (part === "you") setPart("details");
     else setPart("company");
   };
 
@@ -518,8 +549,11 @@ export default function BusinessInfoStep() {
             </FormRow>
           </div>
         ) : (
-          <p className="ts-fieldset__summary">
-            {form.companyName} · <span dir="ltr">{form.companyEmail}</span>
+          // A fixed separator prints a stray dot whenever one side is
+          // missing, and the server withholds the company name until the
+          // address is verified — so on a resume it printed exactly that.
+          <p className="ts-fieldset__summary" dir="ltr">
+            {[form.companyName, form.companyEmail].filter(Boolean).join(" · ")}
           </p>
         )}
       </section>
@@ -535,9 +569,9 @@ export default function BusinessInfoStep() {
           {part === "verify" ? (
             <div className="max-w-md">
               <p className="ts-xs mb-3.5 text-muted-foreground">
-                {t("wizard.verify.sub", {
-                  email: challenge?.maskedEmail || form.companyEmail,
-                })}
+                {challenge
+                  ? t("wizard.verify.sub", { email: challenge.maskedEmail || form.companyEmail })
+                  : t("wizard.verify.send")}
               </p>
 
               <FormRow id="code" label={t("wizard.verify.code")} required error={errors.code}>
@@ -548,6 +582,7 @@ export default function BusinessInfoStep() {
                   maxLength={6}
                   autoComplete="one-time-code"
                   className="ts-otp"
+                  disabled={!challenge}
                   value={code}
                   aria-invalid={Boolean(errors.code)}
                   onChange={(e) => {
@@ -849,7 +884,11 @@ export default function BusinessInfoStep() {
           loadingLabel={t("form.submitting")}
           className="sm:w-auto sm:min-w-40"
         >
-          {part === "you" ? t("form.submit") : t("form.next")}
+          {part === "you"
+            ? t("form.submit")
+            : part === "verify" && !challenge
+              ? t("wizard.verify.send")
+              : t("form.next")}
         </SubmitButton>
       </div>
     </form>

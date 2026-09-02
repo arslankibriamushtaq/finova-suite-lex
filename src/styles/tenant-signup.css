@@ -332,38 +332,25 @@
    they follow the theme and disappear correctly in dark mode. */
 .tenant-signup.ts-shell {
   min-height: 100vh;
-  padding: 1.5rem 1.25rem 2.5rem;
-  background-color: color-mix(in srgb, var(--foreground) 4%, var(--color-surface-page));
-}
-
-@media (max-width: 640px) {
-  .tenant-signup.ts-shell {
-    padding: 0;
-  }
+  background-color: var(--surface-card);
 }
 
 /* The whole journey lives in one framed card — header, rail, content and
    footer — so the rail can stop at the footer instead of running off the page.
    Fixed positioning cannot do that: it has no idea where the footer is. */
+/* The whole journey lives in one frame — header, rail, content and footer —
+   so the rail can stop at the footer instead of running off the page. Fixed
+   positioning cannot do that: it has no idea where the footer is.
+
+   Full-bleed rather than a centred card: on a wide screen the card left more
+   empty page either side of it than it used for the form, and the rail is a
+   piece of app furniture rather than a document. */
 .tenant-signup .ts-frame {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 78rem;
-  min-height: calc(100vh - 4rem);
-  margin-inline: auto;
-  overflow: hidden;
-  border-radius: 4px;
+  min-height: 100vh;
   background: var(--surface-card);
-  box-shadow: 0 20px 50px -40px rgba(0, 0, 0, 0.5);
-}
-
-@media (max-width: 640px) {
-  .tenant-signup .ts-frame {
-    min-height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-  }
 }
 
 .tenant-signup .ts-topbar,
@@ -372,7 +359,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.875rem 1.5rem;
+  padding: 0.875rem 2rem;
 }
 
 .tenant-signup .ts-topbar {
@@ -440,12 +427,12 @@
 
 @media (min-width: 900px) {
   .tenant-signup .ts-body {
-    grid-template-columns: 17rem minmax(0, 1fr);
+    grid-template-columns: 18rem minmax(0, 1fr);
   }
 }
 
 .tenant-signup .ts-aside {
-  padding: 2rem 1.25rem;
+  padding: 2.25rem 1.5rem;
   background: color-mix(in srgb, var(--foreground) 4%, var(--surface-card));
   border-block-end: 1px solid var(--surface-border);
 }
@@ -463,7 +450,7 @@
 
 @media (min-width: 900px) {
   .tenant-signup .ts-main {
-    padding: 2.5rem 2.5rem 3rem;
+    padding: 2.5rem 3rem 3rem;
   }
 }
 
