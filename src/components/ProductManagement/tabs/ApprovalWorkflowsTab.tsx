@@ -16,7 +16,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../ui/dialog"
-import { getApprovalWorkflowScenarios } from "../../../redux/apis/apisCrudProductManagement"
+import {
+  getLexReasonCodes,
+  type LexReasonCode,
+} from "../../../redux/apis/apisCrudProductManagement"
+import ReasonCodePicker, { ReasonCodeSummary } from "./ReasonCodePicker"
 
 interface ApprovalWorkflowsTabProps {
   formData: any
@@ -40,8 +44,6 @@ interface ApprovalWorkflowsTabProps {
   applyTemplateFromPreview: () => void
   errors?: Record<string, Record<string, string>>
 }
-const productId = sessionStorage.getItem("productId")
-
 // Helper function to map field values to display names
 const getFieldDisplayName = (field: string): string => {
   const fieldMap: Record<string, string> = {
@@ -54,6 +56,53 @@ const getFieldDisplayName = (field: string): string => {
   }
   return fieldMap[field] || field.replace(/_/g, " ")
 }
+
+/**
+ * The three kinds of workflow, with the colour, icon and one-line explanation
+ * each carries everywhere it appears.
+ *
+ * Colour does the explaining before the words do: green approves, amber sends
+ * it to a person, red refuses. The palette this replaced painted auto-approval
+ * and rejection in the same red — the one pair a reader must never confuse.
+ */
+const WORKFLOW_KINDS = {
+  manual: {
+    type: "manual" as const,
+    Icon: Clock,
+    tint: "bg-amber-100 text-amber-700",
+    badge: "border-amber-200 bg-amber-50 text-amber-700",
+    header: "bg-amber-50/50",
+    addKey: "workflows.addManual",
+    nameKey: "workflows.kindManual",
+    hintKey: "workflows.kindManualHint",
+  },
+  auto: {
+    type: "auto" as const,
+    Icon: Zap,
+    tint: "bg-emerald-100 text-emerald-700",
+    badge: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    header: "bg-emerald-50/50",
+    addKey: "workflows.addAuto",
+    nameKey: "workflows.kindAuto",
+    hintKey: "workflows.kindAutoHint",
+  },
+  rejection: {
+    type: "rejection" as const,
+    Icon: XCircle,
+    tint: "bg-red-100 text-red-700",
+    badge: "border-red-200 bg-red-50 text-red-700",
+    header: "bg-red-50/50",
+    addKey: "workflows.addRejection",
+    nameKey: "workflows.kindRejection",
+    hintKey: "workflows.kindRejectionHint",
+  },
+}
+
+/** A scenario loaded from the server can carry a type this page does not know. */
+const kindOf = (type: string) =>
+  WORKFLOW_KINDS[type as keyof typeof WORKFLOW_KINDS] || WORKFLOW_KINDS.manual
+
+const KIND_ORDER = [WORKFLOW_KINDS.manual, WORKFLOW_KINDS.auto, WORKFLOW_KINDS.rejection]
 
 export default function ApprovalWorkflowsTab({
   formData,
@@ -79,17 +128,41 @@ export default function ApprovalWorkflowsTab({
 }: ApprovalWorkflowsTabProps) {
   const { t } = useTranslation("productManagement2")
 
-  useEffect(() => {
-    getData();
-  }, [])
+  /**
+   * The LEX reason-code catalogue, fetched once for the whole tab.
+   *
+   * It belongs to the engine rather than to this product, so it is the same
+   * list for every condition on the page — fetching it per condition would be
+   * dozens of identical calls for one unchanging answer.
+   */
+  const [reasonCodes, setReasonCodes] = useState<LexReasonCode[]>([])
+  const [reasonCodesLoading, setReasonCodesLoading] = useState(true)
+  const [reasonCodesFailed, setReasonCodesFailed] = useState(false)
 
-  const getData = async () => {
-    if (!productId) {
-      console.warn("No productId found in sessionStorage.");
-      return;
+  useEffect(() => {
+    let cancelled = false
+
+    getLexReasonCodes()
+      .then((response) => {
+        if (cancelled) return
+        const list = Array.isArray(response?.data?.data) ? response.data.data : []
+        setReasonCodes(list)
+        setReasonCodesFailed(false)
+      })
+      .catch(() => {
+        // A catalogue that did not load must not block the rest of the tab:
+        // thresholds, actions and priorities are all still editable, and a
+        // condition saves with whatever reason code it already had.
+        if (!cancelled) setReasonCodesFailed(true)
+      })
+      .finally(() => {
+        if (!cancelled) setReasonCodesLoading(false)
+      })
+
+    return () => {
+      cancelled = true
     }
-    const response = await getApprovalWorkflowScenarios(productId);
-  };
+  }, [])
   return (
     <div className="space-y-6">
       <Card>
@@ -103,19 +176,29 @@ export default function ApprovalWorkflowsTab({
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button onClick={() => addApprovalScenario("manual")} variant="outline" className="gap-2">
-              <Clock className="h-4 w-4" />
-              {t("workflows.addManual")}
-            </Button>
-            <Button onClick={() => addApprovalScenario("auto")} variant="outline" className="gap-2">
-              <Zap className="h-4 w-4" />
-              {t("workflows.addAuto")}
-            </Button>
-            <Button onClick={() => addApprovalScenario("rejection")} variant="outline" className="gap-2">
-              <XCircle className="h-4 w-4" />
-              {t("workflows.addRejection")}
-            </Button>
+          {/* Three stretched outline buttons read as empty inputs and said
+              nothing about the difference between them. A tile carries the one
+              sentence that decides which of the three you want. */}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            {KIND_ORDER.map((kind) => (
+              <button
+                key={kind.type}
+                type="button"
+                onClick={() => addApprovalScenario(kind.type)}
+                className="group flex items-start gap-3 rounded-lg border bg-card p-4 text-start transition-colors hover:border-primary/40 hover:bg-accent/40"
+              >
+                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${kind.tint}`}>
+                  <kind.Icon className="h-4 w-4" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">{t(kind.addKey)}</span>
+                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                    {t(kind.hintKey)}
+                  </span>
+                </span>
+                <Plus className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+              </button>
+            ))}
           </div>
 
           {/* <Card className="bg-muted/50">
@@ -396,16 +479,24 @@ export default function ApprovalWorkflowsTab({
           </Dialog>
 
           {formData.approval_scenarios.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>
-                {t("workflows.noScenarios")}
+            <div className="rounded-lg border border-dashed px-6 py-10 text-center">
+              <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-muted">
+                <Settings className="h-5 w-5 text-muted-foreground" />
+              </span>
+              <p className="text-sm font-medium">{t("workflows.noScenarios")}</p>
+              <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
+                {t("workflows.noScenariosHint")}
               </p>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">{t("workflows.configuredWorkflows")}</h3>
+                <h3 className="text-base font-semibold">
+                  {t("workflows.configuredWorkflows")}
+                  <span className="ms-2 text-xs font-normal text-muted-foreground">
+                    {t("workflows.scenarioCount", { value: formData.approval_scenarios.length })}
+                  </span>
+                </h3>
                 <div className="flex gap-2">
                   {/* <Button
                     variant="outline"
@@ -422,58 +513,76 @@ export default function ApprovalWorkflowsTab({
 
               {formData.approval_scenarios.map((scenario: any) => {
                 const scenarioErrors = errors[scenario.id] || {}
+                const kind = kindOf(scenario.type)
+                const isEnabled = scenario.enabled ?? true
                 return (
-                <Card key={scenario.id} className="p-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {scenario.type === "manual" && <Clock className="h-5 w-5 text-orange-500" />}
-                        {scenario.type === "auto" && <Zap className="h-5 w-5 text-red-500" />}
-                        {scenario.type === "rejection" && <XCircle className="h-5 w-5 text-red-500" />}
-                        <div>
-                          <h3 className="text-lg font-medium">{scenario.name}</h3>
-                          <Badge
-                            variant={
-                              scenario.type === "auto"
-                                ? "default"
-                                : scenario.type === "rejection"
-                                  ? "destructive"
-                                  : "secondary"
-                            }
+                <Card key={scenario.id} className="gap-0 overflow-hidden p-0">
+                  {/* The header identifies the rule; the body edits it. Before,
+                      the name appeared twice — once as a heading and again in
+                      the field below it — and the type showed as a solid black
+                      pill that matched nothing else on the page. */}
+                  <div className={`flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 ${kind.header}`}>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${kind.tint}`}>
+                        <kind.Icon className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="truncate text-sm font-semibold">
+                          {scenario.name || t("workflows.untitledScenario")}
+                        </h3>
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                          <span
+                            className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${kind.badge}`}
                           >
-                            {scenario.type.charAt(0).toUpperCase() + scenario.type.slice(1)}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {/* <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                          }}
-                          className="gap-1"
-                        >
-                          <Save className="h-3 w-3" />
-                          Save
-                        </Button> */}
-                        {/* <Switch
-                          checked={scenario.enabled}
-                          onChange={(e: any) => updateApprovalScenario(scenario.id, "enabled", e.target.checked)}
-                        /> */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeApprovalScenario(scenario.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                            {t(kind.nameKey)}
+                          </span>
+                          <span>{t("workflows.priorityLabel", { value: scenario.priority || 1 })}</span>
+                        </p>
                       </div>
                     </div>
+                    <div className="flex items-center gap-3">
+                      {/* `active` has always been sent to the server and there
+                          was no way to set it — the only control was commented
+                          out, and wired to onChange, which a Radix switch never
+                          fires. */}
+                      {/* Associated by id rather than by wrapping: the switch
+                          renders a <button>, and a labelable control inside its
+                          own <label> is the classic double-toggle. */}
+                      <span className="flex items-center gap-2">
+                        <Switch
+                          id={`wf-active-${scenario.id}`}
+                          checked={isEnabled}
+                          onCheckedChange={(checked: boolean) =>
+                            updateApprovalScenario(scenario.id, "enabled", checked)
+                          }
+                        />
+                        <Label
+                          htmlFor={`wf-active-${scenario.id}`}
+                          className="cursor-pointer text-xs font-normal text-muted-foreground"
+                        >
+                          {isEnabled ? t("workflows.enabled") : t("workflows.disabled")}
+                        </Label>
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeApprovalScenario(scenario.id)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>{t("workflows.scenarioName")}</Label>
+                  <div className="space-y-6 p-4">
+                    {/* Priority is a small number and was given half the row;
+                        the description is a sentence and had no field at all,
+                        even though it is sent on every save. */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_7rem]">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                          {t("workflows.scenarioName")}
+                        </Label>
                         <Input
                           value={scenario.name}
                           onChange={(e: any) => updateApprovalScenario(scenario.id, "name", e.target.value)}
@@ -481,11 +590,13 @@ export default function ApprovalWorkflowsTab({
                           className={scenarioErrors.scenario_name ? "border-red-500" : ""}
                         />
                         {scenarioErrors.scenario_name && (
-                          <p className="text-sm text-red-500 mt-1">{scenarioErrors.scenario_name}</p>
+                          <p className="text-xs text-red-500">{scenarioErrors.scenario_name}</p>
                         )}
                       </div>
-                      <div className="space-y-2">
-                        <Label>{t("workflows.priority")}</Label>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                          {t("workflows.priority")}
+                        </Label>
                         <Input
                           type="number"
                           value={scenario.priority}
@@ -497,265 +608,390 @@ export default function ApprovalWorkflowsTab({
                       </div>
                     </div>
 
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium text-muted-foreground">
+                        {t("workflows.description")}
+                      </Label>
+                      <Input
+                        value={scenario.description || ""}
+                        onChange={(e: any) =>
+                          updateApprovalScenario(scenario.id, "description", e.target.value)
+                        }
+                        placeholder={t("workflows.descriptionPlaceholder")}
+                      />
+                    </div>
+
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">{t("workflows.conditions")}</h4>
+                      {/* WHEN … THEN. The two halves of a rule were headed
+                          "Conditions" and "Actions" and set in identical type,
+                          so the page read as two unrelated lists rather than as
+                          one sentence with a trigger and a consequence. */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded bg-muted px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            {t("workflows.when")}
+                          </span>
+                          <p className="text-xs text-muted-foreground">{t("workflows.whenHint")}</p>
+                        </div>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => addConditionToScenario(scenario.id)}
-                          className="gap-2"
+                          className="gap-2 shrink-0"
                         >
                           <Plus className="h-4 w-4" />
                           {t("workflows.addCondition")}
                         </Button>
                       </div>
 
+                      {scenario.conditions.length === 0 && (
+                        <p className="rounded-md border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
+                          {t("workflows.noConditions")}
+                        </p>
+                      )}
+
+                      {/* No vertical rhythm on the list itself: every gap
+                          between two cards holds exactly one AND/OR connector,
+                          so the connector's own padding spaces the list and the
+                          chip sits evenly between the cards it joins. */}
+                      <div>
                       {scenario.conditions.map((condition: any, conditionIndex: number) => {
                         const conditionErrorKey = `conditions.${conditionIndex}.operator`
                         const conditionError = scenarioErrors[conditionErrorKey]
-                        return (
-                        <div
-                          key={condition.id}
-                          className="space-y-2"
-                        >
-                          <div className="flex items-start gap-2">
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-3 border rounded flex-1">
-                            <Select
-                              value={condition.field}
-                              onValueChange={(value) => {
-                                const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                  s.id === scenario.id
-                                    ? {
-                                      ...s,
-                                      conditions: s.conditions.map((c: any) =>
-                                        c.id === condition.id ? { ...c, field: value } : c,
-                                      ),
-                                    }
-                                    : s,
-                                )
-                                updateFormData("approval_scenarios", updatedScenarios)
-                              }}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder={t("workflows.field")} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {conditionFields.map((field) => (
-                                  <SelectItem key={field} value={field}>
-                                    {getFieldDisplayName(field)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                        const isLast = conditionIndex === scenario.conditions.length - 1
 
-                            <div className="space-y-1">
-                              <Select
-                                value={condition.operator}
-                                onValueChange={(value) => {
+                        // One writer for every field on the card. The four
+                        // separate copies this replaced each rebuilt the whole
+                        // scenario array by hand, and each was a place for the
+                        // `c.id === condition.id` match to be got wrong.
+                        const patchCondition = (patch: Record<string, any>) => {
+                          const updatedScenarios = formData.approval_scenarios.map((s: any) =>
+                            s.id === scenario.id
+                              ? {
+                                ...s,
+                                conditions: s.conditions.map((c: any) =>
+                                  c.id === condition.id ? { ...c, ...patch } : c,
+                                ),
+                              }
+                              : s,
+                          )
+                          updateFormData("approval_scenarios", updatedScenarios)
+                        }
+
+                        const selectedReason = reasonCodes.find(
+                          (code) => code.referenceCode === condition.reasonCode,
+                        )
+
+                        return (
+                        <div key={condition.id} className="space-y-0">
+                          <div className="overflow-hidden rounded-md border bg-card">
+                            {/* The delete control lives in a header strip
+                                rather than floating beside the fields: nudged
+                                into line with a margin it drifted every time a
+                                label wrapped or an error appeared under the
+                                operator. */}
+                            <div className="flex items-center justify-between gap-2 border-b bg-muted/50 px-3 py-2">
+                              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                {t("workflows.conditionNumber", { number: conditionIndex + 1 })}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
                                   const updatedScenarios = formData.approval_scenarios.map((s: any) =>
                                     s.id === scenario.id
                                       ? {
                                         ...s,
-                                        conditions: s.conditions.map((c: any) =>
-                                          c.id === condition.id ? { ...c, operator: value } : c,
-                                        ),
+                                        conditions: s.conditions.filter((c: any) => c.id !== condition.id),
                                       }
                                       : s,
                                   )
                                   updateFormData("approval_scenarios", updatedScenarios)
                                 }}
+                                className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                               >
-                                <SelectTrigger className={conditionError ? "border-red-500" : ""}>
-                                  <SelectValue placeholder={t("workflows.operator")} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {conditionOperators.map((op) => (
-                                    <SelectItem key={op} value={op}>
-                                      {op}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              {conditionError && (
-                                <p className="text-sm text-red-500 mt-1">{conditionError}</p>
-                              )}
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
 
-                            <Input
-                              placeholder={t("workflows.value")}
-                              value={condition.value}
-                              onChange={(e) => {
-                                const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                  s.id === scenario.id
-                                    ? {
-                                      ...s,
-                                      conditions: s.conditions.map((c: any) =>
-                                        c.id === condition.id ? { ...c, value: e.target.value } : c,
-                                      ),
-                                    }
-                                    : s,
-                                )
-                                updateFormData("approval_scenarios", updatedScenarios)
-                              }}
-                            />
+                            <div className="space-y-3 p-3">
+                              {/* Three columns, not four. The logical operator
+                                  moved out to the connector below, where it
+                                  actually applies — it joins this condition to
+                                  the next one rather than describing this one,
+                                  and the width it gave back goes to the value. */}
+                              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                <div className="space-y-1.5">
+                                  <Label className="text-xs font-medium text-muted-foreground">
+                                    {t("workflows.field")}
+                                  </Label>
+                                  <Select
+                                    value={condition.field}
+                                    onValueChange={(value) => {
+                                      // The code was chosen against the old
+                                      // field, and left alone it would label,
+                                      // say, a DBR breach as an age failure.
+                                      // Only a code tied to a policy parameter
+                                      // is dropped: one with no parameter —
+                                      // document tampering, a restricted
+                                      // country — is not about the field at all
+                                      // and survives the change.
+                                      const linked = selectedReason?.linkedPolicyParameter
+                                      const stale = Boolean(linked) && linked !== value.toUpperCase()
+                                      patchCondition(
+                                        stale ? { field: value, reasonCode: null } : { field: value },
+                                      )
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder={t("workflows.field")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {conditionFields.map((field) => (
+                                        <SelectItem key={field} value={field}>
+                                          {getFieldDisplayName(field)}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
 
-                            <Select
-                              value={condition.logic}
-                              onValueChange={(value: string) => {
-                                const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                  s.id === scenario.id
-                                    ? {
-                                      ...s,
-                                      conditions: s.conditions.map((c: any) =>
-                                        c.id === condition.id ? { ...c, logic: value } : c,
-                                      ),
-                                    }
-                                    : s,
-                                )
-                                updateFormData("approval_scenarios", updatedScenarios)
-                              }}
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="AND">AND</SelectItem>
-                                <SelectItem value="OR">OR</SelectItem>
-                              </SelectContent>
-                            </Select>
+                                <div className="space-y-1.5">
+                                  <Label className="text-xs font-medium text-muted-foreground">
+                                    {t("workflows.operator")}
+                                  </Label>
+                                  <Select
+                                    value={condition.operator}
+                                    onValueChange={(value) => patchCondition({ operator: value })}
+                                  >
+                                    <SelectTrigger className={`w-full ${conditionError ? "border-red-500" : ""}`}>
+                                      <SelectValue placeholder={t("workflows.operator")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {conditionOperators.map((op) => (
+                                        <SelectItem key={op} value={op}>
+                                          {op}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  {conditionError && (
+                                    <p className="text-xs text-red-500">{conditionError}</p>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
+                                  <Label className="text-xs font-medium text-muted-foreground">
+                                    {t("workflows.value")}
+                                  </Label>
+                                  <Input
+                                    placeholder={t("workflows.value")}
+                                    value={condition.value}
+                                    onChange={(e) => patchCondition({ value: e.target.value })}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Full width, and aligned with the fields above
+                                  rather than set beside them: a reason code is
+                                  a sentence, and every layout that gave it a
+                                  column truncated the title it exists to show. */}
+                              <div className="space-y-1.5 border-t pt-3">
+                                <Label className="text-xs font-medium text-muted-foreground">
+                                  {t("workflows.reasonCode")}
+                                </Label>
+                                <ReasonCodePicker
+                                  reasonCodes={reasonCodes}
+                                  loading={reasonCodesLoading}
+                                  value={condition.reasonCode ?? null}
+                                  field={condition.field}
+                                  onChange={(referenceCode) => patchCondition({ reasonCode: referenceCode })}
+                                />
+                                {selectedReason && <ReasonCodeSummary code={selectedReason} />}
+                                {reasonCodesFailed && !selectedReason && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {t("workflows.reasonCodeFailed")}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                s.id === scenario.id
-                                  ? {
-                                    ...s,
-                                    conditions: s.conditions.filter((c: any) => c.id !== condition.id),
-                                  }
-                                  : s,
-                              )
-                              updateFormData("approval_scenarios", updatedScenarios)
-                            }}
-                            className="text-destructive hover:text-destructive mt-3"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                          </div>
+
+                          {/* AND / OR belongs between two conditions, not on
+                              one. On the last card it joins nothing, so it is
+                              not drawn — which also stops it reading as a
+                              property of the threshold above it. */}
+                          {!isLast && (
+                            <div className="flex items-center gap-3 py-3">
+                              <span className="h-px flex-1 bg-border" />
+                              <Select
+                                value={condition.logic || "AND"}
+                                onValueChange={(value: string) => patchCondition({ logic: value })}
+                              >
+                                <SelectTrigger
+                                  size="sm"
+                                  className="w-24 bg-card text-xs font-semibold uppercase tracking-wide"
+                                >
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="AND">AND</SelectItem>
+                                  <SelectItem value="OR">OR</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <span className="h-px flex-1 bg-border" />
+                            </div>
+                          )}
                         </div>
                         )
                       })}
+                      </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">{t("workflows.actions")}</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded bg-muted px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            {t("workflows.then")}
+                          </span>
+                          <p className="text-xs text-muted-foreground">{t("workflows.thenHint")}</p>
+                        </div>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => addActionToScenario(scenario.id)}
-                          className="gap-2"
+                          className="gap-2 shrink-0"
                         >
                           <Plus className="h-4 w-4" />
                           {t("workflows.addAction")}
                         </Button>
                       </div>
 
-                      {scenario.actions.map((action: any) => (
-                        <div
-                          key={action.id}
-                          className="flex items-start gap-2"
-                        >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 border rounded flex-1">
-                          <Select
-                            value={action.type}
-                            onValueChange={(value) => {
-                              const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                s.id === scenario.id
-                                  ? {
-                                    ...s,
-                                    actions: s.actions.map((a: any) =>
-                                      a.id === action.id ? { ...a, type: value } : a,
-                                    ),
-                                  }
-                                  : s,
-                              )
-                              updateFormData("approval_scenarios", updatedScenarios)
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={t("workflows.actionType")} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {actionTypes.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                      {scenario.actions.length === 0 && (
+                        <p className="rounded-md border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
+                          {t("workflows.noActions")}
+                        </p>
+                      )}
 
-                          <Input
-                            placeholder={t("workflows.actionValue")}
-                            value={action.value}
-                            onChange={(e) => {
-                              const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                s.id === scenario.id
-                                  ? {
-                                    ...s,
-                                    actions: s.actions.map((a: any) =>
-                                      a.id === action.id ? { ...a, value: e.target.value } : a,
-                                    ),
-                                  }
-                                  : s,
-                              )
-                              updateFormData("approval_scenarios", updatedScenarios)
-                            }}
-                          />
+                      {scenario.actions.map((action: any, actionIndex: number) => {
+                        // One writer for the whole row, matching the conditions
+                        // above — three hand-rolled copies of the same array
+                        // rebuild is three chances to get the id match wrong.
+                        const patchAction = (patch: Record<string, any>) => {
+                          const updatedScenarios = formData.approval_scenarios.map((s: any) =>
+                            s.id === scenario.id
+                              ? {
+                                ...s,
+                                actions: s.actions.map((a: any) =>
+                                  a.id === action.id ? { ...a, ...patch } : a,
+                                ),
+                              }
+                              : s,
+                          )
+                          updateFormData("approval_scenarios", updatedScenarios)
+                        }
 
-                          <Input
-                            type="number"
-                            placeholder={t("workflows.delayHours")}
-                            value={action.delay_hours || ""}
-                            onChange={(e) => {
-                              const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                                s.id === scenario.id
-                                  ? {
-                                    ...s,
-                                    actions: s.actions.map((a: any) =>
-                                      a.id === action.id
-                                        ? { ...a, delay_hours: Number(e.target.value) }
-                                        : a,
-                                    ),
-                                  }
-                                  : s,
-                              )
-                              updateFormData("approval_scenarios", updatedScenarios)
-                            }}
-                          />
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const updatedScenarios = formData.approval_scenarios.map((s: any) =>
-                              s.id === scenario.id
-                                ? {
-                                  ...s,
-                                  actions: s.actions.filter((a: any) => a.id !== action.id),
+                        // The engine takes configuration as a JSON string, so
+                        // the field cannot be anything but raw JSON — but it
+                        // can at least say when what is typed will not parse,
+                        // rather than failing silently on save.
+                        const configuration = action.configuration ?? action.value ?? ""
+                        let configurationBroken = false
+                        if (String(configuration).trim()) {
+                          try {
+                            JSON.parse(String(configuration))
+                          } catch {
+                            configurationBroken = true
+                          }
+                        }
+
+                        return (
+                        <div key={action.id} className="overflow-hidden rounded-md border bg-card">
+                          <div className="flex items-center justify-between gap-2 border-b bg-muted/50 px-3 py-2">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              {t("workflows.actionNumber", { number: actionIndex + 1 })}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const updatedScenarios = formData.approval_scenarios.map((s: any) =>
+                                  s.id === scenario.id
+                                    ? {
+                                      ...s,
+                                      actions: s.actions.filter((a: any) => a.id !== action.id),
+                                    }
+                                    : s,
+                                )
+                                updateFormData("approval_scenarios", updatedScenarios)
+                              }}
+                              className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          {/* Three bare inputs with nothing but placeholders —
+                              one of them holding raw JSON — were the least
+                              readable thing on the page. Labels, and the JSON
+                              marked as JSON. */}
+                          <div className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_7rem]">
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-muted-foreground">
+                                {t("workflows.actionType")}
+                              </Label>
+                              <Select
+                                value={action.type}
+                                onValueChange={(value) => patchAction({ type: value })}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder={t("workflows.actionType")} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {actionTypes.map((type) => (
+                                    <SelectItem key={type} value={type}>
+                                      {type}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-muted-foreground">
+                                {t("workflows.actionConfiguration")}
+                              </Label>
+                              <Input
+                                placeholder={"{}"}
+                                value={configuration}
+                                onChange={(e) =>
+                                  patchAction({ configuration: e.target.value, value: e.target.value })
                                 }
-                                : s,
-                            )
-                            updateFormData("approval_scenarios", updatedScenarios)
-                          }}
-                          className="text-destructive hover:text-destructive mt-3"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                                className={`font-mono text-xs ${configurationBroken ? "border-red-500" : ""}`}
+                              />
+                              <p className={`text-xs ${configurationBroken ? "text-red-500" : "text-muted-foreground"}`}>
+                                {configurationBroken
+                                  ? t("workflows.actionConfigurationInvalid")
+                                  : t("workflows.actionConfigurationHint")}
+                              </p>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-medium text-muted-foreground">
+                                {t("workflows.delayHours")}
+                              </Label>
+                              <Input
+                                type="number"
+                                min={0}
+                                placeholder="0"
+                                value={action.delay_hours || ""}
+                                onChange={(e) => patchAction({ delay_hours: Number(e.target.value) })}
+                              />
+                            </div>
+                          </div>
                         </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 </Card>

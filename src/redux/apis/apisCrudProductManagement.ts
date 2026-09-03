@@ -125,6 +125,28 @@ export function updateApprovalWorkflows(productId: string, body: any) {
   return axiosProductManagement.put(`/api/v1/products/${productId}/settings/approval-workflows`, body);
 }
 
+/**
+ * A LEX reason code — the decision engine's vocabulary for "why".
+ *
+ * A workflow condition names a threshold; the reason code names what breaching
+ * it MEANS downstream, which is what LEX routes and reports on. `routingType`
+ * decides where a hit lands (a delegation queue, a supervisor, back to the
+ * application source) and `linkedPolicyParameter` ties the code to the policy
+ * value it reads, which is how a code is matched to the field it belongs with.
+ */
+export interface LexReasonCode {
+  referenceCode: string;
+  title: string;
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" | string;
+  routingType: "DELEGATION" | "SUPERVISOR" | "APPLICATION_SOURCE" | string;
+  linkedPolicyParameter: string | null;
+}
+
+/** The catalogue is product-independent — it is the engine's, not one product's. */
+export function getLexReasonCodes() {
+  return axiosProductManagement.get(`/api/v1/products/lex/reason-codes`);
+}
+
 // ============================================================
 // Product Partners (Step 4 — Affiliations)
 // ============================================================

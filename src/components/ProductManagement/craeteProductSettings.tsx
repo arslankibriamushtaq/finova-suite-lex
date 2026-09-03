@@ -57,11 +57,15 @@ interface CreditScoringRule {
 interface ApprovalScenario {
   id: string
   name: string
+  name_ar?: string
+  description?: string
   type: "manual" | "auto" | "rejection"
   conditions: ApprovalCondition[]
   actions: ApprovalAction[]
   priority: number
   enabled: boolean
+  /** Stamped by the engine when a workflow came from a LEX template; null when hand-built. */
+  templateSource?: string | null
   creditScoringRules?: CreditScoringRule[]
   creditScoringField?: string
 }
@@ -72,6 +76,14 @@ interface ApprovalCondition {
   operator: string
   value: string
   logic: "AND" | "OR"
+  /**
+   * The LEX reason code raised when this condition matches, or null.
+   *
+   * Nullable on purpose: an auto-approval that passes has nothing to explain,
+   * while a rejection or a review without a code reaches LEX as an unlabelled
+   * decision it can neither route nor report on.
+   */
+  reasonCode?: string | null
 }
 
 interface ApprovalAction {
@@ -139,6 +151,30 @@ const mapOperatorToApiFormat = (operator: string): string => {
     "=": "equals",
     "<": "less_than",
     ">": "greater_than",
+  }
+  return operatorMap[operator] || operator
+}
+
+/**
+ * The inverse of the map above, so a saved workflow reloads into the same rows.
+ *
+ * The engine answers in both dialects — the long `greater_than_or_equal` this
+ * app sends and the short `GTE` a workflow created elsewhere carries — and
+ * neither matches a `SelectItem` value, so an unmapped operator reaches the
+ * select as an option it does not offer and the field renders blank.
+ */
+const mapOperatorFromApiFormat = (operator: string): string => {
+  const operatorMap: Record<string, string> = {
+    less_than_or_equal: "<=",
+    greater_than_or_equal: ">=",
+    equals: "=",
+    less_than: "<",
+    greater_than: ">",
+    LTE: "<=",
+    GTE: ">=",
+    EQ: "=",
+    LT: "<",
+    GT: ">",
   }
   return operatorMap[operator] || operator
 }
@@ -487,13 +523,21 @@ export default function CraeteProductSettings() {
                      : (w.type || "auto"),
                 enabled: w.active ?? w.enabled ?? true,
                 priority: w.priority || index + 1,
-                conditions: (w.conditions || []).map((c: any) => ({
+                templateSource: w.templateSource ?? null,
+                // Rows carry their own id even though the server sends none:
+                // every edit handler in the tab matches rows on it, and rows
+                // that all share `undefined` are all "the same row" — typing
+                // into one condition would rewrite every condition it has.
+                conditions: (w.conditions || []).map((c: any, ci: number) => ({
+                  id: c.id ? String(c.id) : `${index}-c${ci}-${Date.now()}`,
                   field: c.field || "",
-                  operator: c.operator || "",
+                  operator: mapOperatorFromApiFormat(c.operator || ""),
                   value: (c.value || "").replace(/^"|"$/g, ""),
                   logic: c.logicalOperator || "AND",
+                  reasonCode: c.reasonCode ?? null,
                 })),
-                actions: (w.actions || []).map((a: any) => ({
+                actions: (w.actions || []).map((a: any, ai: number) => ({
+                  id: a.id ? String(a.id) : `${index}-a${ai}-${Date.now()}`,
                   type: a.actionType === "APPROVE" ? "Auto Approval"
                        : a.actionType === "ASSIGN_REVIEWER" || a.actionType === "ESCALATE" ? "Manual Approval"
                        : a.actionType === "REJECT" ? "Reject"
@@ -732,6 +776,7 @@ export default function CraeteProductSettings() {
       operator: conditionOperators[0] || "<=",
       value: "",
       logic: "AND",
+      reasonCode: null,
     }
 
     // Create default action with first value
@@ -802,6 +847,7 @@ export default function CraeteProductSettings() {
       operator: conditionOperators[0] || "<=",
       value: "",
       logic: "AND",
+      reasonCode: null,
     }
 
     const updatedScenarios = formData.approval_scenarios.map((s: any) =>
@@ -1365,16 +1411,29 @@ export default function CraeteProductSettings() {
           nameEn: scenario.name || "",
           nameAr: scenario.name_ar || "",
           description: scenario.description || "",
+          // Echoed back rather than invented: the engine stamps this when a
+          // workflow comes from one of its templates, and a hand-built one is
+          // genuinely null.
+          templateSource: scenario.templateSource ?? null,
           active: scenario.enabled ?? true,
           priority: scenario.priority || 1,
           conditions: (scenario.conditions || []).map((condition: any, idx: number) => ({
             field: condition.field || "",
             operator: mapOperatorToApiFormat(condition.operator),
             value: String(condition.value ?? ""),
+            // Explicitly null rather than omitted or "": the column is nullable
+            // and an empty string would be stored as a reason code naming
+            // nothing.
+            reasonCode: condition.reasonCode || null,
             sortOrder: idx + 1,
           })),
           actions: (scenario.actions || []).map((action: any, idx: number) => ({
-            actionType: action.type === "Auto Approval" ? "APPROVE" : action.type === "Manual Review" ? "ESCALATE" : "REJECT",
+            // The option is labelled "Manual Approval" in the select, so the
+            // old match on "Manual Review" never fired and every manual action
+            // was saved as a REJECT.
+            actionType: action.type === "Auto Approval" ? "APPROVE"
+              : action.type === "Manual Approval" || action.type === "Manual Review" ? "ESCALATE"
+              : "REJECT",
             configuration: action.configuration || action.value || "{}",
             sortOrder: idx + 1,
           })),
