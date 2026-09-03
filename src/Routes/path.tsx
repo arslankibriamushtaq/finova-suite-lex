@@ -22,6 +22,7 @@ import PlatformPackages from "../pages/Platform/PlatformPackages";
 import PlatformInvoices from "../pages/Platform/PlatformInvoices";
 import TenantProfile from "../pages/TenantPortal/TenantProfile";
 import TenantSubscription from "../pages/TenantPortal/TenantSubscription";
+import TenantApiDocs from "../pages/TenantPortal/TenantApiDocs";
 import TenantEntitlements from "../pages/TenantPortal/TenantEntitlements";
 import TenantInvoices from "../pages/TenantPortal/TenantInvoices";
 import ThirdPartyDashboard from "../pages/ThirdPartyDashboard/ThirdPartyDashboard";
@@ -893,6 +894,7 @@ export const router = createBrowserRouter(
             // claim. No tenant id appears in any of these paths, deliberately.
             { path: "/TenantPortal/Profile", element: <TenantProfile /> },
             { path: "/TenantPortal/Subscription", element: <TenantSubscription /> },
+            { path: "/TenantPortal/ApiDocs", element: <TenantApiDocs /> },
             { path: "/TenantPortal/Entitlements", element: <TenantEntitlements /> },
             { path: "/TenantPortal/Invoices", element: <TenantInvoices /> },
 

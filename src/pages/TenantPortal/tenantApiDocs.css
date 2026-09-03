@@ -1,0 +1,528 @@
+/* ==========================================================================
+   Tenant portal — API documentation
+
+   Scoped to `.tn-docs`. Bootstrap and custom.scss are both loaded unlayered, so
+   a bare h2, h3, ul or button here is already styled by something that outranks
+   any Tailwind utility — which is why several rules below state what looks
+   obvious.
+   ========================================================================== */
+
+.tn-docs .tn-docs__code {
+  padding: 0.125rem 0.4rem;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* --- One service --------------------------------------------------------- */
+
+.tn-docs .tn-svc {
+  border: 1px solid var(--surface-border);
+  border-radius: 2px;
+  background: var(--surface-card);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.tn-docs .tn-svc[data-open="true"] {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--surface-border));
+}
+
+.tn-docs .tn-svc__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+
+.tn-docs .tn-svc__chev {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--primary);
+  transition: transform 0.18s ease;
+}
+
+.tn-docs .tn-svc[data-open="true"] .tn-svc__chev {
+  transform: rotate(180deg);
+}
+
+.tn-docs .tn-svc__name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* The address the tenant's own developers call. Monospace because it is copied
+   into their code, not read as prose. */
+.tn-docs .tn-svc__base {
+  display: block;
+  margin-top: 0.125rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.6875rem;
+  word-break: break-all;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-svc__body {
+  padding: 0 0.875rem 0.875rem;
+  border-block-start: 1px solid var(--surface-border);
+  padding-block-start: 0.875rem;
+}
+
+.tn-docs .tn-svc__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-warning) 8%, transparent);
+  font-size: 0.8125rem;
+}
+
+.tn-docs .tn-svc__error p {
+  margin: 0;
+  flex: 1 1 16rem;
+}
+
+/* --- The document -------------------------------------------------------- */
+
+.tn-docs .tn-doc__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block-end: 0.875rem;
+  margin-block-end: 0.875rem;
+  border-block-end: 1px solid var(--surface-border);
+}
+
+.tn-docs .tn-doc__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tn-docs .tn-doc__meta {
+  margin: 0.125rem 0 0;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-doc__empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-tag + .tn-tag {
+  margin-block-start: 1.25rem;
+}
+
+.tn-docs .tn-tag__name {
+  margin: 0 0 0.5rem;
+  /* custom.scss centres and enlarges bare headings from outside Tailwind's
+     layers, so both are stated rather than inherited. */
+  text-align: start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-ops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tn-docs .tn-op {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-block: 0.5rem;
+  border-block-start: 1px solid var(--surface-border);
+}
+
+.tn-docs .tn-op:first-child {
+  border-block-start: 0;
+}
+
+/* The method decides how much of the API a call can change, so it is the first
+   thing on the row and the only coloured thing on it. */
+.tn-docs .tn-op__method {
+  flex: 0 0 auto;
+  min-width: 3.75rem;
+  padding: 0.1875rem 0.375rem;
+  border-radius: 2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--muted-foreground);
+}
+
+.tn-docs .tn-op__method[data-method="get"] {
+  background: #0369a1;
+}
+
+.tn-docs .tn-op__method[data-method="post"] {
+  background: #15803d;
+}
+
+.tn-docs .tn-op__method[data-method="put"],
+.tn-docs .tn-op__method[data-method="patch"] {
+  background: #b45309;
+}
+
+.tn-docs .tn-op__method[data-method="delete"] {
+  background: var(--brand-700);
+}
+
+.tn-docs .tn-op__path {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  word-break: break-all;
+  color: var(--foreground);
+}
+
+.tn-docs .tn-op__dep {
+  margin-inline-start: 0.5rem;
+  padding: 0.0625rem 0.3125rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  font-family: inherit;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-op__summary {
+  margin: 0.125rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-op__params {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0.375rem 0 0;
+}
+
+.tn-docs .tn-op__params > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 2px;
+  font-size: 0.625rem;
+}
+
+.tn-docs .tn-op__params code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--foreground);
+}
+
+.tn-docs .tn-op__params em {
+  font-style: normal;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-op__params b {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* --- Gateway bar ---------------------------------------------------------
+   Every service base URL is this host plus a route prefix, so it is stated
+   once here rather than repeated down the page.
+   ------------------------------------------------------------------------ */
+.tn-docs .tn-gateway {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem;
+  margin-block-end: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--surface-border));
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface-card));
+}
+
+.tn-docs .tn-gateway__icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--primary);
+}
+
+.tn-docs .tn-gateway__label {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-gateway__url {
+  margin: 0.125rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  word-break: break-all;
+  color: var(--foreground);
+}
+
+.tn-docs .tn-gateway__meta {
+  margin-inline-start: auto;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-docs__bundle {
+  padding: 0.125rem 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-svc__count {
+  flex: 0 0 auto;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+/* --- Filter --------------------------------------------------------------
+   Scoped to one document. A page-wide search would mean fetching every service
+   to answer it, which is the cost the lazy load exists to avoid.
+   ------------------------------------------------------------------------ */
+.tn-docs .tn-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-block-end: 0.875rem;
+}
+
+.tn-docs .tn-filter__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 14rem;
+  min-width: 0;
+  height: 32px;
+  padding-inline: 0.625rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 2px;
+  background: var(--surface-card);
+}
+
+.tn-docs .tn-filter__search svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+}
+
+.tn-docs .tn-filter__search input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-size: 0.75rem;
+  color: var(--foreground);
+  outline: none;
+}
+
+.tn-docs .tn-filter__methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tn-docs .tn-filter__methods button {
+  padding: 0.1875rem 0.5rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 2px;
+  background: var(--surface-card);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.tn-docs .tn-filter__methods button[data-active="true"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* --- Tag count and row actions ------------------------------------------ */
+
+.tn-docs .tn-tag__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tn-docs .tn-tag__name span {
+  padding: 0 0.375rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+.tn-docs .tn-op__responses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.375rem 0 0;
+}
+
+.tn-docs .tn-op__responses span {
+  padding: 0.0625rem 0.3125rem;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.625rem;
+  color: var(--muted-foreground);
+}
+
+/* A 2xx is the one a reader is looking for; the rest are the ways it can go
+   wrong, and colouring them all alike hides that. */
+.tn-docs .tn-op__responses span[data-ok="true"] {
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+  color: #15803d;
+}
+
+/* Appears on hover or keyboard focus. Always on, it would put a button on every
+   row of a list that is meant to be read. */
+.tn-docs .tn-op__copy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--muted-foreground);
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.tn-docs .tn-op:hover .tn-op__copy,
+.tn-docs .tn-op__copy:focus-visible {
+  opacity: 1;
+}
+
+.tn-docs .tn-op__copy:hover {
+  border-color: var(--surface-border);
+  color: var(--primary);
+}
+
+.tn-docs .tn-op__copy svg {
+  width: 13px;
+  height: 13px;
+}
+
+.tn-docs .tn-op {
+  align-items: center;
+}
+
+/* --- Product header and per-service save --------------------------------- */
+
+.tn-docs .tn-prod__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-block-end: 0.75rem;
+}
+
+/* The toggle and the save sit side by side rather than nested: a button inside
+   a button is invalid markup, and a save that also expanded the row it saved
+   from would be doing two things on one click. */
+.tn-docs .tn-svc__row {
+  display: flex;
+  align-items: center;
+}
+
+.tn-docs .tn-svc__row .tn-svc__head {
+  flex: 1;
+  min-width: 0;
+}
+
+.tn-docs .tn-svc__dl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin-inline-end: 0.625rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+/* A tinted disc rather than an outlined box: the row already has a border, and
+   a second rectangle inside it reads as a field rather than a button. */
+.tn-docs .tn-svc__dl:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.tn-docs .tn-svc__dl:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.tn-docs .tn-svc__dl:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.tn-docs .tn-svc__dl svg {
+  width: 15px;
+  height: 15px;
+}

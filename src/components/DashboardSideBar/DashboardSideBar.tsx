@@ -12,39 +12,40 @@ import SubHeaderFlowLms from "../DashboardHeader/SubHeaderFlowLms";
 import { useTranslation } from "react-i18next";
 import { FaMobileAlt, FaTimes } from "react-icons/fa";
 import {
-  LayoutDashboard,
-  Bell,
-  Users,
-  Package,
-  CreditCard,
-  ListChecks,
-  ShieldAlert,
-  ShieldCheck,
-  Ban,
-  Landmark,
-  Banknote,
-  FileBarChart2,
-  BarChart3,
-  HandCoins,
-  Settings as SettingsIcon,
-  Plug,
-  Wallet,
   ArrowLeftRight,
-  SlidersHorizontal,
-  Contact,
-  ScrollText,
-  Send,
-  BookOpen,
-  Gauge,
-  ShoppingBag,
-  QrCode,
-  ScanLine,
-  Coins,
+  Ban,
+  Banknote,
+  BarChart3,
+  Bell,
   Bitcoin,
+  BookOpen,
   BrainCircuit,
   Building2,
-  ReceiptText,
+  Code2,
+  Coins,
+  Contact,
+  CreditCard,
+  FileBarChart2,
+  Gauge,
+  HandCoins,
+  Landmark,
+  LayoutDashboard,
+  ListChecks,
   type LucideIcon,
+  Package,
+  Plug,
+  QrCode,
+  ReceiptText,
+  ScanLine,
+  ScrollText,
+  Send,
+  Settings as SettingsIcon,
+  ShieldAlert,
+  ShieldCheck,
+  ShoppingBag,
+  SlidersHorizontal,
+  Users,
+  Wallet,
 } from "lucide-react";
 
 /* Per-module color + icon registry. Each sidebar module gets its own brand
@@ -105,6 +106,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   // purpose — one is a register of customers, the other is a bill.
   "tenant management": { Icon: Building2, color: "#0ea5e9" },
   "my subscription": { Icon: ReceiptText, color: "#a855f7" },
+  "api documentation": { Icon: Code2, color: "#0d9488" },
 };
 
 const DEFAULT_MI_COLOR = "#C81D25";
@@ -1517,101 +1519,101 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // group into their sidebar. Require the lending module too.
         hasAccess("LENDING_READ") &&
           hasAccess("POLICY_READ") && {
-          label: "Setting",
-          Link: "notification",
-          img: Images.SettingsIcon,
-          // Scope to /Lms/Setting/* so it doesn't also match /LOS/Setting/*
-          // (the Access Control Management group). Exclude GeneralCreditScoring —
-          // that page belongs to the top-level "General Setting" item, so this
-          // submenu must not claim it (which would auto-open the LMS dropdown).
-          active:
-            pathname.includes("/Lms/Setting") &&
-            !pathname.includes("/Lms/Setting/GeneralCreditScoring"),
-          submenu: [
-            // {
-            //   label: "Product Management",
-            //   Link: "ProductManagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/Lms/Setting/ProductManagement",
-            // },
-            // {
-            //   label: "Product Fee",
-            //   Link: "ProductFee",
-            //   LinkLable: "/Lms/Setting",
-            //   active: pathname.includes("/Lms/Setting/ProductFee"),
-            // },
-            // hasAccess("delinquency_module") &&
-            hasAccess("POLICY_READ") && {
-              label: "Delinquency",
-              Link: "Deliquency",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/Deliquency"),
-            },
-            hasAccess("POLICY_READ") && {
-              label: "Rescheduling",
-              Link: "Rescheduling",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/Rescheduling"),
-            },
-            hasAccess("POLICY_READ") && {
-              label: "Dunning Policy",
-              Link: "DunningPolicy",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/DunningPolicy"),
-            },
-            // hasAccess("workflow_mapping_module") &&
-            // {
-            //   label: "Work Flow Mapping",
-            //   Link: "WorkFlowMapping",
-            //   LinkLable: "/Lms/Setting",
-            //   active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
-            // },
-            // // hasAccess("invoice_management_admin_module") &&
-            // {
-            //   label: "Invoice Setting",
-            //   Link: "InvoiceSetting",
-            //   LinkLable: "/Lms/Setting",
-            //   active: pathname.includes("/Lms/Setting/InvoiceSetting"),
-            // },
-            // {
-            //   label: "Calculator",
-            //   Link: "Calculator",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/Lms/Setting/Calculator",
-            // },
-            // {
-            //   label: "Search Function",
-            //   Link: "pdcmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/pdcmanagement",
-            // },
+            label: "Setting",
+            Link: "notification",
+            img: Images.SettingsIcon,
+            // Scope to /Lms/Setting/* so it doesn't also match /LOS/Setting/*
+            // (the Access Control Management group). Exclude GeneralCreditScoring —
+            // that page belongs to the top-level "General Setting" item, so this
+            // submenu must not claim it (which would auto-open the LMS dropdown).
+            active:
+              pathname.includes("/Lms/Setting") &&
+              !pathname.includes("/Lms/Setting/GeneralCreditScoring"),
+            submenu: [
+              // {
+              //   label: "Product Management",
+              //   Link: "ProductManagement",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/Lms/Setting/ProductManagement",
+              // },
+              // {
+              //   label: "Product Fee",
+              //   Link: "ProductFee",
+              //   LinkLable: "/Lms/Setting",
+              //   active: pathname.includes("/Lms/Setting/ProductFee"),
+              // },
+              // hasAccess("delinquency_module") &&
+              hasAccess("POLICY_READ") && {
+                label: "Delinquency",
+                Link: "Deliquency",
+                LinkLable: "/Lms/Setting",
+                active: pathname.includes("/Lms/Setting/Deliquency"),
+              },
+              hasAccess("POLICY_READ") && {
+                label: "Rescheduling",
+                Link: "Rescheduling",
+                LinkLable: "/Lms/Setting",
+                active: pathname.includes("/Lms/Setting/Rescheduling"),
+              },
+              hasAccess("POLICY_READ") && {
+                label: "Dunning Policy",
+                Link: "DunningPolicy",
+                LinkLable: "/Lms/Setting",
+                active: pathname.includes("/Lms/Setting/DunningPolicy"),
+              },
+              // hasAccess("workflow_mapping_module") &&
+              // {
+              //   label: "Work Flow Mapping",
+              //   Link: "WorkFlowMapping",
+              //   LinkLable: "/Lms/Setting",
+              //   active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
+              // },
+              // // hasAccess("invoice_management_admin_module") &&
+              // {
+              //   label: "Invoice Setting",
+              //   Link: "InvoiceSetting",
+              //   LinkLable: "/Lms/Setting",
+              //   active: pathname.includes("/Lms/Setting/InvoiceSetting"),
+              // },
+              // {
+              //   label: "Calculator",
+              //   Link: "Calculator",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/Lms/Setting/Calculator",
+              // },
+              // {
+              //   label: "Search Function",
+              //   Link: "pdcmanagement",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/pdcmanagement",
+              // },
 
-            // {
-            //   label: "Securization",
-            //   Link: "escrowmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/escrowmanagement",
-            // },
-            // {
-            //   label: "Tools",
-            //   Link: "transactionmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/transactionmanagement",
-            // },
-            // {
-            //   label: "Interface",
-            //   Link: "pdcmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/pdcmanagement",
-            // },
-            // {
-            //   label: "Pending Event Actions",
-            //   Link: "escrowmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/escrowmanagement",
-            // },
-          ].filter(Boolean),
-        },
+              // {
+              //   label: "Securization",
+              //   Link: "escrowmanagement",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/escrowmanagement",
+              // },
+              // {
+              //   label: "Tools",
+              //   Link: "transactionmanagement",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/transactionmanagement",
+              // },
+              // {
+              //   label: "Interface",
+              //   Link: "pdcmanagement",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/pdcmanagement",
+              // },
+              // {
+              //   label: "Pending Event Actions",
+              //   Link: "escrowmanagement",
+              //   LinkLable: "Setting",
+              //   active: pathname == "/escrowmanagement",
+              // },
+            ].filter(Boolean),
+          },
         // hasAccess("system_logs_module") &&
         // {
         //   label: "Logs",
@@ -2537,7 +2539,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const tenantPortalModule = !isSuperAdmin && {
     label: "My Subscription",
     Link: "/TenantPortal/Subscription",
-    active: pathname.startsWith("/TenantPortal"),
+    // Its own pages only. `startsWith("/TenantPortal")` also matched the API
+    // documentation once that became a module of its own, so both groups lit
+    // up at the same time.
+    active: pathname.startsWith("/TenantPortal") && !pathname.startsWith("/TenantPortal/ApiDocs"),
     menu: [
       {
         label: "Company Profile",
@@ -2564,6 +2569,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         active: pathname.startsWith("/TenantPortal/Invoices"),
       },
     ],
+  };
+
+  // A group of one, deliberately. It is a reference manual rather than part
+  // of managing a subscription, and burying it under "My Subscription" put it
+  // two clicks from a developer who came to the console for nothing else.
+  //
+  // No permission gate here beyond "not the platform operator": the endpoint
+  // checks tenant-portal.api-docs:read itself and the page renders what it is
+  // told, so a gate copied here would be a second rule to keep in step.
+  const tenantApiDocsModule = !isSuperAdmin && {
+    label: "API Documentation",
+    Link: "/TenantPortal/ApiDocs",
+    active: pathname.startsWith("/TenantPortal/ApiDocs"),
   };
 
   const walletItems: any[] = [
@@ -2954,6 +2972,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     ...accountingItems,
     platformTenantModule,
     tenantPortalModule,
+    tenantApiDocsModule,
     // hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK", "LEX"]) &&
     {
       label: "Financing",
@@ -3279,7 +3298,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               {walletItems.map((item, index) => (
                 <React.Fragment key={index}>
                   {!item ? null : item.menu ? (
-                    hasVisibleChildren(item) ? renderSubmenu(item, index) : null
+                    hasVisibleChildren(item) ? (
+                      renderSubmenu(item, index)
+                    ) : null
                   ) : (
                     <div
                       className="menu-items css-12w9als"

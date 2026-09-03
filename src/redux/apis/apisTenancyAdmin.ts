@@ -482,3 +482,101 @@ export function getMyInvoice(invoiceId: string): Promise<Invoice> {
     .get(`/tenant-portal/invoices/${encodeURIComponent(invoiceId)}`)
     .then(unwrap<Invoice>);
 }
+
+// ---------------------------------------------------------------------------
+// Tenant portal — API documentation
+// ---------------------------------------------------------------------------
+
+export interface ApiDocService {
+  serviceCode: string;
+  nameEn: string;
+  nameAr: string;
+  /** Kong's route prefix for the service. */
+  gatewayPath: string;
+  /** Where the tenant's own developers call it. */
+  publicBaseUrl: string;
+  /** Relative to this service's base — prefixed like every other call here. */
+  specUrl: string;
+  /** identity-service module codes the service belongs to. Informational. */
+  modules: string[];
+}
+
+export interface ApiDocProduct {
+  packageCode: string;
+  nameEn: string;
+  nameAr: string;
+  bundle: boolean;
+  services: ApiDocService[];
+}
+
+export interface ApiDocsIndex {
+  gatewayPublicUrl: string;
+  products: ApiDocProduct[];
+}
+
+/**
+ * What this tenant is entitled to read.
+ *
+ * One product per package on the active subscription, in catalog order, with
+ * Core last. A service can legitimately appear under more than one product —
+ * PRODUCT belongs to both LOS and LMS — and that is not a duplicate to clean
+ * up: it is the same document reachable from either place the buyer thinks of
+ * it.
+ *
+ * An empty list is a real answer (no active subscription, Core hidden by
+ * config), not an error.
+ */
+export function getApiDocsIndex(): Promise<ApiDocsIndex> {
+  return axiosTenancy.get("/tenant-portal/api-docs").then(unwrap<ApiDocsIndex>);
+}
+
+/**
+ * One service's OpenAPI 3 document.
+ *
+ * Returned RAW — no platform envelope — so this deliberately does not unwrap.
+ * A failure still arrives enveloped with a `code`, which is why the caller
+ * must branch on that rather than on the shape of what came back.
+ *
+ * Entitlement is re-checked here, not only on the index: a stale specUrl for a
+ * package the tenant has since dropped answers SERVICE_NOT_ENTITLED.
+ */
+export function getOpenApiDocument(specUrl: string): Promise<OpenApiDocument> {
+  // The index gives an absolute path under this service's own API root, and
+  // the axios instance is already based there — so the shared prefix is
+  // stripped rather than concatenated into a doubled path.
+  const path = specUrl.replace(/^\/api\/v1/, "");
+  return axiosTenancy.get(path).then((res) => res.data as OpenApiDocument);
+}
+
+// --- Just enough of OpenAPI to render it ------------------------------------
+//
+// Not a full OpenAPI 3 type: the page lists operations and their parameters and
+// responses, and typing the whole specification to do that would be a schema
+// nobody reads kept in step with a document nobody validates against.
+
+export interface OpenApiParameter {
+  name: string;
+  in: string;
+  required?: boolean;
+  description?: string;
+  schema?: { type?: string; format?: string };
+}
+
+export interface OpenApiOperation {
+  tags?: string[];
+  summary?: string;
+  description?: string;
+  operationId?: string;
+  parameters?: OpenApiParameter[];
+  requestBody?: { required?: boolean; content?: Record<string, unknown> };
+  responses?: Record<string, { description?: string }>;
+  deprecated?: boolean;
+}
+
+export interface OpenApiDocument {
+  openapi?: string;
+  info?: { title?: string; version?: string; description?: string };
+  servers?: { url?: string; description?: string }[];
+  tags?: { name: string; description?: string }[];
+  paths?: Record<string, Record<string, OpenApiOperation>>;
+}
