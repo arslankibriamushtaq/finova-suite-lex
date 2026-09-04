@@ -690,12 +690,40 @@ const TimelineRow = ({
   );
 };
 
+/**
+ * A month marker: a banner with a real point at the spine end.
+ *
+ * The edge facing the spine used to be `rounded-md`, which is 2px in this app,
+ * so it read as a plain square end — the pill looked like it happened to stop
+ * near the timeline rather than like it was aimed at it. `clip-path` cuts the
+ * actual chevron; the far end keeps its full radius, so the shape still reads
+ * as a tag, and the whole thing still scales with the label.
+ *
+ * Three things make the difference between a chevron and a dent:
+ *
+ *   - Depth. At 10px against a ~34px band the angle came out around 120°,
+ *     which reads as a nudge rather than as a point. 14px brings it close to
+ *     the 90° that arrow shapes are normally cut at.
+ *   - A blunted tip. A polygon vertex is infinitely sharp, and at this size
+ *     that renders as a single stray antialiased pixel. Two vertices 2px apart
+ *     leave a flat that is too small to read as a flat but wide enough to
+ *     resolve cleanly — the same reason a good arrowhead is never a needle.
+ *   - A shadow that follows the shape. `box-shadow` is painted outside the
+ *     box, so clip-path deletes it entirely and `shadow-sm` here was a class
+ *     that claimed a shadow and drew none. `drop-shadow` filters the rendered
+ *     pixels, so it traces the point.
+ *
+ * The padding on the pointed side is not decoration either: those 14px are
+ * clipped away, and without it the first letter sits inside the point.
+ */
 const MonthPill = ({ label, side }: { label: string; side: Side }) => (
   <span
     className={cn(
-      "relative my-3 inline-block bg-[var(--evt)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm",
-      /* Pointed at the spine, rounded away from it — the mock's tag shape. */
-      side === "left" ? "mr-2 rounded-l-full rounded-r-md" : "ml-2 rounded-r-full rounded-l-md"
+      "relative my-3 inline-block bg-[var(--evt)] py-1.5 text-xs font-semibold uppercase tracking-wider text-white",
+      "[filter:drop-shadow(0_1px_2px_color-mix(in_srgb,var(--evt)_40%,transparent))]",
+      side === "left"
+        ? "mr-2 rounded-l-full pl-5 pr-7 [clip-path:polygon(0_0,calc(100%_-_14px)_0,100%_calc(50%_-_1px),100%_calc(50%_+_1px),calc(100%_-_14px)_100%,0_100%)]"
+        : "ml-2 rounded-r-full pl-7 pr-5 [clip-path:polygon(14px_0,100%_0,100%_100%,14px_100%,0_calc(50%_+_1px),0_calc(50%_-_1px))]"
     )}
   >
     {label}
@@ -715,7 +743,13 @@ const EventCard = ({ event, side }: { event: TimelineEvent; side: Side }) => {
         // 2px — so the cards rendered square while the year and month pills
         // beside them were fully rounded. An explicit value opts this page's
         // cards out of that without touching the token everything else uses.
-        "relative my-3 w-full max-w-sm rounded-[10px] border px-4 py-3.5 shadow-sm transition-shadow hover:shadow-md",
+        // `border-x border-y`, not `border`: Bootstrap ships an unlayered
+        // `.border { border: … !important }` SHORTHAND, so the bare class was
+        // overwriting this card's accent border-color with a flat Bootstrap
+        // grey. The tail never matched because it does not use that class name
+        // — the card was the one that had been wrong all along. Bootstrap has
+        // no .border-x / .border-y, so these reach the element untouched.
+        "relative my-3 w-full max-w-sm rounded-[10px] border-x border-y px-4 py-3.5 shadow-sm transition-shadow hover:shadow-md",
         CARD_SURFACE,
         side === "left" ? "mr-3" : "ml-3"
       )}
@@ -724,12 +758,15 @@ const EventCard = ({ event, side }: { event: TimelineEvent; side: Side }) => {
         Tail — a rotated square wearing the card's own surface and border, so it
         reads as the card pointing at the spine.
 
-        It used to sit at -6px with a 10px box, which put its centre a pixel
-        OUTSIDE the card: the inner half never covered the card's own border, so
-        the two met at a seam and it read as a loose diamond rather than as an
-        arrow. Half the box (size-3 → -1.5) lands the centre exactly on the edge
-        — the tail is a child, so its background paints over the border it
-        overlaps and the join disappears.
+        The offset is 6.5px against a 12px box — half the box, plus a further
+        half pixel out. Centre-on-the-edge (6px) is where the geometry says the
+        vertices belong, but it is not where they LOOK right: the two visible
+        borders are strokes on a rotated box, they antialias across roughly a
+        pixel and a half of diagonal, and the rounded tip shortens them again.
+        The half pixel is the correction for all of that, arrived at by looking
+        at the rendered thing rather than by deriving it. The diamond's inner
+        half is opaque and is a child, so it still paints over the stretch of
+        the card's border it crosses.
 
         Only the outward corner is rounded. Rounding all four would notch the
         two that meet the card edge, and those are the ones that have to vanish
@@ -741,8 +778,8 @@ const EventCard = ({ event, side }: { event: TimelineEvent; side: Side }) => {
           "absolute top-1/2 size-3 -translate-y-1/2 rotate-45",
           CARD_SURFACE,
           side === "left"
-            ? "-right-1.5 rounded-tr-[3px] border-r border-t"
-            : "-left-1.5 rounded-bl-[3px] border-b border-l"
+            ? "-right-[6.5px] rounded-tr-[3px] border-r border-t"
+            : "-left-[6.5px] rounded-bl-[3px] border-b border-l"
         )}
       />
 
