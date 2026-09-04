@@ -366,19 +366,47 @@ const AccountTimeline = () => {
 
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="acct-timeline flex flex-col gap-4 p-4 md:p-6">
-      {/* A global heading rule oversizes h1/h2 — pin them for this page, and give
-          every card the project's surface + brand-tinted border. */}
+      {/* A global heading rule oversizes h1/h2 — pin them for this page.
+          The card border and shadow used to be mixed from the brand red, and
+          red diluted into a near-white surface is pink: the frame read as
+          coloured without carrying any meaning. Both are neutral now, and the
+          red is left for the timeline dots, which do mean something. */}
       <style>{`
         .acct-timeline h1 { font-size: 1.125rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .acct-timeline h2 { font-size: 0.9375rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .acct-timeline [data-slot="card"] {
           background-color: var(--surface-card) !important;
           background-image: none !important;
-          border-color: color-mix(in srgb, var(--primary) 16%, var(--surface-border)) !important;
+          border-color: var(--surface-border) !important;
           color: var(--foreground) !important;
-          box-shadow: 0 1px 2px color-mix(in srgb, var(--primary) 6%, transparent),
-                      0 8px 20px -16px color-mix(in srgb, var(--primary) 35%, transparent) !important;
+          box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 7%, transparent) !important;
         }
+        /* Every filter bar in the app is 34px tall at 12px (index.css, "Compact
+           filter bars in page headers"). Those rules only reach controls inside
+           .pro-card / .no-card, which this page is not, so it had drifted to
+           36px at 14px — bigger than every other filter row in the product. */
+        .acct-timeline .tl-filters [data-slot="select-trigger"],
+        .acct-timeline .tl-filters input[type="date"] {
+          height: 34px !important;
+          min-height: 34px !important;
+          font-size: 12px !important;
+        }
+        /* Chrome renders the date segments in a shadow tree that does not pick
+           up the field's size on its own, so the same 12px is stated for it —
+           without this the two date fields sit a size above their neighbours. */
+        .acct-timeline .tl-filters input[type="date"]::-webkit-datetime-edit {
+          font-size: 12px;
+          font-family: inherit;
+        }
+        /* A native date field cannot be restyled into a Select, but it can stop
+           advertising the difference: the browser's picker button is loud by
+           default and sat next to four quiet ones. */
+        .acct-timeline input[type="date"]::-webkit-calendar-picker-indicator {
+          opacity: 0.45;
+          cursor: pointer;
+          transition: opacity 0.15s ease;
+        }
+        .acct-timeline input[type="date"]:hover::-webkit-calendar-picker-indicator { opacity: 0.75; }
       `}</style>
 
       {/* Header — back link, identity, event count, filters */}
@@ -412,23 +440,32 @@ const AccountTimeline = () => {
           ) : null}
         </div>
 
-        <div className="flex flex-wrap items-end justify-between gap-5 px-5 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-              {initials || <UserRound className="size-5" />}
+        {/* Identity and filters were one `justify-between` row. Five controls
+            never fit beside a name, so they wrapped to their own line anyway —
+            but left-aligned under a right-aligned block, which is what opened
+            the gap on the right. Two rows do deliberately what the wrap was
+            doing by accident. */}
+        <div className="flex items-center gap-3 px-5 py-4">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-full border bg-muted text-sm font-semibold text-foreground">
+            {initials || <UserRound className="size-5" />}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              {data?.cifNumber || "—"}
             </div>
-            <div>
-              <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                {data?.cifNumber || "—"}
-              </div>
-              <div className="text-base font-semibold text-foreground">{data?.customerName || "—"}</div>
+            <div className="truncate text-base font-semibold text-foreground">
+              {data?.customerName || "—"}
             </div>
           </div>
+        </div>
 
+        {/* The filter bar reads as a control strip rather than as more of the
+            card, so the eye can skip it on the way to the timeline. */}
+        <div className="tl-filters border-t bg-muted/40 px-5 py-2.5">
           <div className="flex flex-wrap items-end gap-3">
             <Filter label={t("timeline.filter.month")}>
               <Select value={month} onValueChange={setMonth} disabled={year === ALL}>
-                <SelectTrigger className="h-9 w-[168px]">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t("timeline.filter.allMonths")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -444,7 +481,7 @@ const AccountTimeline = () => {
 
             <Filter label={t("timeline.filter.year")}>
               <Select value={year} onValueChange={handleYearChange}>
-                <SelectTrigger className="h-9 w-[140px]">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t("timeline.filter.allYears")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -464,7 +501,7 @@ const AccountTimeline = () => {
                 value={from}
                 max={to || undefined}
                 onChange={(e) => setFrom(e.target.value)}
-                className="h-9 w-[150px] rounded-md border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                className="border-input w-full rounded-md border bg-transparent px-3 text-foreground shadow-xs outline-none focus:border-ring"
               />
             </Filter>
 
@@ -474,13 +511,13 @@ const AccountTimeline = () => {
                 value={to}
                 min={from || undefined}
                 onChange={(e) => setTo(e.target.value)}
-                className="h-9 w-[150px] rounded-md border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                className="border-input w-full rounded-md border bg-transparent px-3 text-foreground shadow-xs outline-none focus:border-ring"
               />
             </Filter>
 
             <Filter label={t("timeline.filter.category")}>
               <Select value={category} onValueChange={setCategory} disabled={categories.length === 0}>
-                <SelectTrigger className="h-9 w-[176px]">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t("timeline.filter.allCategories")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -495,7 +532,7 @@ const AccountTimeline = () => {
             </Filter>
 
             {hasFilters ? (
-              <Button variant="ghost" className="h-9 gap-1.5 text-muted-foreground" onClick={clearFilters}>
+              <Button variant="ghost" className="h-[34px] shrink-0 gap-1.5 text-xs text-muted-foreground" onClick={clearFilters}>
                 <RotateCcw className="size-3.5" />
                 {t("timeline.filter.clear")}
               </Button>
@@ -586,9 +623,17 @@ const AccountTimeline = () => {
 /* Pieces                                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * One labelled filter, sized by the row rather than by itself.
+ *
+ * `flex-1` shares whatever the strip has left between however many filters are
+ * on it, so the row fills the card at any width instead of ending in dead space
+ * — and `min-w` is the floor a date field needs before its own segments start
+ * clipping, which is what makes the row wrap rather than crush.
+ */
 const Filter = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="flex flex-col gap-1.5">
-    <label className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+  <div className="flex min-w-[150px] flex-1 flex-col gap-1">
+    <label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
       {label}
     </label>
     {children}

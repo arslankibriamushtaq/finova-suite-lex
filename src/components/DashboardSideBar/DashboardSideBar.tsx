@@ -284,6 +284,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const isSharedPage = (p: string) =>
     p.includes("/CustomerList") ||
     p.includes("/CustomerDetails") ||
+    p.includes("/AccountTimeline") ||
     p.includes("/CustomerManagement/Business") ||
     p.includes("/BusinessDetails") ||
     p.includes("/CostByCustomer") ||
@@ -604,6 +605,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               active:
                 pathname.includes("/CustomerList") ||
                 pathname.includes("/CustomerDetails") ||
+                pathname.includes("/AccountTimeline") ||
                 pathname.includes("/CostByCustomer") ||
                 pathname.includes("/OnboardingCostByCustomer"),
             },
@@ -2680,6 +2682,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active:
             pathname.includes("/CustomerList") ||
             pathname.includes("/CustomerDetails") ||
+            pathname.includes("/AccountTimeline") ||
             pathname.includes("/CostByCustomer") ||
             pathname.includes("/OnboardingCostByCustomer"),
         },
