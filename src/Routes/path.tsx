@@ -20,11 +20,14 @@ import PlatformTenants from "../pages/Platform/PlatformTenants";
 import PlatformTenantDetail from "../pages/Platform/PlatformTenantDetail";
 import PlatformPackages from "../pages/Platform/PlatformPackages";
 import PlatformInvoices from "../pages/Platform/PlatformInvoices";
+import PlatformComplaints from "../pages/Platform/PlatformComplaints";
 import TenantProfile from "../pages/TenantPortal/TenantProfile";
 import TenantSubscription from "../pages/TenantPortal/TenantSubscription";
 import TenantApiDocs from "../pages/TenantPortal/TenantApiDocs";
 import TenantEntitlements from "../pages/TenantPortal/TenantEntitlements";
 import TenantInvoices from "../pages/TenantPortal/TenantInvoices";
+import TenantSupport from "../pages/TenantPortal/TenantSupport";
+import TenantSupportTaxonomy from "../pages/TenantPortal/TenantSupportTaxonomy";
 import ThirdPartyDashboard from "../pages/ThirdPartyDashboard/ThirdPartyDashboard";
 import ServicesList from "../pages/ThirdPartyDashboard/ServicesList";
 import ServicesApis from "../pages/ThirdPartyDashboard/ServicesApis";
@@ -889,6 +892,9 @@ export const router = createBrowserRouter(
             { path: "/Platform/Tenants/:tenantId", element: <PlatformTenantDetail /> },
             { path: "/Platform/Packages", element: <PlatformPackages /> },
             { path: "/Platform/Invoices", element: <PlatformInvoices /> },
+            // Complaints tenants raised about the platform. The one cross-tenant
+            // read in support-service, and super-admin only.
+            { path: "/Platform/Complaints", element: <PlatformComplaints /> },
 
             // Tenant billing portal — scoped to the caller's own `tenant_id`
             // claim. No tenant id appears in any of these paths, deliberately.
@@ -897,6 +903,12 @@ export const router = createBrowserRouter(
             { path: "/TenantPortal/ApiDocs", element: <TenantApiDocs /> },
             { path: "/TenantPortal/Entitlements", element: <TenantEntitlements /> },
             { path: "/TenantPortal/Invoices", element: <TenantInvoices /> },
+            // The tenant's own customers' complaints — a separate screen from the
+            // platform queue above, never one with a toggle.
+            { path: "/TenantPortal/Support", element: <TenantSupport /> },
+            // The tenant's own taxonomy: what a complaint can be about and how
+            // fast each kind must be answered. Tenant-scoped, so no platform twin.
+            { path: "/TenantPortal/SupportTaxonomy", element: <TenantSupportTaxonomy /> },
 
             { path: "/LOS/sales/IBFT", element: <IBFT /> },
             { path: "/LOS/sales/MobileTopup", element: <MobileTopup /> },

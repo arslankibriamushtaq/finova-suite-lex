@@ -2542,7 +2542,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // Its own pages only. `startsWith("/TenantPortal")` also matched the API
     // documentation once that became a module of its own, so both groups lit
     // up at the same time.
-    active: pathname.startsWith("/TenantPortal") && !pathname.startsWith("/TenantPortal/ApiDocs"),
+    active:
+      pathname.startsWith("/TenantPortal") &&
+      !pathname.startsWith("/TenantPortal/ApiDocs") &&
+      !pathname.startsWith("/TenantPortal/Support"),
     menu: [
       {
         label: "Company Profile",
@@ -2578,6 +2581,57 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   // No permission gate here beyond "not the platform operator": the endpoint
   // checks tenant-portal.api-docs:read itself and the page renders what it is
   // told, so a gate copied here would be a second rule to keep in step.
+  /**
+   * Complaint management — two groups, never one, for the same reason the
+   * tenancy modules are split.
+   *
+   * A tenant's agents see the complaints their own customers raised; the
+   * platform operator sees what tenants raised about the platform. The second
+   * is the only cross-tenant read in support-service and is granted to
+   * `super_admin` alone, with no `permission_casbin_map` row, so no tenant role
+   * can inherit it. A single menu row with a toggle would put one policy
+   * between a tenant admin and everybody else's customers.
+   *
+   * Both link to a REGISTER, not an inbox: replying and resolving happen in the
+   * support engine's own console, which the screen opens by SSO.
+   */
+  const platformComplaintsModule = isSuperAdmin && {
+    label: "Complaint Management",
+    Link: "/Platform/Complaints",
+    img: Images.ApiManagementIcon,
+    imgActive: Images.ApiManagementIconDark,
+    active: pathname.startsWith("/Platform/Complaints"),
+  };
+
+  // Gated rather than open like the billing portal: the doc is explicit that a
+  // role without `support.complaints.manage` must not see the row at all — a
+  // 403 the user cannot act on is worse than an absent menu item.
+  const tenantComplaintsModule = !isSuperAdmin &&
+    hasAccess(["support.complaints.manage", "SUPPORT", "TENANT_PORTAL_READ"]) && {
+      label: "Complaint Management",
+      Link: "/TenantPortal/Support",
+      img: Images.ApiManagementIcon,
+      imgActive: Images.ApiManagementIconDark,
+      active: pathname.startsWith("/TenantPortal/Support"),
+      menu: [
+        {
+          label: "Complaints",
+          Link: "Support",
+          LinkLable: "/TenantPortal",
+          active: pathname === "/TenantPortal/Support",
+        },
+        // The taxonomy is a separate object in Casbin (`support.categories` /
+        // `support.priorities`, act `manage`) because seeing the queue does not
+        // make you someone who may redraw its categories or move an SLA target.
+        hasAccess(["support.categories", "support.priorities", "SUPPORT", "TENANT_PORTAL_READ"]) && {
+          label: "Categories & SLA",
+          Link: "SupportTaxonomy",
+          LinkLable: "/TenantPortal",
+          active: pathname.startsWith("/TenantPortal/SupportTaxonomy"),
+        },
+      ].filter(Boolean),
+    };
+
   const tenantApiDocsModule = !isSuperAdmin && {
     label: "API Documentation",
     Link: "/TenantPortal/ApiDocs",
@@ -2972,6 +3026,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     ...accountingItems,
     platformTenantModule,
     tenantPortalModule,
+    platformComplaintsModule,
+    tenantComplaintsModule,
     tenantApiDocsModule,
     // hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK", "LEX"]) &&
     {
