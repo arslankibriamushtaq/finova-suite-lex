@@ -711,18 +711,38 @@ const EventCard = ({ event, side }: { event: TimelineEvent; side: Side }) => {
   return (
     <div
       className={cn(
-        "relative my-3 w-full max-w-sm rounded-xl border px-4 py-3.5 shadow-sm transition-shadow hover:shadow-md",
+        // `rounded-xl` is 2px here — every --radius-* token in the app maps to
+        // 2px — so the cards rendered square while the year and month pills
+        // beside them were fully rounded. An explicit value opts this page's
+        // cards out of that without touching the token everything else uses.
+        "relative my-3 w-full max-w-sm rounded-[10px] border px-4 py-3.5 shadow-sm transition-shadow hover:shadow-md",
         CARD_SURFACE,
         side === "left" ? "mr-3" : "ml-3"
       )}
     >
-      {/* Tail — a rotated square borrowing the card's own surface and border.
-          Physical left/right, matched to the grid column, not to text direction. */}
+      {/*
+        Tail — a rotated square wearing the card's own surface and border, so it
+        reads as the card pointing at the spine.
+
+        It used to sit at -6px with a 10px box, which put its centre a pixel
+        OUTSIDE the card: the inner half never covered the card's own border, so
+        the two met at a seam and it read as a loose diamond rather than as an
+        arrow. Half the box (size-3 → -1.5) lands the centre exactly on the edge
+        — the tail is a child, so its background paints over the border it
+        overlaps and the join disappears.
+
+        Only the outward corner is rounded. Rounding all four would notch the
+        two that meet the card edge, and those are the ones that have to vanish
+        into it. Physical left/right, matched to the grid column, not to text
+        direction.
+      */}
       <span
         className={cn(
-          "absolute top-1/2 size-2.5 -translate-y-1/2 rotate-45 border",
+          "absolute top-1/2 size-3 -translate-y-1/2 rotate-45",
           CARD_SURFACE,
-          side === "left" ? "-right-[6px] border-b-0 border-l-0" : "-left-[6px] border-r-0 border-t-0"
+          side === "left"
+            ? "-right-1.5 rounded-tr-[3px] border-r border-t"
+            : "-left-1.5 rounded-bl-[3px] border-b border-l"
         )}
       />
 
