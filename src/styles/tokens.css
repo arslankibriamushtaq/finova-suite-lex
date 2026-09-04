@@ -111,7 +111,11 @@
   /* Surface / background colors */
   --color-surface-subtle: #f5f5f5;
   --color-surface-muted: #f0f0f0;
-  --color-surface-page: var(--brand-50); /* soft warm-gray page bg — makes cards/table pop */
+  /* A true warm gray. This was var(--brand-50) (#FAF2F3) under a comment
+     that already called it warm-gray — but brand-50 is the red ramp diluted to
+     4%, which is pink, and as the largest surface in the app it tinted every
+     screen. Same lightness, so cards keep the same separation from the page. */
+  --color-surface-page: #F6F5F4;
 
   /* Border colors */
   --color-border-light: #dddddd;
@@ -218,7 +222,7 @@
   --color-border-faint: #eeeeee;
 
   /* ===== Semantic surface tokens (use these everywhere instead of #fff/#000) ===== */
-  --surface-page:        var(--brand-50);   /* soft warm-gray page bg — makes cards/table pop */
+  --surface-page:        #F6F5F4;   /* true warm gray — see --color-surface-page */
   --surface-card:        #ffffff;   /* card / panel background */
   --surface-card-alt:    #f8fafc;   /* slightly tinted card header / striped row */
   --surface-card-hover:  #f1f5f9;   /* card hover */
@@ -2316,19 +2320,22 @@ html.dark .modal-content {
   box-shadow: 0 0 0 0.2rem color-mix(in srgb, #C81D25 22%, transparent) !important;
 }
 
-/* ===== COA Configuration page — professional card + selectable cells ===== */
+/* ===== COA Configuration page — neutral surfaces, red kept for selection =====
+
+   Every surface here used to be washed with the brand red — the card at 14%,
+   each unchecked cell at 6%, a checked one at 16%. Red diluted into white is
+   pink, so the page read as pink rather than as branded, and because the wash
+   was on the resting state too, selection had almost nothing left to say. The
+   surfaces are neutral now and the red only appears where something IS chosen:
+   the border, the ring, and the checkbox the browser already paints. */
 .coa-config-page .coa-card {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #C81D25 14%, var(--card)) 0%,
-    color-mix(in srgb, #C81D25 4%, var(--card)) 60%
-  );
-  border: 1px solid color-mix(in srgb, #C81D25 22%, var(--border));
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 2px;
-  box-shadow: 0 10px 26px -16px color-mix(in srgb, #C81D25 45%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 7%, transparent);
   padding: 22px 24px;
 }
-/* Each account checkbox becomes an red-tinted selectable cell */
+/* Each account checkbox is a selectable cell: neutral at rest, red when chosen */
 .coa-config-page .ps-tab-content .form-check,
 .coa-config-page form .form-check,
 .coa-config-page .form-check {
@@ -2338,19 +2345,33 @@ html.dark .modal-content {
   margin: 0;
   min-height: 46px;
   padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, #C81D25 22%, var(--border));
+  border: 1px solid var(--border);
   border-radius: 2px;
-  background: color-mix(in srgb, #C81D25 6%, var(--card));
+  background: var(--card);
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
+/* Hover moves the neutral, not the hue — mixing the foreground in darkens on a
+   light theme and lightens on a dark one, with no colour of its own either way. */
 .coa-config-page .form-check:hover {
-  border-color: color-mix(in srgb, #C81D25 45%, var(--border));
-  background: color-mix(in srgb, #C81D25 12%, var(--card));
+  border-color: color-mix(in srgb, var(--foreground) 22%, var(--border));
+  background: color-mix(in srgb, var(--foreground) 3%, var(--card));
 }
+/* 5% is deliberately below the point where the tint reads as a colour: the
+   solid border and the ring carry the state, and the fill only has to separate
+   a chosen cell from its neighbours. */
 .coa-config-page .form-check:has(.form-check-input:checked) {
-  border-color: #C81D25;
-  background: color-mix(in srgb, #C81D25 16%, var(--card));
-  box-shadow: 0 4px 12px -6px color-mix(in srgb, #C81D25 45%, transparent);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+/* A disabled cell is not a choice yet — no product is selected — so it should
+   not invite the pointer. */
+.coa-config-page .form-check:has(.form-check-input:disabled) {
+  opacity: 0.55;
+}
+.coa-config-page .form-check:has(.form-check-input:disabled):hover {
+  border-color: var(--border);
+  background: var(--card);
 }
 .coa-config-page .form-check .form-check-input {
   margin: 0 !important;
