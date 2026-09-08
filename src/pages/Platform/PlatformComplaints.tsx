@@ -5,6 +5,7 @@ import ComplaintRegister from "../../components/shared/ComplaintRegister";
 import {
   getPlatformComplaintEvents,
   getPlatformComplaints,
+  getPlatformReportSummary,
   openPlatformConsoleSession,
   recordPlatformOutcome,
   type ComplaintQuery,
@@ -58,6 +59,7 @@ const PlatformComplaints = () => {
       recordOutcome={recordPlatformOutcome}
       openConsole={openPlatformConsoleSession}
       consoleLabel="Open platform console"
+      fetchSummary={getPlatformReportSummary}
       showTenant
       tenantName={tenantName}
     />

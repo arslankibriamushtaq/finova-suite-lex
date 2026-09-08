@@ -24,6 +24,7 @@ import { Textarea } from "../../components/ui/textarea";
 import { Badge } from "../../components/ui/badge";
 import { DetailTabsList, DetailTabsTrigger, EmptyState } from "../../components/shared/detailKit";
 import { LexNotice, LexPageHeader } from "../../components/shared/lexKit";
+import EscalationLadder from "../../components/shared/EscalationLadder";
 import TableView from "../../components/TableView/TableView";
 import {
   createCategory,
@@ -340,17 +341,25 @@ const TenantSupportTaxonomy = () => {
           <RefreshCw className={`me-1 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
           Refresh
         </Button>
-        <Button
-          size="sm"
-          onClick={() =>
-            openForm(
-              tab === "priorities" ? "priority" : tab === "categories" ? "category" : "subCategory"
-            )
-          }
-        >
-          <Plus className="me-1 h-3.5 w-3.5" />
-          New
-        </Button>
+        {/* The escalation tab keeps its own controls: a rung is not a taxonomy
+            row and does not go through this form. */}
+        {tab !== "escalation" && (
+          <Button
+            size="sm"
+            onClick={() =>
+              openForm(
+                tab === "priorities"
+                  ? "priority"
+                  : tab === "categories"
+                    ? "category"
+                    : "subCategory"
+              )
+            }
+          >
+            <Plus className="me-1 h-3.5 w-3.5" />
+            New
+          </Button>
+        )}
       </LexPageHeader>
 
       <LexNotice tone="slate">
@@ -363,6 +372,7 @@ const TenantSupportTaxonomy = () => {
           <DetailTabsTrigger value="categories">Categories</DetailTabsTrigger>
           <DetailTabsTrigger value="subCategories">Sub-categories</DetailTabsTrigger>
           <DetailTabsTrigger value="priorities">Priorities & SLA</DetailTabsTrigger>
+          <DetailTabsTrigger value="escalation">Escalation</DetailTabsTrigger>
         </DetailTabsList>
 
         <TabsContent value="categories" className="mt-3">
@@ -373,6 +383,11 @@ const TenantSupportTaxonomy = () => {
         </TabsContent>
         <TabsContent value="priorities" className="mt-3">
           {table(priorityColumns, priorities, "No priorities yet.", "priority")}
+        </TabsContent>
+        {/* The ladder hangs off a sub-category, because that is what carries a
+            priority — and therefore the clock a rung counts against. */}
+        <TabsContent value="escalation" className="mt-3">
+          <EscalationLadder subCategories={subCategories} />
         </TabsContent>
       </Tabs>
 

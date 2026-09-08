@@ -122,3 +122,48 @@ export const minutesInWords = (minutes?: number | null) => {
   const hours = minutes / 60;
   return hours < 24 ? `${+hours.toFixed(1)}h` : `${+(hours / 24).toFixed(1)}d`;
 };
+
+// ---------------------------------------------------------------------------
+// Satisfaction
+//
+// The engine runs the survey after a resolution; the answer is kept on the
+// complaint, because "how satisfied were complainants" is a question about the
+// record and outlives the conversation.
+// ---------------------------------------------------------------------------
+
+/** 1 worst … 5 best. Stated once, here, so nothing downstream has to guess. */
+export const CSAT_BEST = 5;
+
+export const hasCsat = (c: Complaint) => c.csatRating != null;
+
+/** The words behind the number, so a 2 is not left to the reader to interpret. */
+export const CSAT_LABELS: Record<number, string> = {
+  1: "Very dissatisfied",
+  2: "Dissatisfied",
+  3: "Neutral",
+  4: "Satisfied",
+  5: "Very satisfied",
+};
+
+export const csatLabel = (rating?: number | null) =>
+  rating == null ? "Not rated" : `${rating}/${CSAT_BEST} · ${CSAT_LABELS[rating] || ""}`.trim();
+
+// ---------------------------------------------------------------------------
+// Reports
+// ---------------------------------------------------------------------------
+
+/**
+ * A rate that is null because nothing had a target renders as "—".
+ *
+ * No complaints with an SLA target is no data, not perfect compliance, and a
+ * 0% there would read as the opposite of what happened.
+ */
+export const formatRate = (rate?: number | null) =>
+  rate == null ? "—" : `${+rate.toFixed(1)}%`;
+
+/** An average over complaints that never reached that state is absent, not zero. */
+export const formatAverageMinutes = (minutes?: number | null) =>
+  minutes == null ? "—" : minutesInWords(minutes);
+
+/** Complaints nobody filed under a category are a bucket worth naming, not hiding. */
+export const UNFILED_CATEGORY_LABEL = "Unfiled";

@@ -1,7 +1,13 @@
 import { Badge } from "../ui/badge";
 import { cn } from "../../lib/utils";
 import type { Complaint, ComplaintEvent } from "../../redux/apis/apisSupport";
-import { breachedClock, isEscalated, slaState } from "./supportKitUtils";
+import {
+  breachedClock,
+  csatLabel,
+  hasCsat,
+  isEscalated,
+  slaState,
+} from "./supportKitUtils";
 
 /**
  * Shared rendering for the two complaint registers — the tenant's Support tab
@@ -98,8 +104,15 @@ export const SlaBadge = ({ complaint }: { complaint: Complaint }) => {
           ? "Due soon"
           : "On track";
 
+  // `whitespace-normal` on purpose: "Acknowledgement breached" is wider than
+  // the SLA column, and a badge that clips reads as "Resolution breache" —
+  // which is the one word in it that carries the meaning. Two lines is better
+  // than a truncated one.
   return (
-    <Badge variant="outline" className={cn("border font-medium", SLA_TONES[state])}>
+    <Badge
+      variant="outline"
+      className={cn("border whitespace-normal text-center font-medium leading-tight", SLA_TONES[state])}
+    >
       {label}
     </Badge>
   );
@@ -118,6 +131,32 @@ export const EscalationBadge = ({ complaint }: { complaint: Complaint }) =>
   ) : null;
 
 /**
+ * What the complainant said about how it went, on the scale the service uses:
+ * **1 worst, 5 best**. The direction is rendered alongside the number because
+ * a bare "2/5" is exactly the ambiguity that had agents and reports reading
+ * opposite values in the system this replaced.
+ */
+export const CsatBadge = ({ complaint }: { complaint: Complaint }) =>
+  hasCsat(complaint) ? (
+    <Badge
+      variant="outline"
+      className={cn(
+        "border font-medium",
+        (complaint.csatRating ?? 0) >= 4
+          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600"
+          : (complaint.csatRating ?? 0) === 3
+            ? "border-amber-500/40 bg-amber-500/10 text-amber-600"
+            : "border-rose-500/40 bg-rose-500/10 text-rose-600"
+      )}
+      title="1 worst, 5 best. The first answer stands."
+    >
+      {csatLabel(complaint.csatRating)}
+    </Badge>
+  ) : (
+    <span className="text-xs text-muted-foreground">Not rated</span>
+  );
+
+/**
  * Plain words for the event types, including the two nothing writes yet and
  * the two the subject links write.
  */
@@ -133,6 +172,7 @@ const EVENT_LABELS: Record<string, string> = {
   SLA_BREACHED: "SLA breached",
   LINKED: "Linked to a subject",
   UNLINKED: "Link removed",
+  CSAT_RECORDED: "Satisfaction recorded",
 };
 
 /**

@@ -177,6 +177,15 @@ export interface Complaint {
   /** 0 until the scan climbs the ladder. There is no manual escalate. */
   escalationLevel: number;
   escalationTeam: string | null;
+  /**
+   * The survey the engine runs after a resolution. **1 worst … 5 best** — the
+   * direction is stated because the reference system carried two contradictory
+   * definitions of its own, so agents and reports had been reading opposite
+   * values. The first answer stands: a score that can be revised after a
+   * complaint is closed is a score worth nothing.
+   */
+  csatRating: number | null;
+  csatFeedback: string | null;
   conversationId: number | null;
   openedAt: string;
   firstResponseAt: string | null;
@@ -313,7 +322,9 @@ export const toSupportError = (err: unknown, fallbackMessage: string): SupportEr
   if (!response) return { message: fallbackMessage, code: "NETWORK" };
   return {
     code: response.data?.code,
-    message: response.data?.message || fallbackMessage,
+    // The service's own localised sentence first; the catalog's second; the
+    // caller's generic line only when neither said anything.
+    message: response.data?.message || catalogMessage(response.data?.code) || fallbackMessage,
     status: response.status,
     traceId: response.data?.traceId,
   };
@@ -697,6 +708,125 @@ export function getComplaintsBySubject(params: {
     .get("/tenant/support/complaints/by-subject", { params })
     .then(unwrap<Complaint[]>);
 }
+
+/**
+ * What a month of complaints looked like. Both bounds are optional and apply
+ * to when the complaint was OPENED — `from` inclusive, `to` exclusive.
+ */
+export interface SupportReportCategoryRow {
+  /** Null for complaints nobody has filed under a category — the "Unfiled" bucket. */
+  categoryCode: string | null;
+  categoryNameEn: string | null;
+  count: number;
+}
+
+export interface SupportReportSummary {
+  total: number;
+  open: number;
+  pending: number;
+  resolved: number;
+  upheld: number;
+  rejected: number;
+  invalid: number;
+  duplicate: number;
+  /** Resolved by the engine, classified by nobody. The queue's real paperwork backlog. */
+  unclassifiedOutcome: number;
+  withSlaTarget: number;
+  acknowledgementBreached: number;
+  resolutionBreached: number;
+  /**
+   * NULL, not zero, when `withSlaTarget` is 0 — no complaints with a target is
+   * no data, not perfect compliance. Render "—", never "0%".
+   */
+  acknowledgementMetRate: number | null;
+  averageMinutesToFirstResponse: number | null;
+  averageMinutesToResolution: number | null;
+  reopened: number;
+  escalated: number;
+  csatResponses: number;
+  averageCsat: number | null;
+  byCategory: SupportReportCategoryRow[];
+}
+
+export interface SupportReportQuery {
+  from?: string;
+  to?: string;
+}
+
+const reportParams = (query: SupportReportQuery = {}) => ({
+  from: query.from || undefined,
+  to: query.to || undefined,
+});
+
+export function getTenantReportSummary(
+  query?: SupportReportQuery
+): Promise<SupportReportSummary> {
+  return axiosSupport
+    .get("/tenant/support/reports/summary", { params: reportParams(query) })
+    .then(unwrap<SupportReportSummary>);
+}
+
+/**
+ * Pinned to level 2 in SQL, exactly like the platform queue: a report is not a
+ * way around the tenant boundary.
+ */
+export function getPlatformReportSummary(
+  query?: SupportReportQuery
+): Promise<SupportReportSummary> {
+  return axiosSupport
+    .get("/platform/support/reports/summary", { params: reportParams(query) })
+    .then(unwrap<SupportReportSummary>);
+}
+
+/**
+ * The service's own error codes with their localised templates,
+ * unauthenticated — so a message can be rendered by code without shipping a
+ * copy of the bundle in the frontend.
+ */
+export interface SupportErrorCode {
+  code: string;
+  message: string;
+  status?: number;
+}
+
+export function getSupportErrorCodes(): Promise<SupportErrorCode[]> {
+  return axiosSupport.get("/error-codes").then(unwrap<SupportErrorCode[]>);
+}
+
+/**
+ * The catalog, fetched once and kept — it is a small static table, and the
+ * alternative is shipping a copy of the service's message bundle in the
+ * frontend and watching the two drift.
+ *
+ * It is a FALLBACK, never an override: a refusal that carries its own message
+ * has already been localised by the service for this caller, and that is the
+ * sentence a user should read.
+ */
+let errorCatalog: Record<string, string> | null = null;
+let errorCatalogInFlight: Promise<void> | null = null;
+
+export function primeSupportErrorCatalog(): Promise<void> {
+  if (errorCatalog) return Promise.resolve();
+  if (!errorCatalogInFlight) {
+    errorCatalogInFlight = getSupportErrorCodes()
+      .then((codes) => {
+        errorCatalog = Object.fromEntries(codes.map((entry) => [entry.code, entry.message]));
+      })
+      // A missing catalog costs a nicer sentence, nothing else — every caller
+      // below still has its own fallback.
+      .catch(() => {
+        errorCatalog = {};
+      })
+      .finally(() => {
+        errorCatalogInFlight = null;
+      });
+  }
+  return errorCatalogInFlight;
+}
+
+/** The catalog's sentence for a code, if it has been primed and knows it. */
+export const catalogMessage = (code?: string | null): string | undefined =>
+  code ? errorCatalog?.[code] : undefined;
 
 /**
  * The SSO hand-off into the engine's agent console.

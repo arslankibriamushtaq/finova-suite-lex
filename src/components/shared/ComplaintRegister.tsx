@@ -13,6 +13,7 @@ import {
 } from "../ui/select";
 import { Skeleton } from "../ui/skeleton";
 import ComplaintDetailDialog from "./ComplaintDetailDialog";
+import ComplaintReportPanel from "./ComplaintReportPanel";
 import { EmptyState } from "./detailKit";
 import { formatDateTime } from "./detailKitUtils";
 import { FilterField } from "./filterKit";
@@ -22,6 +23,7 @@ import TableView from "../TableView/TableView";
 import {
   ComplaintOutcomeBadge,
   ComplaintStatusBadge,
+  CsatBadge,
   EscalationBadge,
   ReferenceNo,
   SlaBadge,
@@ -32,6 +34,7 @@ import {
   isReopened,
   isRepeatOffender,
   isUnanswered,
+  hasCsat,
   slaState,
   timeToResolution,
 } from "./supportKitUtils";
@@ -39,6 +42,7 @@ import {
   COMPLAINT_STATUSES,
   isNotProvisioned,
   isSuspended,
+  primeSupportErrorCatalog,
   toSupportError,
   type Complaint,
   type ComplaintEvent,
@@ -47,6 +51,8 @@ import {
   type ComplaintQuery,
   type ComplaintStatus,
   type SupportCategory,
+  type SupportReportQuery,
+  type SupportReportSummary,
   type SupportSubCategory,
 } from "../../redux/apis/apisSupport";
 
@@ -79,6 +85,13 @@ export interface ComplaintRegisterProps {
   showTenant?: boolean;
   /** Resolves a tenant id to a company name. A bare UUID is useless in a queue. */
   tenantName?: (tenantId: string) => string | undefined;
+  /**
+   * The numbers over a window, from the service rather than from the page in
+   * hand — a page of rows is not a month.
+   */
+  fetchSummary?: (query?: SupportReportQuery) => Promise<SupportReportSummary>;
+  /** Subject links are a `/tenant` endpoint; the platform register has none. */
+  showLinks?: boolean;
 }
 
 /**
@@ -104,6 +117,8 @@ export default function ComplaintRegister({
   subCategories,
   showTenant,
   tenantName,
+  fetchSummary,
+  showLinks,
 }: ComplaintRegisterProps) {
   const [rows, setRows] = useState<Complaint[]>([]);
   const [totalRows, setTotalRows] = useState<number | undefined>(undefined);
@@ -161,6 +176,13 @@ export default function ComplaintRegister({
   useEffect(() => {
     load(0);
   }, [load]);
+
+  // The service publishes its own error codes with their localised templates,
+  // so a refusal that arrives with a code and no body still reads as a
+  // sentence. Unauthenticated, cached after the first call, and never fatal.
+  useEffect(() => {
+    primeSupportErrorCatalog();
+  }, []);
 
   /**
    * The hand-off into the agent console — its own window, not a tab.
@@ -309,6 +331,13 @@ export default function ComplaintRegister({
       cell: (row: Row) => <ComplaintOutcomeBadge outcome={row.resolutionOutcome} />,
     },
     {
+      // 1 worst, 5 best — the direction travels with the number, because the
+      // system this replaced had two contradictory definitions of its own.
+      name: "Satisfaction",
+      cell: (row: Row) =>
+        hasCsat(row) ? <CsatBadge complaint={row} /> : <span className="text-xs text-muted-foreground">—</span>,
+    },
+    {
       name: "Action",
       width: "10%",
       cell: (row: Row) => (
@@ -345,42 +374,52 @@ export default function ComplaintRegister({
         </LexNotice>
       )}
 
+      {fetchSummary && <ComplaintReportPanel fetchSummary={fetchSummary} />}
+
       {/* Counts come from the page in hand, not a stats endpoint — the service
           has none, and `pagination.totalElements` already answers the question
-          for whichever status is filtered. */}
-      <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
-        <LexTile
-          label={status ? `${status} complaints` : "Total complaints"}
-          value={totalRows ?? "—"}
-          loading={isLoading}
-        />
-        <LexTile
-          label="Awaiting first response"
-          value={rows.filter(isUnanswered).length}
-          hint="On this page. Filter by OPEN for the full count."
-          loading={isLoading}
-        />
-        <LexTile
-          label="Answered, still open"
-          value={rows.filter(isReopened).length}
-          hint="On this page."
-          loading={isLoading}
-        />
-        <LexTile
-          label="SLA breached"
-          value={rows.filter((row) => slaState(row) === "breached").length}
-          hint="On this page. A paused complaint is not counted — its clock stopped."
-          loading={isLoading}
-        />
-        <LexTile
-          label="Awaiting classification"
-          value={rows.filter(awaitingClassification).length}
-          hint="Resolved on this page, but nobody has recorded how it ended."
-          loading={isLoading}
-        />
-      </div>
+          for whichever status is filtered.
 
-      <div className="no-card mb-3 flex flex-wrap items-end justify-between gap-3">
+          Suppressed entirely when the report is on screen: it answers the same
+          questions over the whole window rather than over one page, and two
+          rows of tiles disagreeing about "total" is worse than one row fewer.
+          Only the two signals the report has no field for survive, folded into
+          the filter bar below. */}
+      {!fetchSummary && (
+        <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
+          <LexTile
+            label={status ? `${status} complaints` : "Total complaints"}
+            value={totalRows ?? "—"}
+            loading={isLoading}
+          />
+          <LexTile
+            label="Awaiting first response"
+            value={rows.filter(isUnanswered).length}
+            hint="On this page. Filter by OPEN for the full count."
+            loading={isLoading}
+          />
+          <LexTile
+            label="Answered, still open"
+            value={rows.filter(isReopened).length}
+            hint="On this page."
+            loading={isLoading}
+          />
+          <LexTile
+            label="SLA breached"
+            value={rows.filter((row) => slaState(row) === "breached").length}
+            hint="On this page. A paused complaint is not counted — its clock stopped."
+            loading={isLoading}
+          />
+          <LexTile
+            label="Awaiting classification"
+            value={rows.filter(awaitingClassification).length}
+            hint="Resolved on this page, but nobody has recorded how it ended."
+            loading={isLoading}
+          />
+        </div>
+      )}
+
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
         <FilterField label="Status" htmlFor="complaint-status" className="w-full sm:w-56">
           <Select
             value={status || ALL}
@@ -403,10 +442,31 @@ export default function ComplaintRegister({
           </Select>
         </FilterField>
 
-        <Button size="sm" variant="outline" onClick={() => load(page)} disabled={isLoading}>
-          <RefreshCw className={`me-1 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* On this page only, which is why they are a sentence beside the
+              filter rather than tiles pretending to be the window's totals. */}
+          {!isLoading && rows.length > 0 && (
+            <p className="mb-0 text-xs text-muted-foreground">
+              On this page:{" "}
+              <strong className="font-medium text-foreground">
+                {rows.filter(isUnanswered).length}
+              </strong>{" "}
+              awaiting a first response,{" "}
+              <strong className="font-medium text-foreground">
+                {rows.filter((row) => slaState(row) === "breached").length}
+              </strong>{" "}
+              past an SLA target,{" "}
+              <strong className="font-medium text-foreground">
+                {rows.filter(awaitingClassification).length}
+              </strong>{" "}
+              awaiting classification.
+            </p>
+          )}
+          <Button size="sm" variant="outline" onClick={() => load(page)} disabled={isLoading}>
+            <RefreshCw className={`me-1 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {isLoading && rows.length === 0 ? (
@@ -447,6 +507,7 @@ export default function ComplaintRegister({
         tenantName={tenantName}
         categories={categories}
         subCategories={subCategories}
+        showLinks={showLinks}
       />
     </div>
   );

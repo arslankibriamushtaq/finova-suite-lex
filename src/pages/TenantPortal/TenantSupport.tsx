@@ -7,6 +7,7 @@ import {
   getSubCategories,
   getTenantComplaintEvents,
   getTenantComplaints,
+  getTenantReportSummary,
   openTenantConsoleSession,
   recordTenantOutcome,
   type ComplaintQuery,
@@ -62,6 +63,8 @@ const TenantSupport = () => {
       openConsole={openTenantConsoleSession}
       categories={categories}
       subCategories={subCategories}
+      fetchSummary={getTenantReportSummary}
+      showLinks
       consoleLabel="Open support console"
     />
   );

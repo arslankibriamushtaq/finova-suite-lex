@@ -360,11 +360,11 @@ html.dark,
   --theme-heading-text-color: #f1f5f9;
   --theme-cards-background-color: #161821;
   --theme-cards-text-color: #e6eaf2;
-  --theme-table-background-color: var(--brand-800);
-  --theme-table-heading-color: #ffffff;
+  --theme-table-background-color: var(--surface-card-alt);
+  --theme-table-heading-color: var(--muted-foreground);
   --theme-table-body-text-color: #e6eaf2;
-  --theme-table-row-alt: #2A1114;   /* red-tinted stripe (dark) */
-  --theme-table-row-hover: #3A171A;
+  --theme-table-row-alt: transparent;
+  --theme-table-row-hover: var(--surface-card-hover);
   /* Subtle red-tinted sidebar surface — follows the Finova logo color */
   --theme-flow-sidebar-logo-bg: #150B0D;
   --theme-flow-dashboard-sidebar-bg: #1A0D0F;
@@ -1291,13 +1291,13 @@ html.dark header.rdt_TableHeadRow,
 html.dark .rdt_TableHead > .rdt_TableHeadRow {
   background-color: var(--theme-table-background-color) !important;
   background: var(--theme-table-background-color) !important;
-  border-bottom: none !important;
+  border-bottom: 1px solid var(--surface-border) !important;
 }
 html.dark .rdt_TableCol,
 html.dark .rdt_TableCol_Sortable,
 html.dark .rdt_TableHeadRow .rdt_TableCol {
   background-color: transparent !important;
-  color: #ffffff !important;
+  color: var(--theme-table-heading-color) !important;
 }
 html.dark .rdt_TableCell {
   background-color: transparent !important;
@@ -1975,11 +1975,20 @@ html.dark .bg-white .recharts-wrapper {
   --theme-heading-text-color: #090909;
   --theme-cards-background-color: transparent;
   --theme-cards-text-color: transparent;
-  --theme-table-background-color: var(--brand-600);
-  --theme-table-heading-color: #ffffff;
+  /* The table is the working canvas, not chrome. A solid brand-red bar with
+     white text and pink zebra striping is the one thing on these screens that
+     still reads as a 2010 admin template: the heaviest element on the page is
+     the row of column names, which is the part nobody needs to read twice.
+     Neutral header, muted label text, and NO stripe — rows separate on the
+     hairline border they already carry. Colour in a table should mean
+     something (a breached SLA, a status), and it cannot while the table paints
+     every other row. Brand stays on the sidebar and the header — chrome around
+     a neutral canvas. */
+  --theme-table-background-color: var(--surface-card-alt);
+  --theme-table-heading-color: var(--muted-foreground);
   --theme-table-body-text-color: #0f172a;
-  --theme-table-row-alt: var(--brand-50);   /* light red stripe — matches theme */
-  --theme-table-row-hover: var(--brand-100);
+  --theme-table-row-alt: transparent;
+  --theme-table-row-hover: var(--surface-card-hover);
   /* Subtle red-tinted sidebar surface — follows the Finova logo color */
   --theme-flow-sidebar-logo-bg: var(--brand-50);
   --theme-flow-dashboard-sidebar-bg: var(--brand-50);

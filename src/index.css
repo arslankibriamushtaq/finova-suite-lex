@@ -249,38 +249,34 @@ body,
 }
 
 /* ---------------------------------------------------------------------------
-   Reusable professional card pattern — emerald-tinted border + subtle shadow,
-   a soft emerald glow accent (::before), and a gentle hover lift. Keeps the
+   Reusable card pattern — a neutral surface with a hairline border, a shadow
+   that reads as depth rather than as colour, and a gentle hover lift. Keeps the
    app's 2px corner radius. Use `.pro-card` on any container and
-   `.pro-head-badge` for the emerald icon badge in section headers.
+   `.pro-head-badge` for the brand icon badge in section headers.
+
+   Deliberately NEUTRAL. This used to mix the brand red into the border, both
+   shadows, and a 128px blurred glow in the corner — and .pro-card is the
+   largest surface on every migrated page, so the whole working canvas came out
+   pink. That is the same mistake --surface-page had: red diluted into a
+   near-white surface is not "a hint of brand", it is pink. Branded chrome
+   around a neutral canvas is the intent; the red belongs on the things a user
+   chose or must act on, not on the container they sit in.
 --------------------------------------------------------------------------- */
 .pro-card {
   position: relative;
   overflow: hidden;
   background: var(--surface-card);
-  border: 1px solid color-mix(in srgb, #C81D25 16%, var(--surface-border));
+  border: 1px solid var(--surface-border);
   border-radius: 2px;
   box-shadow:
-    0 1px 2px rgba(200, 29, 37, 0.05),
-    0 8px 20px -16px color-mix(in srgb, #C81D25 35%, transparent);
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 20px -16px rgba(0, 0, 0, 0.18);
   transition: box-shadow 0.2s ease;
 }
 .pro-card:hover {
   box-shadow:
-    0 6px 22px -10px rgba(200, 29, 37, 0.22),
+    0 6px 22px -10px rgba(0, 0, 0, 0.14),
     0 8px 20px -16px rgba(0, 0, 0, 0.18);
-}
-.pro-card::before {
-  content: "";
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 128px;
-  height: 128px;
-  border-radius: 9999px;
-  background: rgba(200, 29, 37, 0.07);
-  filter: blur(40px);
-  pointer-events: none;
 }
 .pro-card > * {
   position: relative;
@@ -539,16 +535,21 @@ body,
 /* ---------------------------------------------------------------------------
    Compact read-only tile for a label + value pair inside a `.pro-card`, where
    the full `.stat-card` KPI treatment (150px tall, gradient, 40px icon badge)
-   is too heavy. Same emerald tint and 2px corner as the card it sits in, so a
-   row of these reads as part of the card rather than as pasted-in grey boxes.
+   is too heavy. 2px corner to match the card it sits in.
    Use `.pro-tile` on the wrapper, `.pro-tile__label` / `.pro-tile__value`.
+
+   The fill is mixed from the FOREGROUND, not from the brand: a report is
+   sixteen of these at once, and at 4% red each they turned the card pink
+   without distinguishing any tile from any other. Mixing the foreground gives
+   the same separation from the card in both themes — it darkens on light and
+   lightens on dark, where a fixed red tint did neither.
 --------------------------------------------------------------------------- */
 .pro-tile {
   min-width: 0;
   padding: 10px 12px;
   border-radius: 2px;
-  border: 1px solid color-mix(in srgb, #C81D25 14%, var(--surface-border));
-  background: color-mix(in srgb, #C81D25 4%, var(--surface-card));
+  border: 1px solid var(--surface-border);
+  background: color-mix(in srgb, var(--foreground) 3%, var(--surface-card));
 }
 .pro-tile__label {
   display: block;
@@ -572,7 +573,7 @@ body,
   font-size: 18px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: #AB1920;
+  color: var(--primary);
 }
 /* ---------------------------------------------------------------------------
    Dashboard KPI card — the LEX and SLA counts.
@@ -711,11 +712,6 @@ html.dark .lex-kpi__label,
   color: color-mix(in srgb, var(--c) 30%, var(--muted-foreground));
 }
 
-html.dark .pro-tile,
-.dark .pro-tile {
-  border-color: color-mix(in srgb, #C81D25 20%, var(--surface-border));
-  background: color-mix(in srgb, #C81D25 7%, var(--surface-card));
-}
 html.dark .pro-tile__value--accent,
 .dark .pro-tile__value--accent {
   color: #D96368;
@@ -825,34 +821,23 @@ html.dark .pro-tile__value--accent,
   font-variant-numeric: tabular-nums;
 }
 
-/* Emerald glow + hover-lift accent for shadcn <Card> (and similar), to match
-   the app's professional cards. Keeps the card's own background and radius —
-   only layers on the brand border, soft glow, and hover lift. */
+/* Hairline border + hover-lift for shadcn <Card> (and similar), to match
+   `.pro-card`. Keeps the card's own background and radius — only layers on the
+   border, shadow, and hover lift. Neutral, for the same reason `.pro-card` is:
+   these two sit side by side on the same screens and must not drift. */
 .pro-card-glow {
   position: relative;
   overflow: hidden;
-  border-color: color-mix(in srgb, #C81D25 16%, var(--surface-border)) !important;
+  border-color: var(--surface-border) !important;
   box-shadow:
-    0 1px 2px rgba(200, 29, 37, 0.05),
-    0 8px 20px -16px color-mix(in srgb, #C81D25 35%, transparent) !important;
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 20px -16px rgba(0, 0, 0, 0.18) !important;
   transition: box-shadow 0.2s ease;
 }
 .pro-card-glow:hover {
   box-shadow:
-    0 6px 22px -10px rgba(200, 29, 37, 0.22),
+    0 6px 22px -10px rgba(0, 0, 0, 0.14),
     0 8px 20px -16px rgba(0, 0, 0, 0.18) !important;
-}
-.pro-card-glow::before {
-  content: "";
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 128px;
-  height: 128px;
-  border-radius: 9999px;
-  background: rgba(200, 29, 37, 0.07);
-  filter: blur(40px);
-  pointer-events: none;
 }
 .pro-card-glow > * {
   position: relative;

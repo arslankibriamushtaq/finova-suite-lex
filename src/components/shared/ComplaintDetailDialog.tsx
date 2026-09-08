@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FolderTree, History, ShieldCheck } from "lucide-react";
+import { FolderTree, History, ShieldCheck, Timer } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
@@ -17,15 +17,20 @@ import { Textarea } from "../ui/textarea";
 import { Field } from "./detailKit";
 import { formatDateTime } from "./detailKitUtils";
 import { LexNotice } from "./lexKit";
+import ComplaintLinksPanel from "./ComplaintLinksPanel";
 import {
   ComplaintOutcomeBadge,
   ComplaintStatusBadge,
   ComplaintTimeline,
+  CsatBadge,
+  EscalationBadge,
   ReferenceNo,
+  SlaBadge,
 } from "./supportKit";
 import {
   canRecordOutcome,
   formatDuration,
+  isEscalated,
   outcomeNeedsNote,
   timeToFirstResponse,
   timeToResolution,
@@ -63,6 +68,12 @@ export interface ComplaintDetailDialogProps {
    */
   categories?: SupportCategory[];
   subCategories?: SupportSubCategory[];
+  /**
+   * Subject links exist under `/tenant` only, so the platform register does
+   * not offer them — and should not: what a tenant's complaint is about is
+   * that tenant's data.
+   */
+  showLinks?: boolean;
 }
 
 /**
@@ -85,6 +96,7 @@ export default function ComplaintDetailDialog({
   tenantName,
   categories,
   subCategories,
+  showLinks,
 }: ComplaintDetailDialogProps) {
   const [events, setEvents] = useState<ComplaintEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
@@ -240,6 +252,71 @@ export default function ComplaintDetailDialog({
               {complaint.resolutionNote && (
                 <Field label="Outcome note" value={complaint.resolutionNote} />
               )}
+              {/* The engine runs the survey after a resolution; the answer is
+                  kept on the complaint because "how satisfied were
+                  complainants" is a question about the record and outlives the
+                  conversation. The first answer stands — there is nothing here
+                  that could revise it. */}
+              <Field label="Satisfaction" value={<CsatBadge complaint={complaint} />} />
+              {complaint.csatFeedback && (
+                <Field label="Their words" value={complaint.csatFeedback} />
+              )}
+            </div>
+
+            {/* The clocks. Every target, breach and escalation on this platform
+                is the platform's own — the engine's Community build has no SLA
+                at all. Read from the payload, never recomputed here. */}
+            <div className="rounded-lg border border-[var(--surface-border)] p-3">
+              <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
+                <Timer className="h-4 w-4" />
+                SLA
+                <SlaBadge complaint={complaint} />
+                <EscalationBadge complaint={complaint} />
+              </h4>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field
+                  label="Acknowledgement due"
+                  value={
+                    complaint.acknowledgeDueAt ? formatDateTime(complaint.acknowledgeDueAt) : "—"
+                  }
+                />
+                <Field
+                  label="Resolution due"
+                  value={complaint.resolveDueAt ? formatDateTime(complaint.resolveDueAt) : "—"}
+                />
+                {complaint.acknowledgeBreachedAt && (
+                  <Field
+                    label="Acknowledgement breached"
+                    value={formatDateTime(complaint.acknowledgeBreachedAt)}
+                  />
+                )}
+                {complaint.resolveBreachedAt && (
+                  <Field
+                    label="Resolution breached"
+                    value={formatDateTime(complaint.resolveBreachedAt)}
+                  />
+                )}
+                {isEscalated(complaint) && (
+                  <Field
+                    label="Escalated to"
+                    value={`Level ${complaint.escalationLevel}${
+                      complaint.escalationTeam ? ` · ${complaint.escalationTeam}` : ""
+                    }`}
+                  />
+                )}
+              </div>
+              {!complaint.acknowledgeDueAt && !complaint.resolveDueAt ? (
+                <LexNotice tone="slate" className="mb-0 mt-2">
+                  No target: only a sub-category carries a priority. Filing this complaint under
+                  one starts its clocks, counted from when it was opened.
+                </LexNotice>
+              ) : (
+                <LexNotice tone="slate" className="mb-0 mt-2">
+                  {complaint.slaPaused
+                    ? "The clock is stopped while this complaint waits on the customer. Both targets move forward by exactly what the pause costs."
+                    : "The clock is wall-clock — it runs through evenings and weekends. There is no working calendar behind these targets."}
+                </LexNotice>
+              )}
             </div>
 
             <div>
@@ -342,6 +419,8 @@ export default function ComplaintDetailDialog({
                 </Button>
               </div>
             )}
+
+            {showLinks && <ComplaintLinksPanel complaintId={complaint.id} />}
 
             <div className="rounded-lg border border-[var(--surface-border)] p-3">
               <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
