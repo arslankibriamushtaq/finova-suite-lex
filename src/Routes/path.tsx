@@ -142,6 +142,8 @@ import Employees from "../components/Settings/Employees";
 import RoleList from "../components/Settings/RoleList";
 import AssignPermissions from "../components/Settings/AssignPermissions";
 import Departments from "../components/Settings/Departments";
+import ApprovalWorkflows from "../pages/lmsPages/Settings/ApprovalWorkflows";
+import ApprovalRequests from "../pages/lmsPages/Settings/ApprovalRequests";
 import DepartmentPermissions from "../components/Settings/DepartmentPermissions";
 import AwnInfo from "../components/Settings/AwnInfo";
 import ComplianceRequirement from "../components/Settings/ComplianceRequirement";
@@ -1439,6 +1441,16 @@ export const router = createBrowserRouter(
             {
               path: "/LOS/Setting/Departments",
               element: <Departments />,
+            },
+            {
+              // Maker-checker chains: the definition side, in identity-service.
+              path: "/LOS/Setting/ApprovalWorkflows",
+              element: <ApprovalWorkflows />,
+            },
+            {
+              // The runtime side, in lending-service: requests walking a chain.
+              path: "/LOS/Setting/ApprovalRequests",
+              element: <ApprovalRequests />,
             },
             {
               // A department's own permission set. Saving it cascades to every

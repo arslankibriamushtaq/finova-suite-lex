@@ -23,6 +23,15 @@ import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { usePermissions, LOV_PURPOSE_OF_FINANCE_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { Link } from "react-router-dom";
+import {
+  getApprovalRequests,
+  isEntityAlreadyPending,
+  isParkedForApproval,
+  parkedApproval,
+  approvalRequestMessage,
+  type ApprovalRequest,
+} from "../../redux/apis/apisApprovalRequests";
 
 const PurposeOfFinancing = () => {
   const { t } = useTranslation("lov");
@@ -58,9 +67,53 @@ const PurposeOfFinancing = () => {
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  /**
+   * Rows with a change already parked for approval.
+   *
+   * One list call rather than a lookup per row: filtering the requests by entity
+   * type gives every pending `entityId` in one go. CREATEs carry a null
+   * `entityId` — they have no row yet — so they are counted separately and
+   * announced above the table instead.
+   */
+  const [pendingEntityIds, setPendingEntityIds] = useState<Set<string>>(new Set());
+  const [pendingCreates, setPendingCreates] = useState(0);
+
   useEffect(() => {
     fetchData();
   }, [page, pageSize, searchTerm]);
+
+  useEffect(() => {
+    fetchPendingApprovals();
+  }, []);
+
+  /**
+   * Silent on failure: a chain may not be configured for this entity at all, in
+   * which case there is nothing pending and nothing to say. An error here must
+   * not put a toast over a screen that is working perfectly well.
+   */
+  const fetchPendingApprovals = async () => {
+    try {
+      const res = await getApprovalRequests({
+        status: "PENDING",
+        entityType: "PURPOSE_OF_FINANCE",
+        page: 0,
+        size: 200,
+      });
+      const all: ApprovalRequest[] = Array.isArray(res?.data?.data) ? res.data.data : [];
+      // The status and entityType filters are asked for in the query, but a badge
+      // that says "pending" must not depend on the server having honoured them:
+      // an unfiltered list would include already-decided requests and leave the
+      // row flagged for good. Narrow again here on what each row actually says.
+      const rows = all.filter(
+        (r) => r.status === "PENDING" && r.entityType === "PURPOSE_OF_FINANCE"
+      );
+      setPendingEntityIds(new Set(rows.map((r) => r.entityId).filter(Boolean) as string[]));
+      setPendingCreates(rows.filter((r) => r.action === "CREATE").length);
+    } catch {
+      setPendingEntityIds(new Set());
+      setPendingCreates(0);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -140,18 +193,43 @@ const PurposeOfFinancing = () => {
         body.active = formData.active;
       }
 
-      if (modalMode === "edit" && currentItemId) {
-        await updatePurposeOfFinance(currentItemId, body);
-        toast.success(t("purposeOfFinancing.toast.updated"));
+      const response =
+        modalMode === "edit" && currentItemId
+          ? await updatePurposeOfFinance(currentItemId, body)
+          : await createPurposeOfFinance(body);
+
+      // Once a chain governs PURPOSE_OF_FINANCE the write is parked, not
+      // applied: 202 and a pending-approval body instead of the record. Saying
+      // "saved" here would promise a row that will not be in the list.
+      if (isParkedForApproval(response)) {
+        const parked = parkedApproval(response);
+        toast.success(parked?.message || t("purposeOfFinancing.toast.submittedForApproval"));
+        fetchPendingApprovals();
       } else {
-        await createPurposeOfFinance(body);
-        toast.success(t("purposeOfFinancing.toast.created"));
+        toast.success(
+          modalMode === "edit"
+            ? t("purposeOfFinancing.toast.updated")
+            : t("purposeOfFinancing.toast.created")
+        );
       }
 
       setShowFormModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || (modalMode === "edit" ? t("purposeOfFinancing.toast.updateFailed") : t("purposeOfFinancing.toast.createFailed")));
+      // The record already has a change in flight — that is a place to go, not a
+      // failure to report.
+      if (isEntityAlreadyPending(error)) {
+        toast.error(t("purposeOfFinancing.toast.alreadyPending"));
+      } else {
+        toast.error(
+          approvalRequestMessage(
+            error,
+            modalMode === "edit"
+              ? t("purposeOfFinancing.toast.updateFailed")
+              : t("purposeOfFinancing.toast.createFailed")
+          )
+        );
+      }
     } finally {
       setIsSaving(false);
     }
@@ -161,12 +239,24 @@ const PurposeOfFinancing = () => {
     if (!deleteTarget) return;
     try {
       setIsDeleting(true);
-      await deletePurposeOfFinance(deleteTarget.id);
-      toast.success(t("purposeOfFinancing.toast.deleted"));
-      setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+      const response = await deletePurposeOfFinance(deleteTarget.id);
+      // A parked deletion leaves the row exactly where it is, so it must not be
+      // dropped from the table the way an applied one is.
+      if (isParkedForApproval(response)) {
+        const parked = parkedApproval(response);
+        toast.success(parked?.message || t("purposeOfFinancing.toast.submittedForApproval"));
+        fetchPendingApprovals();
+      } else {
+        toast.success(t("purposeOfFinancing.toast.deleted"));
+        setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+      }
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || t("purposeOfFinancing.toast.deleteFailed"));
+      if (isEntityAlreadyPending(error)) {
+        toast.error(t("purposeOfFinancing.toast.alreadyPending"));
+      } else {
+        toast.error(approvalRequestMessage(error, t("purposeOfFinancing.toast.deleteFailed")));
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -205,13 +295,23 @@ const PurposeOfFinancing = () => {
       cell: (row: any) => {
         const isActive = row.active ?? true;
         return (
-          <span className={isActive ? "text-slate-500 font-medium" : "text-red-600 font-medium"}>
-            {isActive ? t("common:active") : t("common:inactive")}
-          </span>
+          <div className="flex flex-col gap-1">
+            <span className={isActive ? "text-slate-500 font-medium" : "text-red-600 font-medium"}>
+              {isActive ? t("common:active") : t("common:inactive")}
+            </span>
+            {/* What is on screen is the approved record; a pending change is a
+                separate thing waiting on a chain, so it is flagged rather than
+                merged into the row. */}
+            {pendingEntityIds.has(row.id) && (
+              <span className="text-[11px] font-medium text-amber-600">
+                {t("purposeOfFinancing.pendingChange")}
+              </span>
+            )}
+          </div>
         );
       },
       sortable: true,
-      width: "100px",
+      width: "130px",
     },
     {
       name: t("common:actions"),
@@ -298,6 +398,17 @@ const PurposeOfFinancing = () => {
         )}
         </div>
       </div>
+
+      {/* A pending CREATE has no row to badge — the record does not exist yet —
+          so the only place it can be announced is above the table. */}
+      {pendingCreates > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+          <span>{t("purposeOfFinancing.pendingCreates", { count: pendingCreates })}</span>
+          <Link to="/LOS/Setting/ApprovalRequests" className="font-medium underline">
+            {t("purposeOfFinancing.viewApprovals")}
+          </Link>
+        </div>
+      )}
 
       <div className="pro-card">
         <TableView

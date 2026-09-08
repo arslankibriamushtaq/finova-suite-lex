@@ -2807,7 +2807,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
-    hasAccess(["ROLE", "PERMISSION", "EMPLOYEE", "DEPARTMENT"]) && {
+    hasAccess([
+      "ROLE",
+      "PERMISSION",
+      "EMPLOYEE",
+      "DEPARTMENT",
+      "APPROVAL_WORKFLOW",
+      "APPROVAL_REQUEST",
+    ]) && {
       label: "Access Control Management",
       Link: "/LOS/Setting/Employees",
       img: Images.SettingsIcon,
@@ -2837,6 +2844,23 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "AssignPermissions",
           LinkLable: "/LOS/Setting",
           active: pathname.includes("/LOS/Setting/AssignPermissions"),
+        },
+        // Chains are built out of departments and roles, so the screen sits with
+        // them rather than under the flow types they govern.
+        hasAccess("APPROVAL_WORKFLOW_READ") && {
+          label: "Approval Workflows",
+          Link: "ApprovalWorkflows",
+          LinkLable: "/LOS/Setting",
+          active: pathname.includes("/LOS/Setting/ApprovalWorkflows"),
+        },
+        // The queue an approver actually works from. Read is granted far more
+        // widely than the workflow permissions — a checker needs the inbox and
+        // must never see the chain editor.
+        hasAccess("APPROVAL_REQUEST_READ") && {
+          label: "Approval Requests",
+          Link: "ApprovalRequests",
+          LinkLable: "/LOS/Setting",
+          active: pathname.includes("/LOS/Setting/ApprovalRequests"),
         },
       ].filter(Boolean),
     },

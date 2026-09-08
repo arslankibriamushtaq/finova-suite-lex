@@ -385,6 +385,43 @@ export const DEPARTMENT_PERMISSIONS = {
   DELETE: "DEPARTMENT_DELETE",
 };
 
+/**
+ * Dynamic approval workflows — identity-service module APPROVAL_WORKFLOW.
+ *
+ * Granted to `super_admin` and `admin`; `developer` holds read only. UPDATE
+ * covers both the header rename and the whole-chain replace, and it is also
+ * what authorizes activate/deactivate: standing a chain up is a change to the
+ * chain, not a separate kind of act.
+ */
+export const APPROVAL_WORKFLOW_PERMISSIONS = {
+  MODULE: "APPROVAL_WORKFLOW",
+  LIST: "APPROVAL_WORKFLOW_READ",
+  CREATE: "APPROVAL_WORKFLOW_CREATE",
+  /** Also authorizes `approval-workflows.stages:update` and activate/deactivate. */
+  EDIT: "APPROVAL_WORKFLOW_UPDATE",
+  DELETE: "APPROVAL_WORKFLOW_DELETE",
+};
+
+/**
+ * Approval requests — the runtime side, in lending-service.
+ *
+ * Separate from APPROVAL_WORKFLOW because defining a chain and walking one are
+ * different jobs: a checker approves requests all day and must never be able to
+ * edit the chain that put them there. APPROVE and REJECT are also split, since
+ * a role may be allowed to pass work on without being allowed to send it back.
+ *
+ * Holding these is necessary but not sufficient — the chain still decides who
+ * is eligible for a given stage, which is what NOT_ELIGIBLE means.
+ */
+export const APPROVAL_REQUEST_PERMISSIONS = {
+  MODULE: "APPROVAL_REQUEST",
+  LIST: "APPROVAL_REQUEST_READ",
+  APPROVE: "APPROVAL_REQUEST_APPROVE",
+  REJECT: "APPROVAL_REQUEST_REJECT",
+  /** Resubmit and cancel — both maker-only, enforced server-side. */
+  EDIT: "APPROVAL_REQUEST_UPDATE",
+};
+
 // ============================================
 // MODULE 27-35: LOV Management
 // ============================================

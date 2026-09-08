@@ -14,6 +14,7 @@ import {
 } from "antd";
 import TableView from "../TableView/TableView";
 import { getRoles, saveRole, updateRole, deleteRole } from "../../redux/apis/apisCrudFactoring";
+import { IN_USE_BY_WORKFLOW } from "../../redux/apis/apisApprovalWorkflows";
 import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
@@ -196,7 +197,13 @@ const RoleList = () => {
         toast.error(res?.data?.message || t("roles.toast.deleteFailed"));
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || t("roles.toast.deleteFailed"));
+      // A role an approval chain routes a stage to cannot be deleted — the stage
+      // would be left pointing at nothing. The chain is edited first.
+      const key =
+        err?.response?.data?.code === IN_USE_BY_WORKFLOW.ROLE
+          ? "roles.toast.inUseByWorkflow"
+          : "roles.toast.deleteFailed";
+      toast.error(err?.response?.data?.message || err?.message || t(key));
       setShowConfirmModal(false);
     }
   };

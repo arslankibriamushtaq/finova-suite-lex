@@ -37,6 +37,7 @@ import {
   departmentErrorCode,
   DEPARTMENT_ERRORS,
 } from "../../redux/apis/apisDepartments";
+import { IN_USE_BY_WORKFLOW } from "../../redux/apis/apisApprovalWorkflows";
 import { usePermissions, DEPARTMENT_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { PermissionDenied } from "../shared/detailKit";
 
@@ -206,6 +207,11 @@ const Departments = () => {
         // The backend refuses rather than silently stripping inherited grants
         // from every role in the department — say so, and point at the fix.
         toast.error(error?.response?.data?.message || t("departments.toast.hasRoles"));
+      } else if (code === IN_USE_BY_WORKFLOW.DEPARTMENT) {
+        // An approval chain still routes a stage here. Deleting the department
+        // would leave that stage pointing at nothing, so the chain is edited
+        // first — this screen cannot do it, but it can say where to go.
+        toast.error(error?.response?.data?.message || t("departments.toast.inUseByWorkflow"));
       } else {
         toast.error(error?.response?.data?.message || t("departments.toast.deleteFailed"));
       }
