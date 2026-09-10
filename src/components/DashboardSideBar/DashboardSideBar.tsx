@@ -37,6 +37,7 @@ import {
   QrCode,
   ReceiptText,
   ScanLine,
+  Briefcase,
   ScrollText,
   Send,
   Settings as SettingsIcon,
@@ -107,6 +108,12 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "tenant management": { Icon: Building2, color: "#0ea5e9" },
   "my subscription": { Icon: ReceiptText, color: "#a855f7" },
   "api documentation": { Icon: Code2, color: "#0d9488" },
+  // Group only, no entry per child. A leaf draws an icon exactly when it has
+  // its own entry here, so leaving the children out gives the plain list every
+  // other configurator group uses — the module's children were each carrying a
+  // different legacy PNG, which is why the column read as a jumble of grey and
+  // blue glyphs rather than as one module.
+  "portfolio management": { Icon: Briefcase, color: "#0d9488" },
 };
 
 const DEFAULT_MI_COLOR = "#C81D25";
@@ -257,12 +264,25 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
 
 /* Renders a colored lucide icon when the label is a known module; otherwise
    falls back to the legacy PNG icon (or nothing). */
-const ModuleIcon: React.FC<{ label?: string; fallback?: string; size?: number }> = ({
-  label,
-  fallback,
-  size = 18,
-}) => {
+const ModuleIcon: React.FC<{
+  label?: string;
+  fallback?: string;
+  size?: number;
+  /* An explicit icon wins over the label lookup. MODULE_THEME is keyed by
+     label, so two modules that happen to name a screen the same thing share a
+     glyph whether they want to or not; this is the opt-out. */
+  icon?: LucideIcon;
+}> = ({ label, fallback, size = 18, icon }) => {
   const theme = getModuleTheme(label);
+  if (icon) {
+    const Explicit = icon;
+    // --mi-color is set on the module wrapper and inherits down, so an icon
+    // named by an item takes its own module's colour rather than the default
+    // brand red — a red glyph inside a teal module reads as a stray.
+    return (
+      <Explicit size={size} style={{ color: "var(--mi-color)" }} strokeWidth={2} />
+    );
+  }
   if (theme) {
     const Icon = theme.Icon;
     return <Icon size={size} style={{ color: theme.color }} strokeWidth={2} />;
@@ -277,6 +297,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const isRTL = i18n.dir() === "rtl";
   const tr = (label?: string) =>
     label && SIDEBAR_LABEL_KEYS[label] ? t(SIDEBAR_LABEL_KEYS[label]) : label;
+
+  /**
+   * True when the current route IS `base` or sits underneath it.
+   *
+   * Neither `===` nor `includes` is right on its own, and Portfolio Management
+   * had both. `===` misses every detail route — Reports lost its highlight on
+   * all sixteen report screens, Allocation Engine on its audit and strategy
+   * pages, Investments on the adjust page. `includes` goes the other way and
+   * matches any substring, so a sibling whose name merely starts the same way
+   * lights up too. Anchoring on a path boundary is the only form that gets
+   * both cases right.
+   */
+  const isUnder = (base: string) => pathname === base || pathname.startsWith(`${base}/`);
   const [openSubmenuIndices, setOpenSubmenuIndices] = useState<number[]>([]);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
   // Pages that live under BOTH tabs (Customers, General Setting). For these we
@@ -1299,34 +1332,34 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           label: "Reports",
           Link: "Reports",
           img: Images.reportsIconDark,
-          active: pathname.split("/").includes("Reports"),
+          active: isUnder("/Lms/Reports"),
           submenu: [
             //  hasAccess("account_report_module") &&
             hasAccess("REPORT_READ") && {
               label: "Account Report",
               Link: "AccountReportsList",
               LinkLable: "/Lms/Reports",
-              active: pathname.includes("/Lms/Reports/AccountReportsList"),
+              active: isUnder("/Lms/Reports/AccountReportsList"),
             },
             //  hasAccess("simah_report_module") &&
             hasAccess("REPORT_READ") && {
               label: "Simah Report",
               Link: "SimahReportsList",
               LinkLable: "/Lms/Reports",
-              active: pathname.includes("/Lms/Reports/SimahReportsList"),
+              active: isUnder("/Lms/Reports/SimahReportsList"),
             },
             // hasAccess("LEDGER") &&
             hasAccess("REPORT_READ") && {
               label: "Accounting & Financing",
               Link: "AccountingFinancing",
               LinkLable: "/Lms/Reports",
-              active: pathname.split("/").includes("AccountingFinancing"),
+              active: isUnder("/Lms/Reports/AccountingFinancing"),
             },
             hasAccess("REPORT_READ") && {
               label: "Loans Reports",
               Link: "loans",
               LinkLable: "/Lms/Reports",
-              active: pathname.split("/").includes("loans"),
+              active: isUnder("/Lms/Reports/loans"),
             },
           ].filter(Boolean),
         },
@@ -2088,32 +2121,27 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
      * these menu rows — seeing a list is a read.
      */
     hasAccess("PORTFOLIO") && {
-      label: "Porfolio Management",
+      label: "Portfolio Management",
       Link: "/InvestorDashboard/Overview",
-      img: Images.dashboardIcon,
-      imgActive: Images.dashboardIconActive,
-      active: pathname.includes("/InvestorDashboard"),
+      active: isUnder("/InvestorDashboard"),
       menu: [
         hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Dashboard Overview",
           Link: "Overview",
           LinkLable: "/InvestorDashboard",
-          img: Images.dashboardIcon,
-          active: pathname.includes("/InvestorDashboard/Overview"),
+          active: isUnder("/InvestorDashboard/Overview"),
         },
         hasAccess("PORTFOLIO_INVESTOR_READ") && {
           label: "Investors",
           Link: "Investors",
           LinkLable: "/InvestorDashboard",
-          img: Images.CustomerManagementIcon,
-          active: pathname.includes("/InvestorDashboard/Investors"),
+          active: isUnder("/InvestorDashboard/Investors"),
         },
         hasAccess("PORTFOLIO_PRODUCT_READ") && {
           label: "Products & Rates",
           Link: "Products",
           LinkLable: "/InvestorDashboard",
-          img: Images.productManagementIcon,
-          active: pathname.includes("/InvestorDashboard/Products"),
+          active: isUnder("/InvestorDashboard/Products"),
         },
         // The four settings screens are routed under `SystemSettings/` (see
         // Routes/path.tsx), so the flat copies of them that used to sit here
@@ -2122,105 +2150,94 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // the router actually serves.
         hasAccess("PORTFOLIO_SETTINGS_READ") && {
           label: "System Settings",
+          Icon: SlidersHorizontal,
           Link: "SystemSettings",
           LinkLable: "/InvestorDashboard",
-          img: Images.SettingsIcon,
-          active: pathname.includes("/InvestorDashboard/SystemSettings"),
+          active: isUnder("/InvestorDashboard/SystemSettings"),
           submenu: [
 
             hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Income Ranges",
               Link: "IncomeRanges",
               LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.LovIcon,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/IncomeRanges"),
+              active: isUnder("/InvestorDashboard/SystemSettings/IncomeRanges"),
             },
             hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Initial Invest",
               Link: "InitialInvest",
               LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.FinancingApplicationsIcon,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/InitialInvest"),
+              active: isUnder("/InvestorDashboard/SystemSettings/InitialInvest"),
             },
             hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Investment Experience",
               Link: "InvestmentExperience",
               LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.PartnerManagementIcon,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentExperience"),
+              active: isUnder("/InvestorDashboard/SystemSettings/InvestmentExperience"),
             },
             hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Investment Timeline",
               Link: "InvestmentTimeline",
               LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.applicationBoard,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
+              active: isUnder("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
             },
 
           ].filter(Boolean),
         },
         hasAccess("PORTFOLIO_INVESTMENT_APPROVE") && {
-          label: "Investment",
+          label: "Approve Investment",
           Link: "ApproveInvestment",
           LinkLable: "/InvestorDashboard",
-          img: Images.logsIcon,
-          active: pathname.includes("/InvestorDashboard/ApproveInvestment"),
+          active: isUnder("/InvestorDashboard/ApproveInvestment"),
         },
         hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Logs",
           Link: "Logs",
           LinkLable: "/InvestorDashboard",
-          img: Images.logsIcon,
-          active: pathname.includes("/InvestorDashboard/Logs"),
+          active: isUnder("/InvestorDashboard/Logs"),
         },
         hasAccess("PORTFOLIO_FUND_READ") && {
           label: "Ledger",
+          noIcon: true,
           Link: "Ledger",
           LinkLable: "/InvestorDashboard",
-          img: Images.reportsIconDark,
-          active: pathname.includes("/InvestorDashboard/Ledger"),
+          active: isUnder("/InvestorDashboard/Ledger"),
         },
         hasAccess("PORTFOLIO_INVESTMENT_READ") && {
           label: "Investments",
           Link: "Investments",
           LinkLable: "/InvestorDashboard",
-          img: Images.loanIcon,
-          active: pathname == "/InvestorDashboard/Investments",
+          active: isUnder("/InvestorDashboard/Investments"),
         },
         hasAccess("PORTFOLIO_ALLOCATION_READ") && {
           label: "Allocation Engine",
           Link: "AllocationEngine",
           LinkLable: "/InvestorDashboard",
-          img: Images.ApiManagementIcon,
-          active: pathname == "/InvestorDashboard/AllocationEngine",
+          active: isUnder("/InvestorDashboard/AllocationEngine"),
         },
         hasAccess("PORTFOLIO_DASHBOARD_READ") && {
           label: "Reports",
+          noIcon: true,
           Link: "Reports",
           LinkLable: "/InvestorDashboard",
-          img: Images.reportsIconDark,
-          active: pathname == "/InvestorDashboard/Reports",
+          active: isUnder("/InvestorDashboard/Reports"),
         },
         hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Audit Logs",
           Link: "AuditLogs",
           LinkLable: "/InvestorDashboard",
-          img: Images.logsIcon,
-          active: pathname == "/InvestorDashboard/AuditLogs",
+          active: isUnder("/InvestorDashboard/AuditLogs"),
         },
         hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Notifications",
           Link: "Notifications",
           LinkLable: "/InvestorDashboard",
-          img: Images.notification,
-          active: pathname == "/InvestorDashboard/Notifications",
+          active: isUnder("/InvestorDashboard/Notifications"),
         },
         hasAccess("PORTFOLIO_SETTINGS_MANAGE") && {
           label: "Admin Users & Roles",
           Link: "AdminUsers",
           LinkLable: "/InvestorDashboard",
-          img: Images.DepartmentManagementIcon,
-          active: pathname == "/InvestorDashboard/AdminUsers",
+          active: isUnder("/InvestorDashboard/AdminUsers"),
         },
 
       ].filter(Boolean),
@@ -2231,7 +2248,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   // tab without duplicating their (large) configs.
   const lmsModule = sidebarItems.find((x: any) => x && x.label === "LMS");
   const connectorModule = sidebarItems.find((x: any) => x && x.label === "Connector Management");
-  const portfolioModule = sidebarItems.find((x: any) => x && x.label === "Porfolio Management");
+  const portfolioModule = sidebarItems.find((x: any) => x && x.label === "Portfolio Management");
 
   /**
    * LEX — the agentic decisioning layer, a sibling of LOS and LMS under
@@ -3237,7 +3254,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               e.stopPropagation();
               setOpenNestedSubmenus((prev) => ({ ...prev, [key]: !isOpen }));
             }}
-            icon={<ModuleIcon label={it.label} fallback={it.img} />}
+            icon={<ModuleIcon label={it.label} fallback={it.img} icon={it.Icon} />}
           >
             {renderMenuItems(nested, key)}
           </SubMenu>
@@ -3256,8 +3273,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             style={{ fontSize: "12px", fontWeight: "400", textDecoration: "none" }}
             className={it.active ? "active" : ""}
             icon={
-              !it.noIcon && (getModuleTheme(it.label) || it.img) ? (
-                <ModuleIcon label={it.label} fallback={it.img} />
+              !it.noIcon && (it.Icon || getModuleTheme(it.label) || it.img) ? (
+                <ModuleIcon label={it.label} fallback={it.img} icon={it.Icon} />
               ) : null
             }
           >
