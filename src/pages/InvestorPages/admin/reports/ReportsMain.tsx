@@ -261,7 +261,7 @@ export default function ReportsMain() {
                           </div>
                           <div className="flex items-center space-x-2 ms-4">
                             <Link
-                              to={`/admin/reports/${report.id}`}
+                              to={`/InvestorDashboard/Reports/${report.id}`}
                               className="text-black hover:text-blue-900"
                               title={t('reports.viewReport')}
                             >
@@ -342,7 +342,7 @@ export default function ReportsMain() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('reports.quickActions')}</h3>
             <div className="space-y-3">
               <Link
-                to="/admin/reports/pl"
+                to="/InvestorDashboard/Reports/pl"
                 className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
@@ -353,7 +353,7 @@ export default function ReportsMain() {
               </Link>
 
               <Link
-                to="/admin/reports/analytics"
+                to="/InvestorDashboard/Reports/analytics"
                 className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">

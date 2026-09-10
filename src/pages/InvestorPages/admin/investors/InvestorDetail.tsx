@@ -495,7 +495,7 @@ export default function InvestorDetail() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <Link 
-                      to={`/admin/investments/${investment.id}/adjust`}
+                      to={`/InvestorDashboard/Investments/${investment.id}/adjust`}
                       className="text-black hover:text-blue-900"
                     >
                       <Settings className="w-4 h-4" />

@@ -153,7 +153,7 @@ export default function AllocationDashboard() {
               {t('dashboard.refreshData')}
             </button>
             <Link
-              to="/admin/allocation/audit"
+              to="/InvestorDashboard/AllocationEngine/audit"
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               <FileText className="w-4 h-4 me-2" />
@@ -227,7 +227,7 @@ export default function AllocationDashboard() {
         <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('reports.quickActions')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
-            to="/admin/allocation/strategies/new"
+            to="/InvestorDashboard/AllocationEngine/strategies/new"
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
           >
             <div className="flex items-center">
@@ -249,7 +249,7 @@ export default function AllocationDashboard() {
           </button>
 
           <Link
-            to="/admin/allocation/audit"
+            to="/InvestorDashboard/AllocationEngine/audit"
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
           >
             <div className="flex items-center">
@@ -345,7 +345,7 @@ export default function AllocationDashboard() {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900">{t('ad.recentActivities')}</h3>
           <Link
-            to="/admin/allocation/audit"
+            to="/InvestorDashboard/AllocationEngine/audit"
             className="text-sm text-black hover:text-gray-800"
           >
             {t('reports.viewAll')}

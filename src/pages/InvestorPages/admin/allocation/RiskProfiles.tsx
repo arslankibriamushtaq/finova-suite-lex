@@ -158,7 +158,7 @@ export default function RiskProfiles() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link
-              to="/admin/allocation"
+              to="/InvestorDashboard/AllocationEngine"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-5 h-5 me-2" />

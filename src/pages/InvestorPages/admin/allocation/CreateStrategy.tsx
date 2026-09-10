@@ -197,13 +197,13 @@ export default function CreateStrategy() {
 
   const handleSaveDraft = () => {
     alert(t('cs.toast.draftSaved'));
-    navigate('/admin/allocation/strategies');
+    navigate('/InvestorDashboard/AllocationEngine/strategies');
   };
 
   const handlePublish = () => {
     if (confirm(t('cs.confirm.publish'))) {
       alert(t('cs.toast.published'));
-      navigate('/admin/allocation/strategies');
+      navigate('/InvestorDashboard/AllocationEngine/strategies');
     }
   };
 
@@ -1647,7 +1647,7 @@ export default function CreateStrategy() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link
-              to="/admin/allocation/strategies"
+              to="/InvestorDashboard/AllocationEngine/strategies"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-5 h-5 me-2" />
@@ -1716,7 +1716,7 @@ export default function CreateStrategy() {
           {currentStep === totalSteps ? (
             <div className="flex items-center space-x-3">
               <Link
-                to={`/admin/allocation/strategies/simulate?preview=true`}
+                to={`/InvestorDashboard/AllocationEngine/strategies/simulate?preview=true`}
                 className="px-4 py-2 text-sm font-medium text-black bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100"
               >
                 {t('cs.simulateBeforePublish')}

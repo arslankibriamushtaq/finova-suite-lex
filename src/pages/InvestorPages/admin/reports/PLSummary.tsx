@@ -138,7 +138,7 @@ export default function PLSummary() {
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-4">
           <Link
-            to="/admin/reports"
+            to="/InvestorDashboard/Reports"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 me-2" />

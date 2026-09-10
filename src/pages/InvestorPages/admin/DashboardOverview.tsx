@@ -196,7 +196,7 @@ export default function DashboardOverview() {
             {t('dashboard.refreshData')}
           </button>
           {/* <Link 
-            to="/admin/reports"
+            to="/InvestorDashboard/Reports"
             className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
           >
             <Eye className="w-4 h-4 me-2" />
@@ -298,7 +298,7 @@ export default function DashboardOverview() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">{t('dashboard.topPerformingProducts')}</h2>
             <Link
-              to="/admin/products"
+              to="/InvestorDashboard/Products"
               className="text-sm text-black hover:text-gray-800 font-medium"
             >
               {t('dashboard.viewAllProducts')}
@@ -373,7 +373,7 @@ export default function DashboardOverview() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
           <Link 
-            to="/admin/logs"
+            to="/InvestorDashboard/Logs"
             className="text-sm text-black hover:text-gray-800 font-medium"
           >
             View All Logs

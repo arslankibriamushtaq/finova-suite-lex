@@ -112,7 +112,7 @@ export default function AllocationReports() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link
-              to="/admin/reports"
+              to="/InvestorDashboard/Reports"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-5 h-5 me-2" />

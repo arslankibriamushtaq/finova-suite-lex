@@ -206,7 +206,7 @@ export default function InvestmentAdjust() {
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-4">
           <Link
-            to="/admin/investments"
+            to="/InvestorDashboard/Investments"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 me-2" />
@@ -484,7 +484,7 @@ export default function InvestmentAdjust() {
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-6 border-t border-gray-200">
               <Link
-                to="/admin/investments"
+                to="/InvestorDashboard/Investments"
                 className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 <X className="w-4 h-4 me-2" />

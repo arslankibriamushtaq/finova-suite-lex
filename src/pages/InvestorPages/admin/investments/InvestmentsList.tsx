@@ -549,7 +549,7 @@ export default function InvestmentsList() {
                             <Edit className="w-4 h-4" />
                           </button>
                           <Link
-                            to={`/admin/investments/${investment.id}/adjust`}
+                            to={`/InvestorDashboard/Investments/${investment.id}/adjust`}
                             className="text-orange-600 hover:text-orange-900"
                             title={t('invl.adjustInvestment')}
                           >
