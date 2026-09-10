@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Plus,
-  Search,
   Filter,
   Download,
   Eye,
@@ -13,16 +12,58 @@ import {
   Settings,
   Users,
   Clock,
-  CheckCircle,
   AlertTriangle,
+  CheckCircle2,
   RefreshCw,
-  MoreHorizontal,
-  X,
   Trash2,
   Play,
-  Pause
+  Copy,
+  ChevronDown,
 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
+
+import TableView from '../../../components/TableView/TableView';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+import { Checkbox } from '../../../components/ui/checkbox';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import { Tabs, TabsContent } from '../../../components/ui/tabs';
+import { Textarea } from '../../../components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../../components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../components/ui/select';
+import {
+  DetailTabsList,
+  DetailTabsTrigger,
+  EmptyState,
+} from '../../../components/shared/detailKit';
+import { TONES } from '../../../components/shared/detailKitUtils';
+import {
+  LexMetricTile,
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+} from '../../../components/shared/lexKit';
 
 const notifications = [
   {
@@ -126,7 +167,39 @@ const templates = [
   }
 ];
 
+type RowAction = {
+  icon: typeof Eye;
+  label: string;
+  onSelect: () => void;
+  destructive?: boolean;
+};
+
+/** A titled pair of settings fields. */
+const SettingsGroup = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div>
+    <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      {title}
+    </h5>
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">{children}</div>
+  </div>
+);
+
+const SettingsField = ({ label, defaultValue }: { label: string; defaultValue: string }) => (
+  <div className="space-y-1.5">
+    <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+    <Input defaultValue={defaultValue} />
+  </div>
+);
+
 export default function Notifications() {
+  // Like the audit log, this page carried no translation at all — every label,
+  // column head, filter option, settings field and data value was hardcoded
+  // English inside an app that ships EN, FR and AR with RTL.
+  const { t } = useTranslation('investor');
+
+  const tStatus = (v: string) => t(`inot.st.${v}`);
+  const tType = (v: string) => t(`inot.type.${v}`);
+
   const [activeTab, setActiveTab] = useState('notifications');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -140,13 +213,21 @@ export default function Notifications() {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showCreateTemplateModal, setShowCreateTemplateModal] = useState(false);
 
+  // Delivered and Failed were both `bg-red-100 text-red-800` — a notification
+  // that reached its recipients and one that did not looked the same.
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Delivered': return 'bg-red-100 text-red-800';
-      case 'Scheduled': return 'bg-gray-100 text-gray-900';
-      case 'Failed': return 'bg-red-100 text-red-800';
-      case 'Sending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Delivered':
+      case 'Active':
+        return TONES.emerald;
+      case 'Failed':
+        return TONES.red;
+      case 'Sending':
+        return TONES.amber;
+      case 'Scheduled':
+      case 'Draft':
+      default:
+        return TONES.slate;
     }
   };
 
@@ -161,7 +242,7 @@ export default function Notifications() {
   };
 
   const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return 'Not sent';
+    if (!dateString) return t('inot.notSent');
     return new Date(dateString).toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -195,30 +276,37 @@ export default function Notifications() {
     setShowDeleteModal(true);
   };
 
+  /**
+   * Fourteen handlers on this page reported success for work that never ran.
+   *
+   * "deleted successfully", "resent successfully", "settings saved
+   * successfully" — every one an `alert()` over a module-level literal, with
+   * no service behind any of it. On a screen that sends mail and SMS to real
+   * investors, "resent successfully" is the worst of them: an operator would
+   * have no reason to try again.
+   */
+  const notConnected = () => toast.error(t('invl.notConnected'));
+
   const handleCreateNotification = () => {
-    alert('New notification created successfully!');
+    notConnected();
     setShowCreateModal(false);
   };
 
   const handleSaveEdit = () => {
-    alert('Notification updated successfully!');
+    notConnected();
     setShowEditModal(false);
     setSelectedNotification(null);
   };
 
   const confirmDelete = () => {
-    alert(`Notification "${selectedNotification?.title}" deleted successfully!`);
+    notConnected();
     setShowDeleteModal(false);
     setSelectedNotification(null);
   };
 
-  const handleResendNotification = (notification: any) => {
-    alert(`Notification "${notification.title}" resent successfully!`);
-  };
+  const handleResendNotification = notConnected;
 
-  const handleDuplicateNotification = (notification: any) => {
-    alert(`Notification "${notification.title}" duplicated successfully!`);
-  };
+  const handleDuplicateNotification = notConnected;
 
   // Template Actions
   const handleViewTemplate = (template: any) => {
@@ -228,742 +316,684 @@ export default function Notifications() {
 
   const handleEditTemplate = (template: any) => {
     setSelectedTemplate(template);
-    alert(`Edit template: ${template.name}`);
+    notConnected();
   };
 
-  const handleDeleteTemplate = (template: any) => {
-    alert(`Template "${template.name}" deleted successfully!`);
-  };
+  const handleDeleteTemplate = notConnected;
 
   const handleCreateTemplate = () => {
-    alert('New template created successfully!');
+    notConnected();
     setShowCreateTemplateModal(false);
   };
 
-  const handlePreviewTemplate = (template: any) => {
-    alert(`Preview template: ${template.name}`);
-  };
+  const handlePreviewTemplate = notConnected;
 
-  const handleDuplicateTemplate = (template: any) => {
-    alert(`Template "${template.name}" duplicated successfully!`);
-  };
+  const handleDuplicateTemplate = notConnected;
 
-  // General Actions
-  const handleRefreshStatus = () => {
-    alert('Notification status refreshed successfully!');
-  };
+  const handleRefreshStatus = notConnected;
 
-  const handleExportLogs = () => {
-    alert('Notification logs exported successfully!');
-  };
+  const handleExportLogs = notConnected;
 
-  const handleSaveSettings = () => {
-    alert('Notification settings saved successfully!');
-  };
+  const handleSaveSettings = notConnected;
+
+  /**
+   * Row actions on a menu rather than a row of icon buttons.
+   *
+   * Five bare glyphs per row is a guessing game, and Resend only appears on a
+   * failed row — so the column had four icons on most rows and five on one,
+   * and nothing lined up. A single trigger keeps the column a fixed width and
+   * gives every action a name.
+   */
+  const RowActions = ({ items }: { items: RowAction[] }) => (
+    <div
+      className="relative inline-block"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            {t('common:select')}
+            <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="z-[9999]">
+          {items.map(({ icon: Icon, label, onSelect, destructive }) => (
+            <DropdownMenuItem
+              key={label}
+              variant={destructive ? 'destructive' : 'default'}
+              onSelect={(e) => {
+                e.preventDefault();
+                onSelect();
+              }}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const notificationHeaders = [
+    {
+      name: t('inot.col.notification'),
+      cell: (row: any) => {
+        const TypeIcon = getTypeIcon(row.type);
+        return (
+          <span className="flex min-w-0 items-center gap-2.5">
+            <span className="pro-head-badge">
+              <TypeIcon className="h-4 w-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-medium text-foreground">{row.title}</span>
+              <span className="block truncate text-xs text-muted-foreground">{row.category}</span>
+            </span>
+          </span>
+        );
+      },
+      width: '280px',
+    },
+    {
+      name: t('inot.col.typeChannel'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 truncate text-sm text-foreground">{tType(row.type)}</p>
+          <p className="m-0 truncate text-xs text-muted-foreground">{row.channel}</p>
+        </div>
+      ),
+      width: '170px',
+    },
+    {
+      name: t('inot.col.recipients'),
+      cell: (row: any) => (
+        <span className="inline-flex items-center gap-1.5 text-sm tabular-nums">
+          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+          {row.recipients.toLocaleString()}
+        </span>
+      ),
+      width: '140px',
+    },
+    {
+      name: t('inot.col.sentDate'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
+          {formatDateTime(row.sent)}
+        </span>
+      ),
+      width: '170px',
+    },
+    {
+      name: t('common:status'),
+      cell: (row: any) => (
+        <Badge variant="outline" className={`border font-medium ${getStatusColor(row.status)}`}>
+          {tStatus(row.status)}
+        </Badge>
+      ),
+      width: '130px',
+    },
+    {
+      name: t('inot.col.performance'),
+      cell: (row: any) =>
+        row.openRate ? (
+          <div className="min-w-0">
+            <p className="m-0 text-sm tabular-nums text-foreground">
+              {t('inot.openLabel', { value: row.openRate })}
+            </p>
+            <p className="m-0 text-xs tabular-nums text-muted-foreground">
+              {t('inot.clickLabel', { value: row.clickRate })}
+            </p>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        ),
+      width: '150px',
+    },
+    {
+      name: t('common:actions'),
+      cell: (row: any) => (
+        <RowActions
+          items={[
+            { icon: Eye, label: t('common:viewDetails'), onSelect: () => handleViewDetails(row) },
+            { icon: Edit, label: t('common:edit'), onSelect: () => handleEditNotification(row) },
+            // Resend belongs only on a failure — it is the one row where it
+            // means anything.
+            ...(row.status === 'Failed'
+              ? [
+                  {
+                    icon: Send,
+                    label: t('inot.action.resend'),
+                    onSelect: () => handleResendNotification(),
+                  },
+                ]
+              : []),
+            // Was a Plus icon, the same glyph as "Create Notification" in the
+            // header — duplicating is not creating.
+            {
+              icon: Copy,
+              label: t('inot.action.duplicate'),
+              onSelect: () => handleDuplicateNotification(),
+            },
+            {
+              icon: Trash2,
+              label: t('common:delete'),
+              onSelect: () => handleDeleteNotification(row),
+              destructive: true,
+            },
+          ]}
+        />
+      ),
+      width: '140px',
+    },
+  ];
+
+  const templateHeaders = [
+    {
+      name: t('inot.tcol.name'),
+      cell: (row: any) => (
+        <span className="truncate text-sm font-medium text-foreground">{row.name}</span>
+      ),
+      width: '240px',
+    },
+    {
+      name: t('common:type'),
+      cell: (row: any) => (
+        <span className="inline-flex items-center gap-1.5 text-sm">
+          {row.type.includes('Email') && <Mail className="h-3.5 w-3.5 text-muted-foreground" />}
+          {row.type.includes('SMS') && (
+            <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+          )}
+          {row.type.includes('In-App') && <Bell className="h-3.5 w-3.5 text-muted-foreground" />}
+          {row.type}
+        </span>
+      ),
+      width: '180px',
+    },
+    {
+      name: t('common:category'),
+      cell: (row: any) => <span className="text-sm">{row.category}</span>,
+      width: '150px',
+    },
+    {
+      name: t('inot.tcol.usage'),
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{row.usage}</span>,
+      width: '170px',
+    },
+    {
+      name: t('inot.tcol.lastModified'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
+          {new Date(row.lastModified).toLocaleDateString()}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('common:status'),
+      cell: (row: any) => (
+        <Badge variant="outline" className={`border font-medium ${getStatusColor(row.status)}`}>
+          {tStatus(row.status)}
+        </Badge>
+      ),
+      width: '120px',
+    },
+    {
+      name: t('common:actions'),
+      cell: (row: any) => (
+        <RowActions
+          items={[
+            { icon: Eye, label: t('common:view'), onSelect: () => handleViewTemplate(row) },
+            { icon: Edit, label: t('common:edit'), onSelect: () => handleEditTemplate(row) },
+            { icon: Play, label: t('inot.action.preview'), onSelect: () => handlePreviewTemplate() },
+            {
+              icon: Copy,
+              label: t('inot.action.duplicate'),
+              onSelect: () => handleDuplicateTemplate(),
+            },
+            {
+              icon: Trash2,
+              label: t('common:delete'),
+              onSelect: () => handleDeleteTemplate(),
+              destructive: true,
+            },
+          ]}
+        />
+      ),
+      width: '140px',
+    },
+  ];
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Notifications</h1>
-            <p className="text-gray-600">Manage notifications, templates, and communication settings</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={handleRefreshStatus}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <RefreshCw className="w-4 h-4 me-2" />
-              Refresh Status
-            </button>
-            <button 
-              onClick={handleExportLogs}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Download className="w-4 h-4 me-2" />
-              Export Logs
-            </button>
-            <button 
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              Create Notification
-            </button>
-          </div>
-        </div>
+    <div className="service">
+      <LexPageHeader icon={Bell} title={t('inot.title')} subtitle={t('inot.subtitle')}>
+        <Button variant="outline" size="sm" onClick={handleRefreshStatus} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
+          {t('inot.refreshStatus')}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExportLogs} className="gap-2">
+          <Download className="h-4 w-4" />
+          {t('inot.exportLogs')}
+        </Button>
+        <Button size="sm" onClick={() => setShowCreateModal(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
+          {t('inot.createNotification')}
+        </Button>
+      </LexPageHeader>
+
+      <LexNotice tone="amber" icon={AlertTriangle}>
+        {t('invl.sampleDataNotice')}
+      </LexNotice>
+
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <LexMetricTile
+          label={t('inot.stat.totalSent')}
+          icon={Send}
+          tone="sky"
+          value="15,247"
+          footnote={t('inot.stat.thisMonth')}
+        />
+        <LexMetricTile
+          label={t('inot.stat.deliveryRate')}
+          icon={CheckCircle2}
+          tone="emerald"
+          value="98.5%"
+          footnote={t('inot.stat.aboveTarget')}
+        />
+        <LexMetricTile
+          label={t('inot.stat.openRate')}
+          icon={Eye}
+          tone="slate"
+          value="87.2%"
+          footnote={t('inot.stat.vsLastMonth')}
+        />
+        <LexMetricTile
+          label={t('inot.stat.activeTemplates')}
+          icon={MessageSquare}
+          tone="amber"
+          value="23"
+          footnote={t('inot.stat.inDraft')}
+        />
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Sent</p>
-              <p className="text-2xl font-bold text-gray-900">15,247</p>
-              <p className="text-xs text-red-600 mt-1">This month</p>
-            </div>
-            <Send className="w-8 h-8 text-gray-700" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Delivery Rate</p>
-              <p className="text-2xl font-bold text-gray-900">98.5%</p>
-              <p className="text-xs text-red-600 mt-1">Above target</p>
-            </div>
-            <CheckCircle className="w-8 h-8 text-red-500" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Open Rate</p>
-              <p className="text-2xl font-bold text-gray-900">87.2%</p>
-              <p className="text-xs text-red-600 mt-1">+2.3% vs last month</p>
-            </div>
-            <Eye className="w-8 h-8 text-purple-500" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Active Templates</p>
-              <p className="text-2xl font-bold text-gray-900">23</p>
-              <p className="text-xs text-gray-500 mt-1">3 in draft</p>
-            </div>
-            <MessageSquare className="w-8 h-8 text-orange-500" />
-          </div>
-        </div>
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <DetailTabsList className="mb-3">
+          <DetailTabsTrigger value="notifications" className="gap-2">
+            <Bell className="h-4 w-4" />
+            {t('inot.tab.notifications')}
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="templates" className="gap-2">
+            <MessageSquare className="h-4 w-4" />
+            {t('inot.tab.templates')}
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="settings" className="gap-2">
+            <Settings className="h-4 w-4" />
+            {t('inot.tab.settings')}
+          </DetailTabsTrigger>
+        </DetailTabsList>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('notifications')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'notifications'
-                ? 'border-gray-700 text-black'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center">
-              <Bell className="w-4 h-4 me-2" />
-              Notifications
+        <TabsContent value="notifications">
+          <div className="pro-card p-3 mb-3">
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+              <LexSearch
+                id="notifications-search"
+                className="flex-1"
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={t('inot.searchPlaceholder')}
+              />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full lg:w-[160px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Status">{t('inot.allStatuses')}</SelectItem>
+                  {['Delivered', 'Scheduled', 'Failed', 'Sending'].map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {tStatus(v)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-full lg:w-[160px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Types">{t('inot.allTypes')}</SelectItem>
+                  {['System', 'Alert', 'Scheduled', 'Onboarding'].map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {tType(v)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+                <Filter className="h-4 w-4" />
+                {t('inot.moreFilters')}
+              </Button>
+              <span className="whitespace-nowrap text-xs text-muted-foreground">
+                {t('inot.countLabel', {
+                  shown: filteredNotifications.length,
+                  total: notifications.length,
+                })}
+              </span>
             </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('templates')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'templates'
-                ? 'border-gray-700 text-black'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center">
-              <MessageSquare className="w-4 h-4 me-2" />
-              Templates
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'settings'
-                ? 'border-gray-700 text-black'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center">
-              <Settings className="w-4 h-4 me-2" />
-              Settings
-            </div>
-          </button>
-        </nav>
-      </div>
+          </div>
 
-      {/* Notifications Tab */}
-      {activeTab === 'notifications' && (
-        <>
-          {/* Filters */}
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search notifications..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+          <div className="pro-card p-4">
+            {filteredNotifications.length === 0 ? (
+              <EmptyState icon={Bell} text={t('common:noData')} />
+            ) : (
+              <TableView
+                header={notificationHeaders}
+                data={filteredNotifications}
+                paginationShow={false}
+              />
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="templates">
+          <div className="pro-card p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <MessageSquare className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t('inot.templates.title')}
+                </h4>
+              </div>
+              <Button size="sm" onClick={() => setShowCreateTemplateModal(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                {t('inot.templates.new')}
+              </Button>
+            </div>
+            <TableView header={templateHeaders} data={templates} paginationShow={false} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <div className="pro-card p-4">
+            <div className="mb-4 flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Settings className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t('inot.settings.title')}
+              </h4>
+            </div>
+
+            <div className="space-y-5">
+              <SettingsGroup title={t('inot.settings.emailConfig')}>
+                <SettingsField label={t('inot.settings.smtpServer')} defaultValue="smtp.portfolio.com" />
+                <SettingsField label={t('inot.settings.fromName')} defaultValue="Portfolio Admin" />
+              </SettingsGroup>
+
+              <SettingsGroup title={t('inot.settings.smsConfig')}>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-muted-foreground">
+                    {t('inot.settings.smsProvider')}
+                  </Label>
+                  <Select defaultValue="Twilio">
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['Twilio', 'AWS SNS', 'SendGrid'].map((v) => (
+                        <SelectItem key={v} value={v}>
+                          {v}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <SettingsField
+                  label={t('inot.settings.fromNumber')}
+                  defaultValue="+1 (555) 123-4567"
                 />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-              >
-                <option value="All Status">All Status</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Scheduled">Scheduled</option>
-                <option value="Failed">Failed</option>
-                <option value="Sending">Sending</option>
-              </select>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-              >
-                <option value="All Types">All Types</option>
-                <option value="System">System</option>
-                <option value="Alert">Alert</option>
-                <option value="Scheduled">Scheduled</option>
-                <option value="Onboarding">Onboarding</option>
-              </select>
-              <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-                <Filter className="w-4 h-4 me-2" />
-                More Filters
-              </button>
-            </div>
-            <div className="text-sm text-gray-500">
-              {filteredNotifications.length} of {notifications.length} notifications
-            </div>
-          </div>
+              </SettingsGroup>
 
-          {/* Notifications Table */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Notification
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Type & Channel
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Recipients
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sent Date
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Performance
-                    </th>
-                    <th className="relative px-6 py-3">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredNotifications.map((notification) => {
-                    const TypeIcon = getTypeIcon(notification.type);
-                    return (
-                      <tr key={notification.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <TypeIcon className="w-5 h-5 text-gray-400 me-3" />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{notification.title}</div>
-                              <div className="text-sm text-gray-500">{notification.category}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm text-gray-900">{notification.type}</div>
-                            <div className="text-sm text-gray-500">{notification.channel}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <Users className="w-4 h-4 text-gray-400 me-1" />
-                            <span className="text-sm text-gray-900">{notification.recipients.toLocaleString()}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDateTime(notification.sent)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(notification.status))}>
-                            {notification.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {notification.openRate ? (
-                            <div className="text-sm">
-                              <div className="text-gray-900">Open: {notification.openRate}</div>
-                              <div className="text-gray-500">Click: {notification.clickRate}</div>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                          <div className="flex items-center space-x-2">
-                            <button 
-                              onClick={() => handleViewDetails(notification)}
-                              className="text-black hover:text-blue-900" 
-                              title="View Details"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button 
-                              onClick={() => handleEditNotification(notification)}
-                              className="text-gray-600 hover:text-gray-900" 
-                              title="Edit"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            {notification.status === 'Failed' && (
-                              <button 
-                                onClick={() => handleResendNotification(notification)}
-                                className="text-red-600 hover:text-red-900" 
-                                title="Resend"
-                              >
-                                <Send className="w-4 h-4" />
-                              </button>
-                            )}
-                            <button 
-                              onClick={() => handleDuplicateNotification(notification)}
-                              className="text-purple-600 hover:text-purple-900" 
-                              title="Duplicate"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteNotification(notification)}
-                              className="text-red-600 hover:text-red-900" 
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Templates Tab */}
-      {activeTab === 'templates' && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Notification Templates</h3>
-            <button 
-              onClick={() => setShowCreateTemplateModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              New Template
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Template Name
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usage
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Modified
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {templates.map((template) => (
-                  <tr key={template.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{template.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm text-gray-900">
-                        {template.type.includes('Email') && <Mail className="w-4 h-4 me-1" />}
-                        {template.type.includes('SMS') && <MessageSquare className="w-4 h-4 me-1" />}
-                        {template.type.includes('In-App') && <Bell className="w-4 h-4 me-1" />}
-                        {template.type}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {template.category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {template.usage}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(template.lastModified).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                        template.status === 'Active' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
-                      )}>
-                        {template.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleViewTemplate(template)}
-                          className="text-black hover:text-blue-900" 
-                          title="View Template"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleEditTemplate(template)}
-                          className="text-gray-600 hover:text-gray-900" 
-                          title="Edit Template"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handlePreviewTemplate(template)}
-                          className="text-red-600 hover:text-red-900" 
-                          title="Preview"
-                        >
-                          <Play className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDuplicateTemplate(template)}
-                          className="text-purple-600 hover:text-purple-900" 
-                          title="Duplicate"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteTemplate(template)}
-                          className="text-red-600 hover:text-red-900" 
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Settings Tab */}
-      {activeTab === 'settings' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Notification Settings</h3>
-
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Email Configuration</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">SMTP Server</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    defaultValue="smtp.portfolio.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">From Name</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    defaultValue="Portfolio Admin"
-                  />
+              <div>
+                <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('inot.settings.defaultPrefs')}
+                </h5>
+                <div className="space-y-2.5">
+                  {[
+                    ['welcome', 'inot.settings.prefWelcome', true],
+                    ['transaction', 'inot.settings.prefTransaction', true],
+                    ['statements', 'inot.settings.prefStatements', true],
+                    ['marketing', 'inot.settings.prefMarketing', false],
+                  ].map(([id, key, checked]) => (
+                    <div key={String(id)} className="flex items-center gap-2.5">
+                      <Checkbox id={`pref-${id}`} defaultChecked={Boolean(checked)} />
+                      <Label htmlFor={`pref-${id}`} className="cursor-pointer text-sm font-normal">
+                        {t(String(key))}
+                      </Label>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">SMS Configuration</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">SMS Provider</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option>Twilio</option>
-                    <option>AWS SNS</option>
-                    <option>SendGrid</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">From Number</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    defaultValue="+1 (555) 123-4567"
-                  />
-                </div>
+              <div className="border-t pt-4">
+                <Button onClick={handleSaveSettings} className="gap-2">
+                  <Settings className="h-4 w-4" />
+                  {t('inot.settings.save')}
+                </Button>
               </div>
-            </div>
-
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Default Preferences</h4>
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Send welcome emails to new investors</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Send transaction confirmations</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Send monthly statements</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
-                  <span className="text-sm text-gray-700">Send marketing communications</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-gray-200">
-              <button 
-                onClick={handleSaveSettings}
-                className="flex items-center px-6 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-              >
-                <Settings className="w-4 h-4 me-2" />
-                Save Settings
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
 
-      {/* Notification Details Modal */}
-      {showDetailsModal && selectedNotification && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Notification Details</h3>
-              <button
-                onClick={() => setShowDetailsModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
 
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                  <p className="text-sm text-gray-900">{selectedNotification.title}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <p className="text-sm text-gray-900">{selectedNotification.type}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Channel</label>
-                  <p className="text-sm text-gray-900">{selectedNotification.channel}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Recipients</label>
-                  <p className="text-sm text-gray-900">{selectedNotification.recipients.toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedNotification.status)}`}>
-                    {selectedNotification.status}
-                  </span>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Sent Date</label>
-                  <p className="text-sm text-gray-900">{formatDateTime(selectedNotification.sent)}</p>
-                </div>
-              </div>
+      {/*
+        Three hand-rolled `fixed inset-0 bg-black/50` overlays became three
+        shadcn Dialogs. The difference is not only visual: the old ones trapped
+        no focus, closed on nothing but their own X, and had no labelled title
+        for a screen reader — a div with a high z-index is not a dialog.
+      */}
+      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Bell className="h-4 w-4" />
+              </span>
+              {t('inot.details.title')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedNotification && (
+            <div className="space-y-3">
+              {/* A definition grid on one panel, rather than six loose
+                  label/value pairs floating in whitespace. */}
+              <dl className="grid grid-cols-1 gap-x-6 gap-y-3 rounded-md border bg-muted/40 px-4 py-3 sm:grid-cols-2">
+                <Field label={t('inot.field.title')} value={selectedNotification.title} />
+                <Field label={t('common:type')} value={tType(selectedNotification.type)} />
+                <Field label={t('inot.field.channel')} value={selectedNotification.channel} />
+                <Field
+                  label={t('inot.col.recipients')}
+                  value={selectedNotification.recipients.toLocaleString()}
+                />
+                <Field
+                  label={t('common:status')}
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={`border font-medium ${getStatusColor(selectedNotification.status)}`}
+                    >
+                      {tStatus(selectedNotification.status)}
+                    </Badge>
+                  }
+                />
+                <Field
+                  label={t('inot.col.sentDate')}
+                  value={formatDateTime(selectedNotification.sent)}
+                />
+              </dl>
 
               {selectedNotification.openRate && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Open Rate</label>
-                    <p className="text-sm text-gray-900">{selectedNotification.openRate}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Click Rate</label>
-                    <p className="text-sm text-gray-900">{selectedNotification.clickRate}</p>
-                  </div>
+                <div className="rounded-md border px-4 py-3">
+                  <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {t('inot.details.performance')}
+                  </h5>
+                  <dl className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+                    <Field
+                      label={t('inot.field.openRate')}
+                      value={selectedNotification.openRate}
+                    />
+                    <Field
+                      label={t('inot.field.clickRate')}
+                      value={selectedNotification.clickRate}
+                    />
+                  </dl>
                 </div>
               )}
             </div>
+          )}
 
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDetailsModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setShowDetailsModal(false);
-                  handleEditNotification(selectedNotification);
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-              >
-                Edit Notification
-              </button>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDetailsModal(false)}>
+              {t('common:close')}
+            </Button>
+            <Button
+              onClick={() => {
+                setShowDetailsModal(false);
+                if (selectedNotification) handleEditNotification(selectedNotification);
+              }}
+              className="gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              {t('inot.edit')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Plus className="h-4 w-4" />
+              </span>
+              {t('inot.create.title')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="new-notif-title">
+                {t('inot.field.title')} <span className="text-destructive">*</span>
+              </Label>
+              <Input id="new-notif-title" placeholder={t('inot.create.titlePlaceholder')} />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>
+                  {t('common:type')} <span className="text-destructive">*</span>
+                </Label>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('inot.create.selectType')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['System', 'Alert', 'Scheduled', 'Onboarding'].map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {tType(v)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>
+                  {t('inot.field.channel')} <span className="text-destructive">*</span>
+                </Label>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('inot.create.selectChannel')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Email', 'SMS', 'In-App', 'Email + SMS', 'Email + In-App'].map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>{t('inot.col.recipients')}</Label>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('inot.create.selectRecipients')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-investors">{t('inot.recipients.all')}</SelectItem>
+                  <SelectItem value="active-investors">{t('inot.recipients.active')}</SelectItem>
+                  <SelectItem value="new-investors">{t('inot.recipients.new')}</SelectItem>
+                  <SelectItem value="custom">{t('inot.recipients.custom')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="new-notif-message">{t('inot.create.message')}</Label>
+              <Textarea
+                id="new-notif-message"
+                rows={4}
+                placeholder={t('inot.create.messagePlaceholder')}
+              />
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Create Notification Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Create New Notification</h3>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleCreateNotification} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t('inot.createNotification')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
-                <input
-                  type="text"
-                  placeholder="Enter notification title"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Type *</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option value="">Select type</option>
-                    <option value="System">System</option>
-                    <option value="Alert">Alert</option>
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Onboarding">Onboarding</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Channel *</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option value="">Select channel</option>
-                    <option value="Email">Email</option>
-                    <option value="SMS">SMS</option>
-                    <option value="In-App">In-App</option>
-                    <option value="Email + SMS">Email + SMS</option>
-                    <option value="Email + In-App">Email + In-App</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Recipients</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                  <option value="">Select recipients</option>
-                  <option value="all-investors">All Investors</option>
-                  <option value="active-investors">Active Investors</option>
-                  <option value="new-investors">New Investors</option>
-                  <option value="custom">Custom List</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                <textarea
-                  placeholder="Enter notification message"
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCreateNotification}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  Create Notification
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && selectedNotification && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete Notification</h3>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                Are you sure you want to delete the notification <strong>"{selectedNotification.title}"</strong>? This action cannot be undone.
-              </p>
-            </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700"
-              >
-                Delete Notification
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="pro-dialog confirm-dialog sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <span className="mb-1 flex size-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15">
+              <Trash2 className="size-6 text-red-600 dark:text-red-400" />
+            </span>
+            <DialogTitle className="text-center">{t('inot.delete.title')}</DialogTitle>
+            <DialogDescription className="text-center">
+              {t('inot.delete.description', { name: selectedNotification?.title ?? '' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-center">
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              {t('common:delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
+/** One label/value pair in a details grid. */
+const Field = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="min-w-0">
+    <dt className="mb-0.5 text-xs font-medium text-muted-foreground">{label}</dt>
+    <dd className="m-0 break-words text-sm font-medium text-foreground">{value}</dd>
+  </div>
+);

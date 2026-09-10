@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Search,
-  Plus, 
-  Trash2, 
-  Eye, 
+  Plus,
+  Trash2,
+  Eye,
   X,
   AlertTriangle,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Wallet,
 } from 'lucide-react';
+import TableView from '../../../../components/TableView/TableView';
+import { Button } from '../../../../components/ui/button';
+import { EmptyState } from '../../../../components/shared/detailKit';
+import { LexNotice, LexPageHeader, LexSearch } from '../../../../components/shared/lexKit';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
   
 import {
   IncomeRange,
@@ -22,9 +27,7 @@ import {
   deleteIncomeRangeById
 } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
-import { cn } from '../../../../lib/utils';
-import Loader from '../../../../components/Loader/Loader';
-import { usePermissions } from '../../../../hooks/useProductPermissions';
+
 
 export default function IncomeRangeList() {
   // Portfolio settings are configuration: reading the list is PORTFOLIO_SETTINGS_READ
@@ -38,7 +41,7 @@ export default function IncomeRangeList() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   
@@ -58,11 +61,17 @@ export default function IncomeRangeList() {
   const [formError, setFormError] = useState<string | null>(null);
 
   // Fetch income ranges
-  const fetchIncomeRanges = async (page: number = 1) => {
+  /**
+   * `size` is a parameter rather than read from state because the page-size
+   * control has to fetch with the size it was just given — a setState in the
+   * same tick has not landed yet, so reading state here would fetch the OLD
+   * size and the selector would look live while doing nothing.
+   */
+  const fetchIncomeRanges = async (page: number = 1, size: number = pageSize) => {
     try {
       setLoading(true);
       setError(null);
-      const result = await getAllIncomeRanges(page, pageSize);
+      const result = await getAllIncomeRanges(page, size);
       
       if (result.success) {
         setIncomeRanges(result.data);
@@ -92,15 +101,15 @@ export default function IncomeRangeList() {
     range.maximumAmount.toString().includes(searchTerm)
   );
 
-  // Format currency
+  /**
+   * The app prices everything in SAR; this was the one place printing dollars,
+   * and only inside the delete confirmation — so the figure a reader checked
+   * before deleting a row was in a different currency from the row itself.
+   */
   const formatCurrency = (amount: number) => {
-    if (amount >= 1000000) {
-      return `$${(amount / 1000000).toFixed(1)}M`;
-    } else if (amount >= 1000) {
-      return `$${(amount / 1000).toFixed(0)}K`;
-    } else {
-      return `$${amount.toLocaleString()}`;
-    }
+    if (amount >= 1000000) return `SAR ${(amount / 1000000).toFixed(1)}M`;
+    if (amount >= 1000) return `SAR ${(amount / 1000).toFixed(0)}K`;
+    return `SAR ${amount.toLocaleString()}`;
   };
 
   // Handle create income range
@@ -219,196 +228,133 @@ export default function IncomeRangeList() {
     fetchIncomeRanges(page);
   };
 
+  /** Both bounds are the same kind of figure, so both are typeset the same. */
+  const amountCell = (value: number) => (
+    <span className="font-mono text-sm tabular-nums text-foreground">
+      {Number(value ?? 0).toLocaleString()}
+    </span>
+  );
+
+  const stampCell = (value: string) =>
+    value ? (
+      <span className="whitespace-nowrap text-xs text-muted-foreground">
+        {new Date(value).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </span>
+    ) : (
+      <span className="text-xs text-muted-foreground">—</span>
+    );
+
+  const incomeRangeHeaders = [
+    {
+      name: t('irl.col.minAmount'),
+      cell: (row: IncomeRange) => amountCell(row.minimumAmount),
+      width: '180px',
+    },
+    {
+      name: t('irl.col.maxAmount'),
+      cell: (row: IncomeRange) => amountCell(row.maximumAmount),
+      width: '180px',
+    },
+    { name: t('irl.col.created'), cell: (row: IncomeRange) => stampCell(row.createdAt) },
+    { name: t('irl.col.updated'), cell: (row: IncomeRange) => stampCell(row.updatedAt) },
+    {
+      name: t('common:actions'),
+      cell: (row: IncomeRange) => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => handleViewClick(row.id)}
+            title={t('irl.viewDetails')}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          {canManage && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              onClick={() => handleDeleteClick(row)}
+              title={t('irl.deleteTitle')}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      ),
+      width: '120px',
+    },
+  ];
+
   return (
-    <div className="p-2">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('irl.title')}</h1>
-            <p className="text-gray-600">{t('irl.subtitle')}</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={() => fetchIncomeRanges(currentPage)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <RefreshCw className="w-4 h-4 me-2" />
-              {t('common:refresh')}
-            </button>
-            {canManage && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-              >
-                <Plus className="w-4 h-4 me-2" />
-                {t('irl.addIncomeRange')}
-              </button>
-            )}
-          </div>
+    <div className="service">
+      <LexPageHeader icon={Wallet} title={t('irl.title')} subtitle={t('irl.subtitle')}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => fetchIncomeRanges(currentPage)}
+          disabled={loading}
+          className="gap-2"
+        >
+          <RefreshCw className={loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
+          {t('common:refresh')}
+        </Button>
+        {canManage && (
+          <Button size="sm" onClick={() => setShowCreateModal(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t('irl.addIncomeRange')}
+          </Button>
+        )}
+      </LexPageHeader>
+
+      {error && <LexNotice tone="red">{error}</LexNotice>}
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="income-range-search"
+            className="flex-1"
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder={t('irl.searchPlaceholder')}
+          />
+          <span className="whitespace-nowrap text-xs text-muted-foreground">
+            {t('irl.countLabel', { shown: filteredIncomeRanges.length, total: totalCount })}
+          </span>
         </div>
       </div>
 
-      {/* Error Display */}
-      {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center">
-            <AlertTriangle className="w-5 h-5 text-red-500 me-2" />
-            <p className="text-red-700">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Search and Filters */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t('irl.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
-            />
-          </div>
-        </div>
-        <div className="text-sm text-gray-500">
-          {t('irl.countLabel', { shown: filteredIncomeRanges.length, total: totalCount })}
-        </div>
+      <div className="pro-card p-4">
+        {!loading && filteredIncomeRanges.length === 0 ? (
+          <EmptyState icon={Wallet} text={t('common:noData')} />
+        ) : (
+          <TableView
+            header={incomeRangeHeaders}
+            data={filteredIncomeRanges}
+            isLoading={loading}
+            totalRows={totalCount}
+            totalPage={totalPages}
+            page={currentPage}
+            setPage={handlePageChange}
+            pageSize={pageSize}
+            setPageSize={(size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+              fetchIncomeRanges(1, size);
+            }}
+            from={totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1}
+            to={Math.min(currentPage * pageSize, totalCount)}
+          />
+        )}
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <Loader />
-            <p className="text-gray-600">{t('irl.loading')}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Income Ranges Table */}
-      {!loading && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('irl.col.minAmount')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('irl.col.maxAmount')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('irl.col.created')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('irl.col.updated')}
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">{t('common:actions')}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredIncomeRanges.map((incomeRange) => (
-                  <tr key={incomeRange.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="font-medium text-red-600">
-                        {incomeRange.minimumAmount}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="font-medium text-black">
-                        {incomeRange.maximumAmount}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(incomeRange.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(incomeRange.updatedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleViewClick(incomeRange.id)}
-                          className="text-black hover:text-blue-900"
-                          title={t('irl.viewDetails')}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        {canManage && (
-                          <button
-                            onClick={() => handleDeleteClick(incomeRange)}
-                            className="text-red-600 hover:text-red-900"
-                            title={t('irl.deleteTitle')}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Pagination */}
-      {!loading && totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            {t('irl.showingResults', { from: ((currentPage - 1) * pageSize) + 1, to: Math.min(currentPage * pageSize, totalCount), total: totalCount })}
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t('common:previous')}
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={cn(
-                  'px-3 py-2 text-sm font-medium rounded-lg',
-                  page === currentPage
-                    ? 'text-white bg-black border border-black'
-                    : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
-                )}
-              >
-                {page}
-              </button>
-            ))}
-            <button 
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t('common:next')}
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Create Income Range Modal */}
       {showCreateModal && (

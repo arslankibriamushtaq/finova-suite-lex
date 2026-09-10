@@ -4,9 +4,6 @@ import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Download,
-  Filter,
-  Search,
-  Calendar,
   Eye,
   FileText,
   Activity,
@@ -16,8 +13,29 @@ import {
   Play,
   User,
   Settings,
-  Clock
+  Clock,
+  ScrollText,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+import TableView from '../../../../components/TableView/TableView';
+import { Badge } from '../../../../components/ui/badge';
+import { Button } from '../../../../components/ui/button';
+import { Label } from '../../../../components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../../components/ui/select';
+import { EmptyState } from '../../../../components/shared/detailKit';
+import { TONES } from '../../../../components/shared/detailKitUtils';
+import {
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+} from '../../../../components/shared/lexKit';
 
 // Mock audit log data
 const auditLogs = [
@@ -185,28 +203,71 @@ export default function AllocationAudit() {
     const matchesType = typeFilter === 'All Types' || log.type === typeFilter;
     const matchesOutcome = outcomeFilter === 'All Outcomes' || log.outcome === outcomeFilter;
     const matchesActor = actorFilter === 'All Actors' || log.actor === actorFilter;
-    
-    return matchesSearch && matchesType && matchesOutcome && matchesActor;
+
+    // dateFrom / dateTo were captured into state and then never read — two
+    // date inputs sat on the filter bar changing nothing. `toDate` is pushed
+    // to the end of its day so an entry made at 14:00 is not excluded by a
+    // "to" of the same date.
+    const stamp = new Date(log.timestamp).getTime();
+    const afterFrom = !dateFrom || stamp >= new Date(`${dateFrom}T00:00:00`).getTime();
+    const beforeTo = !dateTo || stamp <= new Date(`${dateTo}T23:59:59.999`).getTime();
+
+    return matchesSearch && matchesType && matchesOutcome && matchesActor && afterFrom && beforeTo;
   });
 
+  // `strategy_executed` and `allocation_failed` were both text-red-500 — an
+  // execution and a failure marked with the same colour, on the log whose
+  // whole job is telling them apart.
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'strategy_executed': return <Play className="w-4 h-4 text-red-500" />;
-      case 'manual_allocation': return <User className="w-4 h-4 text-gray-700" />;
-      case 'simulation_run': return <Activity className="w-4 h-4 text-purple-500" />;
-      case 'strategy_modified': return <Settings className="w-4 h-4 text-orange-500" />;
-      case 'allocation_failed': return <XCircle className="w-4 h-4 text-red-500" />;
-      case 'exposure_limit_exceeded': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      default: return <FileText className="w-4 h-4 text-gray-500" />;
+      case 'strategy_executed':
+        return <Play className="h-4 w-4 text-primary" />;
+      case 'manual_allocation':
+        return <User className="h-4 w-4 text-muted-foreground" />;
+      case 'simulation_run':
+        return <Activity className="h-4 w-4 text-sky-600" />;
+      case 'strategy_modified':
+        return <Settings className="h-4 w-4 text-muted-foreground" />;
+      case 'allocation_failed':
+        return <XCircle className="h-4 w-4 text-destructive" />;
+      case 'exposure_limit_exceeded':
+        return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+      default:
+        return <FileText className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
+  // Same again: the success tick and the failure cross were both red.
   const getOutcomeIcon = (outcome: string) => {
     switch (outcome) {
-      case 'success': return <CheckCircle className="w-4 h-4 text-red-500" />;
-      case 'failure': return <XCircle className="w-4 h-4 text-red-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      default: return <Clock className="w-4 h-4 text-gray-500" />;
+      case 'success':
+        return <CheckCircle className="h-4 w-4 text-primary" />;
+      case 'failure':
+        return <XCircle className="h-4 w-4 text-destructive" />;
+      case 'warning':
+        return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  /**
+   * The outcome badge.
+   *
+   * success and failure were BOTH `bg-red-100 text-red-800`. On an audit log
+   * that is the single distinction the screen exists to make, and it was not
+   * being made.
+   */
+  const outcomeTone = (outcome: string) => {
+    switch (outcome) {
+      case 'success':
+        return TONES.emerald;
+      case 'failure':
+        return TONES.red;
+      case 'warning':
+        return TONES.amber;
+      default:
+        return TONES.slate;
     }
   };
 
@@ -217,8 +278,10 @@ export default function AllocationAudit() {
     setShowDetails(true);
   };
 
+  // Nothing on this page comes from a service, so there is nothing to export.
+  // It used to alert "Exporting…" and stop there.
   const handleExport = () => {
-    alert(t('aud.exporting'));
+    toast.error(t('invl.notConnected'));
   };
 
   const formatCurrency = (amount: number) => {
@@ -231,216 +294,244 @@ export default function AllocationAudit() {
     }).format(amount);
   };
 
-  return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              to="/InvestorDashboard/AllocationEngine"
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="w-5 h-5 me-2" />
-              {t('sl.backToDashboard')}
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('aud.title')}</h1>
-              <p className="text-gray-600">{t('aud.subtitle')}</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={handleExport}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Download className="w-4 h-4 me-2" />
-              {t('ts.exportCsv')}
-            </button>
-          </div>
+  const auditHeaders = [
+    {
+      name: t('aud.col.timestamp'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 whitespace-nowrap text-sm text-foreground">
+            {new Date(row.timestamp).toLocaleDateString()}
+          </p>
+          <p className="m-0 whitespace-nowrap text-xs text-muted-foreground">
+            {new Date(row.timestamp).toLocaleTimeString()}
+          </p>
         </div>
-      </div>
+      ),
+      width: '140px',
+    },
+    {
+      name: t('common:type'),
+      cell: (row: any) => (
+        <span className="flex min-w-0 items-center gap-2">
+          {getTypeIcon(row.type)}
+          <span className="truncate text-sm text-foreground">{getTypeLabel(row.type)}</span>
+        </span>
+      ),
+      width: '210px',
+    },
+    {
+      name: t('aud.col.actor'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 truncate text-sm text-foreground">{row.actorName}</p>
+          <p className="m-0 truncate text-xs text-muted-foreground">{tActor(row.actor)}</p>
+        </div>
+      ),
+      width: '170px',
+    },
+    {
+      name: t('sl.col.strategy'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 truncate text-sm text-foreground">{row.strategyName}</p>
+          <p className="m-0 truncate font-mono text-[11px] text-muted-foreground">
+            {row.strategyId}
+          </p>
+        </div>
+      ),
+      width: '200px',
+    },
+    {
+      name: t('aud.col.loanId'),
+      cell: (row: any) => (
+        <span className="font-mono text-xs text-foreground">{row.loanId || '—'}</span>
+      ),
+      width: '140px',
+    },
+    {
+      name: t('aud.col.outcome'),
+      cell: (row: any) => (
+        <span className="flex items-center gap-2">
+          {getOutcomeIcon(row.outcome)}
+          <Badge variant="outline" className={`border font-medium ${outcomeTone(row.outcome)}`}>
+            {tOutcome(row.outcome)}
+          </Badge>
+        </span>
+      ),
+      width: '160px',
+    },
+    {
+      name: t('common:details'),
+      cell: (row: any) => (
+        <span className="text-sm text-muted-foreground">
+          {row.details?.totalAllocated ? formatCurrency(row.details.totalAllocated) : null}
+          {row.details?.errorCode ? t('aud.errorPrefix', { code: row.details.errorCode }) : null}
+          {row.details?.changeType ? t('aud.changePrefix', { type: row.details.changeType }) : null}
+          {row.details?.simulationType
+            ? t('aud.simPrefix', { type: row.details.simulationType })
+            : null}
+        </span>
+      ),
+      width: '200px',
+    },
+    {
+      name: t('common:actions'),
+      cell: (row: any) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => handleViewDetails(row)}
+          title={t('aud.viewDetails')}
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
+      ),
+      width: '90px',
+    },
+  ];
 
-      {/* Filters */}
-      <div className="mb-6 space-y-4">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t('aud.searchPlaceholder')}
+  return (
+    <div className="service">
+      <LexPageHeader icon={ScrollText} title={t('aud.title')} subtitle={t('aud.subtitle')}>
+        <Button asChild variant="ghost" size="sm" className="gap-2">
+          {/* Was /admin/allocation — not a route in this app. */}
+          <Link to="/InvestorDashboard/AllocationEngine">
+            <ArrowLeft className="h-4 w-4" />
+            {t('sl.backToDashboard')}
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+          <Download className="h-4 w-4" />
+          {t('ts.exportCsv')}
+        </Button>
+      </LexPageHeader>
+
+      {/* `auditLogs` is a module-level literal; there is no fetch in this file. */}
+      <LexNotice tone="amber" icon={AlertTriangle}>
+        {t('invl.sampleDataNotice')}
+      </LexNotice>
+
+      <div className="pro-card p-3 mb-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="flex flex-col gap-1 sm:col-span-2 xl:col-span-2">
+            <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('common:search')}
+            </Label>
+            <LexSearch
+              id="audit-search"
+              className="w-full"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+              onChange={setSearchTerm}
+              placeholder={t('aud.searchPlaceholder')}
             />
           </div>
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            {typeOptions.map(type => (
-              <option key={type} value={type}>{tType(type)}</option>
-            ))}
-          </select>
-          <select
-            value={outcomeFilter}
-            onChange={(e) => setOutcomeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            {outcomeOptions.map(outcome => (
-              <option key={outcome} value={outcome}>{tOutcome(outcome)}</option>
-            ))}
-          </select>
-          <select
-            value={actorFilter}
-            onChange={(e) => setActorFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            {actorOptions.map(actor => (
-              <option key={actor} value={actor}>{tActor(actor)}</option>
-            ))}
-          </select>
-        </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-700">{t('aud.dateRange')}</span>
+          <div className="flex flex-col gap-1">
+            <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('common:type')}
+            </Label>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {typeOptions.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {tType(type)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          />
-          <span className="text-gray-500">{t('common:to')}</span>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          />
-          <div className="text-sm text-gray-500">
-            {t('aud.countLabel', { shown: filteredLogs.length, total: auditLogs.length })}
+
+          <div className="flex flex-col gap-1">
+            <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('aud.col.outcome')}
+            </Label>
+            <Select value={outcomeFilter} onValueChange={setOutcomeFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {outcomeOptions.map((outcome) => (
+                  <SelectItem key={outcome} value={outcome}>
+                    {tOutcome(outcome)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('aud.col.actor')}
+            </Label>
+            <Select value={actorFilter} onValueChange={setActorFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {actorOptions.map((actor) => (
+                  <SelectItem key={actor} value={actor}>
+                    {tActor(actor)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label
+              htmlFor="audit-from"
+              className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+            >
+              {t('common:from')}
+            </Label>
+            <input
+              id="audit-from"
+              type="date"
+              value={dateFrom}
+              max={dateTo || undefined}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm text-foreground shadow-xs outline-none focus:border-ring"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label
+              htmlFor="audit-to"
+              className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+            >
+              {t('common:to')}
+            </Label>
+            <input
+              id="audit-to"
+              type="date"
+              value={dateTo}
+              min={dateFrom || undefined}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="border-input h-9 w-full rounded-md border bg-transparent px-3 text-sm text-foreground shadow-xs outline-none focus:border-ring"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Audit Logs Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('aud.col.timestamp')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('common:type')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('aud.col.actor')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('sl.col.strategy')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('aud.col.loanId')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('aud.col.outcome')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('common:details')}
-                </th>
-                <th className="relative px-6 py-3">
-                  <span className="sr-only">{t('common:actions')}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {new Date(log.timestamp).toLocaleDateString()}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {new Date(log.timestamp).toLocaleTimeString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {getTypeIcon(log.type)}
-                      <span className="ms-2 text-sm text-gray-900">
-                        {getTypeLabel(log.type)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{log.actorName}</div>
-                    <div className="text-sm text-gray-500">{log.actor}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{log.strategyName}</div>
-                    <div className="text-sm text-gray-500">{log.strategyId}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.loanId || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {getOutcomeIcon(log.outcome)}
-                      <span className={`ms-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        log.outcome === 'success' ? 'bg-red-100 text-red-800' :
-                        log.outcome === 'failure' ? 'bg-red-100 text-red-800' :
-                        log.outcome === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {tOutcome(log.outcome)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {log.details.totalAllocated && formatCurrency(log.details.totalAllocated)}
-                    {log.details.errorCode && t('aud.errorPrefix', { code: log.details.errorCode })}
-                    {log.details.changeType && t('aud.changePrefix', { type: log.details.changeType })}
-                    {log.details.simulationType && t('aud.simPrefix', { type: log.details.simulationType })}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                    <button
-                      onClick={() => handleViewDetails(log)}
-                      className="text-black hover:text-blue-900"
-                      title={t('aud.viewDetails')}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-6 flex items-center justify-between">
-        <div className="text-sm text-gray-500">
+        <p className="mt-2 text-xs text-muted-foreground">
           {t('aud.countLabel', { shown: filteredLogs.length, total: auditLogs.length })}
-        </div>
-        <div className="flex items-center space-x-2">
-          <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
-            {t('common:previous')}
-          </button>
-          <button className="px-3 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg">
-            1
-          </button>
-          <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-            {t('common:next')}
-          </button>
-        </div>
+        </p>
       </div>
+
+      {/* The pager under this table was three buttons with no handlers at all —
+          Previous, "1" and Next, none of them wired. Every row is already in
+          memory, so there is nothing to page through. */}
+      <div className="pro-card p-4">
+        {filteredLogs.length === 0 ? (
+          <EmptyState icon={ScrollText} text={t('common:noData')} />
+        ) : (
+          <TableView header={auditHeaders} data={filteredLogs} paginationShow={false} />
+        )}
+      </div>
+
 
       {/* Details Modal */}
       {showDetails && selectedLog && (

@@ -2,6 +2,17 @@
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);
 
+/* Dark mode is a class on <html>, set by the app's theme toggle — NOT the
+   operating system preference.
+
+   index.css declares this variant; this file is a SECOND, self-contained
+   Tailwind build and never did, so `dark:` here fell back to the v4 default of
+   @media (prefers-color-scheme: dark). Every dark: utility on every investor
+   page therefore fired whenever the OS was in dark mode, while the app itself
+   stayed light: status badges rendered `dark:text-red-200` — pale pink — on a
+   light `bg-red-50` pill, which is why the status column was unreadable. */
+@custom-variant dark (&:is(.dark *));
+
 /* Theme customizations for Tailwind v4 - Black theme to match existing dashboards */
 @theme {
   --font-sans: 'Inter', system-ui, sans-serif;

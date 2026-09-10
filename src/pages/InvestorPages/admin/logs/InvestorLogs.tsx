@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import TableView from "../../../../components/TableView/TableView";
-import Loader from "../../../../components/Loader/Loader";
-import { getAllLogs } from "../../../../redux/apis/apisInvestor";
+import { Coins, Calculator, Layers, ScrollText, Sigma } from "lucide-react";
 import toast from "react-hot-toast";
+
+import TableView from "../../../../components/TableView/TableView";
+import { Badge } from "../../../../components/ui/badge";
+import { LexMetricTile, LexPageHeader } from "../../../../components/shared/lexKit";
+import { TONES } from "../../../../components/shared/detailKitUtils";
+import { getAllLogs } from "../../../../redux/apis/apisInvestor";
 
 const InvestorLogs = () => {
   const { t } = useTranslation("investor");
@@ -117,6 +121,41 @@ const InvestorLogs = () => {
     }
   };
 
+  /**
+   * Thousands separators on the summary figures.
+   *
+   * They were `toFixed(2)` strings, so a large total rendered as "1234567.89"
+   * — readable only by counting digits. No currency symbol is added: these are
+   * summed straight from the log payload and nothing in it says what unit they
+   * are in, and guessing SAR on a figure this prominent is worse than leaving
+   * the reader to know.
+   */
+  const formatAmount = (value: string | number) =>
+    Number(value ?? 0).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+  /** Log level is the one column a reader scans, so it carries a tone. */
+  const levelTone = (level: string) => {
+    switch (String(level || "").toLowerCase()) {
+      case "error":
+      case "critical":
+      case "fatal":
+      case "emergency":
+      case "alert":
+        return TONES.red;
+      case "warning":
+      case "warn":
+        return TONES.amber;
+      case "info":
+      case "notice":
+        return TONES.sky;
+      default:
+        return TONES.slate;
+    }
+  };
+
   const formatDate = (dateString: string) => {
     if (!dateString || dateString === "-") return "-";
     try {
@@ -168,9 +207,19 @@ const InvestorLogs = () => {
     },
     {
       name: t("ilog.col.level"),
-      selector: (row: any) => row.level || "-",
+      cell: (row: any) =>
+        row.level && row.level !== "-" ? (
+          <Badge
+            variant="outline"
+            className={`border font-medium uppercase ${levelTone(row.level)}`}
+          >
+            {row.level}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
       sortable: true,
-      width: "80px",
+      width: "110px",
     },
     {
       name: t("ilog.col.message"),
@@ -271,61 +320,59 @@ const InvestorLogs = () => {
     },
   ];
 
-  if (loading && data.length === 0) {
-    return (
-      <div className="p-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="service">
-      <h2 className="mb-3 mt-2 d-flex justify-content-start">{t("logs.title")}</h2>
+      <LexPageHeader icon={ScrollText} title={t("logs.title")} />
 
-      {/* Summary Cards */}
-      <div className="row mb-4">
-        <div className="col-md-3 col-sm-6 mb-3">
-          <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">{t("ilog.totalLogs")}</h6>
-            <h3 className="mb-0 text-black">{summary.totalLogs.toLocaleString()}</h3>
-          </div>
-        </div>
-        <div className="col-md-3 col-sm-6 mb-3">
-          <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">{t("ilog.totalReturnAmount")}</h6>
-            <h3 className="mb-0 text-black">{summary.totalReturnAmount}</h3>
-          </div>
-        </div>
-        <div className="col-md-3 col-sm-6 mb-3">
-          <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">{t("ilog.totalNetReturnAmount")}</h6>
-            <h3 className="mb-0 text-black">{summary.totalNetReturnAmount}</h3>
-          </div>
-        </div>
-        <div className="col-md-3 col-sm-6 mb-3">
-          <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">{t("ilog.averageReturnAmount")}</h6>
-            <h3 className="mb-0 text-black">{summary.averageReturnAmount}</h3>
-          </div>
-        </div>
+      {/* Bootstrap's grid and `bg-white … text-black` cards, which ignored the
+          theme in both directions — invisible text in dark mode, and a white
+          card on a page whose other surfaces are tokens. */}
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <LexMetricTile
+          label={t("ilog.totalLogs")}
+          icon={Layers}
+          tone="sky"
+          loading={loading && data.length === 0}
+          value={totalRows.toLocaleString()}
+        />
+        <LexMetricTile
+          label={t("ilog.totalReturnAmount")}
+          icon={Coins}
+          tone="emerald"
+          value={formatAmount(summary.totalReturnAmount)}
+        />
+        <LexMetricTile
+          label={t("ilog.totalNetReturnAmount")}
+          icon={Sigma}
+          tone="slate"
+          value={formatAmount(summary.totalNetReturnAmount)}
+        />
+        <LexMetricTile
+          label={t("ilog.averageReturnAmount")}
+          icon={Calculator}
+          tone="amber"
+          value={formatAmount(summary.averageReturnAmount)}
+        />
       </div>
 
-      <TableView
-        header={Headers}
-        data={data}
-        totalRows={totalRows}
-        isLoading={loading}
-        from={from}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={to}
-      />
+      {/* The whole page used to be replaced by a spinner on first load, so the
+          heading and the tiles appeared only once the rows had arrived.
+          TableView draws its own skeleton rows. */}
+      <div className="pro-card p-4">
+        <TableView
+          header={Headers}
+          data={data}
+          totalRows={totalRows}
+          isLoading={loading}
+          from={from}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={to}
+        />
+      </div>
     </div>
   );
 };

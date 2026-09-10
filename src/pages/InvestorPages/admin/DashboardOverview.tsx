@@ -1,81 +1,60 @@
-import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Activity, 
-  AlertTriangle, 
-  CheckCircle,
-  Clock,
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  AlertTriangle,
+  Boxes,
+  Building2,
+  ClipboardCheck,
   Eye,
-  RefreshCw
-} from 'lucide-react';
-// import { DashboardData } from '@shared/api';
-import { getDashboardInfo } from '../../../redux/apis/apisInvestor';
-import Loader from '../../../components/Loader/Loader';
+  LayoutDashboard,
+  RefreshCw,
+  TrendingUp,
+  UserCheck,
+  Users,
+  Wallet,
+} from "lucide-react";
 
-// Helper function to format currency
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'SAR',
+import TableView from "../../../components/TableView/TableView";
+import { Badge } from "../../../components/ui/badge";
+import { Button } from "../../../components/ui/button";
+import { EmptyState } from "../../../components/shared/detailKit";
+import { LexMetricTile, LexPageHeader } from "../../../components/shared/lexKit";
+import { TONES } from "../../../components/shared/detailKitUtils";
+import { cn } from "../../../lib/utils";
+import { getDashboardInfo } from "../../../redux/apis/apisInvestor";
+
+/**
+ * The investor portfolio at a glance.
+ *
+ * Drawn with the same furniture as every other overview in the product — the
+ * page header, the KPI tiles and `TableView` — rather than with a private set
+ * of white cards in raw Tailwind greys. That page had drifted far enough that
+ * it read as a different application: `text-3xl` headings against the app's
+ * `LexPageHeader`, `bg-black` buttons against shadcn's, and a hand-rolled
+ * `<table>` next to `TableView` everywhere else. None of its colours came from
+ * a token, so none of them followed the tenant theme or dark mode.
+ */
+
+const formatCurrency = (amount: number): string =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "SAR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
-};
 
-// Helper function to format percentage
-const formatPercentage = (value: number): string => {
-  return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
-};
+const formatPercentage = (value: number): string =>
+  `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 
-const recentActivity = [
-  {
-    id: 1,
-    type: 'investment',
-    message: 'Large cap equity fund received $50M investment from Goldman Family Office',
-    time: '2 minutes ago',
-    severity: 'info',
-    amount: '$50,000,000'
-  },
-  {
-    id: 2,
-    type: 'alert',
-    message: 'Risk threshold exceeded for emerging markets fund - requires attention',
-    time: '15 minutes ago',
-    severity: 'warning',
-    amount: null
-  },
-  {
-    id: 3,
-    type: 'transaction',
-    message: 'Quarterly dividend distribution completed for 1,247 investors',
-    time: '1 hour ago',
-    severity: 'success',
-    amount: '$12,450,000'
-  },
-  {
-    id: 4,
-    type: 'compliance',
-    message: 'Monthly compliance report generated and submitted to regulators',
-    time: '3 hours ago',
-    severity: 'info',
-    amount: null
-  },
-  {
-    id: 5,
-    type: 'user',
-    message: 'New institutional investor account created - pending KYC verification',
-    time: '4 hours ago',
-    severity: 'info',
-    amount: null
-  },
-];
+/** A movement in the shape `LexMetricTile` renders in its pill. */
+const deltaOf = (value: number, text?: string) => ({
+  text: text ?? formatPercentage(value),
+  direction: (value >= 0 ? "up" : "down") as "up" | "down",
+});
 
 export default function DashboardOverview() {
-  const { t } = useTranslation('investor');
+  const { t } = useTranslation("investor");
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,17 +63,16 @@ export default function DashboardOverview() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const result = await getDashboardInfo();
-      
+
       if (result.success) {
         setDashboardData(result.data);
       } else {
-        throw new Error(result.notificationMessage || 'Failed to fetch dashboard data');
+        throw new Error(result.notificationMessage || "Failed to fetch dashboard data");
       }
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      setError(t('dashboard.loadError'));
+    } catch {
+      setError(t("dashboard.loadError"));
     } finally {
       setLoading(false);
     }
@@ -104,304 +82,260 @@ export default function DashboardOverview() {
     fetchDashboardData();
   }, []);
 
-  if (loading) {
-    return (
-     <Loader />
-    );
-  }
+  const pending = dashboardData?.pendingActions;
+  const products = dashboardData?.performingProducts || [];
 
-  if (error) {
-    return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-red-600" />
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={fetchDashboardData}
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+  const productHeaders = [
+    {
+      name: t("dashboard.col.productName"),
+      cell: (row: any) => (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="pro-head-badge">
+            <Boxes className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="m-0 truncate text-sm font-medium text-foreground">{row.productName}</p>
+            {/* The id is a UUID and no cell is wide enough for one; the first
+                block is enough to match a row against a support ticket. */}
+            <p className="m-0 font-mono text-[11px] text-muted-foreground">
+              {String(row.productId || "").slice(0, 8)}
+            </p>
+          </div>
+        </div>
+      ),
+      width: "240px",
+    },
+    {
+      name: t("dashboard.stat.totalInvestment"),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-sm font-semibold text-foreground">
+          {formatCurrency(row.totalInvestment)}
+        </span>
+      ),
+      width: "170px",
+    },
+    {
+      name: t("dashboard.col.launchYear"),
+      cell: (row: any) => <span className="text-sm">{row.launchYear ?? "—"}</span>,
+      width: "120px",
+    },
+    {
+      name: t("dashboard.col.investors"),
+      cell: (row: any) => (
+        <span className="inline-flex items-center gap-1.5 text-sm">
+          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+          {row.totalInvestors ?? 0}
+        </span>
+      ),
+      width: "130px",
+    },
+    {
+      name: t("common:status"),
+      cell: (row: any) => {
+        const tone = row.status === 0 ? "emerald" : row.status === 1 ? "amber" : "slate";
+        const label =
+          row.status === 0
+            ? t("dashboard.status.active")
+            : row.status === 1
+              ? t("dashboard.status.launching")
+              : t("dashboard.status.inactive");
+        return (
+          <Badge variant="outline" className={`border font-medium ${TONES[tone]}`}>
+            {label}
+          </Badge>
+        );
+      },
+      width: "130px",
+    },
+    {
+      name: t("common:actions"),
+      cell: (row: any) => (
+        // The old button carried no handler at all — an Eye icon that did
+        // nothing on click. The product view is a real route, so it links.
+        <Button asChild variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Link
+            to={`/InvestorDashboard/Products/View/${row.productId}`}
+            aria-label={t("common:view")}
           >
-            {t('dashboard.tryAgain')}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!dashboardData) {
-    return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-600">{t('common:noData')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Create dynamic portfolio stats from API data
-  const portfolioStats = [
-    {
-      name: t('dashboard.stat.totalInvestment'),
-      value: formatCurrency(dashboardData.totalInvestment),
-      change: formatPercentage(dashboardData.quarterlyChangeInInvestment),
-      changeType: dashboardData.quarterlyChangeInInvestment >= 0 ? 'increase' : 'decrease',
-      icon: "SAR",
-      period: t('dashboard.period.vsLastQuarter'),
-      subtext: t('dashboard.subtext.acrossProducts', { count: dashboardData.totalProducts })
-    },
-    {
-      name: t('dashboard.stat.totalInvestors'),
-      value: dashboardData.totalInvestors.toString(),
-      change: formatPercentage(dashboardData.monthlyChangeInInvestor),
-      changeType: dashboardData.monthlyChangeInInvestor >= 0 ? 'increase' : 'decrease',
-      icon: Users,
-      period: t('dashboard.period.vsLastMonth'),
-      subtext: t('dashboard.subtext.pendingVerification', { count: dashboardData.pendingInvestors })
-    },
-    {
-      name: t('dashboard.stat.investmentProducts'),
-      value: dashboardData.totalProducts.toString(),
-      change: formatPercentage(dashboardData.quarterlyChangeInProduct),
-      changeType: dashboardData.quarterlyChangeInProduct >= 0 ? 'increase' : 'decrease',
-      icon: Activity,
-      period: t('dashboard.period.newThisQuarter'),
-      subtext: t('dashboard.subtext.activeLaunching', { active: dashboardData.activeProducts, launching: dashboardData.launchingProducts })
-    },
-    {
-      name: t('dashboard.stat.ytdPerformance'),
-      value: `${(dashboardData.ytdPerformance * 100).toFixed(2)}%`,
-      change: dashboardData.ytdPerformance >= 0 ? `+${(dashboardData.ytdPerformance * 100).toFixed(2)}%` : `${(dashboardData.ytdPerformance * 100).toFixed(2)}%`,
-      changeType: dashboardData.ytdPerformance >= 0 ? 'increase' : 'decrease',
-      icon: TrendingUp,
-      period: t('dashboard.period.yearToDate'),
-      subtext: t('dashboard.subtext.portfolioPerformance')
+            <Eye className="h-4 w-4" />
+          </Link>
+        </Button>
+      ),
+      width: "90px",
     },
   ];
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
-          <p className="text-gray-600">{t('dashboard.subtitle')}</p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <button 
-            onClick={fetchDashboardData}
-            disabled={loading}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 me-2 ${loading ? 'animate-spin' : ''}`} />
-            {t('dashboard.refreshData')}
-          </button>
-          {/* <Link 
-            to="/InvestorDashboard/Reports"
-            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-          >
-            <Eye className="w-4 h-4 me-2" />
-            View Reports
-          </Link> */}
-        </div>
-      </div>
+    <div className="service">
+      <LexPageHeader
+        icon={LayoutDashboard}
+        title={t("dashboard.title")}
+        subtitle={t("dashboard.subtitle")}
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={fetchDashboardData}
+          disabled={loading}
+          className="gap-2"
+        >
+          <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+          {t("dashboard.refreshData")}
+        </Button>
+      </LexPageHeader>
 
-      {/* Portfolio Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {portfolioStats.map((stat) => (
-          <div key={stat.name} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                <stat.icon className="w-6 h-6 text-gray-600" />
-              </div>
-              <div className={`flex items-center text-sm font-medium ${
-                stat.changeType === 'increase' ? 'text-slate-500' : 'text-red-600'
-              }`}>
-                {stat.changeType === 'increase' ? (
-                  <TrendingUp className="w-4 h-4 me-1" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 me-1" />
-                )}
-                {stat.change}
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</p>
-              <p className="text-sm text-gray-500 mb-1">{stat.period}</p>
-              <p className="text-xs text-gray-400">{stat.subtext}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pending Actions Grid */}
-      {dashboardData.pendingActions && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-yellow-600" />
-              </div>
-              <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
-                {t('dashboard.pending')}
-              </span>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 mb-1">
-                {dashboardData.pendingActions.kycVerificationsPending}
-              </p>
-              <p className="text-sm text-gray-600 font-medium">{t('dashboard.kycVerifications')}</p>
-              <p className="text-xs text-gray-400 mt-1">{t('dashboard.kycVerificationsHint')}</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-blue-600" />
-              </div>
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                {t('dashboard.pending')}
-              </span>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 mb-1">
-                {dashboardData.pendingActions.kybVerificationsPending}
-              </p>
-              <p className="text-sm text-gray-600 font-medium">{t('dashboard.kybVerifications')}</p>
-              <p className="text-xs text-gray-400 mt-1">{t('dashboard.kybVerificationsHint')}</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-purple-600" />
-              </div>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
-                {t('dashboard.pending')}
-              </span>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 mb-1">
-                {dashboardData.pendingActions.pendingProducts}
-              </p>
-              <p className="text-sm text-gray-600 font-medium">{t('dashboard.productApprovals')}</p>
-              <p className="text-xs text-gray-400 mt-1">{t('dashboard.productApprovalsHint')}</p>
-            </div>
+      {error ? (
+        <div className="pro-card p-4">
+          <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+            <AlertTriangle className="size-8 text-destructive" />
+            <p className="m-0 text-sm text-muted-foreground">{error}</p>
+            <Button variant="outline" size="sm" onClick={fetchDashboardData} className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              {t("dashboard.tryAgain")}
+            </Button>
           </div>
         </div>
+      ) : (
+        <>
+          {/* The tiles render through the load rather than being replaced by a
+              full-page spinner: the labels are the same either way, so keeping
+              the shell means the page does not jump when the figures arrive. */}
+          <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <LexMetricTile
+              label={t("dashboard.stat.totalInvestment")}
+              icon={Wallet}
+              tone="emerald"
+              loading={loading}
+              value={dashboardData ? formatCurrency(dashboardData.totalInvestment) : undefined}
+              delta={
+                dashboardData
+                  ? deltaOf(dashboardData.quarterlyChangeInInvestment)
+                  : undefined
+              }
+              footnote={
+                dashboardData
+                  ? `${t("dashboard.period.vsLastQuarter")} · ${t("dashboard.subtext.acrossProducts", { count: dashboardData.totalProducts })}`
+                  : undefined
+              }
+            />
+            <LexMetricTile
+              label={t("dashboard.stat.totalInvestors")}
+              icon={Users}
+              tone="sky"
+              loading={loading}
+              value={dashboardData?.totalInvestors}
+              delta={
+                dashboardData ? deltaOf(dashboardData.monthlyChangeInInvestor) : undefined
+              }
+              footnote={
+                dashboardData
+                  ? `${t("dashboard.period.vsLastMonth")} · ${t("dashboard.subtext.pendingVerification", { count: dashboardData.pendingInvestors })}`
+                  : undefined
+              }
+            />
+            <LexMetricTile
+              label={t("dashboard.stat.investmentProducts")}
+              icon={Boxes}
+              tone="slate"
+              loading={loading}
+              value={dashboardData?.totalProducts}
+              delta={
+                dashboardData ? deltaOf(dashboardData.quarterlyChangeInProduct) : undefined
+              }
+              footnote={
+                dashboardData
+                  ? `${t("dashboard.period.newThisQuarter")} · ${t("dashboard.subtext.activeLaunching", { active: dashboardData.activeProducts, launching: dashboardData.launchingProducts })}`
+                  : undefined
+              }
+            />
+            <LexMetricTile
+              label={t("dashboard.stat.ytdPerformance")}
+              icon={TrendingUp}
+              tone="amber"
+              loading={loading}
+              value={
+                dashboardData
+                  ? `${(dashboardData.ytdPerformance * 100).toFixed(2)}%`
+                  : undefined
+              }
+              delta={
+                dashboardData
+                  ? deltaOf(
+                      dashboardData.ytdPerformance,
+                      formatPercentage(dashboardData.ytdPerformance * 100)
+                    )
+                  : undefined
+              }
+              footnote={
+                dashboardData
+                  ? `${t("dashboard.period.yearToDate")} · ${t("dashboard.subtext.portfolioPerformance")}`
+                  : undefined
+              }
+            />
+          </div>
+
+          {/* Everything here is a queue someone has to work through, so all
+              three carry the same "needs attention" tone. Colouring them apart
+              would imply a difference in urgency the data does not carry. */}
+          {pending && (
+            <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <LexMetricTile
+                label={t("dashboard.kycVerifications")}
+                icon={UserCheck}
+                tone="amber"
+                value={pending.kycVerificationsPending}
+                footnote={t("dashboard.kycVerificationsHint")}
+              />
+              <LexMetricTile
+                label={t("dashboard.kybVerifications")}
+                icon={Building2}
+                tone="amber"
+                value={pending.kybVerificationsPending}
+                footnote={t("dashboard.kybVerificationsHint")}
+              />
+              <LexMetricTile
+                label={t("dashboard.productApprovals")}
+                icon={ClipboardCheck}
+                tone="amber"
+                value={pending.pendingProducts}
+                footnote={t("dashboard.productApprovalsHint")}
+              />
+            </div>
+          )}
+
+          <div className="pro-card p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <TrendingUp className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t("dashboard.topPerformingProducts")}
+                </h4>
+              </div>
+              {/* Was /admin/products, which is not a route in this app — the
+                  link 404'd. */}
+              <Link
+                to="/InvestorDashboard/Products"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                {t("dashboard.viewAllProducts")}
+              </Link>
+            </div>
+
+            {!loading && products.length === 0 ? (
+              <EmptyState icon={Boxes} text={t("common:noData")} />
+            ) : (
+              <TableView
+                header={productHeaders}
+                data={products}
+                isLoading={loading}
+                paginationShow={false}
+              />
+            )}
+          </div>
+        </>
       )}
-
-      {/* Top Performing Products Table */}
-      {dashboardData.performingProducts && dashboardData.performingProducts.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">{t('dashboard.topPerformingProducts')}</h2>
-            <Link
-              to="/InvestorDashboard/Products"
-              className="text-sm text-black hover:text-gray-800 font-medium"
-            >
-              {t('dashboard.viewAllProducts')}
-            </Link>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.col.productName')}</th>
-                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.stat.totalInvestment')}</th>
-                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.col.launchYear')}</th>
-                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.col.investors')}</th>
-                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('common:status')}</th>
-                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('common:actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboardData.performingProducts.map((product: any, index: number) => (
-                  <tr key={product.productId} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          index === 0 ? 'bg-red-100' : index === 1 ? 'bg-blue-100' : 'bg-purple-100'
-                        }`}>
-                          <Activity className={`w-5 h-5 ${
-                            index === 0 ? 'text-red-600' : index === 1 ? 'text-blue-600' : 'text-purple-600'
-                          }`} />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{product.productName}</p>
-                          <p className="text-xs text-gray-500">ID: {product.productId.substring(0, 8)}...</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <p className="text-sm font-semibold text-gray-900">{formatCurrency(product.totalInvestment)}</p>
-                    </td>
-                    <td className="py-4 px-4">
-                      <p className="text-sm text-gray-700">{product.launchYear}</p>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-700">{product.totalInvestors}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        product.status === 0 ? 'bg-red-100 text-red-800' : 
-                        product.status === 1 ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {product.status === 0 ? t('dashboard.status.active') : product.status === 1 ? t('dashboard.status.launching') : t('dashboard.status.inactive')}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Eye className="w-4 h-4 text-gray-600" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-   
-      {/* Recent Activity */}
-      {/* <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          <Link 
-            to="/InvestorDashboard/Logs"
-            className="text-sm text-black hover:text-gray-800 font-medium"
-          >
-            View All Logs
-          </Link>
-        </div>
-        <div className="space-y-4">
-          {recentActivity.map((activity) => (
-            <div key={activity.id} className="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-lg transition-colors">
-              <div className={`w-2 h-2 rounded-full mt-2 ${
-                activity.severity === 'success' ? 'bg-red-500' :
-                activity.severity === 'warning' ? 'bg-yellow-500' :
-                activity.severity === 'error' ? 'bg-red-500' : 'bg-gray-700'
-              }`} />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">{activity.message}</p>
-                <div className="flex items-center space-x-4 mt-1">
-                  <span className="text-xs text-gray-500">{activity.time}</span>
-                  {activity.amount && (
-                    <span className="text-xs font-medium text-gray-700">{activity.amount}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div> */}
-
- 
     </div>
   );
 }

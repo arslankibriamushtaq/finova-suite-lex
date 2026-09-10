@@ -4,17 +4,38 @@ import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Download,
-  Calendar,
   TrendingUp,
   TrendingDown,
   DollarSign,
   BarChart3,
-  Filter,
   RefreshCw,
-  Eye,
-  Share,
-  Printer
+  Share2,
+  Printer,
+  Users,
+  Wallet,
+  AlertTriangle,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+import TableView from '../../../../components/TableView/TableView';
+import { Button } from '../../../../components/ui/button';
+import { Tabs, TabsContent } from '../../../../components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../../components/ui/select';
+import {
+  DetailTabsList,
+  DetailTabsTrigger,
+} from '../../../../components/shared/detailKit';
+import {
+  LexMetricTile,
+  LexNotice,
+  LexPageHeader,
+} from '../../../../components/shared/lexKit';
 
 const plData = {
   summary: {
@@ -104,360 +125,383 @@ export default function PLSummary() {
   const { t } = useTranslation('investor');
   const [dateRange, setDateRange] = useState('ytd');
   const [viewBy, setViewBy] = useState('product');
-  const [isGenerating, setIsGenerating] = useState(false);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  // SAR, like the rest of the module. `formatCurrencyCompact` went with this
+  // pass — it was defined and never called.
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'SAR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
 
-  const formatCurrencyCompact = (amount: number) => {
-    if (Math.abs(amount) >= 1000000) {
-      return `${(amount / 1000000).toFixed(1)}M`;
-    } else if (Math.abs(amount) >= 1000) {
-      return `${(amount / 1000).toFixed(0)}K`;
-    }
-    return amount.toString();
-  };
+  /** A signed figure: the sign is part of the number, not glued on in markup. */
+  const signed = (amount: number) => `${amount > 0 ? '+' : ''}${formatCurrency(amount)}`;
 
-  const handleGenerateReport = async () => {
-    setIsGenerating(true);
-    // Simulate report generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsGenerating(false);
-    alert(t('pl.reportGenerated'));
-  };
+  const toneOf = (value: number) => (value < 0 ? 'text-destructive' : 'text-foreground');
+
+  /**
+   * Every figure on this page is a module literal and no endpoint is wired.
+   * The old handler waited two seconds and alerted "Report generated" — a
+   * progress spinner and a success message for work that never ran.
+   */
+  const notConnected = () => toast.error(t('invl.notConnected'));
+
+  const productHeaders = [
+    {
+      name: t('pl.col.product'),
+      cell: (row: any) => (
+        <span className="truncate text-sm font-medium text-foreground">{row.name}</span>
+      ),
+      width: '230px',
+    },
+    {
+      name: t('pl.col.investment'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-sm tabular-nums">
+          {formatCurrency(row.investment)}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('pl.col.currentValue'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-sm tabular-nums">
+          {formatCurrency(row.currentValue)}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('pl.col.unrealizedPl'),
+      cell: (row: any) => (
+        <span
+          className={`whitespace-nowrap text-sm font-medium tabular-nums ${toneOf(row.unrealizedGains)}`}
+        >
+          {signed(row.unrealizedGains)}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      // Was hardcoded to a "+" prefix in red, so a product with zero realized
+      // gains printed "+SAR 0" as though it had made money.
+      name: t('pl.col.realizedPl'),
+      cell: (row: any) => (
+        <span
+          className={`whitespace-nowrap text-sm font-medium tabular-nums ${toneOf(row.realizedGains)}`}
+        >
+          {signed(row.realizedGains)}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('pl.col.totalPl'),
+      cell: (row: any) => (
+        <span
+          className={`whitespace-nowrap text-sm font-medium tabular-nums ${toneOf(row.totalGains)}`}
+        >
+          {signed(row.totalGains)}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('pl.col.returnPct'),
+      cell: (row: any) => (
+        <span
+          className={`inline-flex items-center gap-1 whitespace-nowrap text-sm font-medium tabular-nums ${toneOf(row.return)}`}
+        >
+          {row.return >= 0 ? (
+            <TrendingUp className="h-3.5 w-3.5" />
+          ) : (
+            <TrendingDown className="h-3.5 w-3.5" />
+          )}
+          {row.return >= 0 ? '+' : ''}
+          {row.return.toFixed(2)}%
+        </span>
+      ),
+      width: '130px',
+    },
+    {
+      name: t('pl.col.investors'),
+      cell: (row: any) => (
+        <span className="inline-flex items-center gap-1.5 text-sm tabular-nums">
+          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+          {row.investors}
+        </span>
+      ),
+      width: '120px',
+    },
+  ];
+
+  // The bars used magic divisors — /4 for periods and /40 for investors — so
+  // they were only meaningful for the numbers that happened to be in the
+  // literal. Scaled against the largest value present instead.
+  const maxInvestorReturn = Math.max(...plData.topPerformers.map((i) => i.return), 1);
+
+  const investorHeaders = [
+    {
+      name: t('pl.col.investor'),
+      cell: (row: any, index: number) => (
+        <span className="flex min-w-0 items-center gap-2.5">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border bg-muted text-xs font-semibold tabular-nums text-foreground">
+            {index + 1}
+          </span>
+          <span className="truncate text-sm font-medium text-foreground">{row.investor}</span>
+        </span>
+      ),
+      width: '260px',
+    },
+    {
+      name: t('pl.col.totalGains'),
+      cell: (row: any) => (
+        <span
+          className={`whitespace-nowrap text-sm font-medium tabular-nums ${toneOf(row.gains)}`}
+        >
+          {signed(row.gains)}
+        </span>
+      ),
+      width: '170px',
+    },
+    {
+      name: t('pl.col.returnPct'),
+      cell: (row: any) => (
+        <span
+          className={`inline-flex items-center gap-1 whitespace-nowrap text-sm font-medium tabular-nums ${toneOf(row.return)}`}
+        >
+          {row.return >= 0 ? (
+            <TrendingUp className="h-3.5 w-3.5" />
+          ) : (
+            <TrendingDown className="h-3.5 w-3.5" />
+          )}
+          {row.return >= 0 ? '+' : ''}
+          {row.return.toFixed(1)}%
+        </span>
+      ),
+      width: '140px',
+    },
+    {
+      name: t('pl.col.performance'),
+      cell: (row: any) => (
+        <span className="block h-2 w-24 overflow-hidden rounded-full bg-muted">
+          <span
+            className="block h-full rounded-full bg-primary"
+            style={{ width: `${Math.min(100, (row.return / maxInvestorReturn) * 100)}%` }}
+          />
+        </span>
+      ),
+      width: '140px',
+    },
+  ];
+
+  const maxPeriodReturn = Math.max(...plData.byPeriod.map((pd) => Math.abs(pd.return)), 1);
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-4 mb-4">
-          <Link
-            to="/InvestorDashboard/Reports"
-            className="flex items-center text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft className="w-4 h-4 me-2" />
+    <div className="service">
+      <LexPageHeader icon={BarChart3} title={t('pl.title')} subtitle={t('pl.subtitle')}>
+        <Button asChild variant="ghost" size="sm" className="gap-2">
+          {/* Was /admin/reports, which is not a route in this app. */}
+          <Link to="/InvestorDashboard/Reports">
+            <ArrowLeft className="h-4 w-4" />
             {t('pl.backToReports')}
           </Link>
-        </div>
+        </Button>
+        <Select value={dateRange} onValueChange={setDateRange}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="mtd">{t('pl.range.mtd')}</SelectItem>
+            <SelectItem value="qtd">{t('pl.range.qtd')}</SelectItem>
+            <SelectItem value="ytd">{t('pl.range.ytd')}</SelectItem>
+            <SelectItem value="1y">{t('pl.range.1y')}</SelectItem>
+            <SelectItem value="custom">{t('pl.range.custom')}</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
+          {t('dashboard.refreshData')}
+        </Button>
+        {/* Share, Print and Export had no onClick at all. */}
+        <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+          <Share2 className="h-4 w-4" />
+          {t('pl.share')}
+        </Button>
+        <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+          <Printer className="h-4 w-4" />
+          {t('pl.print')}
+        </Button>
+        <Button size="sm" onClick={notConnected} className="gap-2">
+          <Download className="h-4 w-4" />
+          {t('pl.exportPdf')}
+        </Button>
+      </LexPageHeader>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('pl.title')}</h1>
-            <p className="text-gray-600">{t('pl.subtitle')}</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-            >
-              <option value="mtd">{t('pl.range.mtd')}</option>
-              <option value="qtd">{t('pl.range.qtd')}</option>
-              <option value="ytd">{t('pl.range.ytd')}</option>
-              <option value="1y">{t('pl.range.1y')}</option>
-              <option value="custom">{t('pl.range.custom')}</option>
-            </select>
-            <button
-              onClick={handleGenerateReport}
-              disabled={isGenerating}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <RefreshCw className="w-4 h-4 me-2 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4 me-2" />
-              )}
-              {t('dashboard.refreshData')}
-            </button>
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Share className="w-4 h-4 me-2" />
-              {t('pl.share')}
-            </button>
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Printer className="w-4 h-4 me-2" />
-              {t('pl.print')}
-            </button>
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-              <Download className="w-4 h-4 me-2" />
-              {t('pl.exportPdf')}
-            </button>
-          </div>
-        </div>
+      <LexNotice tone="amber" icon={AlertTriangle}>
+        {t('invl.sampleDataNotice')}
+      </LexNotice>
+
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <LexMetricTile
+          label={t('pl.card.totalInvestment')}
+          icon={Wallet}
+          tone="slate"
+          value={formatCurrency(plData.summary.totalInvestment)}
+          footnote={plData.summary.period}
+        />
+        <LexMetricTile
+          label={t('pl.card.currentValue')}
+          icon={BarChart3}
+          tone="sky"
+          value={formatCurrency(plData.summary.currentValue)}
+          footnote={t('pl.card.marketValue')}
+        />
+        <LexMetricTile
+          label={t('pl.card.unrealizedGains')}
+          icon={TrendingUp}
+          tone="emerald"
+          value={formatCurrency(plData.summary.unrealizedGains)}
+          footnote={t('pl.card.paperGains')}
+        />
+        <LexMetricTile
+          label={t('pl.card.realizedGains')}
+          icon={DollarSign}
+          tone="emerald"
+          value={formatCurrency(plData.summary.realizedGains)}
+          footnote={t('pl.card.actualGains')}
+        />
+        <LexMetricTile
+          label={t('pl.card.totalReturn')}
+          icon={TrendingUp}
+          tone="amber"
+          value={`${plData.summary.totalReturn.toFixed(2)}%`}
+          footnote={t('pl.card.overallPerformance')}
+        />
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">{t('pl.card.totalInvestment')}</p>
-            <DollarSign className="w-5 h-5 text-gray-400" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(plData.summary.totalInvestment)}</p>
-          <p className="text-xs text-gray-500 mt-1">{plData.summary.period}</p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">{t('pl.card.currentValue')}</p>
-            <BarChart3 className="w-5 h-5 text-gray-700" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(plData.summary.currentValue)}</p>
-          <p className="text-xs text-gray-500 mt-1">{t('pl.card.marketValue')}</p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">{t('pl.card.unrealizedGains')}</p>
-            <TrendingUp className="w-5 h-5 text-red-500" />
-          </div>
-          <p className="text-2xl font-bold text-red-600">{formatCurrency(plData.summary.unrealizedGains)}</p>
-          <p className="text-xs text-gray-500 mt-1">{t('pl.card.paperGains')}</p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">{t('pl.card.realizedGains')}</p>
-            <DollarSign className="w-5 h-5 text-red-500" />
-          </div>
-          <p className="text-2xl font-bold text-red-600">{formatCurrency(plData.summary.realizedGains)}</p>
-          <p className="text-xs text-gray-500 mt-1">{t('pl.card.actualGains')}</p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">{t('pl.card.totalReturn')}</p>
-            <TrendingUp className="w-5 h-5 text-red-500" />
-          </div>
-          <p className="text-2xl font-bold text-red-600">{plData.summary.totalReturn.toFixed(2)}%</p>
-          <p className="text-xs text-gray-500 mt-1">{t('pl.card.overallPerformance')}</p>
-        </div>
-      </div>
-
-      {/* View Toggle */}
-      <div className="mb-6">
-        <div className="flex items-center bg-gray-100 rounded-lg p-1 w-fit">
-          <button
-            onClick={() => setViewBy('product')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              viewBy === 'product' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
+      {/* Was a hand-rolled segmented control in bg-gray-100. */}
+      <Tabs value={viewBy} onValueChange={setViewBy}>
+        <DetailTabsList className="mb-3">
+          <DetailTabsTrigger value="product" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
             {t('pl.view.byProduct')}
-          </button>
-          <button
-            onClick={() => setViewBy('period')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              viewBy === 'period' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="period" className="gap-2">
+            <TrendingUp className="h-4 w-4" />
             {t('pl.view.byPeriod')}
-          </button>
-          <button
-            onClick={() => setViewBy('investor')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              viewBy === 'investor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="investor" className="gap-2">
+            <Users className="h-4 w-4" />
             {t('pl.view.byInvestor')}
-          </button>
-        </div>
-      </div>
+          </DetailTabsTrigger>
+        </DetailTabsList>
 
-      {/* P/L Breakdown */}
-      {viewBy === 'product' && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">{t('pl.plByProduct')}</h3>
+        <TabsContent value="product">
+          <div className="pro-card p-4">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <BarChart3 className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t('pl.plByProduct')}
+              </h4>
+            </div>
+            <TableView header={productHeaders} data={plData.byProduct} paginationShow={false} />
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.product')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.investment')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.currentValue')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.unrealizedPl')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.realizedPl')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.totalPl')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.returnPct')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.investors')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {plData.byProduct.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(product.investment)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(product.currentValue)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`text-sm font-medium ${
-                        product.unrealizedGains >= 0 ? 'text-slate-500' : 'text-red-600'
-                      }`}>
-                        {product.unrealizedGains >= 0 ? '+' : ''}{formatCurrency(product.unrealizedGains)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-red-600">
-                        +{formatCurrency(product.realizedGains)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`text-sm font-medium ${
-                        product.totalGains >= 0 ? 'text-slate-500' : 'text-red-600'
-                      }`}>
-                        {product.totalGains >= 0 ? '+' : ''}{formatCurrency(product.totalGains)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`flex items-center text-sm font-medium ${
-                        product.return >= 0 ? 'text-slate-500' : 'text-red-600'
-                      }`}>
-                        {product.return >= 0 ? (
-                          <TrendingUp className="w-4 h-4 me-1" />
-                        ) : (
-                          <TrendingDown className="w-4 h-4 me-1" />
-                        )}
-                        {product.return >= 0 ? '+' : ''}{product.return.toFixed(2)}%
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {product.investors}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+        </TabsContent>
 
-      {viewBy === 'period' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('pl.plByPeriod')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {plData.byPeriod.map((period, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium text-gray-900">{period.period}</h4>
-                  <div className="flex items-center text-red-600">
-                    <TrendingUp className="w-4 h-4 me-1" />
-                    <span className="text-sm font-medium">{period.return.toFixed(1)}%</span>
+        <TabsContent value="period">
+          <div className="pro-card p-4">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <TrendingUp className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t('pl.plByPeriod')}
+              </h4>
+            </div>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {plData.byPeriod.map((period) => (
+                <div key={period.period} className="rounded-md border p-3">
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <h5 className="m-0 truncate text-sm font-medium text-foreground">
+                      {period.period}
+                    </h5>
+                    {/* TrendingUp was hardcoded, so a negative month would have
+                        shown a rising arrow. */}
+                    <span
+                      className={`inline-flex items-center gap-1 text-sm font-medium tabular-nums ${toneOf(period.return)}`}
+                    >
+                      {period.return >= 0 ? (
+                        <TrendingUp className="h-3.5 w-3.5" />
+                      ) : (
+                        <TrendingDown className="h-3.5 w-3.5" />
+                      )}
+                      {period.return.toFixed(1)}%
+                    </span>
+                  </div>
+                  <p className={`m-0 text-lg font-semibold tabular-nums ${toneOf(period.gains)}`}>
+                    {signed(period.gains)}
+                  </p>
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{
+                        width: `${Math.min(100, (Math.abs(period.return) / maxPeriodReturn) * 100)}%`,
+                      }}
+                    />
                   </div>
                 </div>
-                <p className="text-lg font-bold text-red-600">
-                  +{formatCurrency(period.gains)}
-                </p>
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-red-600 h-2 rounded-full"
-                    style={{ width: `${(period.return / 4) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        </TabsContent>
 
-      {viewBy === 'investor' && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">{t('pl.topPerformingInvestors')}</h3>
+        <TabsContent value="investor">
+          <div className="pro-card p-4">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Users className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t('pl.topPerformingInvestors')}
+              </h4>
+            </div>
+            <TableView
+              header={investorHeaders}
+              data={plData.topPerformers}
+              paginationShow={false}
+            />
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.investor')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.totalGains')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.returnPct')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('pl.col.performance')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {plData.topPerformers.map((investor, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center me-3">
-                          <span className="text-xs font-medium text-gray-700">{index + 1}</span>
-                        </div>
-                        <div className="text-sm font-medium text-gray-900">{investor.investor}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
-                      +{formatCurrency(investor.gains)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm font-medium text-red-600">
-                        <TrendingUp className="w-4 h-4 me-1" />
-                        +{investor.return.toFixed(1)}%
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-red-600 h-2 rounded-full"
-                          style={{ width: `${Math.min((investor.return / 40) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
 
-      {/* Summary Footer */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('pl.portfolioSummary')}</h3>
-            <p className="text-sm text-gray-600">
-              {t('pl.summaryText', { gains: formatCurrency(plData.summary.totalGains), pct: plData.summary.totalReturn.toFixed(2), period: plData.summary.period })}
+      <div className="pro-card mt-3 p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t('pl.portfolioSummary')}
+            </h4>
+            <p className="m-0 mt-1 text-sm text-muted-foreground">
+              {t('pl.summaryText', {
+                gains: formatCurrency(plData.summary.totalGains),
+                pct: plData.summary.totalReturn.toFixed(2),
+                period: plData.summary.period,
+              })}
             </p>
           </div>
           <div className="text-end">
-            <p className="text-sm text-gray-600">{t('pl.lastUpdated')}</p>
-            <p className="text-sm font-medium text-gray-900">{t('pl.lastUpdatedAt', { date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() })}</p>
+            <p className="m-0 text-xs text-muted-foreground">{t('pl.lastUpdated')}</p>
+            <p className="m-0 text-sm font-medium text-foreground">
+              {t('pl.lastUpdatedAt', {
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+              })}
+            </p>
           </div>
         </div>
       </div>

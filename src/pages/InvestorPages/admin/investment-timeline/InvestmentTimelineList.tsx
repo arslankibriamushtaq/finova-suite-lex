@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
-  Search, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  X, 
+  Edit,
+  Trash2,
+  Eye,
+  X,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
-  Clock
+  Clock,
 } from 'lucide-react';
+import TableView from '../../../../components/TableView/TableView';
+import { Button } from '../../../../components/ui/button';
+import { EmptyState } from '../../../../components/shared/detailKit';
+import { LexNotice, LexPageHeader, LexSearch } from '../../../../components/shared/lexKit';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 import {
   getAllInvestmentTimeline,
   createInvestmentTimeline,
@@ -23,8 +25,6 @@ import {
   InvestmentTimelineUpdateRequest
 } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
-import Loader from '../../../../components/Loader/Loader';
-import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 export default function InvestmentTimelineList() {
   // Portfolio settings are configuration: reading the list is PORTFOLIO_SETTINGS_READ
@@ -46,7 +46,7 @@ export default function InvestmentTimelineList() {
   });
   const [formLoading, setFormLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -70,9 +70,11 @@ export default function InvestmentTimelineList() {
     }
   };
 
+  // Page size belongs in here with the page number: both change what the
+  // server is being asked for, and only one of them used to trigger a fetch.
   useEffect(() => {
     fetchInvestmentTimelines();
-  }, [currentPage]);
+  }, [currentPage, pageSize]);
 
   // Handle create
   const handleCreate = async (e: React.FormEvent) => {
@@ -197,221 +199,144 @@ export default function InvestmentTimelineList() {
     setCurrentPage(page);
   };
 
-  const renderPagination = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`px-3 py-2 text-sm font-medium rounded-lg ${
-            currentPage === i
-              ? 'bg-black text-white'
-              : 'text-gray-700 hover:bg-gray-100'
-          }`}
-        >
-          {i}
-        </button>
-      );
-    }
-    return pages;
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader />
-        <span className="ms-2 text-gray-600">{t('itl.loading')}</span>
-      </div>
+  const stampCell = (value: string) =>
+    value ? (
+      <span className="whitespace-nowrap text-xs text-muted-foreground">
+        {new Date(value).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </span>
+    ) : (
+      <span className="text-xs text-muted-foreground">—</span>
     );
-  }
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-600">{error}</p>
-        <button
-          onClick={fetchInvestmentTimelines}
-          className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-        >
-          {t('iil.retry')}
-        </button>
-      </div>
-    );
-  }
+  const timelineHeaders = [
+    {
+      name: t('itl.col.timeline'),
+      cell: (row: InvestmentTimeline) => (
+        <span className="flex min-w-0 items-center gap-2.5">
+          <span className="pro-head-badge">
+            <Clock className="h-4 w-4" />
+          </span>
+          <span className="truncate text-sm font-medium text-foreground">{row.timeline}</span>
+        </span>
+      ),
+      width: '320px',
+    },
+    { name: t('irl.col.created'), cell: (row: InvestmentTimeline) => stampCell(row.createdAt) },
+    { name: t('irl.col.updated'), cell: (row: InvestmentTimeline) => stampCell(row.updatedAt) },
+    {
+      name: t('common:actions'),
+      cell: (row: InvestmentTimeline) => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => handleViewClick(row.id)}
+            title={t('irl.viewDetails')}
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          {canManage && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => handleEditClick(row.id)}
+                title={t('common:edit')}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                onClick={() => handleDeleteClick(row)}
+                title={t('common:delete')}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
+      ),
+      width: '150px',
+    },
+  ];
 
   return (
-    <div className="p-8 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('itl.title')}</h1>
-          <p className="text-gray-600">{t('itl.subtitle')}</p>
-        </div>
+    <div className="service">
+      <LexPageHeader icon={Clock} title={t('itl.title')} subtitle={t('itl.subtitle')}>
         {canManage && (
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-          >
-            <Plus className="w-4 h-4 me-2" />
+          <Button size="sm" onClick={() => setShowCreateModal(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
             {t('itl.addBtn')}
-          </button>
+          </Button>
+        )}
+      </LexPageHeader>
+
+      {/* Loading and failure used to REPLACE the page — header, Add button and
+          all — so a failed load left a red box with a retry and nothing else,
+          and a slow one blanked the screen. Both are states inside the page
+          now. */}
+      {error && (
+        <LexNotice tone="red">
+          <span className="flex flex-wrap items-center gap-3">
+            {error}
+            <Button variant="outline" size="sm" onClick={fetchInvestmentTimelines}>
+              {t('common:tryAgain')}
+            </Button>
+          </span>
+        </LexNotice>
+      )}
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="investment-timeline-search"
+            className="flex-1"
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder={t('itl.searchPlaceholder')}
+          />
+          <span className="whitespace-nowrap text-xs text-muted-foreground">
+            {t('itl.countLabel', {
+              shown: filteredInvestmentTimelines.length,
+              total: totalCount,
+            })}
+          </span>
+        </div>
+      </div>
+
+      <div className="pro-card p-4">
+        {!loading && filteredInvestmentTimelines.length === 0 ? (
+          <EmptyState icon={Clock} text={t('common:noData')} />
+        ) : (
+          <TableView
+            header={timelineHeaders}
+            data={filteredInvestmentTimelines}
+            isLoading={loading}
+            totalRows={totalCount}
+            totalPage={totalPages}
+            page={currentPage}
+            setPage={handlePageChange}
+            pageSize={pageSize}
+            setPageSize={(size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            from={totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1}
+            to={Math.min(currentPage * pageSize, totalCount)}
+          />
         )}
       </div>
 
-      {/* Search and Stats */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t('itl.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-        <div className="text-sm text-gray-600">
-          {t('itl.countLabel', { shown: filteredInvestmentTimelines.length, total: totalCount })}
-        </div>
-      </div>
-
-      {/* Investment Timelines Table */}
-      {!loading && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('itl.col.timeline')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('irl.col.created')}
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('irl.col.updated')}
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">{t('common:actions')}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredInvestmentTimelines.map((investmentTimeline) => (
-                  <tr key={investmentTimeline.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Clock className="w-5 h-5 text-gray-700 me-3" />
-                        <span className="text-sm font-medium text-gray-900">
-                          {investmentTimeline.timeline}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(investmentTimeline.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(investmentTimeline.updatedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleViewClick(investmentTimeline.id)}
-                          className="text-black hover:text-blue-900"
-                          title={t('irl.viewDetails')}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        {canManage && (
-                          <button
-                            onClick={() => handleEditClick(investmentTimeline.id)}
-                            className="text-yellow-600 hover:text-yellow-900"
-                            title={t('common:edit')}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                        )}
-                        {canManage && (
-                          <button
-                            onClick={() => handleDeleteClick(investmentTimeline)}
-                            className="text-red-600 hover:text-red-900"
-                            title={t('common:delete')}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {t('common:previous')}
-                </button>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="ms-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {t('common:next')}
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    {t('iil.showingPage', { current: currentPage, total: totalPages })}
-                  </p>
-                </div>
-                <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    {renderPagination()}
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Create Investment Timeline Modal */}
       {showCreateModal && (

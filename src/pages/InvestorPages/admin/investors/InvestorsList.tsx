@@ -2,26 +2,35 @@ import { useState, useEffect } from 'react';
 import { Plus as PlusIcon, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+import TableView from '../../../../components/TableView/TableView';
+import { Badge } from '../../../../components/ui/badge';
+import { Button } from '../../../../components/ui/button';
+import { Tabs, TabsContent } from '../../../../components/ui/tabs';
+import {
+  DetailTabsList,
+  DetailTabsTrigger,
+  EmptyState,
+} from '../../../../components/shared/detailKit';
+import { TONES } from '../../../../components/shared/detailKitUtils';
+import { LexMetricTile, LexNotice, LexPageHeader } from '../../../../components/shared/lexKit';
 import { getInvestorDashboard, getAllCountries, getAllKycInvestors, getAllKybInvestors, createBusinessShare, Country, InvestorKyc, InvestorKyb } from '../../../../redux/apis/apisInvestor';
 
-import { 
-  Plus, 
-
-  Download, 
-  Eye, 
-  UserCheck, 
+import {
+  Plus,
+  Download,
+  Eye,
   Mail,
   Phone,
-
   AlertTriangle,
   X,
   Upload,
   FileText,
-
   User,
   Building,
-
-
+  BadgeCheck,
+  Coins,
+  Users,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
@@ -81,7 +90,7 @@ export default function InvestorsList() {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Pagination logic
   const getCurrentInvestors = () => {
@@ -94,22 +103,6 @@ export default function InvestorsList() {
   const getTotalPages = () => {
     const totalItems = activeTab === 'individual' ? kycInvestors.length : kybInvestors.length;
     return Math.ceil(totalItems / itemsPerPage);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < getTotalPages()) {
-      setCurrentPage(currentPage + 1);
-    }
   };
 
   // Reset to first page when switching tabs
@@ -585,448 +578,282 @@ export default function InvestorsList() {
   };
 
 
-  return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('ilst.title')}</h1>
-            <p className="text-gray-600">{t('ilst.subtitle')}</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            {canManage && (
-              <button 
-                onClick={handleImportData}
-                className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                <Upload className="w-4 h-4 me-2" />
-                {t('ilst.import')}
-              </button>
-            )}
-            <button 
-              onClick={handleExportData}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Download className="w-4 h-4 me-2" />
-              {t('ilst.exportData')}
-            </button>
-            {canManage && (
-              <button 
-                onClick={() => setShowTypeSelectionModal(true)}
-                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-              >
-                <Plus className="w-4 h-4 me-2" />
-                {t('ilst.addInvestor')}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+  const isTabLoading = activeTab === 'individual' ? kycLoading : kybLoading;
+  const tabRows = activeTab === 'individual' ? kycInvestors : kybInvestors;
+  const tabTotal = tabRows.length;
 
-      {/* Error Display */}
-      {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center">
-            <AlertTriangle className="w-5 h-5 text-red-500 me-2" />
-            <p className="text-red-700">{error}</p>
-          </div>
+  /** Name, email and phone in one cell — the identity, not three columns of it. */
+  const identityCell = (row: any) => (
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border bg-muted text-xs font-semibold text-foreground">
+        {`${row.firstNameInEnglish?.[0] || ''}${row.lastNameInEnglish?.[0] || ''}`.toUpperCase() || '—'}
+      </span>
+      <div className="min-w-0">
+        <p className="m-0 truncate text-sm font-medium text-foreground">
+          {row.firstNameInEnglish} {row.lastNameInEnglish}
+        </p>
+        {row.email && (
+          <p className="m-0 flex items-center gap-1 truncate text-xs text-muted-foreground">
+            <Mail className="h-3 w-3 shrink-0" />
+            {row.email}
+          </p>
+        )}
+        {row.phone && (
+          <p className="m-0 flex items-center gap-1 truncate text-xs text-muted-foreground">
+            <Phone className="h-3 w-3 shrink-0" />
+            {row.phone}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
+  /**
+   * Verification, as a badge.
+   *
+   * 0 was amber and both 1 and 2 were the same red, so a verified investor and
+   * a rejected one looked identical — the one distinction on the row that has
+   * to be readable at a glance.
+   */
+  const verificationCell = (row: any) => (
+    <Badge
+      variant="outline"
+      className={`border font-medium ${
+        row.verificationStatus === 1
+          ? TONES.emerald
+          : row.verificationStatus === 0
+            ? TONES.amber
+            : TONES.red
+      }`}
+    >
+      {tVerification(row.verificationStatus)}
+    </Badge>
+  );
+
+  const actionsCell = (row: any) => (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0"
+        onClick={() => handleViewInvestor(row)}
+        title={t('ilst.action.viewDetails')}
+      >
+        <Eye className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0"
+        onClick={() => handleViewDocuments(row)}
+        title={t('ilst.action.viewDocuments')}
+      >
+        <FileText className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+
+  const individualHeaders = [
+    { name: t('ilst.col.investor'), cell: identityCell, width: '270px' },
+    {
+      name: t('ils.col.investorLevel'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 text-sm font-medium text-foreground">
+            {tLevel(row.investorLevel)}
+          </p>
+          <p className="m-0 text-xs text-muted-foreground">
+            {tEmployment(row.employmentStatus)}
+          </p>
         </div>
+      ),
+      width: '180px',
+    },
+    {
+      name: t('ils.col.nationalId'),
+      cell: (row: any) => <span className="font-mono text-xs">{row.nationalId || '—'}</span>,
+      width: '150px',
+    },
+    {
+      name: t('ils.col.address'),
+      cell: (row: any) => (
+        <span className="line-clamp-2 text-sm text-muted-foreground">{row.address || '—'}</span>
+      ),
+      width: '220px',
+    },
+    { name: t('ils.col.verificationStatus'), cell: verificationCell, width: '150px' },
+    { name: t('common:actions'), cell: actionsCell, width: '110px' },
+  ];
+
+  const businessHeaders = [
+    { name: t('ilst.col.investor'), cell: identityCell, width: '270px' },
+    {
+      name: t('ils.col.companyInfo'),
+      cell: (row: any) => (
+        <span className="text-sm font-medium text-foreground">{row.companyName || '—'}</span>
+      ),
+      width: '200px',
+    },
+    {
+      name: t('ils.col.crNumber'),
+      cell: (row: any) => <span className="font-mono text-xs">{row.crNumber || '—'}</span>,
+      width: '150px',
+    },
+    {
+      name: t('ils.col.designation'),
+      cell: (row: any) => (
+        <span className="text-sm">{tDesigCell(row.employeeDesignation)}</span>
+      ),
+      width: '150px',
+    },
+    {
+      // Was a filled purple pill, which reads as a status. An address is not a
+      // status, so it is text.
+      name: t('ils.col.address'),
+      cell: (row: any) => (
+        <span className="line-clamp-2 text-sm text-muted-foreground">
+          {row.companyAddress || '—'}
+        </span>
+      ),
+      width: '220px',
+    },
+    { name: t('ils.col.verificationStatus'), cell: verificationCell, width: '150px' },
+    { name: t('common:actions'), cell: actionsCell, width: '110px' },
+  ];
+
+  return (
+    <div className="service">
+      <LexPageHeader
+        icon={Users}
+        title={t('ilst.title')}
+        subtitle={t('ilst.subtitle')}
+      >
+        {canManage && (
+          <Button variant="outline" size="sm" onClick={handleImportData} className="gap-2">
+            <Upload className="h-4 w-4" />
+            {t('ilst.import')}
+          </Button>
+        )}
+        <Button variant="outline" size="sm" onClick={handleExportData} className="gap-2">
+          <Download className="h-4 w-4" />
+          {t('ilst.exportData')}
+        </Button>
+        {canManage && (
+          <Button size="sm" onClick={() => setShowTypeSelectionModal(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t('ilst.addInvestor')}
+          </Button>
+        )}
+      </LexPageHeader>
+
+      {error && (
+        <LexNotice tone="red" icon={AlertTriangle}>
+          {error}
+        </LexNotice>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">{t('ilst.stat.totalInvestors')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {loading ? '...' : dashboardData?.totalInvestors || '0'}
-              </p>
-              <p className="text-xs text-red-600 mt-1">
-                {t('ils.pctThisMonth', { value: `${dashboardData?.monthlyChangeInInvestors >= 0 ? '+' : ''}${dashboardData?.monthlyChangeInInvestors || 0}` })}
-              </p>
-            </div>
-            <UserCheck className="w-8 h-8 text-gray-700" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">{t('ilst.stat.activeInvestors')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {loading ? '...' : dashboardData?.activeInvestors || '0'}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {t('ils.pctOfTotal', { value: dashboardData?.activeInvestorPercentage || 0 })}
-              </p>
-            </div>
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">{t('ilst.stat.totalAum')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {loading ? '...' : `SAR ${dashboardData?.totalAum || 0}`}
-              </p>
-              <p className="text-xs text-red-600 mt-1">
-                {t('ils.pctThisQuarter', { value: `${dashboardData?.quaterlyChangeInAum >= 0 ? '+' : ''}${dashboardData?.quaterlyChangeInAum || 0}` })}
-              </p>
-            </div>
-          
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">{t('ilst.stat.pendingKyc')}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {loading ? '...' : dashboardData?.pendingKyc || '0'}
-              </p>
-              <p className="text-xs text-yellow-600 mt-1">{t('ilst.stat.requiresReview')}</p>
-            </div>
-            <AlertTriangle className="w-8 h-8 text-yellow-500" />
-          </div>
-        </div>
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <LexMetricTile
+          label={t('ilst.stat.totalInvestors')}
+          icon={Users}
+          tone="sky"
+          loading={loading}
+          value={dashboardData?.totalInvestors ?? 0}
+          delta={
+            dashboardData
+              ? {
+                  text: `${dashboardData.monthlyChangeInInvestors >= 0 ? '+' : ''}${dashboardData.monthlyChangeInInvestors || 0}%`,
+                  direction: dashboardData.monthlyChangeInInvestors >= 0 ? 'up' : 'down',
+                }
+              : undefined
+          }
+          footnote={t('ils.pctThisMonth', { value: '' }).replace(/^[+\s]*/, '')}
+        />
+        <LexMetricTile
+          label={t('ilst.stat.activeInvestors')}
+          icon={BadgeCheck}
+          tone="emerald"
+          loading={loading}
+          value={dashboardData?.activeInvestors ?? 0}
+          // A real share of a real denominator, so it gets the bar rather than
+          // the server's pre-computed percentage in a footnote.
+          denominator={dashboardData?.totalInvestors ?? null}
+        />
+        <LexMetricTile
+          label={t('ilst.stat.totalAum')}
+          icon={Coins}
+          tone="slate"
+          loading={loading}
+          value={dashboardData ? `SAR ${dashboardData.totalAum ?? 0}` : undefined}
+          delta={
+            dashboardData
+              ? {
+                  text: `${dashboardData.quaterlyChangeInAum >= 0 ? '+' : ''}${dashboardData.quaterlyChangeInAum || 0}%`,
+                  direction: dashboardData.quaterlyChangeInAum >= 0 ? 'up' : 'down',
+                }
+              : undefined
+          }
+          footnote={t('ils.pctThisQuarter', { value: '' }).replace(/^[+\s]*/, '')}
+        />
+        <LexMetricTile
+          label={t('ilst.stat.pendingKyc')}
+          icon={AlertTriangle}
+          tone="amber"
+          loading={loading}
+          value={dashboardData?.pendingKyc ?? 0}
+          footnote={t('ilst.stat.requiresReview')}
+        />
       </div>
 
-      {/* Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('individual')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'individual'
-                  ? 'border-gray-700 text-black'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {t('ils.tab.individual')}
-            </button>
-            <button
-              onClick={() => setActiveTab('business')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'business'
-                  ? 'border-gray-700 text-black'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {t('ils.tab.business')}
-          </button>
-          </nav>
-        </div>
-      </div>
+      <Tabs
+        value={activeTab}
+        onValueChange={(next) => setActiveTab(next as 'individual' | 'business')}
+      >
+        <DetailTabsList className="mb-3">
+          <DetailTabsTrigger value="individual" className="gap-2">
+            <User className="h-4 w-4" />
+            {t('ils.tab.individual')}
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="business" className="gap-2">
+            <Building className="h-4 w-4" />
+            {t('ils.tab.business')}
+          </DetailTabsTrigger>
+        </DetailTabsList>
 
-
-      {/* Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead style={{ backgroundColor: 'var(--color-surface-mint)' }}>
-              <tr>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {t('ilst.col.investor')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {t('common:type')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {activeTab === 'individual' ? t('ils.col.investorLevel') : t('ils.col.companyInfo')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {activeTab === 'individual' ? t('ils.col.nationalId') : t('ils.col.crNumber')}
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {activeTab === 'individual' ? t('ils.col.email') : t('ils.col.designation')}
-                </th>
-              <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                {t('ils.col.address')}
-              </th>
-            <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-              {t('ils.col.verificationStatus')}
-            </th>
-
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {t('common:actions')}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {activeTab === 'individual' ? (
-                kycLoading ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      {t('ils.loadingIndividual')}
-                    </td>
-                  </tr>
-                ) : kycInvestors.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      {t('ils.noIndividual')}
-                    </td>
-                  </tr>
-                ) : (
-                  getCurrentInvestors().map((investor:any) => (
-                <tr key={investor.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
-                        <span className="text-sm font-medium text-gray-700">
-                          {investor.firstNameInEnglish.charAt(0)}{investor.lastNameInEnglish.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {investor.firstNameInEnglish} {investor.lastNameInEnglish}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <Mail className="w-3 h-3 me-1" />
-                          {investor.email}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <Phone className="w-3 h-3 me-1" />
-                          {investor.phone}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <span className="text-sm text-gray-900 font-medium">{t('ilst.type.individual')}</span>
-                      <div className="mt-1">
-                        {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          KYC Verified
-                        </span> */}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                       {t('ils.levelLabel', { level: tLevel(investor.investorLevel) })}
-
-                      </div>
-                      <div className="text-sm text-gray-500">
-                      {t('ils.employmentLabel', { status: tEmployment(investor.employmentStatus) })}
-
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {/* <Shield className="w-4 h-4 text-gray-700 me-1" /> */}
-                      <span className="text-sm font-medium text-black">
-                        {investor.nationalId}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {investor.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {investor.address}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      investor.verificationStatus === 0
-                        ? "bg-orange-100 text-orange-800"
-                        : investor.verificationStatus === 1
-                        ? "bg-red-100 text-red-800"
-                        : "bg-red-100 text-red-800"
-                    }`}>
-                      {tVerification(investor.verificationStatus)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center gap-2 space-x-2">
-                      <button 
-                        onClick={() => handleViewInvestor(investor)}
-                        className="text-black hover:text-blue-900" 
-                        title={t('ilst.action.viewDetails')}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleViewDocuments(investor)}
-                        className="text-purple-600 hover:text-purple-900" 
-                        title={t('ilst.action.viewDocuments')}
-                      >
-                        <FileText className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                  ))
-                )
+        {/* Both tabs render the same component: the columns differ, the frame
+            does not. Two copies of a table is two places for a fix to be
+            applied once. */}
+        {(['individual', 'business'] as const).map((tab) => (
+          <TabsContent key={tab} value={tab}>
+            <div className="pro-card p-4">
+              {!isTabLoading && tabRows.length === 0 ? (
+                <EmptyState
+                  icon={tab === 'individual' ? User : Building}
+                  text={tab === 'individual' ? t('ils.noIndividual') : t('ils.noBusiness')}
+                />
               ) : (
-                kybLoading ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      {t('ils.loadingBusiness')}
-                    </td>
-                  </tr>
-                ) : kybInvestors.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      {t('ils.noBusiness')}
-                    </td>
-                  </tr>
-                ) : (
-                  getCurrentInvestors().map((investor:any) => (
-                    <tr key={investor.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
-                            <span className="text-sm font-medium text-gray-700">
-                              {investor.firstNameInEnglish.charAt(0)}{investor.lastNameInEnglish.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {investor.firstNameInEnglish} {investor.lastNameInEnglish}
-                            </div>
-                            <div className="text-sm text-gray-500 flex items-center">
-                              <Mail className="w-3 h-3 me-1" />
-                              {investor.email}
-                            </div>
-                            <div className="text-sm text-gray-500 flex items-center">
-                              <Phone className="w-3 h-3 me-1" />
-                              {investor.phone}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <span className="text-sm text-gray-900 font-medium">{t('ils.business')}</span>
-                          <div className="mt-1">
-                            {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              KYB Verified
-                            </span> */}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {investor.companyName}
-                          </div>
-                     
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                      
-                         
-                          <div className="text-sm text-gray-500">
-                            {t('ils.crLabel', { value: investor.crNumber })}
-                          </div>
-                      
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          {/* <Building className="w-4 h-4 text-purple-500 me-1" /> */}
-                          <span className="text-sm font-medium text-purple-600">
-                                                    {tDesigCell(investor.employeeDesignation)}
-
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                     {investor.companyAddress}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          investor.verificationStatus === 0
-                            ? "bg-orange-100 text-orange-800"
-                            : investor.verificationStatus === 1
-                            ? "bg-red-100 text-red-800"
-                            : "bg-red-100 text-red-800"
-                        }`}>
-                          {tVerification(investor.verificationStatus)}
-                        </span>
-                      </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Calendar className="w-3 h-3 me-1" />
-                          {new Date(investor.createdAt).toLocaleDateString()}
-                        </div>
-                      </td> */}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center gap-2 space-x-2">
-                          <button
-                            onClick={() => handleViewInvestor(investor)}
-                            className="text-black hover:text-blue-900"
-                            title={t('ilst.action.viewDetails')}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleViewDocuments(investor)}
-                            className="text-purple-600 hover:text-purple-900"
-                            title={t('ilst.action.viewDocuments')}
-                          >
-                            <FileText className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )
+                <TableView
+                  header={tab === 'individual' ? individualHeaders : businessHeaders}
+                  data={getCurrentInvestors()}
+                  isLoading={isTabLoading}
+                  totalRows={tabTotal}
+                  totalPage={getTotalPages()}
+                  page={currentPage}
+                  setPage={setCurrentPage}
+                  pageSize={itemsPerPage}
+                  setPageSize={(size: number) => {
+                    setItemsPerPage(size);
+                    setCurrentPage(1);
+                  }}
+                  from={tabTotal === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
+                  to={Math.min(currentPage * itemsPerPage, tabTotal)}
+                />
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
 
-      {/* Pagination */}
-      <div className="mt-6 flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          {activeTab === 'individual'
-            ? t('ils.showingIndividual', { start: ((currentPage - 1) * itemsPerPage) + 1, end: Math.min(currentPage * itemsPerPage, kycInvestors.length), total: kycInvestors.length })
-            : t('ils.showingBusiness', { start: ((currentPage - 1) * itemsPerPage) + 1, end: Math.min(currentPage * itemsPerPage, kybInvestors.length), total: kybInvestors.length })}
-        </div>
-        <div className="flex items-center space-x-2">
-          <button 
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t('common:previous')}
-          </button>
-          
-          {/* Page numbers */}
-          {Array.from({ length: getTotalPages() }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-3 py-2 text-sm font-medium border rounded-lg ${
-                currentPage === page
-                  ? 'text-white bg-black border-black'
-                  : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          
-          <button 
-            onClick={handleNextPage}
-            disabled={currentPage === getTotalPages()}
-            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t('common:next')}
-          </button>
-        </div>
-      </div>
 
       {/* Type Selection Modal */}
       {showTypeSelectionModal && (

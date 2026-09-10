@@ -31,10 +31,54 @@ async function throwIfNotOk(response: Response): Promise<void> {
   throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
 }
 
-const API_BASE_URL =`${import.meta.env.VITE_API_BASE_URL}/portfolio-service`;
-const WalletAPI_BASE_URL = import.meta.env.VITE_REACT_APP_API_WALLET_URL;
-const LEDGER_API_BASE_URL = import.meta.env.VITE_REACT_APP_API_BASE_LMS_URL;
-const LOGS_API_BASE_URL = import.meta.env.VITE_REACT_APP_API_INVESTOR_URL;
+/**
+ * A base URL that reports its own absence.
+ *
+ * An undefined `import.meta.env` value interpolates to the STRING "undefined",
+ * so a missing variable produced `undefined/api/v1/Logs/GetLogs` — a relative
+ * path, which the dev server answers with index.html at HTTP 200. `response.ok`
+ * was therefore true, nothing threw, and the failure surfaced several frames
+ * later as `Unexpected token '<', "<!DOCTYPE "... is not valid JSON`, which
+ * names neither the endpoint nor the variable that was never set.
+ *
+ * The value is read lazily: throwing at module scope would take down every
+ * import of this file, including the calls that do not need that base.
+ */
+function requireBase(name: string, value: string | undefined): string {
+  if (!value) {
+    throw new Error(
+      `${name} is not set. Add it to .env and restart the dev server — the request cannot be built without it.`
+    );
+  }
+  return value.replace(/\/+$/, '');
+}
+
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/portfolio-service`;
+const walletBase = () =>
+  requireBase('VITE_REACT_APP_API_WALLET_URL', import.meta.env.VITE_REACT_APP_API_WALLET_URL);
+const ledgerBase = () =>
+  requireBase('VITE_REACT_APP_API_BASE_LMS_URL', import.meta.env.VITE_REACT_APP_API_BASE_LMS_URL);
+const logsBase = () =>
+  requireBase('VITE_REACT_APP_API_INVESTOR_URL', import.meta.env.VITE_REACT_APP_API_INVESTOR_URL);
+
+/**
+ * Parses a response that is supposed to be JSON, and says what it got if it is
+ * not. A gateway error page, a login redirect and an SPA fallback are all HTML
+ * with a 200, and `response.json()` reports every one of them as a stray "<".
+ */
+async function parseJson<T>(response: Response, url: string): Promise<T> {
+  const body = await response.text();
+  try {
+    return JSON.parse(body) as T;
+  } catch {
+    const looksLikeHtml = body.trimStart().startsWith('<');
+    throw new Error(
+      looksLikeHtml
+        ? `${url} returned HTML instead of JSON — the endpoint is wrong or the base URL is unset.`
+        : `${url} returned a response that is not JSON.`
+    );
+  }
+}
 
 // Generic API call function
 export async function apiCall<T>(
@@ -64,7 +108,7 @@ export async function apiCall<T>(
 
   await throwIfNotOk(response);
 
-  return response.json();
+  return parseJson<T>(response, url);
 }
 
 // Dashboard API functions
@@ -1245,7 +1289,7 @@ export async function getAllLogs(page: number = 1, pageSize: number = 10) {
     pageSize: pageSize.toString(),
   });
 
-  const url = `${LOGS_API_BASE_URL}/api/v1/Logs/GetLogs?${params.toString()}`;
+  const url = `${logsBase()}/api/v1/Logs/GetLogs?${params.toString()}`;
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': '*/*',
@@ -1261,7 +1305,7 @@ export async function getAllLogs(page: number = 1, pageSize: number = 10) {
 
   await throwIfNotOk(response);
 
-  return response.json() as Promise<LogListResponse>;
+  return parseJson<LogListResponse>(response, url);
 }
 
 // Update Wallet Balance interfaces
@@ -1295,7 +1339,7 @@ const generateUUID = (): string => {
 export async function updateWalletBalance(data: UpdateWalletBalanceData): Promise<UpdateWalletBalanceResponse> {
   try {
     const token = getAuthToken();
-    const url = `${WalletAPI_BASE_URL}/api/UserWallet/UpdateWalletBalance`;
+    const url = `${walletBase()}/api/UserWallet/UpdateWalletBalance`;
 
     const defaultHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -1318,7 +1362,7 @@ export async function updateWalletBalance(data: UpdateWalletBalanceData): Promis
 
     await throwIfNotOk(response);
 
-    const responseData = await response.json();
+    const responseData = await parseJson<any>(response, url);
     
     // Check if the API response indicates failure
     if (responseData.success === false) {
@@ -1593,7 +1637,7 @@ export async function getInvestorLedgerList(
     params.append('ToDate', toDate);
   }
   const token = getAuthToken();
-  const url = `${LEDGER_API_BASE_URL}/api/AccountLedger/GetInvestorLedgerList?${params.toString()}`;
+  const url = `${ledgerBase()}/api/AccountLedger/GetInvestorLedgerList?${params.toString()}`;
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': '*/*',
@@ -1613,7 +1657,7 @@ export async function getInvestorLedgerList(
 
   await throwIfNotOk(response);
 
-  return response.json() as Promise<InvestorLedgerListResponse>;
+  return parseJson<InvestorLedgerListResponse>(response, url);
 }
 
 // Get Investor Accounts for dropdown
@@ -1627,7 +1671,7 @@ export async function getInvestorAccounts(
     Channel: 'LMS',
   });
 
-  const url = `${LEDGER_API_BASE_URL}/api/ChartOfAccounts/GetInvestorAccounts?${params.toString()}`;
+  const url = `${ledgerBase()}/api/ChartOfAccounts/GetInvestorAccounts?${params.toString()}`;
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': '*/*',
@@ -1646,5 +1690,5 @@ export async function getInvestorAccounts(
 
   await throwIfNotOk(response);
 
-  return response.json() as Promise<InvestorAccountListResponse>;
+  return parseJson<InvestorAccountListResponse>(response, url);
 }

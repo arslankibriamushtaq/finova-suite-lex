@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { BookOpenText, Download } from "lucide-react";
 import { DatePicker, Select } from "antd";
-import TableView from "../../../../components/TableView/TableView";
-import {
-  getInvestorLedgerList,
-  getInvestorAccounts,
-} from "../../../../redux/apis/apisInvestor";
 import toast from "react-hot-toast";
 import moment from "moment";
 import { saveAs } from "file-saver";
+
+import TableView from "../../../../components/TableView/TableView";
+import { Button } from "../../../../components/ui/button";
+import { Label } from "../../../../components/ui/label";
+import { EmptyState } from "../../../../components/shared/detailKit";
+import { LexPageHeader } from "../../../../components/shared/lexKit";
+import { getInvestorLedgerList } from "../../../../redux/apis/apisInvestor";
 
 const InvestorLedger = () => {
   const { t } = useTranslation("investor");
@@ -67,13 +70,25 @@ const InvestorLedger = () => {
       cell: (row: any) => <span>{row.account}</span>,
     },
 
+    // Figures a reader compares down a column, so they are tabular and end
+    // aligned. As plain selectors they came out ragged and left aligned.
     {
       name: t("led.col.debit"),
-      selector: (row: { debit: number }) => row.debit,
+      cell: (row: { debit: number | string }) => (
+        <span className="block w-full text-end font-mono text-sm tabular-nums">
+          {typeof row.debit === "number" ? row.debit.toLocaleString() : row.debit}
+        </span>
+      ),
+      width: "130px",
     },
     {
       name: t("led.col.credit"),
-      selector: (row: { credit: number }) => row.credit,
+      cell: (row: { credit: number | string }) => (
+        <span className="block w-full text-end font-mono text-sm tabular-nums">
+          {typeof row.credit === "number" ? row.credit.toLocaleString() : row.credit}
+        </span>
+      ),
+      width: "130px",
     },
   ];
 
@@ -143,14 +158,7 @@ const InvestorLedger = () => {
     }
   };
 
-  useEffect(() => {
-    if (fromDate && toDate) {
 
-      setTimeout(() => {
-        getDayBookReprtData();
-      }, 200); // Small delay to ensure state is updated
-    }
-  }, [fromDate, toDate]);
 
 //   const accountsDetailsForList = async () => {
 //     try {
@@ -171,6 +179,13 @@ const InvestorLedger = () => {
 //   };
 
   const exportToCSV = (data: any[], fileName: string) => {
+    // `Object.keys(data[0])` throws on an empty list, and the button was live
+    // before the first response landed.
+    if (!Array.isArray(data) || data.length === 0) {
+      toast.error(t("led.noData"));
+      return;
+    }
+
     const csvRows = [];
     const headers = Object.keys(data[0]); // Assuming all objects have the same keys
     csvRows.push(headers.join(",")); // Join header row with commas
@@ -189,129 +204,142 @@ const InvestorLedger = () => {
     saveAs(blob, `${fileName}.csv`);
   };
 
+  /**
+   * One trigger for one request.
+   *
+   * There were three effects calling this — a mount effect, one on
+   * [fromDate, toDate] behind a 200ms setTimeout, and one on
+   * [searchValue, page, pageSize] — and React runs all three on mount, so the
+   * page opened with three identical requests in flight. The account Select
+   * scheduled a fourth on every change, racing the effect that was already
+   * going to fire. Every input that changes the query is in the dependency
+   * list here instead, which also fixes the dates: they were not in any list
+   * that fetched, so changing one did nothing until something else moved.
+   */
   useEffect(() => {
-    // accountsDetailsForList();
-    // Fetch data on initial load since dates are set to today
     if (fromDate && toDate) {
       getDayBookReprtData();
     }
-  }, []);
-
-  useEffect(() => {
-    if (fromDate && toDate) {
-      getDayBookReprtData();
-    }
-  }, [searchValue, page, pageSize]);
+  }, [searchValue, page, pageSize, fromDate, toDate]);
 
   return (
-    <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h3 className="mb-0">{t("led.title")}</h3>
-          </div>
-        </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center w-75">
-            {/* From Date */}
-            <div className="col-md-3 d-grid">
-              <label htmlFor="fromDate" className="form-label">
-                {t("common:from")}
-              </label>
-              <DatePicker
-                value={fromDate ? moment(fromDate) : null}
-                onChange={(date: any, dateString: string | string[]) => {
-                  setFromDate(dateString || null);
-                }}
-                placeholder={t("led.selectFromDate")}
-              />
-            </div>
+    <div className="service">
+      <LexPageHeader icon={BookOpenText} title={t("led.title")}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          disabled={loading || !ledgerData?.length}
+          onClick={() => exportToCSV(ledgerData, "ledgerData")}
+        >
+          <Download className="h-4 w-4" />
+          {t("led.exportCsv")}
+        </Button>
+      </LexPageHeader>
 
-            {/* To Date */}
-            <div className="col-md-3 d-grid">
-              <label htmlFor="toDate" className="form-label">
-                {t("common:to")}
-              </label>
-              <DatePicker
-                value={toDate ? moment(toDate) : null}
-                onChange={(date, dateString: string | string[]) => {
-                  setToDate(dateString || null);
-                }}
-                placeholder={t("led.selectToDate")}
-              />
-            </div>
-
-            <div className="col-md-4">
-              <label htmlFor="Accounts" className="form-label">
-                {t("led.accounts")}
-              </label>
-              <Select
-                size="middle"
-                className="ledger-account"
-                placeholder={t("led.selectAccountName")}
-                onChange={(value) => {
-                  setSearchValue(value);
-                  if (fromDate && toDate) {
-                    setTimeout(() => {
-                      getDayBookReprtData();
-                    }, 200);
-                  }
-                }}
-              >
-                <Select.Option value="all">{t("common:all")}</Select.Option>
-                {customerData?.map((option) => (
-                  <Select.Option key={option.accountCode} value={option.accountCode}>
-                    {option?.accountName}
-                  </Select.Option>
-                ))}
-              </Select>
-            </div>
+      {/* A `pro-card p-3` filter bar, which is what the app's compact-control
+          rules key off: they pin .ant-picker and .ant-select to the same 34px
+          and 12px as every other filter row. Loose in a Bootstrap grid, these
+          three were full height and a size larger than their neighbours. */}
+      <div className="pro-card p-3 mb-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="ledger-from" className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("common:from")}
+            </Label>
+            <DatePicker
+              id="ledger-from"
+              className="w-full"
+              value={fromDate ? moment(fromDate) : null}
+              onChange={(date: any, dateString: string | string[]) => {
+                setFromDate(dateString || null);
+                setPage(1);
+              }}
+              placeholder={t("led.selectFromDate")}
+            />
           </div>
 
-          <div className="col-2 text-end mt-4">
-            <button
-              className="invoice-btn bg-dark"
-              onClick={() => {
-                exportToCSV(ledgerData, "ledgerData");
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="ledger-to" className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("common:to")}
+            </Label>
+            <DatePicker
+              id="ledger-to"
+              className="w-full"
+              value={toDate ? moment(toDate) : null}
+              onChange={(date, dateString: string | string[]) => {
+                setToDate(dateString || null);
+                setPage(1);
+              }}
+              placeholder={t("led.selectToDate")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("led.accounts")}
+            </Label>
+            {/* Controlled, so the box shows what is actually filtering. It was
+                uncontrolled, which let the visible selection and searchValue
+                drift apart. */}
+            <Select
+              className="ledger-account w-full"
+              value={searchValue || undefined}
+              placeholder={t("led.selectAccountName")}
+              onChange={(value) => {
+                setSearchValue(value);
+                setPage(1);
               }}
             >
-              {t("led.exportCsv")}
-            </button>
+              <Select.Option value="all">{t("common:all")}</Select.Option>
+              {customerData?.map((option) => (
+                <Select.Option key={option.accountCode} value={option.accountCode}>
+                  {option?.accountName}
+                </Select.Option>
+              ))}
+            </Select>
           </div>
         </div>
       </div>
 
-      <div className="cs-table p-2">
-        <TableView
-          data={mappedData}
-          header={getAllDaybookReport}
-          setPage={setPage}
-          page={page}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          totalRows={totalRows}
-          totalPage={totalPage}
-          from={from}
-          to={to}
-          isLoading={loading}
-          paginationRowsPerPageOptions={[10, 20, 50, 100]}
-        />
-        {ledgerData?.length !== 0 && !loading && (
-          <div className="d-flex justify-content-between p-3 border-top border-bottom">
-            <strong>{t("led.overallTotal")}</strong>
-            <span className="d-flex gap-4">
-              <strong>{t("led.debitLabel", { value: responseData?.totalDebitAmount })}</strong>
-              <strong>{t("led.creditLabel", { value: responseData?.toalCreditAmount })}</strong>
-            </span>
-          </div>
-        )}
-        {ledgerData?.length == 0 && !loading && (
-          <div className="d-flex justify-content-center mt-5 bg-red">
-            {t("led.noData")}
-          </div>
+      <div className="pro-card p-4">
+        {!loading && ledgerData?.length === 0 ? (
+          <EmptyState icon={BookOpenText} text={t("led.noData")} />
+        ) : (
+          <>
+            <TableView
+              data={mappedData}
+              header={getAllDaybookReport}
+              setPage={setPage}
+              page={page}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalRows={totalRows}
+              totalPage={totalPage}
+              from={from}
+              to={to}
+              isLoading={loading}
+              paginationRowsPerPageOptions={[10, 20, 50, 100]}
+            />
+
+            {/* The running totals are the point of a ledger, so they get their
+                own band rather than a Bootstrap border-top/border-bottom pair
+                that drew a line through the middle of the pager. */}
+            {!loading && ledgerData?.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-md border bg-muted/40 px-4 py-2.5">
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t("led.overallTotal")}
+                </span>
+                <span className="flex flex-wrap items-center gap-5 text-sm font-semibold tabular-nums text-foreground">
+                  <span>{t("led.debitLabel", { value: responseData?.totalDebitAmount ?? 0 })}</span>
+                  <span>{t("led.creditLabel", { value: responseData?.toalCreditAmount ?? 0 })}</span>
+                </span>
+              </div>
+            )}
+          </>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -658,6 +658,27 @@ body,
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--foreground);
+  /* The card reserves 64px on the end for the badge, so a tile is only about
+     150px wide inside at five across. Nothing here could ever overflow when
+     the tiles held counts; a formatted currency runs to fourteen characters
+     and ran straight under the badge and out of the card. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Long figures step down instead of overflowing.
+
+   A step rather than a fluid clamp: `cqi` scales with the CARD, which would
+   shrink a two-character count on a narrow tile just as much as a currency
+   string, and those tiles are the reason the size is 1.75rem in the first
+   place. The component measures the value it was handed and only the long
+   ones move. */
+.lex-kpi__value--long {
+  font-size: 1.375rem;
+}
+.lex-kpi__value--xlong {
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
 }
 
 /* Tinted from the tile tone, so the share belongs to the figure beside it
@@ -696,6 +717,22 @@ body,
   border-radius: 999px;
   background: var(--c);
   transition: width 0.3s ease;
+}
+
+/* The line under a figure that is not a share of anything — a period, a
+   breakdown, a queue's reason for existing. Sits where the bar would, so a row
+   mixing the two still has its bottom edges aligned.
+
+   The card reserves 64px on the end for the icon badge, and the badge occupies
+   only the top 38px of it. Down here nothing is in the way, so the note takes
+   that reservation back rather than wrapping around an absence. */
+.lex-kpi__note {
+  margin-top: auto;
+  padding-top: 12px;
+  margin-inline-end: -48px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--muted-foreground);
 }
 
 html.dark .lex-kpi,

@@ -1,5 +1,12 @@
 import React from "react";
-import { AlertTriangle, Ban, Info, type LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  Ban,
+  Info,
+  TrendingDown,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -55,7 +62,10 @@ export const LexPageHeader = ({
         <p className="mb-0 mt-1.5 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
       )}
     </div>
-    {children && <div className="flex items-center gap-2">{children}</div>}
+    {/* `flex-wrap`: a page with six actions in this slot (P/L Summary has
+        a back link, a range select and four buttons) pushed them off the edge
+        on anything narrower than a desktop. */}
+    {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
   </div>
 );
 
@@ -261,6 +271,8 @@ export const LexMetricTile = ({
   label,
   value,
   denominator,
+  delta,
+  footnote,
   hint,
   icon: Icon,
   tone = "slate",
@@ -270,6 +282,15 @@ export const LexMetricTile = ({
   /** A count, or an already-formatted figure such as "2h 15m". */
   value?: React.ReactNode;
   denominator?: number | null;
+  /**
+   * A movement against an earlier period, for figures that are not a share of
+   * anything — "+8.4% vs last quarter". Direction is carried by the arrow, not
+   * by colour: the brand has no green, so tinting a rise and a fall differently
+   * would mean inventing a palette this app does not own.
+   */
+  delta?: { text: string; direction: "up" | "down" };
+  /** One quiet line under the figure, where a share bar would otherwise sit. */
+  footnote?: React.ReactNode;
   hint?: string;
   icon?: LucideIcon;
   tone?: keyof typeof TONE_HEX | string;
@@ -307,9 +328,40 @@ export const LexMetricTile = ({
       {loading ? (
         <span className="mt-2 block h-8 w-24 animate-pulse rounded-[2px] bg-muted-foreground/20" />
       ) : (
-        <div className="mt-1.5 flex items-baseline gap-2">
-          <span className="lex-kpi__value">{value ?? "—"}</span>
-          {share !== null && <span className="lex-kpi__share">{share.toFixed(1)}%</span>}
+        <div className="mt-1.5 flex min-w-0 items-baseline gap-2">
+          {/* Measured, not guessed: the thresholds are where a 14- and an
+              11-character figure stop fitting a five-across tile. Anything
+              that is not a plain string or number cannot be measured, so it
+              keeps the full size. */}
+          <span
+            className={cn(
+              "lex-kpi__value",
+              typeof value === "string" || typeof value === "number"
+                ? String(value).length > 12
+                  ? "lex-kpi__value--xlong"
+                  : String(value).length > 9
+                    ? "lex-kpi__value--long"
+                    : undefined
+                : undefined
+            )}
+          >
+            {value ?? "—"}
+          </span>
+          {/* The share and the delta are the same slot because they answer the
+              same question — "how big is this?" — and a tile that had both
+              would be answering it twice, in two different units. */}
+          {share !== null ? (
+            <span className="lex-kpi__share">{share.toFixed(1)}%</span>
+          ) : delta ? (
+            <span className="lex-kpi__share inline-flex items-center gap-0.5">
+              {delta.direction === "up" ? (
+                <TrendingUp className="h-3 w-3" />
+              ) : (
+                <TrendingDown className="h-3 w-3" />
+              )}
+              {delta.text}
+            </span>
+          ) : null}
         </div>
       )}
 
@@ -320,6 +372,10 @@ export const LexMetricTile = ({
           <div className="lex-kpi__fill" style={{ width: `${Math.min(100, share)}%` }} />
         </div>
       )}
+
+      {/* Same slot as the bar, so a row mixing shares and footnotes still has
+          its tiles aligned along the bottom. */}
+      {share === null && footnote ? <span className="lex-kpi__note">{footnote}</span> : null}
     </div>
   );
 };

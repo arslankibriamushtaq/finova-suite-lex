@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Dropdown, Menu } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-import { 
-  Plus, 
-  X, 
-  Eye, 
+import {
+  Plus,
+  X,
+  Eye,
   Settings,
   Trash2,
   Target,
-  DollarSign,
   Calendar,
+  ChevronDown,
   Loader2,
-  Package
+  Package,
 } from 'lucide-react';
 import TableView from '../../../../components/TableView/TableView';
+import { Badge } from '../../../../components/ui/badge';
+import { Button } from '../../../../components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../../../components/ui/dropdown-menu';
+import { LexNotice, LexPageHeader } from '../../../../components/shared/lexKit';
+import { TONES } from '../../../../components/shared/detailKitUtils';
 
 import {
   getAllProducts,
@@ -51,6 +59,27 @@ export default function ProductsList() {
     };
     const key = statusMap[status as keyof typeof statusMap];
     return key ? t(key) : t('pln.status.unknown');
+  };
+
+  /**
+   * The tone each product status carries in the table.
+   *
+   * Active and Closed both used to be `bg-red-100 text-red-800` — the two
+   * statuses furthest apart in meaning rendered identically, which is the one
+   * thing a status column must never do.
+   */
+  const productStatusTone = (status: number) => {
+    switch (status) {
+      case 0:
+        return TONES.emerald; // Active
+      case 3:
+      case 4:
+        return TONES.amber; // Suspended, Launching
+      case 2:
+        return TONES.red; // Closed
+      default:
+        return TONES.slate; // Inactive, unknown
+    }
   };
 
   // Helper function to get product category text
@@ -265,33 +294,70 @@ export default function ProductsList() {
     }
   };
 
-  // Table Headers
-  const menu = (row: any) => (
-    <Menu>
-      <Menu.Item key="view" onClick={() => handleViewClick(row.id)}>
-        <Eye className="w-4 h-4 me-2" style={{ display: 'inline' }} />
-        {t('pln.menu.viewDetails')}
-      </Menu.Item>
-      <Menu.Item key="config" onClick={() => navigate(`/InvestorDashboard/Products/${row.id}/config`)}>
-        <Settings className="w-4 h-4 me-2" style={{ display: 'inline' }} />
-        {t('pln.menu.configurations')}
-      </Menu.Item>
-      {canManage && (
-        <Menu.Item key="delete" onClick={() => handleDeleteClick(row)}>
-          <Trash2 className="w-4 h-4 me-2" style={{ display: 'inline' }} />
-          {t('common:delete')}
-        </Menu.Item>
-      )}
-    </Menu>
+  /**
+   * Row actions, on the app's own dropdown rather than antd's.
+   *
+   * The old trigger was an antd Button carrying `style={{ backgroundColor:
+   * "var(--foreground)" }}` — a solid near-black block on every row, in a
+   * table where nothing else is filled. The stop-propagation wrapper is what
+   * keeps a click on the menu from also being a click on the row.
+   */
+  const rowActions = (row: any) => (
+    <div
+      className="relative inline-block"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            {t('pln.select')}
+            <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="z-[9999]">
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              handleViewClick(row.id);
+            }}
+          >
+            <Eye className="h-4 w-4" />
+            {t('pln.menu.viewDetails')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              navigate(`/InvestorDashboard/Products/${row.id}/config`);
+            }}
+          >
+            <Settings className="h-4 w-4" />
+            {t('pln.menu.configurations')}
+          </DropdownMenuItem>
+          {canManage && (
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={(e) => {
+                e.preventDefault();
+                handleDeleteClick(row);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              {t('common:delete')}
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 
   const Product_Headers = [
     {
       name: t('pln.col.product'),
       selector: (row: { productName: any; description: any }) => (
-        <div>
-          <div className="text-sm font-medium">{row.productName}</div>
-          <div className="text-sm text-gray-500">{row.description}</div>
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium text-foreground">{row.productName}</div>
+          <div className="line-clamp-2 text-xs text-muted-foreground">{row.description}</div>
         </div>
       ),
       sortable: true,
@@ -300,46 +366,45 @@ export default function ProductsList() {
     {
       name: t('common:type'),
       selector: (row: { type: any }) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-900">
+        <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
           {row.type}
-        </span>
+        </Badge>
       ),
       sortable: true,
     },
     {
       name: t('pln.col.code'),
       selector: (row: { code: any }) => (
-        <span className="text-sm text-gray-900">{row.code}</span>
+        <span className="font-mono text-xs text-foreground">{row.code}</span>
       ),
       sortable: true,
     },
     {
       name: t('pln.col.expectedReturn'),
       selector: (row: { expectedReturn: any }) => (
-        <div className="flex items-center">
-          <Target className="w-4 h-4 text-red-500 me-1" />
-          <span>{row.expectedReturn}%</span>
-        </div>
+        <span className="inline-flex items-center gap-1.5 text-sm">
+          <Target className="h-3.5 w-3.5 text-primary" />
+          {row.expectedReturn}%
+        </span>
       ),
       sortable: true,
     },
     {
       name: t('pln.col.minInvestment'),
       selector: (row: { minimumInvestment: any }) => (
-        <div className="flex items-center">
-        
-          <span>{`SAR ${row.minimumInvestment.toLocaleString()}`}</span>
-        </div>
+        <span className="whitespace-nowrap text-sm">
+          {`SAR ${row.minimumInvestment.toLocaleString()}`}
+        </span>
       ),
       sortable: true,
     },
     {
       name: t('pln.col.launchDate'),
       selector: (row: { launchDate: any }) => (
-        <div className="flex items-center">
-          <Calendar className="w-4 h-4 text-gray-400 me-1" />
-          <span>{new Date(row.launchDate).toLocaleDateString()}</span>
-        </div>
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm">
+          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+          {new Date(row.launchDate).toLocaleDateString()}
+        </span>
       ),
       sortable: true,
       width: "150px",
@@ -347,28 +412,16 @@ export default function ProductsList() {
     {
       name: t('common:status'),
       cell: (row: any) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          row.status === 0 ? 'bg-red-100 text-red-800' : // Active
-          row.status === 1 ? 'bg-gray-100 text-gray-800' : // Inactive
-          row.status === 2 ? 'bg-red-100 text-red-800' : // Closed
-          row.status === 3 ? 'bg-yellow-100 text-yellow-800' : // Suspended (Pending-like)
-          row.status === 4 ? 'bg-yellow-100 text-yellow-800' : // Launching (Pending-like)
-          'bg-gray-100 text-gray-800' // Default
-        }`}>
+        <Badge variant="outline" className={`border font-medium ${productStatusTone(row.status)}`}>
           {getProductStatusText(row.status)}
-        </span>
+        </Badge>
       ),
       sortable: true,
     },
     {
       name: t('pln.col.action'),
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
-            {t('pln.select')} <DownOutlined />
-          </Button>
-        </Dropdown>
-      ),
+      cell: rowActions,
+      width: '130px',
     },
   ];
 
@@ -385,42 +438,32 @@ export default function ProductsList() {
     status: item.productStatus,
   }));
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-600">{error}</p>
-        <button
-          onClick={fetchProducts}
-          className="mt-2 px-4 py-2 bg-black text-white rounded-lg "
-        >
-          {t('pln.retry')}
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-2 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('pln.title')}</h1>
-          <p className="text-gray-600">{t('pln.subtitle')}</p>
-        </div>
+    <div className="service">
+      <LexPageHeader icon={Package} title={t('pln.title')} subtitle={t('pln.subtitle')}>
         {canManage && (
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-            style={{ borderRadius: '2px' }}
-          >
-            <Plus className="w-4 h-4 me-2" />
+          <Button size="sm" onClick={() => setShowCreateModal(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
             {t('pln.addProduct')}
-          </button>
+          </Button>
         )}
-      </div>
+      </LexPageHeader>
 
-      {/* Products Table */}
-      <div className="cs-table">
+      {/* A failed load used to replace the entire page, header and all, so
+          there was nothing left to retry FROM except a bare button on a red
+          box. The page stays; the failure is a notice inside it. */}
+      {error && (
+        <LexNotice tone="red">
+          <span className="flex flex-wrap items-center gap-3">
+            {error}
+            <Button variant="outline" size="sm" onClick={fetchProducts}>
+              {t('pln.retry')}
+            </Button>
+          </span>
+        </LexNotice>
+      )}
+
+      <div className="pro-card p-4">
         <TableView
           header={Product_Headers}
           data={mappedData}

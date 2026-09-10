@@ -1,29 +1,66 @@
 import { useState } from 'react';
 import {
   Plus,
-  Search,
-  Filter,
   Download,
   Eye,
   Edit,
   Shield,
+  ShieldCheck,
   Users,
   Settings,
   Lock,
   Unlock,
   UserPlus,
   Key,
-  Clock,
-  CheckCircle,
   AlertTriangle,
-  MoreHorizontal,
-  X,
   Trash2,
   Copy,
-  Mail,
-  Phone
+  ChevronDown,
 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
+
+import TableView from '../../../components/TableView/TableView';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+import { Checkbox } from '../../../components/ui/checkbox';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import { Textarea } from '../../../components/ui/textarea';
+import { Tabs, TabsContent } from '../../../components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../../components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../components/ui/select';
+import {
+  DetailTabsList,
+  DetailTabsTrigger,
+  EmptyState,
+} from '../../../components/shared/detailKit';
+import { TONES } from '../../../components/shared/detailKitUtils';
+import {
+  LexMetricTile,
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+} from '../../../components/shared/lexKit';
 
 const adminUsers = [
   {
@@ -167,7 +204,51 @@ const allPermissions = [
   'Transactions'
 ];
 
+type RowAction = {
+  icon: typeof Eye;
+  label: string;
+  onSelect: () => void;
+  destructive?: boolean;
+};
+
+/** A titled group of checkboxes in the security tab. */
+const CheckGroup = ({
+  title,
+  items,
+}: {
+  title: string;
+  items: [string, string, boolean][];
+}) => (
+  <div>
+    <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      {title}
+    </h5>
+    <div className="space-y-2.5">
+      {items.map(([id, label, checked]) => (
+        <div key={id} className="flex items-center gap-2.5">
+          <Checkbox id={`sec-${id}`} defaultChecked={checked} />
+          <Label htmlFor={`sec-${id}`} className="cursor-pointer text-sm font-normal">
+            {label}
+          </Label>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/** One label/value pair in a details grid. */
+const Field = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="min-w-0">
+    <dt className="mb-0.5 text-xs font-medium text-muted-foreground">{label}</dt>
+    <dd className="m-0 break-words text-sm font-medium text-foreground">{value}</dd>
+  </div>
+);
+
 export default function AdminUsers() {
+  // Third page in this module written with no translation at all.
+  const { t } = useTranslation('investor');
+  const tStatus = (v: string) => t(`iusr.st.${v}`);
+
   const [activeTab, setActiveTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -183,13 +264,19 @@ export default function AdminUsers() {
   const [showEditRoleModal, setShowEditRoleModal] = useState(false);
   const [showDeleteRoleModal, setShowDeleteRoleModal] = useState(false);
 
+  // Active and Suspended were both `bg-red-100 text-red-800` — a working
+  // admin account and a suspended one looked the same in the list.
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-red-100 text-red-800';
-      case 'Suspended': return 'bg-red-100 text-red-800';
-      case 'Inactive': return 'bg-gray-100 text-gray-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Active':
+        return TONES.emerald;
+      case 'Suspended':
+        return TONES.red;
+      case 'Pending':
+        return TONES.amber;
+      case 'Inactive':
+      default:
+        return TONES.slate;
     }
   };
 
@@ -235,36 +322,37 @@ export default function AdminUsers() {
     setShowDeleteUserModal(true);
   };
 
+  /**
+   * Twelve handlers on this page reported success for work that never ran.
+   *
+   * Two of them are worse than the rest because of what they claim about
+   * security: "Password reset email sent to …" and "MFA enabled for …". An
+   * administrator told a reset went out has no reason to send another, and one
+   * told MFA is on has no reason to check. Neither touched a service — this
+   * whole page is a module-level literal.
+   */
+  const notConnected = () => toast.error(t('invl.notConnected'));
+
   const handleCreateUser = () => {
-    alert('New user created successfully!');
+    notConnected();
     setShowCreateUserModal(false);
   };
 
   const handleUpdateUser = () => {
-    alert('User updated successfully!');
+    notConnected();
     setShowEditUserModal(false);
     setSelectedUser(null);
   };
 
   const confirmDeleteUser = () => {
-    alert(`User ${selectedUser?.name} deleted successfully!`);
+    notConnected();
     setShowDeleteUserModal(false);
     setSelectedUser(null);
   };
 
-  const handleToggleUserStatus = (user: any) => {
-    const newStatus = user.status === 'Active' ? 'Suspended' : 'Active';
-    alert(`User ${user.name} status changed to ${newStatus}`);
-  };
+  const handleResetPassword = notConnected;
 
-  const handleResetPassword = (user: any) => {
-    alert(`Password reset email sent to ${user.email}`);
-  };
-
-  const handleToggleMFA = (user: any) => {
-    const action = user.mfaEnabled ? 'disabled' : 'enabled';
-    alert(`MFA ${action} for ${user.name}`);
-  };
+  const handleToggleMFA = notConnected;
 
   // Role Actions
   const handleViewRole = (role: any) => {
@@ -283,1165 +371,977 @@ export default function AdminUsers() {
   };
 
   const handleCreateRole = () => {
-    alert('New role created successfully!');
+    notConnected();
     setShowCreateRoleModal(false);
   };
 
   const handleUpdateRole = () => {
-    alert('Role updated successfully!');
+    notConnected();
     setShowEditRoleModal(false);
     setSelectedRole(null);
   };
 
   const confirmDeleteRole = () => {
-    alert(`Role ${selectedRole?.name} deleted successfully!`);
+    notConnected();
     setShowDeleteRoleModal(false);
     setSelectedRole(null);
   };
 
-  const handleDuplicateRole = (role: any) => {
-    alert(`Role ${role.name} duplicated successfully!`);
-  };
+  const handleDuplicateRole = notConnected;
 
-  // General Actions
-  const handleExportUsers = () => {
-    alert('Users exported successfully!');
-  };
+  const handleExportUsers = notConnected;
 
-  const handleSaveSecuritySettings = () => {
-    alert('Security settings saved successfully!');
-  };
+  const handleSaveSecuritySettings = notConnected;
 
-  return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Users & Roles</h1>
-            <p className="text-gray-600">Manage user accounts, roles, and permissions</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={handleExportUsers}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+  const RowActions = ({ items }: { items: RowAction[] }) => (
+    <div
+      className="relative inline-block"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            {t('common:select')}
+            <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="z-[9999]">
+          {items.map(({ icon: Icon, label, onSelect, destructive }) => (
+            <DropdownMenuItem
+              key={label}
+              variant={destructive ? 'destructive' : 'default'}
+              onSelect={(e) => {
+                e.preventDefault();
+                onSelect();
+              }}
             >
-              <Download className="w-4 h-4 me-2" />
-              Export Users
-            </button>
-            <button 
-              onClick={() => setShowCreateUserModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <UserPlus className="w-4 h-4 me-2" />
-              Add User
-            </button>
-          </div>
-        </div>
-      </div>
+              <Icon className="h-4 w-4" />
+              {label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{adminUsers.length}</p>
-              <p className="text-xs text-gray-500 mt-1">Admin accounts</p>
-            </div>
-            <Users className="w-8 h-8 text-gray-700" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Active Users</p>
-              <p className="text-2xl font-bold text-gray-900">{adminUsers.filter(u => u.status === 'Active').length}</p>
-              <p className="text-xs text-red-600 mt-1">Online today</p>
-            </div>
-            <CheckCircle className="w-8 h-8 text-red-500" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Roles</p>
-              <p className="text-2xl font-bold text-gray-900">{roles.length}</p>
-              <p className="text-xs text-gray-500 mt-1">Permission sets</p>
-            </div>
-            <Shield className="w-8 h-8 text-purple-500" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">MFA Enabled</p>
-              <p className="text-2xl font-bold text-gray-900">{adminUsers.filter(u => u.mfaEnabled).length}</p>
-              <p className="text-xs text-gray-500 mt-1">Security enhanced</p>
-            </div>
-            <Lock className="w-8 h-8 text-orange-500" />
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'users'
-                ? 'border-gray-700 text-black'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center">
-              <Users className="w-4 h-4 me-2" />
-              Users
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('roles')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'roles'
-                ? 'border-gray-700 text-black'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center">
-              <Shield className="w-4 h-4 me-2" />
-              Roles & Permissions
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('security')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'security'
-                ? 'border-gray-700 text-black'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-center">
-              <Lock className="w-4 h-4 me-2" />
-              Security Settings
-            </div>
-          </button>
-        </nav>
-      </div>
-
-      {/* Users Tab */}
-      {activeTab === 'users' && (
-        <>
-          {/* Filters */}
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-              >
-                <option value="All Status">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Suspended">Suspended</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-              >
-                <option value="All Roles">All Roles</option>
-                {roles.map(role => (
-                  <option key={role.id} value={role.name}>{role.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="text-sm text-gray-500">
-              {filteredUsers.length} of {adminUsers.length} users
-            </div>
-          </div>
-
-          {/* Users Table */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Login
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Security
-                    </th>
-                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Permissions
-                    </th>
-                    <th className="relative px-6 py-3">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
-                            <span className="text-sm font-medium text-gray-700">
-                              {user.name.split(' ').map(n => n[0]).join('')}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{user.role}</div>
-                        <div className="text-sm text-gray-500">Since {formatDate(user.createdDate)}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(user.status))}>
-                          {user.status}
-                        </span>
-                        {user.loginAttempts > 0 && (
-                          <div className="text-xs text-red-600 mt-1">
-                            {user.loginAttempts} failed attempts
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDateTime(user.lastLogin)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
-                          {user.mfaEnabled ? (
-                            <span className="flex items-center text-xs text-red-600">
-                              <Lock className="w-3 h-3 me-1" />
-                              MFA On
-                            </span>
-                          ) : (
-                            <span className="flex items-center text-xs text-red-600">
-                              <Unlock className="w-3 h-3 me-1" />
-                              MFA Off
-                            </span>
-                          )}
-                        </div>
-                        {user.ipRestrictions.length > 0 && (
-                          <div className="text-xs text-black mt-1">IP Restricted</div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-wrap gap-1">
-                          {user.permissions.slice(0, 3).map((permission, index) => (
-                            <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
-                              {permission}
-                            </span>
-                          ))}
-                          {user.permissions.length > 3 && (
-                            <span className="text-xs text-gray-500">+{user.permissions.length - 3} more</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button 
-                            onClick={() => handleViewUser(user)}
-                            className="text-black hover:text-blue-900" 
-                            title="View Details"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleEditUser(user)}
-                            className="text-gray-600 hover:text-gray-900" 
-                            title="Edit User"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleResetPassword(user)}
-                            className="text-orange-600 hover:text-orange-900" 
-                            title="Reset Password"
-                          >
-                            <Key className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleToggleMFA(user)}
-                            className="text-purple-600 hover:text-purple-900" 
-                            title="Toggle MFA"
-                          >
-                            {user.mfaEnabled ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteUser(user)}
-                            className="text-red-600 hover:text-red-900" 
-                            title="Delete User"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Roles Tab */}
-      {activeTab === 'roles' && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Roles & Permissions</h3>
-            <button 
-              onClick={() => setShowCreateRoleModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              New Role
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role Name
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Users
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Permissions
-                  </th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Modified
-                  </th>
-                  <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {roles.map((role) => (
-                  <tr key={role.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Shield className="w-5 h-5 text-gray-400 me-3" />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{role.name}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 max-w-xs">{role.description}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Users className="w-4 h-4 text-gray-400 me-1" />
-                        <span className="text-sm text-gray-900">{role.userCount}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1 max-w-xs">
-                        {role.permissions.slice(0, 3).map((permission, index) => (
-                          <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
-                            {permission}
-                          </span>
-                        ))}
-                        {role.permissions.length > 3 && (
-                          <span className="text-xs text-gray-500">+{role.permissions.length - 3} more</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(role.lastModified)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button 
-                          onClick={() => handleViewRole(role)}
-                          className="text-black hover:text-blue-900" 
-                          title="View Role"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleEditRole(role)}
-                          className="text-gray-600 hover:text-gray-900" 
-                          title="Edit Role"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDuplicateRole(role)}
-                          className="text-red-600 hover:text-red-900" 
-                          title="Duplicate Role"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteRole(role)}
-                          className="text-red-600 hover:text-red-900" 
-                          title="Delete Role"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Security Settings Tab */}
-      {activeTab === 'security' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Security Settings</h3>
-
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Password Policy</h4>
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Minimum 8 characters</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Require uppercase and lowercase letters</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Require numbers and special characters</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Password expiry (90 days)</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Multi-Factor Authentication</h4>
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Enforce MFA for all admin users</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Allow SMS authentication</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Allow authenticator apps</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Session Management</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Session Timeout (minutes)</label>
-                  <input
-                    type="number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    defaultValue="60"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Failed Login Attempts</label>
-                  <input
-                    type="number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    defaultValue="5"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">IP Restrictions</h4>
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
-                  <span className="text-sm text-gray-700">Enable IP whitelist for admin access</span>
-                </label>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Allowed IP Ranges</label>
-                  <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="192.168.1.0/24&#10;10.0.0.0/8"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-gray-200">
-              <button 
-                onClick={handleSaveSecuritySettings}
-                className="flex items-center px-6 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-              >
-                <Settings className="w-4 h-4 me-2" />
-                Save Security Settings
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Create User Modal */}
-      {showCreateUserModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Add New User</h3>
-              <button
-                onClick={() => setShowCreateUserModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                  <input
-                    type="text"
-                    placeholder="Enter full name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                  <input
-                    type="email"
-                    placeholder="Enter email address"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Role *</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option value="">Select role</option>
-                    {roles.map(role => (
-                      <option key={role.id} value={role.id}>{role.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                <input
-                  type="tel"
-                  placeholder="Enter phone number"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Send welcome email</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
-                  <span className="text-sm text-gray-700">Require MFA setup</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
-                  <span className="text-sm text-gray-700">Force password change on first login</span>
-                </label>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateUserModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCreateUser}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  Create User
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* User Details Modal */}
-      {showUserModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">User Details</h3>
-              <button
-                onClick={() => setShowUserModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                  <p className="text-sm text-gray-900">{selectedUser.name}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <p className="text-sm text-gray-900">{selectedUser.email}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                  <p className="text-sm text-gray-900">{selectedUser.role}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedUser.status)}`}>
-                    {selectedUser.status}
-                  </span>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Created Date</label>
-                  <p className="text-sm text-gray-900">{formatDate(selectedUser.createdDate)}</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Login</label>
-                  <p className="text-sm text-gray-900">{formatDateTime(selectedUser.lastLogin)}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">MFA Status</label>
-                  <p className={`text-sm ${selectedUser.mfaEnabled ? 'text-slate-500' : 'text-red-600'}`}>
-                    {selectedUser.mfaEnabled ? 'Enabled' : 'Disabled'}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Failed Login Attempts</label>
-                  <p className="text-sm text-gray-900">{selectedUser.loginAttempts}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">IP Restrictions</label>
-                  <p className="text-sm text-gray-900">
-                    {selectedUser.ipRestrictions.length > 0 ? selectedUser.ipRestrictions.join(', ') : 'None'}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedUser.permissions.map((permission: string, index: number) => (
-                      <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
-                        {permission}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowUserModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setShowUserModal(false);
-                  handleEditUser(selectedUser);
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-              >
-                Edit User
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit User Modal */}
-      {showEditUserModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Edit User</h3>
-              <button
-                onClick={() => setShowEditUserModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                  <input
-                    type="text"
-                    defaultValue={selectedUser.name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                  <input
-                    type="email"
-                    defaultValue={selectedUser.email}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Role *</label>
-                  <select
-                    defaultValue={selectedUser.role}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  >
-                    {roles.map(role => (
-                      <option key={role.id} value={role.name}>{role.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                  <select
-                    defaultValue={selectedUser.status}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Suspended">Suspended</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">IP Restrictions</label>
-                <textarea
-                  defaultValue={selectedUser.ipRestrictions.join(', ')}
-                  placeholder="Enter IP addresses or ranges, separated by commas"
-                  rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    defaultChecked={selectedUser.mfaEnabled}
-                    className="rounded border-gray-300 text-black focus:ring-gray-500 me-3"
-                  />
-                  <span className="text-sm text-gray-700">Require Multi-Factor Authentication</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
-                  <span className="text-sm text-gray-700">Send notification email about changes</span>
-                </label>
-                <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
-                  <span className="text-sm text-gray-700">Force password reset on next login</span>
-                </label>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Account Information</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">Created:</span>
-                    <span className="ms-2 text-gray-900">{formatDate(selectedUser.createdDate)}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Last Login:</span>
-                    <span className="ms-2 text-gray-900">{formatDateTime(selectedUser.lastLogin)}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Login Attempts:</span>
-                    <span className="ms-2 text-gray-900">{selectedUser.loginAttempts}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowEditUserModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleUpdateUser}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  Update User
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete User Confirmation Modal */}
-      {showDeleteUserModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete User</h3>
-              <button
-                onClick={() => setShowDeleteUserModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                Are you sure you want to delete <strong>{selectedUser.name}</strong>? This action cannot be undone and will revoke all access immediately.
-              </p>
-            </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteUserModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDeleteUser}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700"
-              >
-                Delete User
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Create Role Modal */}
-      {showCreateRoleModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Create New Role</h3>
-              <button
-                onClick={() => setShowCreateRoleModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role Name *</label>
-                <input
-                  type="text"
-                  placeholder="Enter role name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea
-                  placeholder="Describe the role and its purpose"
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Permissions *</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4">
-                  {allPermissions.map((permission) => (
-                    <label key={permission} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
-                      />
-                      <span className="text-sm text-gray-700">{permission}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateRoleModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCreateRole}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  Create Role
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Role Modal */}
-      {showEditRoleModal && selectedRole && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Edit Role</h3>
-              <button
-                onClick={() => setShowEditRoleModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role Name *</label>
-                <input
-                  type="text"
-                  defaultValue={selectedRole.name}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea
-                  defaultValue={selectedRole.description}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Permissions *</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4">
-                  {allPermissions.map((permission) => (
-                    <label key={permission} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        defaultChecked={selectedRole.permissions.includes(permission)}
-                        className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
-                      />
-                      <span className="text-sm text-gray-700">{permission}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Current Users with this Role</h4>
-                <p className="text-sm text-gray-600">{selectedRole.userCount} users currently assigned to this role</p>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowEditRoleModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleUpdateRole}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  Update Role
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* View Role Modal */}
-      {showRoleModal && selectedRole && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Role Details</h3>
-              <button
-                onClick={() => setShowRoleModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role Name</label>
-                <p className="text-lg font-semibold text-gray-900">{selectedRole.name}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <p className="text-sm text-gray-900">{selectedRole.description}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Users with this Role</label>
-                <p className="text-sm text-gray-900">{selectedRole.userCount} users</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Created Date</label>
-                <p className="text-sm text-gray-900">{formatDate(selectedRole.createdDate)}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Modified</label>
-                <p className="text-sm text-gray-900">{formatDate(selectedRole.lastModified)}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Permissions</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {selectedRole.permissions.map((permission: string, index: number) => (
-                    <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-900">
-                      {permission}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowRoleModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setShowRoleModal(false);
-                  handleEditRole(selectedRole);
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-              >
-                Edit Role
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Role Confirmation Modal */}
-      {showDeleteRoleModal && selectedRole && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete Role</h3>
-              <button
-                onClick={() => setShowDeleteRoleModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                Are you sure you want to delete the role <strong>{selectedRole.name}</strong>?
-              </p>
-              {selectedRole.userCount > 0 && (
-                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Warning:</strong> This role is currently assigned to {selectedRole.userCount} user(s).
-                    Deleting this role will remove permissions from these users.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteRoleModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDeleteRole}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700"
-              >
-                Delete Role
-              </button>
-            </div>
-          </div>
-        </div>
+  const permissionChips = (permissions: string[]) => (
+    <div className="flex min-w-0 flex-wrap gap-1">
+      {permissions.slice(0, 3).map((permission) => (
+        <Badge key={permission} variant="outline" className={`border font-medium ${TONES.slate}`}>
+          {permission}
+        </Badge>
+      ))}
+      {permissions.length > 3 && (
+        <span className="self-center text-[11px] text-muted-foreground">
+          {t('iusr.morePermissions', { count: permissions.length - 3 })}
+        </span>
       )}
     </div>
   );
+
+  const userHeaders = [
+    {
+      name: t('iusr.col.user'),
+      cell: (row: any) => (
+        <span className="flex min-w-0 items-center gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full border bg-muted text-xs font-semibold text-foreground">
+            {row.name
+              .split(' ')
+              .map((part: string) => part[0])
+              .join('')}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium text-foreground">{row.name}</span>
+            <span className="block truncate text-xs text-muted-foreground">{row.email}</span>
+          </span>
+        </span>
+      ),
+      width: '250px',
+    },
+    {
+      name: t('iusr.col.role'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 truncate text-sm text-foreground">{row.role}</p>
+          <p className="m-0 truncate text-xs text-muted-foreground">
+            {t('iusr.sinceLabel', { date: formatDate(row.createdDate) })}
+          </p>
+        </div>
+      ),
+      width: '190px',
+    },
+    {
+      name: t('common:status'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <Badge variant="outline" className={`border font-medium ${getStatusColor(row.status)}`}>
+            {tStatus(row.status)}
+          </Badge>
+          {row.loginAttempts > 0 && (
+            <p className="m-0 mt-1 text-[11px] text-destructive">
+              {t('iusr.failedAttempts', { count: row.loginAttempts })}
+            </p>
+          )}
+        </div>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('iusr.col.lastLogin'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
+          {formatDateTime(row.lastLogin)}
+        </span>
+      ),
+      width: '170px',
+    },
+    {
+      // MFA On and MFA Off were BOTH text-red-600 — the two opposite states of
+      // a security control, in the same colour, on the admin user list.
+      name: t('iusr.col.security'),
+      cell: (row: any) => (
+        <div className="min-w-0 space-y-1">
+          <Badge
+            variant="outline"
+            className={`border gap-1 font-medium ${row.mfaEnabled ? TONES.emerald : TONES.amber}`}
+          >
+            {row.mfaEnabled ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+            {row.mfaEnabled ? t('iusr.mfaOn') : t('iusr.mfaOff')}
+          </Badge>
+          {row.ipRestrictions.length > 0 && (
+            <p className="m-0 text-[11px] text-muted-foreground">{t('iusr.ipRestricted')}</p>
+          )}
+        </div>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('iusr.col.permissions'),
+      cell: (row: any) => permissionChips(row.permissions),
+      width: '230px',
+    },
+    {
+      name: t('common:actions'),
+      cell: (row: any) => (
+        <RowActions
+          items={[
+            { icon: Eye, label: t('common:viewDetails'), onSelect: () => handleViewUser(row) },
+            { icon: Edit, label: t('common:edit'), onSelect: () => handleEditUser(row) },
+            { icon: Key, label: t('iusr.action.resetPassword'), onSelect: () => handleResetPassword() },
+            {
+              icon: row.mfaEnabled ? Unlock : Lock,
+              label: t('iusr.action.toggleMfa'),
+              onSelect: () => handleToggleMFA(),
+            },
+            {
+              icon: Trash2,
+              label: t('common:delete'),
+              onSelect: () => handleDeleteUser(row),
+              destructive: true,
+            },
+          ]}
+        />
+      ),
+      width: '140px',
+    },
+  ];
+
+  const roleHeaders = [
+    {
+      name: t('iusr.rcol.name'),
+      cell: (row: any) => (
+        <span className="flex min-w-0 items-center gap-2.5">
+          <span className="pro-head-badge">
+            <Shield className="h-4 w-4" />
+          </span>
+          <span className="truncate text-sm font-medium text-foreground">{row.name}</span>
+        </span>
+      ),
+      width: '220px',
+    },
+    {
+      name: t('common:description'),
+      cell: (row: any) => (
+        <p className="m-0 line-clamp-2 text-sm text-muted-foreground">{row.description}</p>
+      ),
+      width: '280px',
+    },
+    {
+      name: t('iusr.rcol.users'),
+      cell: (row: any) => (
+        <span className="inline-flex items-center gap-1.5 text-sm tabular-nums">
+          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+          {row.userCount}
+        </span>
+      ),
+      width: '110px',
+    },
+    {
+      name: t('iusr.col.permissions'),
+      cell: (row: any) => permissionChips(row.permissions),
+      width: '230px',
+    },
+    {
+      name: t('iusr.rcol.lastModified'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
+          {formatDate(row.lastModified)}
+        </span>
+      ),
+      width: '150px',
+    },
+    {
+      name: t('common:actions'),
+      cell: (row: any) => (
+        <RowActions
+          items={[
+            { icon: Eye, label: t('common:view'), onSelect: () => handleViewRole(row) },
+            { icon: Edit, label: t('common:edit'), onSelect: () => handleEditRole(row) },
+            {
+              icon: Copy,
+              label: t('iusr.action.duplicateRole'),
+              onSelect: () => handleDuplicateRole(),
+            },
+            {
+              icon: Trash2,
+              label: t('common:delete'),
+              onSelect: () => handleDeleteRole(row),
+              destructive: true,
+            },
+          ]}
+        />
+      ),
+      width: '140px',
+    },
+  ];
+
+  return (
+    <div className="service">
+      <LexPageHeader icon={ShieldCheck} title={t('iusr.title')} subtitle={t('iusr.subtitle')}>
+        <Button variant="outline" size="sm" onClick={handleExportUsers} className="gap-2">
+          <Download className="h-4 w-4" />
+          {t('iusr.exportUsers')}
+        </Button>
+        <Button size="sm" onClick={() => setShowCreateUserModal(true)} className="gap-2">
+          <UserPlus className="h-4 w-4" />
+          {t('iusr.addUser')}
+        </Button>
+      </LexPageHeader>
+
+      <LexNotice tone="amber" icon={AlertTriangle}>
+        {t('invl.sampleDataNotice')}
+      </LexNotice>
+
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <LexMetricTile
+          label={t('iusr.stat.totalUsers')}
+          icon={Users}
+          tone="sky"
+          value={adminUsers.length}
+        />
+        <LexMetricTile
+          label={t('iusr.stat.activeUsers')}
+          icon={ShieldCheck}
+          tone="emerald"
+          value={adminUsers.filter((u) => u.status === 'Active').length}
+          denominator={adminUsers.length}
+        />
+        <LexMetricTile
+          label={t('iusr.stat.roles')}
+          icon={Shield}
+          tone="slate"
+          value={roles.length}
+        />
+        <LexMetricTile
+          label={t('iusr.stat.mfaEnabled')}
+          icon={Lock}
+          tone="amber"
+          value={adminUsers.filter((u) => u.mfaEnabled).length}
+          denominator={adminUsers.length}
+        />
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <DetailTabsList className="mb-3">
+          <DetailTabsTrigger value="users" className="gap-2">
+            <Users className="h-4 w-4" />
+            {t('iusr.tab.users')}
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="roles" className="gap-2">
+            <Shield className="h-4 w-4" />
+            {t('iusr.tab.roles')}
+          </DetailTabsTrigger>
+          <DetailTabsTrigger value="security" className="gap-2">
+            <Settings className="h-4 w-4" />
+            {t('iusr.tab.security')}
+          </DetailTabsTrigger>
+        </DetailTabsList>
+
+        <TabsContent value="users">
+          <div className="pro-card p-3 mb-3">
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+              <LexSearch
+                id="admin-users-search"
+                className="flex-1"
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={t('iusr.searchPlaceholder')}
+              />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full lg:w-[160px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Status">{t('iusr.allStatuses')}</SelectItem>
+                  {['Active', 'Suspended', 'Inactive'].map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {tStatus(v)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-full lg:w-[190px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Roles">{t('iusr.allRoles')}</SelectItem>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.name}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="whitespace-nowrap text-xs text-muted-foreground">
+                {t('iusr.countLabel', { shown: filteredUsers.length, total: adminUsers.length })}
+              </span>
+            </div>
+          </div>
+
+          <div className="pro-card p-4">
+            {filteredUsers.length === 0 ? (
+              <EmptyState icon={Users} text={t('common:noData')} />
+            ) : (
+              <TableView header={userHeaders} data={filteredUsers} paginationShow={false} />
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="roles">
+          <div className="pro-card p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <span className="pro-head-badge">
+                  <Shield className="h-4 w-4" />
+                </span>
+                <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                  {t('iusr.roles.title')}
+                </h4>
+              </div>
+              <Button size="sm" onClick={() => setShowCreateRoleModal(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                {t('iusr.roles.new')}
+              </Button>
+            </div>
+            <TableView header={roleHeaders} data={roles} paginationShow={false} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="security">
+          <div className="pro-card p-4">
+            <div className="mb-4 flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Settings className="h-4 w-4" />
+              </span>
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+                {t('iusr.sec.title')}
+              </h4>
+            </div>
+
+            <div className="space-y-5">
+              <CheckGroup
+                title={t('iusr.sec.passwordPolicy')}
+                items={[
+                  ['pw1', t('iusr.sec.pw1'), true],
+                  ['pw2', t('iusr.sec.pw2'), true],
+                  ['pw3', t('iusr.sec.pw3'), true],
+                  ['pw4', t('iusr.sec.pw4'), true],
+                ]}
+              />
+              <CheckGroup
+                title={t('iusr.sec.mfa')}
+                items={[
+                  ['mfa1', t('iusr.sec.mfa1'), true],
+                  ['mfa2', t('iusr.sec.mfa2'), true],
+                  ['mfa3', t('iusr.sec.mfa3'), true],
+                ]}
+              />
+
+              <div>
+                <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('iusr.sec.session')}
+                </h5>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sec-timeout">{t('iusr.sec.sessionTimeout')}</Label>
+                    <Input id="sec-timeout" type="number" min={1} defaultValue="60" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sec-attempts">{t('iusr.sec.maxAttempts')}</Label>
+                    <Input id="sec-attempts" type="number" min={1} defaultValue="5" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('iusr.sec.ip')}
+                </h5>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2.5">
+                    <Checkbox id="sec-ip" />
+                    <Label htmlFor="sec-ip" className="cursor-pointer text-sm font-normal">
+                      {t('iusr.sec.ipEnable')}
+                    </Label>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sec-ranges">{t('iusr.sec.ipRanges')}</Label>
+                    <Textarea id="sec-ranges" rows={3} placeholder={'192.168.1.0/24\n10.0.0.0/8'} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <Button onClick={handleSaveSecuritySettings} className="gap-2">
+                  <Settings className="h-4 w-4" />
+                  {t('iusr.sec.save')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+
+      {/*
+        Eight hand-rolled `fixed inset-0` overlays became eight Dialogs. None of
+        the originals trapped focus, closed on Escape or on a click outside, or
+        carried a role and a labelled title — a div with a z-index is not a
+        dialog, and on a screen that manages admin accounts that matters.
+      */}
+      <Dialog open={showCreateUserModal} onOpenChange={setShowCreateUserModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <UserPlus className="h-4 w-4" />
+              </span>
+              {t('iusr.user.create')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <FormField label={t('iusr.field.fullName')} required>
+                <Input placeholder={t('iusr.field.fullNamePlaceholder')} />
+              </FormField>
+              <FormField label={t('iusr.field.email')} required>
+                <Input type="email" placeholder={t('iusr.field.emailPlaceholder')} />
+              </FormField>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <FormField label={t('iusr.col.role')} required>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('iusr.field.selectRole')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles.map((role) => (
+                      <SelectItem key={role.id} value={String(role.id)}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <FormField label={t('common:status')}>
+                <Select defaultValue="Active">
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Active', 'Inactive'].map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {tStatus(v)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+            </div>
+
+            <FormField label={t('iusr.field.phone')}>
+              <Input type="tel" placeholder={t('iusr.field.phonePlaceholder')} />
+            </FormField>
+
+            <CheckGroup
+              title={t('common:settings')}
+              items={[
+                ['new-welcome', t('iusr.opt.welcomeEmail'), true],
+                ['new-mfa', t('iusr.opt.requireMfa'), false],
+                ['new-pw', t('iusr.opt.forcePassword'), false],
+              ]}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateUserModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleCreateUser} className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              {t('iusr.addUser')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Users className="h-4 w-4" />
+              </span>
+              {t('iusr.user.details')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="space-y-3">
+              <dl className="grid grid-cols-1 gap-x-6 gap-y-3 rounded-md border bg-muted/40 px-4 py-3 sm:grid-cols-2">
+                <Field label={t('common:name')} value={selectedUser.name} />
+                <Field label={t('common:email')} value={selectedUser.email} />
+                <Field label={t('iusr.col.role')} value={selectedUser.role} />
+                <Field
+                  label={t('common:status')}
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={`border font-medium ${getStatusColor(selectedUser.status)}`}
+                    >
+                      {tStatus(selectedUser.status)}
+                    </Badge>
+                  }
+                />
+                <Field
+                  label={t('iusr.field.createdDate')}
+                  value={formatDate(selectedUser.createdDate)}
+                />
+                <Field
+                  label={t('iusr.col.lastLogin')}
+                  value={formatDateTime(selectedUser.lastLogin)}
+                />
+                <Field
+                  label={t('iusr.field.mfaStatus')}
+                  value={
+                    <Badge
+                      variant="outline"
+                      className={`border gap-1 font-medium ${selectedUser.mfaEnabled ? TONES.emerald : TONES.amber}`}
+                    >
+                      {selectedUser.mfaEnabled ? (
+                        <Lock className="h-3 w-3" />
+                      ) : (
+                        <Unlock className="h-3 w-3" />
+                      )}
+                      {selectedUser.mfaEnabled ? t('iusr.mfaOn') : t('iusr.mfaOff')}
+                    </Badge>
+                  }
+                />
+                <Field label={t('iusr.field.failedLogins')} value={selectedUser.loginAttempts} />
+                <Field
+                  label={t('iusr.sec.ip')}
+                  value={
+                    selectedUser.ipRestrictions.length > 0
+                      ? selectedUser.ipRestrictions.join(', ')
+                      : t('iusr.none')
+                  }
+                />
+              </dl>
+
+              <div className="rounded-md border px-4 py-3">
+                <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('iusr.col.permissions')}
+                </h5>
+                <div className="flex flex-wrap gap-1">
+                  {selectedUser.permissions.map((permission: string) => (
+                    <Badge
+                      key={permission}
+                      variant="outline"
+                      className={`border font-medium ${TONES.slate}`}
+                    >
+                      {permission}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUserModal(false)}>
+              {t('common:close')}
+            </Button>
+            <Button
+              onClick={() => {
+                setShowUserModal(false);
+                if (selectedUser) handleEditUser(selectedUser);
+              }}
+              className="gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              {t('iusr.user.edit')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditUserModal} onOpenChange={setShowEditUserModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Edit className="h-4 w-4" />
+              </span>
+              {t('iusr.user.edit')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <FormField label={t('iusr.field.fullName')} required>
+                  <Input defaultValue={selectedUser.name} />
+                </FormField>
+                <FormField label={t('iusr.field.email')} required>
+                  <Input type="email" defaultValue={selectedUser.email} />
+                </FormField>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <FormField label={t('iusr.col.role')} required>
+                  <Select defaultValue={selectedUser.role}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.name}>
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label={t('common:status')}>
+                  <Select defaultValue={selectedUser.status}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['Active', 'Suspended', 'Inactive'].map((v) => (
+                        <SelectItem key={v} value={v}>
+                          {tStatus(v)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+              </div>
+
+              <FormField label={t('iusr.sec.ip')}>
+                <Textarea
+                  rows={2}
+                  defaultValue={selectedUser.ipRestrictions.join(', ')}
+                  placeholder={t('iusr.field.ipPlaceholder')}
+                />
+              </FormField>
+
+              <CheckGroup
+                title={t('common:settings')}
+                items={[
+                  ['edit-notify', t('iusr.opt.notifyChanges'), false],
+                  ['edit-reset', t('iusr.opt.forceReset'), false],
+                ]}
+              />
+
+              <div className="rounded-md border bg-muted/40 px-4 py-3">
+                <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('iusr.accountInfo')}
+                </h5>
+                <dl className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
+                  <Field
+                    label={t('iusr.field.createdDate')}
+                    value={formatDate(selectedUser.createdDate)}
+                  />
+                  <Field
+                    label={t('iusr.col.lastLogin')}
+                    value={formatDateTime(selectedUser.lastLogin)}
+                  />
+                </dl>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditUserModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleUpdateUser}>{t('common:saveChanges')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteUserModal} onOpenChange={setShowDeleteUserModal}>
+        <DialogContent className="pro-dialog confirm-dialog sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <span className="mb-1 flex size-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15">
+              <Trash2 className="size-6 text-red-600 dark:text-red-400" />
+            </span>
+            <DialogTitle className="text-center">{t('iusr.user.delete')}</DialogTitle>
+            <DialogDescription className="text-center">
+              {t('iusr.user.deleteDescription', { name: selectedUser?.name ?? '' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-center">
+            <Button variant="outline" onClick={() => setShowDeleteUserModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteUser}>
+              {t('common:delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCreateRoleModal} onOpenChange={setShowCreateRoleModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Shield className="h-4 w-4" />
+              </span>
+              {t('iusr.role.create')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <FormField label={t('iusr.rcol.name')} required>
+              <Input placeholder={t('iusr.role.namePlaceholder')} />
+            </FormField>
+            <FormField label={t('common:description')}>
+              <Textarea rows={2} placeholder={t('iusr.role.descPlaceholder')} />
+            </FormField>
+            <PermissionPicker prefix="new-role" permissions={allPermissions} selected={[]} />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateRoleModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleCreateRole} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t('iusr.roles.new')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditRoleModal} onOpenChange={setShowEditRoleModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Edit className="h-4 w-4" />
+              </span>
+              {t('iusr.role.edit')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedRole && (
+            <div className="space-y-3">
+              <FormField label={t('iusr.rcol.name')} required>
+                <Input defaultValue={selectedRole.name} />
+              </FormField>
+              <FormField label={t('common:description')}>
+                <Textarea rows={2} defaultValue={selectedRole.description} />
+              </FormField>
+              <PermissionPicker
+                prefix="edit-role"
+                permissions={allPermissions}
+                selected={selectedRole.permissions}
+              />
+              <div className="rounded-md border bg-muted/40 px-4 py-3">
+                <h5 className="m-0 mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('iusr.role.currentUsers')}
+                </h5>
+                <p className="m-0 text-sm tabular-nums text-foreground">{selectedRole.userCount}</p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditRoleModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleUpdateRole}>{t('common:saveChanges')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRoleModal} onOpenChange={setShowRoleModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Shield className="h-4 w-4" />
+              </span>
+              {t('iusr.role.details')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedRole && (
+            <div className="space-y-3">
+              <dl className="grid grid-cols-1 gap-x-6 gap-y-3 rounded-md border bg-muted/40 px-4 py-3 sm:grid-cols-2">
+                <Field label={t('iusr.rcol.name')} value={selectedRole.name} />
+                <Field
+                  label={t('iusr.role.usersWithRole')}
+                  value={selectedRole.userCount}
+                />
+                <Field label={t('common:description')} value={selectedRole.description} />
+                <Field
+                  label={t('iusr.rcol.lastModified')}
+                  value={formatDate(selectedRole.lastModified)}
+                />
+              </dl>
+
+              <div className="rounded-md border px-4 py-3">
+                <h5 className="m-0 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('iusr.col.permissions')}
+                </h5>
+                <div className="flex flex-wrap gap-1">
+                  {selectedRole.permissions.map((permission: string) => (
+                    <Badge
+                      key={permission}
+                      variant="outline"
+                      className={`border font-medium ${TONES.slate}`}
+                    >
+                      {permission}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRoleModal(false)}>
+              {t('common:close')}
+            </Button>
+            <Button
+              onClick={() => {
+                setShowRoleModal(false);
+                if (selectedRole) handleEditRole(selectedRole);
+              }}
+              className="gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              {t('iusr.role.edit')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteRoleModal} onOpenChange={setShowDeleteRoleModal}>
+        <DialogContent className="pro-dialog confirm-dialog sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <span className="mb-1 flex size-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/15">
+              <Trash2 className="size-6 text-red-600 dark:text-red-400" />
+            </span>
+            <DialogTitle className="text-center">{t('iusr.role.delete')}</DialogTitle>
+            <DialogDescription className="text-center">
+              {t('iusr.role.deleteDescription', { name: selectedRole?.name ?? '' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-center">
+            <Button variant="outline" onClick={() => setShowDeleteRoleModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteRole}>
+              {t('common:delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
+
+/** A labelled form control, with the required mark carried by the label. */
+const FormField = ({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) => (
+  <div className="space-y-1.5">
+    <Label>
+      {label}
+      {required && <span className="ms-0.5 text-destructive">*</span>}
+    </Label>
+    {children}
+  </div>
+);
+
+/** The permission grid shared by the create- and edit-role dialogs. */
+const PermissionPicker = ({
+  prefix,
+  permissions,
+  selected,
+}: {
+  prefix: string;
+  permissions: string[];
+  selected: string[];
+}) => {
+  const { t } = useTranslation('investor');
+  return (
+    <div>
+      <Label className="mb-2 block">
+        {t('iusr.col.permissions')}
+        <span className="ms-0.5 text-destructive">*</span>
+      </Label>
+      <div className="grid grid-cols-1 gap-2 rounded-md border px-4 py-3 sm:grid-cols-2">
+        {permissions.map((permission) => (
+          <div key={permission} className="flex items-center gap-2.5">
+            <Checkbox
+              id={`${prefix}-${permission}`}
+              defaultChecked={selected.includes(permission)}
+            />
+            <Label
+              htmlFor={`${prefix}-${permission}`}
+              className="cursor-pointer text-sm font-normal"
+            >
+              {permission}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

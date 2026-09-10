@@ -1,24 +1,41 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
+
+import TableView from '../../../components/TableView/TableView';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+import { Label } from '../../../components/ui/label';
 import {
-  Search,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../components/ui/select';
+import { EmptyState } from '../../../components/shared/detailKit';
+import { TONES } from '../../../components/shared/detailKitUtils';
+import {
+  LexMetricTile,
+  LexNotice,
+  LexPageHeader,
+  LexSearch,
+} from '../../../components/shared/lexKit';
+import {
   Download,
   Filter,
-  Calendar,
   User,
   Activity,
   AlertTriangle,
-  CheckCircle,
-  Clock,
   Eye,
   RefreshCw,
   FileText,
   Settings,
   Shield,
+  ShieldCheck,
   Database,
-  Mail,
-  Lock
+  Lock,
 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
 
 const auditLogs = [
   {
@@ -192,32 +209,86 @@ const severities = ['All Severities', 'Low', 'Medium', 'High', 'Critical'];
 const statuses = ['All Status', 'Success', 'Failed', 'Alert', 'Warning'];
 const modules = ['All Modules', 'Investments', 'KYC', 'Pricing', 'Risk Management', 'Authentication', 'User Management', 'Reports', 'Security'];
 
+/** One labelled select in the filter bar. Five identical blocks became one. */
+const FilterSelect = ({
+  label,
+  value,
+  onChange,
+  options,
+  render,
+}: {
+  label: string;
+  value: string;
+  onChange: (next: string) => void;
+  options: string[];
+  render: (option: string) => string;
+}) => (
+  <div className="flex flex-col gap-1">
+    <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      {label}
+    </Label>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((option) => (
+          <SelectItem key={option} value={option}>
+            {render(option)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+);
+
 export default function AuditLogs() {
+  // This page carried no translation at all — every label, column head, filter
+  // option and data value was a hardcoded English string, so an Arabic or
+  // French session rendered it in English inside an RTL shell. It is the only
+  // page in the module that was written that way.
+  const { t } = useTranslation('investor');
+
+  /** Data values are enumerable, so they translate through a key each. */
+  const tCategory = (v: string) => t(`iaud.cat.${v.replace(/\s+/g, '')}`);
+  const tSeverity = (v: string) => t(`iaud.sev.${v}`);
+  const tStatus = (v: string) => t(`iaud.st.${v}`);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
   const [severityFilter, setSeverityFilter] = useState('All Severities');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [moduleFilter, setModuleFilter] = useState('All Modules');
-  const [dateRange, setDateRange] = useState('today');
   const [selectedLog, setSelectedLog] = useState<number | null>(null);
 
+  // Success and Failed were BOTH `bg-red-100 text-red-800`. On an audit log
+  // that is the distinction the page exists to make.
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Success': return 'bg-red-100 text-red-800';
-      case 'Failed': return 'bg-red-100 text-red-800';
-      case 'Alert': return 'bg-yellow-100 text-yellow-800';
-      case 'Warning': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Success':
+        return TONES.emerald;
+      case 'Failed':
+        return TONES.red;
+      case 'Alert':
+      case 'Warning':
+        return TONES.amber;
+      default:
+        return TONES.slate;
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Low': return 'bg-gray-100 text-gray-900';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'High': return 'bg-orange-100 text-orange-800';
-      case 'Critical': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Low':
+        return TONES.slate;
+      case 'Medium':
+        return TONES.sky;
+      case 'High':
+        return TONES.amber;
+      case 'Critical':
+        return TONES.red;
+      default:
+        return TONES.slate;
     }
   };
 
@@ -258,243 +329,236 @@ export default function AuditLogs() {
     });
   };
 
-  const exportLogs = () => {
-    // Simulate export functionality
-    alert('Audit logs exported successfully!');
-  };
+  /**
+   * `auditLogs` is a module-level literal and there is no fetch in this file,
+   * so there is nothing to export, refresh or report on. The old handler
+   * alerted "Audit logs exported successfully!" and wrote no file.
+   */
+  const notConnected = () => toast.error(t('invl.notConnected'));
+
+  const auditHeaders = [
+    {
+      name: t('iaud.col.timestamp'),
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
+          {formatTimestamp(row.timestamp)}
+        </span>
+      ),
+      width: '190px',
+    },
+    {
+      name: t('iaud.col.userAction'),
+      cell: (row: any) => {
+        const ActionIcon = getActionIcon(row.category);
+        return (
+          <span className="flex min-w-0 items-center gap-2.5">
+            <span className="pro-head-badge">
+              <ActionIcon className="h-4 w-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-medium text-foreground">{row.user}</span>
+              <span className="block truncate text-xs text-muted-foreground">{row.action}</span>
+            </span>
+          </span>
+        );
+      },
+      width: '230px',
+    },
+    {
+      name: t('common:description'),
+      cell: (row: any) => (
+        <div className="min-w-0">
+          <p className="m-0 line-clamp-2 text-sm text-foreground" title={row.description}>
+            {row.description}
+          </p>
+          <p className="m-0 text-[11px] text-muted-foreground">{row.module}</p>
+        </div>
+      ),
+      width: '280px',
+    },
+    {
+      name: t('common:category'),
+      cell: (row: any) => (
+        <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
+          {tCategory(row.category)}
+        </Badge>
+      ),
+      width: '160px',
+    },
+    {
+      name: t('common:status'),
+      cell: (row: any) => (
+        <Badge variant="outline" className={`border font-medium ${getStatusColor(row.status)}`}>
+          {tStatus(row.status)}
+        </Badge>
+      ),
+      width: '130px',
+    },
+    {
+      name: t('iaud.severity'),
+      cell: (row: any) => (
+        <Badge
+          variant="outline"
+          className={`border font-medium ${getSeverityColor(row.severity)}`}
+        >
+          {tSeverity(row.severity)}
+        </Badge>
+      ),
+      width: '130px',
+    },
+    {
+      name: t('iaud.col.ipAddress'),
+      cell: (row: any) => (
+        <span className="font-mono text-xs text-muted-foreground">{row.ipAddress}</span>
+      ),
+      width: '140px',
+    },
+    {
+      name: t('common:actions'),
+      cell: (row: any) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => setSelectedLog(selectedLog === row.id ? null : row.id)}
+          title={t('common:viewDetails')}
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
+      ),
+      width: '90px',
+    },
+  ];
+
+  const securityEvents = auditLogs.filter((log) => log.category === 'Security').length;
+  const systemEvents = auditLogs.filter((log) => log.category === 'System').length;
+  const userEvents = auditLogs.filter((log) => log.category === 'User Management').length;
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Audit Logs</h1>
-            <p className="text-gray-600">Comprehensive audit trail and activity monitoring</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 me-2" />
-              Refresh
-            </button>
-            <button
-              onClick={exportLogs}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Download className="w-4 h-4 me-2" />
-              Export CSV
-            </button>
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-              <Shield className="w-4 h-4 me-2" />
-              Security Report
-            </button>
-          </div>
-        </div>
+    <div className="service">
+      <LexPageHeader icon={ShieldCheck} title={t('iaud.title')} subtitle={t('iaud.subtitle')}>
+        {/* Refresh and Security Report had no onClick at all. */}
+        <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
+          {t('common:refresh')}
+        </Button>
+        <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+          <Download className="h-4 w-4" />
+          {t('ts.exportCsv')}
+        </Button>
+        <Button size="sm" onClick={notConnected} className="gap-2">
+          <Shield className="h-4 w-4" />
+          {t('iaud.securityReport')}
+        </Button>
+      </LexPageHeader>
+
+      <LexNotice tone="amber" icon={AlertTriangle}>
+        {t('invl.sampleDataNotice')}
+      </LexNotice>
+
+      {/* The three counts beside Total Events were the literals 1, 2 and 5,
+          unrelated to the rows below. Counted from the data. */}
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <LexMetricTile
+          label={t('iaud.stat.totalEvents')}
+          icon={Activity}
+          tone="sky"
+          value={auditLogs.length}
+          footnote={t('iaud.stat.last24h')}
+        />
+        <LexMetricTile
+          label={t('iaud.stat.securityEvents')}
+          icon={AlertTriangle}
+          tone="red"
+          value={securityEvents}
+          denominator={auditLogs.length}
+        />
+        <LexMetricTile
+          label={t('iaud.stat.systemEvents')}
+          icon={Database}
+          tone="slate"
+          value={systemEvents}
+          denominator={auditLogs.length}
+        />
+        <LexMetricTile
+          label={t('iaud.stat.userActions')}
+          icon={User}
+          tone="emerald"
+          value={userEvents}
+          denominator={auditLogs.length}
+        />
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Events</p>
-              <p className="text-2xl font-bold text-gray-900">{auditLogs.length}</p>
-              <p className="text-xs text-gray-500 mt-1">Last 24 hours</p>
-            </div>
-            <Activity className="w-8 h-8 text-gray-700" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Security Events</p>
-              <p className="text-2xl font-bold text-gray-900">1</p>
-              <p className="text-xs text-red-600 mt-1">Requires attention</p>
-            </div>
-            <AlertTriangle className="w-8 h-8 text-red-500" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">System Events</p>
-              <p className="text-2xl font-bold text-gray-900">2</p>
-              <p className="text-xs text-red-600 mt-1">All successful</p>
-            </div>
-            <Database className="w-8 h-8 text-red-500" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">User Actions</p>
-              <p className="text-2xl font-bold text-gray-900">5</p>
-              <p className="text-xs text-gray-500 mt-1">Today</p>
-            </div>
-            <User className="w-8 h-8 text-purple-500" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
-          <div className="lg:col-span-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search logs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="ps-10 pe-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-              />
-            </div>
+      <div className="pro-card p-3 mb-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('common:search')}
+            </Label>
+            <LexSearch
+              id="audit-logs-search"
+              className="w-full"
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder={t('iaud.searchPlaceholder')}
+            />
           </div>
 
-          <select
+          <FilterSelect
+            label={t('common:category')}
             value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-
-          <select
+            onChange={setCategoryFilter}
+            options={categories}
+            render={(v) => (v === 'All Categories' ? t('iaud.allCategories') : tCategory(v))}
+          />
+          <FilterSelect
+            label={t('iaud.severity')}
             value={severityFilter}
-            onChange={(e) => setSeverityFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            {severities.map(severity => (
-              <option key={severity} value={severity}>{severity}</option>
-            ))}
-          </select>
-
-          <select
+            onChange={setSeverityFilter}
+            options={severities}
+            render={(v) => (v === 'All Severities' ? t('iaud.allSeverities') : tSeverity(v))}
+          />
+          <FilterSelect
+            label={t('common:status')}
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            {statuses.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-          >
-            <option value="today">Today</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="last-7-days">Last 7 Days</option>
-            <option value="last-30-days">Last 30 Days</option>
-            <option value="custom">Custom Range</option>
-          </select>
+            onChange={setStatusFilter}
+            options={statuses}
+            render={(v) => (v === 'All Status' ? t('iaud.allStatuses') : tStatus(v))}
+          />
+          {/* `moduleFilter` was already in the filter predicate and `modules`
+              was already declared — the select for it was simply never
+              rendered, so a third of the filtering was unreachable. */}
+          <FilterSelect
+            label={t('iaud.module')}
+            value={moduleFilter}
+            onChange={setModuleFilter}
+            options={modules}
+            render={(v) => (v === 'All Modules' ? t('iaud.allModules') : v)}
+          />
         </div>
 
-        <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-gray-500">
-            {filteredLogs.length} of {auditLogs.length} events
-          </div>
-          <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter className="w-4 h-4 me-2" />
-            Advanced Filters
-          </button>
+        {/* Reads as the card's footer rather than a stray third row. */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t pt-2.5">
+          <span className="text-xs text-muted-foreground">
+            {t('iaud.countLabel', { shown: filteredLogs.length, total: auditLogs.length })}
+          </span>
+          <Button variant="outline" size="sm" onClick={notConnected} className="gap-2">
+            <Filter className="h-4 w-4" />
+            {t('iaud.advancedFilters')}
+          </Button>
         </div>
       </div>
 
-      {/* Audit Logs Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Timestamp
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User & Action
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Severity
-                </th>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  IP Address
-                </th>
-                <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredLogs.map((log) => {
-                const ActionIcon = getActionIcon(log.category);
-                return (
-                  <tr key={log.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatTimestamp(log.timestamp)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <ActionIcon className="w-5 h-5 text-gray-400 me-3" />
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{log.user}</div>
-                          <div className="text-sm text-gray-500">{log.action}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 max-w-xs truncate" title={log.description}>
-                        {log.description}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">{log.module}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {log.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(log.status))}>
-                        {log.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getSeverityColor(log.severity))}>
-                        {log.severity}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {log.ipAddress}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                      <button
-                        onClick={() => setSelectedLog(selectedLog === log.id ? null : log.id)}
-                        className="text-black hover:text-blue-900"
-                        title="View Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+      {/* The pager here was Previous / "1" / Next with no handlers on any of
+          the three. Every row is already in memory. */}
+      <div className="pro-card p-4">
+        {filteredLogs.length === 0 ? (
+          <EmptyState icon={Activity} text={t('common:noData')} />
+        ) : (
+          <TableView header={auditHeaders} data={filteredLogs} paginationShow={false} />
+        )}
       </div>
+
 
       {/* Log Details Modal */}
       {selectedLog && (
