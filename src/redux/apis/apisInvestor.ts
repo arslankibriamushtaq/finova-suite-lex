@@ -1370,6 +1370,87 @@ export async function getDocumentsByInvestorId(investorId: string) {
   return apiCall<DocumentListResponse>(`/api/v1/Document/GetDocumentByInvestorId/${investorId}`);
 }
 
+/**
+ * What GetDocumentByInvestorId actually returns: not a list of documents but a
+ * single record with one slot per required document, each holding the id of the
+ * uploaded file plus its review state. The older `Document[]` shape above is
+ * what the page was written against and is not what the service sends.
+ */
+export interface InvestorDocumentSlots {
+  nationalIdFront: string | null;
+  nationalIdFrontStatus: string | null;
+  nationalIdFrontExpiryDate: string | null;
+  nationalIdBack: string | null;
+  nationalIdBackStatus: string | null;
+  nationalIdBackExpiryDate: string | null;
+  bankStatement: string | null;
+  bankStatementStatus: string | null;
+  bankStatementExpiryDate: string | null;
+  salaryCertificate: string | null;
+  salaryCertificateStatus: string | null;
+  salaryCertificateExpiryDate: string | null;
+  [key: string]: string | null;
+}
+
+export async function getInvestorDocumentSlots(investorId: string) {
+  return apiCall<{
+    success: boolean;
+    responseCode: number;
+    notificationMessage: string;
+    errors: string[] | null;
+    data: InvestorDocumentSlots | null;
+    pageInfo: any;
+  }>(`/api/v1/Document/GetDocumentByInvestorId/${investorId}`);
+}
+
+/**
+ * The bytes of one uploaded document. The endpoint is authenticated, so the
+ * file cannot be handed to an <img>/<iframe> as a URL — it is fetched here and
+ * handed over as a blob for the caller to turn into an object URL (and revoke).
+ */
+export async function getInvestorDocumentContent(
+  investorId: string,
+  documentId: string
+): Promise<Blob> {
+  const url = `${API_BASE_URL}/api/v2/investors/${investorId}/documents/${documentId}/content`;
+  const headers: Record<string, string> = { Accept: '*/*', 'Request-Id': uuidv4() };
+  const token = getAuthToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(url, { method: 'GET', headers });
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+  }
+  return response.blob();
+}
+
+/**
+ * The download endpoint, which is a different thing from the content endpoint:
+ * it serves the file as an attachment and carries the stored filename in
+ * Content-Disposition, so that name is parsed out and returned alongside the
+ * bytes rather than the caller inventing one.
+ */
+export async function downloadInvestorDocument(
+  documentId: string
+): Promise<{ blob: Blob; fileName: string | null }> {
+  const url = `${API_BASE_URL}/api/v1/Document/Download/${documentId}`;
+  const headers: Record<string, string> = { Accept: '*/*', 'Request-Id': uuidv4() };
+  const token = getAuthToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(url, { method: 'GET', headers });
+  if (!response.ok) {
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+  }
+
+  const disposition = response.headers.get('Content-Disposition') || '';
+  const match = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(disposition);
+  return {
+    blob: await response.blob(),
+    fileName: match ? decodeURIComponent(match[1]) : null,
+  };
+}
+
 // Approve Document Request
 export interface ApproveDocumentRequest {
   investorId: string;

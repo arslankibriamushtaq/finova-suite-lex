@@ -189,7 +189,7 @@ export default function InvestorDetail() {
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-4">
           <Link 
-            to="/admin/investors"
+            to="/InvestorDashboard/Investors"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 me-2" />
@@ -225,7 +225,7 @@ export default function InvestorDetail() {
               {t('common:export')}
             </button>
             <Link
-              to={`/admin/investors/${id}?edit=true`}
+              to={`/InvestorDashboard/Investors/${id}?edit=true`}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
               <Edit className="w-4 h-4 me-2" />

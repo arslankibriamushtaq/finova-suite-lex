@@ -134,7 +134,7 @@ export default function InvestorKyc() {
               Export
             </button>
             <Link
-              to="/admin/investors/new"
+              to="/InvestorDashboard/Investors/new"
               className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 flex items-center"
             >
               <Plus className="w-4 h-4 me-2" />
@@ -261,7 +261,7 @@ export default function InvestorKyc() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <Link
-                          to={`/admin/investors/kyc-documents/${investor.id}`}
+                          to={`/InvestorDashboard/Investors/kyc-documents/${investor.id}`}
                           className="text-black hover:text-blue-900 flex items-center"
                         >
                           <Eye className="w-4 h-4 me-1" />

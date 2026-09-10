@@ -146,7 +146,7 @@ export default function AddInvestor() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Navigate to investor detail page
-      navigate('/admin/investors/123'); // In real app, use actual ID from response
+      navigate('/InvestorDashboard/Investors/123'); // In real app, use actual ID from response
     } catch (error) {
       console.error('Error creating investor:', error);
     } finally {
@@ -179,7 +179,7 @@ export default function AddInvestor() {
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-4">
           <Link 
-            to="/admin/investors"
+            to="/InvestorDashboard/Investors"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 me-2" />
@@ -696,7 +696,7 @@ export default function AddInvestor() {
 
             <div className="flex items-center space-x-3">
               <Link
-                to="/admin/investors"
+                to="/InvestorDashboard/Investors"
                 className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
                 <X className="w-4 h-4 me-2" />
