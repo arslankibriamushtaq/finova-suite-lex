@@ -2080,28 +2080,35 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     },
 
     
-    {
+    /**
+     * Gated on the PORTFOLIO catalogue module. Every row carries the READ code
+     * for the thing it opens, so a role holding only PORTFOLIO_INVESTOR_READ
+     * gets the investor list and nothing else. The write/approve codes
+     * (…_MANAGE, …_APPROVE, …_EXECUTE) gate actions inside the screens, not
+     * these menu rows — seeing a list is a read.
+     */
+    hasAccess("PORTFOLIO") && {
       label: "Porfolio Management",
       Link: "/InvestorDashboard/Overview",
       img: Images.dashboardIcon,
       imgActive: Images.dashboardIconActive,
       active: pathname.includes("/InvestorDashboard"),
       menu: [
-        {
+        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Dashboard Overview",
           Link: "Overview",
           LinkLable: "/InvestorDashboard",
           img: Images.dashboardIcon,
           active: pathname.includes("/InvestorDashboard/Overview"),
         },
-        {
+        hasAccess("PORTFOLIO_INVESTOR_READ") && {
           label: "Investors",
           Link: "Investors",
           LinkLable: "/InvestorDashboard",
           img: Images.CustomerManagementIcon,
           active: pathname.includes("/InvestorDashboard/Investors"),
         },
-        {
+        hasAccess("PORTFOLIO_PRODUCT_READ") && {
           label: "Products & Rates",
           Link: "Products",
           LinkLable: "/InvestorDashboard",
@@ -2113,7 +2120,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // pointed at /InvestorDashboard/IncomeRanges etc. — all 404. The
         // "System Settings" group below is the same four rows with the paths
         // the router actually serves.
-        {
+        hasAccess("PORTFOLIO_SETTINGS_READ") && {
           label: "System Settings",
           Link: "SystemSettings",
           LinkLable: "/InvestorDashboard",
@@ -2121,28 +2128,28 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname.includes("/InvestorDashboard/SystemSettings"),
           submenu: [
 
-            {
+            hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Income Ranges",
               Link: "IncomeRanges",
               LinkLable: "/InvestorDashboard/SystemSettings",
               img: Images.LovIcon,
               active: pathname.includes("/InvestorDashboard/SystemSettings/IncomeRanges"),
             },
-            {
+            hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Initial Invest",
               Link: "InitialInvest",
               LinkLable: "/InvestorDashboard/SystemSettings",
               img: Images.FinancingApplicationsIcon,
               active: pathname.includes("/InvestorDashboard/SystemSettings/InitialInvest"),
             },
-            {
+            hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Investment Experience",
               Link: "InvestmentExperience",
               LinkLable: "/InvestorDashboard/SystemSettings",
               img: Images.PartnerManagementIcon,
               active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentExperience"),
             },
-            {
+            hasAccess("PORTFOLIO_SETTINGS_READ") && {
               label: "Investment Timeline",
               Link: "InvestmentTimeline",
               LinkLable: "/InvestorDashboard/SystemSettings",
@@ -2150,65 +2157,65 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
             },
 
-          ],
+          ].filter(Boolean),
         },
-        {
+        hasAccess("PORTFOLIO_INVESTMENT_APPROVE") && {
           label: "Investment",
           Link: "ApproveInvestment",
           LinkLable: "/InvestorDashboard",
           img: Images.logsIcon,
           active: pathname.includes("/InvestorDashboard/ApproveInvestment"),
         },
-        {
+        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Logs",
           Link: "Logs",
           LinkLable: "/InvestorDashboard",
           img: Images.logsIcon,
           active: pathname.includes("/InvestorDashboard/Logs"),
         },
-        {
+        hasAccess("PORTFOLIO_FUND_READ") && {
           label: "Ledger",
           Link: "Ledger",
           LinkLable: "/InvestorDashboard",
           img: Images.reportsIconDark,
           active: pathname.includes("/InvestorDashboard/Ledger"),
         },
-        {
+        hasAccess("PORTFOLIO_INVESTMENT_READ") && {
           label: "Investments",
           Link: "Investments",
           LinkLable: "/InvestorDashboard",
           img: Images.loanIcon,
           active: pathname == "/InvestorDashboard/Investments",
         },
-        {
+        hasAccess("PORTFOLIO_ALLOCATION_READ") && {
           label: "Allocation Engine",
           Link: "AllocationEngine",
           LinkLable: "/InvestorDashboard",
           img: Images.ApiManagementIcon,
           active: pathname == "/InvestorDashboard/AllocationEngine",
         },
-        {
+        hasAccess("PORTFOLIO_DASHBOARD_READ") && {
           label: "Reports",
           Link: "Reports",
           LinkLable: "/InvestorDashboard",
           img: Images.reportsIconDark,
           active: pathname == "/InvestorDashboard/Reports",
         },
-        {
+        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Audit Logs",
           Link: "AuditLogs",
           LinkLable: "/InvestorDashboard",
           img: Images.logsIcon,
           active: pathname == "/InvestorDashboard/AuditLogs",
         },
-        {
+        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Notifications",
           Link: "Notifications",
           LinkLable: "/InvestorDashboard",
           img: Images.notification,
           active: pathname == "/InvestorDashboard/Notifications",
         },
-        {
+        hasAccess("PORTFOLIO_SETTINGS_MANAGE") && {
           label: "Admin Users & Roles",
           Link: "AdminUsers",
           LinkLable: "/InvestorDashboard",
@@ -2216,9 +2223,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname == "/InvestorDashboard/AdminUsers",
         },
 
-      ],
+      ].filter(Boolean),
     },
-  ];
+  ].filter(Boolean);
 
   // Reference existing Financing-tab modules so they can be reused in the Wallet
   // tab without duplicating their (large) configs.
