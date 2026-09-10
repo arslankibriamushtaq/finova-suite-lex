@@ -42,6 +42,7 @@ import ApprovalChainEditor, {
 import {
   hasChainErrors,
   newStageDraft,
+  suggestStageCode,
   toStageDraft,
   toStagePayload,
   validateChain,
@@ -230,7 +231,7 @@ const ApprovalWorkflows = () => {
   const openCreate = () => {
     setCurrent(null);
     setHeader(emptyHeader);
-    setStages([newStageDraft()]);
+    setStages([newStageDraft(suggestStageCode(0))]);
     setErrors({});
     setFormError("");
     setMode("create");
@@ -250,7 +251,7 @@ const ApprovalWorkflows = () => {
         workflowName: detail.workflowName || "",
         description: detail.description || "",
       });
-      setStages(drafts.length ? drafts : [newStageDraft()]);
+      setStages(drafts.length ? drafts : [newStageDraft(suggestStageCode(0))]);
       setErrors({});
       setFormError("");
       setMode("edit");

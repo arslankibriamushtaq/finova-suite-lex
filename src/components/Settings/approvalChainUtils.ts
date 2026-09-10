@@ -50,9 +50,25 @@ export type ChainErrors = Record<number, StageErrors>;
 let seq = 0;
 const nextKey = () => `stage-${Date.now()}-${seq++}`;
 
-export const newStageDraft = (): StageDraft => ({
+/**
+ * The code a stage at this position almost always gets. A maker-checker chain
+ * is named the same way in every shop that runs one, and a required, frozen-on-
+ * save field is a poor place to make an admin invent a convention — it is only
+ * a starting value, and stays editable until the first save.
+ */
+export const suggestStageCode = (index: number, drafts: StageDraft[] = []): string => {
+  const taken = new Set(drafts.map((draft) => draft.stageCode));
+  const ladder = ["MAKER", "CHECKER", "APPROVER"];
+  const preferred = ladder[index];
+  if (preferred && !taken.has(preferred)) return preferred;
+  let n = index + 1;
+  while (taken.has(`STAGE_${n}`)) n += 1;
+  return `STAGE_${n}`;
+};
+
+export const newStageDraft = (stageCode = ""): StageDraft => ({
   key: nextKey(),
-  stageCode: "",
+  stageCode,
   stageName: "",
   stageNameAr: "",
   departmentId: "",
