@@ -47,15 +47,21 @@ interface InvestorDocument {
   field: SlotField;
   label: string;
   documentId: string;
-  status: string;
+  status: string | number;
   expiryDate: string | null;
 }
 
-/** PENDING/VERIFIED/REJECTED is what the read returns; the approve API speaks numbers. */
-const statusCode = (status: string): number => {
-  const value = (status || '').toUpperCase();
-  if (value === 'VERIFIED' || value === 'APPROVED') return 1;
-  if (value === 'REJECTED') return 2;
+/**
+ * The approve API speaks numbers (0 pending / 1 approved / 2 rejected) and so,
+ * as it turns out, does the read — but not always: some slots come back as the
+ * words PENDING/VERIFIED/REJECTED. Accept either rather than assuming a string
+ * and calling toUpperCase on a number.
+ */
+const statusCode = (status: string | number | null | undefined): number => {
+  if (typeof status === 'number') return status === 1 || status === 2 ? status : 0;
+  const value = String(status ?? '').toUpperCase();
+  if (value === 'VERIFIED' || value === 'APPROVED' || value === '1') return 1;
+  if (value === 'REJECTED' || value === '2') return 2;
   return 0;
 };
 
@@ -103,9 +109,11 @@ export default function DocumentPreview() {
               {
                 field,
                 label: t(`dpv.slot.${field}`, label),
-                documentId,
-                status: data[`${field}Status`] || 'PENDING',
-                expiryDate: data[`${field}ExpiryDate`],
+                documentId: String(documentId),
+                status: data[`${field}Status`] ?? 'PENDING',
+                expiryDate: data[`${field}ExpiryDate`] == null
+                  ? null
+                  : String(data[`${field}ExpiryDate`]),
               },
             ];
           })
@@ -169,7 +177,7 @@ export default function DocumentPreview() {
     }
   }, [documents, searchParams, previewDocument]);
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: string | number) => {
     switch (statusCode(status)) {
       case 1:
         return t('doc.status.verified');
@@ -180,7 +188,7 @@ export default function DocumentPreview() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string | number) => {
     switch (statusCode(status)) {
       case 1:
         return <CheckCircle className="w-4 h-4 text-green-600" />;
@@ -191,7 +199,7 @@ export default function DocumentPreview() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | number) => {
     switch (statusCode(status)) {
       case 1:
         return 'bg-green-100 text-green-800';

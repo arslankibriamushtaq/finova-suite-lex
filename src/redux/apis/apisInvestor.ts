@@ -1391,18 +1391,19 @@ export async function getDocumentsByInvestorId(investorId: string) {
  */
 export interface InvestorDocumentSlots {
   nationalIdFront: string | null;
-  nationalIdFrontStatus: string | null;
+  /** 0 pending / 1 approved / 2 rejected, though some slots send the word instead. */
+  nationalIdFrontStatus: string | number | null;
   nationalIdFrontExpiryDate: string | null;
   nationalIdBack: string | null;
-  nationalIdBackStatus: string | null;
+  nationalIdBackStatus: string | number | null;
   nationalIdBackExpiryDate: string | null;
   bankStatement: string | null;
-  bankStatementStatus: string | null;
+  bankStatementStatus: string | number | null;
   bankStatementExpiryDate: string | null;
   salaryCertificate: string | null;
-  salaryCertificateStatus: string | null;
+  salaryCertificateStatus: string | number | null;
   salaryCertificateExpiryDate: string | null;
-  [key: string]: string | null;
+  [key: string]: string | number | null;
 }
 
 export async function getInvestorDocumentSlots(investorId: string) {
