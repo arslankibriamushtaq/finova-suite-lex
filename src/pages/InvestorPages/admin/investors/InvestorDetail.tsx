@@ -19,6 +19,7 @@ import {
   Plus,
   MoreHorizontal
 } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 // Mock data - in real app, this would come from API
 const investorData = {
@@ -148,6 +149,9 @@ const investorData = {
 };
 
 export default function InvestorDetail() {
+  const { hasPermission } = usePermissions();
+  const canManageInvestor = hasPermission('PORTFOLIO_INVESTOR_MANAGE');
+  const canManageInvestment = hasPermission('PORTFOLIO_INVESTMENT_MANAGE');
   const { t } = useTranslation('investor');
   const statusKey: Record<string, string> = { 'Active': 'idet.status.active', 'Pending': 'idet.status.pending', 'Suspended': 'idet.status.suspended', 'Inactive': 'idet.status.inactive' };
   const riskKey: Record<string, string> = { 'Conservative': 'idet.risk.conservative', 'Moderate': 'idet.risk.moderate', 'Aggressive': 'idet.risk.aggressive' };
@@ -224,13 +228,15 @@ export default function InvestorDetail() {
               <Download className="w-4 h-4 me-2" />
               {t('common:export')}
             </button>
-            <Link
-              to={`/InvestorDashboard/Investors/${id}?edit=true`}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Edit className="w-4 h-4 me-2" />
-              {t('common:edit')}
-            </Link>
+            {canManageInvestor && (
+              <Link
+                to={`/InvestorDashboard/Investors/${id}?edit=true`}
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Edit className="w-4 h-4 me-2" />
+                {t('common:edit')}
+              </Link>
+            )}
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
               <MoreHorizontal className="w-4 h-4" />
             </button>
@@ -426,13 +432,15 @@ export default function InvestorDetail() {
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">{t('idet.investmentHoldings')}</h3>
-            <Link
-              to={`/admin/investments/new?investor=${id}`}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              {t('idet.addInvestment')}
-            </Link>
+            {canManageInvestment && (
+              <Link
+                to={`/admin/investments/new?investor=${id}`}
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Plus className="w-4 h-4 me-2" />
+                {t('idet.addInvestment')}
+              </Link>
+            )}
           </div>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">

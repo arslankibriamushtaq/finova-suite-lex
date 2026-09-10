@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Save, X, Upload, AlertCircle, CheckCircle } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 interface FormData {
   personalInfo: {
@@ -39,6 +40,8 @@ interface FormData {
 }
 
 export default function AddInvestor() {
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_INVESTOR_MANAGE');
   const { t } = useTranslation('investor');
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -711,23 +714,25 @@ export default function AddInvestor() {
                   {t('common:next')}
                 </button>
               ) : (
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
-                      {t('ai.creating')}
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 me-2" />
-                      {t('ai.createInvestor')}
-                    </>
-                  )}
-                </button>
+                canManage && (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
+                        {t('ai.creating')}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 me-2" />
+                        {t('ai.createInvestor')}
+                      </>
+                    )}
+                  </button>
+                )
               )}
             </div>
           </div>

@@ -23,8 +23,13 @@ import {
 } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
 import Loader from '../../../../components/Loader/Loader';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 export default function InitialInvestList() {
+  // Portfolio settings are configuration: reading the list is PORTFOLIO_SETTINGS_READ
+  // (which is what put this page in the menu), but changing one needs _MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_SETTINGS_MANAGE');
   const { t } = useTranslation('investor');
   const [initialInvests, setInitialInvests] = useState<InitialInvest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -247,13 +252,15 @@ export default function InitialInvestList() {
           <h1 className="text-2xl font-bold text-gray-900">{t('iil.title')}</h1>
           <p className="text-gray-600">{t('iil.subtitle')}</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-        >
-          <Plus className="w-4 h-4 me-2" />
-          {t('iil.addBtn')}
-        </button>
+        {canManage && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+          >
+            <Plus className="w-4 h-4 me-2" />
+            {t('iil.addBtn')}
+          </button>
+        )}
       </div>
 
       {/* Search and Stats */}
@@ -339,20 +346,24 @@ export default function InitialInvestList() {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => handleEditClick(initialInvest.id)}
-                          className="text-yellow-600 hover:text-yellow-900"
-                          title={t('common:edit')}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(initialInvest)}
-                          className="text-red-600 hover:text-red-900"
-                          title={t('common:delete')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canManage && (
+                          <button
+                            onClick={() => handleEditClick(initialInvest.id)}
+                            className="text-yellow-600 hover:text-yellow-900"
+                            title={t('common:edit')}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        )}
+                        {canManage && (
+                          <button
+                            onClick={() => handleDeleteClick(initialInvest)}
+                            className="text-red-600 hover:text-red-900"
+                            title={t('common:delete')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -24,8 +24,13 @@ import {
 import toast from 'react-hot-toast';
 import { cn } from '../../../../lib/utils';
 import Loader from '../../../../components/Loader/Loader';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 export default function IncomeRangeList() {
+  // Portfolio settings are configuration: reading the list is PORTFOLIO_SETTINGS_READ
+  // (which is what put this page in the menu), but changing one needs _MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_SETTINGS_MANAGE');
   const { t } = useTranslation('investor');
   const navigate = useNavigate();
   const [incomeRanges, setIncomeRanges] = useState<IncomeRange[]>([]);
@@ -231,13 +236,15 @@ export default function IncomeRangeList() {
               <RefreshCw className="w-4 h-4 me-2" />
               {t('common:refresh')}
             </button>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              {t('irl.addIncomeRange')}
-            </button>
+            {canManage && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Plus className="w-4 h-4 me-2" />
+                {t('irl.addIncomeRange')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -345,13 +352,15 @@ export default function IncomeRangeList() {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => handleDeleteClick(incomeRange)}
-                          className="text-red-600 hover:text-red-900"
-                          title={t('irl.deleteTitle')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canManage && (
+                          <button
+                            onClick={() => handleDeleteClick(incomeRange)}
+                            className="text-red-600 hover:text-red-900"
+                            title={t('irl.deleteTitle')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

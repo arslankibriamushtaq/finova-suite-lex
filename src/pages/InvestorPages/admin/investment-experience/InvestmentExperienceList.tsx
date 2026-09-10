@@ -24,8 +24,13 @@ import {
 } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
 import Loader from '../../../../components/Loader/Loader';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 export default function InvestmentExperienceList() {
+  // Portfolio settings are configuration: reading the list is PORTFOLIO_SETTINGS_READ
+  // (which is what put this page in the menu), but changing one needs _MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_SETTINGS_MANAGE');
   const { t } = useTranslation('investor');
   const [investmentExperiences, setInvestmentExperiences] = useState<InvestmentExperience[]>([]);
   const [loading, setLoading] = useState(true);
@@ -244,13 +249,15 @@ export default function InvestmentExperienceList() {
           <h1 className="text-2xl font-bold text-gray-900">{t('ixp.title')}</h1>
           <p className="text-gray-600">{t('ixp.subtitle')}</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-        >
-          <Plus className="w-4 h-4 me-2" />
-          {t('ixp.addBtn')}
-        </button>
+        {canManage && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+          >
+            <Plus className="w-4 h-4 me-2" />
+            {t('ixp.addBtn')}
+          </button>
+        )}
       </div>
 
       {/* Search and Stats */}
@@ -331,20 +338,24 @@ export default function InvestmentExperienceList() {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => handleEditClick(investmentExperience.id)}
-                          className="text-yellow-600 hover:text-yellow-900"
-                          title={t('common:edit')}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(investmentExperience)}
-                          className="text-red-600 hover:text-red-900"
-                          title={t('common:delete')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canManage && (
+                          <button
+                            onClick={() => handleEditClick(investmentExperience.id)}
+                            className="text-yellow-600 hover:text-yellow-900"
+                            title={t('common:edit')}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        )}
+                        {canManage && (
+                          <button
+                            onClick={() => handleDeleteClick(investmentExperience)}
+                            className="text-red-600 hover:text-red-900"
+                            title={t('common:delete')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

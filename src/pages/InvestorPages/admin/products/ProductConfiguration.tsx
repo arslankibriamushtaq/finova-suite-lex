@@ -29,6 +29,7 @@ import {
 import type { ProductConfiguration } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
 import Loader from '../../../../components/Loader/Loader';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 interface ConfigurationData {
   // Amounts tab
@@ -117,6 +118,8 @@ const initialConfigData: ConfigurationData = {
 };
 
 export default function ProductConfiguration() {
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_PRODUCT_MANAGE');
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation('investor');
@@ -1412,7 +1415,7 @@ export default function ProductConfiguration() {
             </div>
           </div>
         </div>
-        {!isEditMode && (
+        {!isEditMode && canManage && (
           <button
             onClick={handleEditConfiguration}
             disabled={loadingConfiguration}
@@ -1535,27 +1538,29 @@ export default function ProductConfiguration() {
         >
           {t('common:cancel')}
         </button>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-        >
-          {saving ? (
-            <>
-              <Loader />
-              {activeTab === 'advanced' ? t('pc.action.saving') : t('pc.action.processing')}
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4 me-2" />
-              {activeTab === 'advanced' ? t('pc.action.saveConfig') : (() => {
-                const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
-                const nextTab = tabs[currentTabIndex + 1];
-                return t('pc.action.continueTo', { tab: nextTab.label });
-              })()}
-            </>
-          )}
-        </button>
+        {canManage && (
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          >
+            {saving ? (
+              <>
+                <Loader />
+                {activeTab === 'advanced' ? t('pc.action.saving') : t('pc.action.processing')}
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 me-2" />
+                {activeTab === 'advanced' ? t('pc.action.saveConfig') : (() => {
+                  const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
+                  const nextTab = tabs[currentTabIndex + 1];
+                  return t('pc.action.continueTo', { tab: nextTab.label });
+                })()}
+              </>
+            )}
+          </button>
+        )}
       </div>
    
     </div>

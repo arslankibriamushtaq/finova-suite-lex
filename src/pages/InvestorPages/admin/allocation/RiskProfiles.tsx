@@ -15,6 +15,7 @@ import {
   TrendingUp,
   AlertTriangle
 } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 // Mock data for risk profiles
 const customerRiskProfiles = [
@@ -111,6 +112,10 @@ const investorRiskProfiles = [
 ];
 
 export default function RiskProfiles() {
+  // Strategies are readable on PORTFOLIO_ALLOCATION_READ; authoring, cloning,
+  // enabling and deleting them is _ALLOCATION_MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_ALLOCATION_MANAGE');
   const { t } = useTranslation('investor');
   const tolKey: Record<string, string> = { 'Low': 'rp.risk.low', 'Medium': 'rp.risk.medium', 'High': 'rp.risk.high' };
   const tTol = (v: string) => (tolKey[v] ? t(tolKey[v]) : v);
@@ -170,13 +175,15 @@ export default function RiskProfiles() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setShowImportModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Upload className="w-4 h-4 me-2" />
-              {t('rp.importCsv')}
-            </button>
+            {canManage && (
+              <button
+                onClick={() => setShowImportModal(true)}
+                className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                <Upload className="w-4 h-4 me-2" />
+                {t('rp.importCsv')}
+              </button>
+            )}
             <button
               onClick={handleExportProfiles}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -184,13 +191,15 @@ export default function RiskProfiles() {
               <Download className="w-4 h-4 me-2" />
               {t('common:export')}
             </button>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              {t('rp.createProfile')}
-            </button>
+            {canManage && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Plus className="w-4 h-4 me-2" />
+                {t('rp.createProfile')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -299,20 +308,24 @@ export default function RiskProfiles() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleEditProfile(profile)}
-                          className="text-black hover:text-blue-900"
-                          title={t('rp.editProfile')}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProfile(profile.id)}
-                          className="text-red-600 hover:text-red-900"
-                          title={t('rp.deleteProfile')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canManage && (
+                          <button
+                            onClick={() => handleEditProfile(profile)}
+                            className="text-black hover:text-blue-900"
+                            title={t('rp.editProfile')}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        )}
+                        {canManage && (
+                          <button
+                            onClick={() => handleDeleteProfile(profile.id)}
+                            className="text-red-600 hover:text-red-900"
+                            title={t('rp.deleteProfile')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -388,20 +401,24 @@ export default function RiskProfiles() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleEditProfile(profile)}
-                          className="text-black hover:text-blue-900"
-                          title={t('rp.editProfile')}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProfile(profile.id)}
-                          className="text-red-600 hover:text-red-900"
-                          title={t('rp.deleteProfile')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canManage && (
+                          <button
+                            onClick={() => handleEditProfile(profile)}
+                            className="text-black hover:text-blue-900"
+                            title={t('rp.editProfile')}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        )}
+                        {canManage && (
+                          <button
+                            onClick={() => handleDeleteProfile(profile.id)}
+                            className="text-red-600 hover:text-red-900"
+                            title={t('rp.deleteProfile')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   Info
 } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 interface StrategyFormData {
   name: string;
@@ -107,6 +108,10 @@ const ruleTypes = [
 ];
 
 export default function CreateStrategy() {
+  // Strategies are readable on PORTFOLIO_ALLOCATION_READ; authoring, cloning,
+  // enabling and deleting them is _ALLOCATION_MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_ALLOCATION_MANAGE');
   const navigate = useNavigate();
   const { t } = useTranslation('investor');
   const productNameKey: Record<string, string> = { 'POS Loans V1': 'cs.product.pos', 'Auto Loans V2': 'cs.product.auto', 'MSME Working Capital': 'cs.product.msme', 'Consumer Loans': 'cs.product.consumer', 'Real Estate Financing': 'cs.product.realEstate' };
@@ -1706,12 +1711,14 @@ export default function CreateStrategy() {
         </button>
 
         <div className="flex items-center space-x-3">
-          <button
-            onClick={handleSaveDraft}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            {t('cs.saveDraft')}
-          </button>
+          {canManage && (
+            <button
+              onClick={handleSaveDraft}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              {t('cs.saveDraft')}
+            </button>
+          )}
           
           {currentStep === totalSteps ? (
             <div className="flex items-center space-x-3">
@@ -1721,13 +1728,15 @@ export default function CreateStrategy() {
               >
                 {t('cs.simulateBeforePublish')}
               </Link>
-              <button
-                onClick={handlePublish}
-                disabled={!formData.name}
-                className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t('cs.publishStrategy')}
-              </button>
+              {canManage && (
+                <button
+                  onClick={handlePublish}
+                  disabled={!formData.name}
+                  className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t('cs.publishStrategy')}
+                </button>
+              )}
             </div>
           ) : (
             <button

@@ -13,6 +13,7 @@ import {
   CheckCircle,
   Info
 } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 // Mock data - in real app, this would come from API based on investment ID
 const investmentData = {
@@ -46,6 +47,9 @@ interface AdjustmentForm {
 }
 
 export default function InvestmentAdjust() {
+  // Previewing the maths is a read; committing the adjustment is not.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_INVESTMENT_MANAGE');
   const { t } = useTranslation('investor');
   const { id } = useParams();
   const [formData, setFormData] = useState<AdjustmentForm>({
@@ -499,23 +503,25 @@ export default function InvestmentAdjust() {
                   <Calculator className="w-4 h-4 me-2" />
                   {t('iadj.previewChanges')}
                 </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !formData.confirmRisks}
-                  className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
-                      {t('iadj.processing')}
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 me-2" />
-                      {t('iadj.submitAdjustment')}
-                    </>
-                  )}
-                </button>
+                {canManage && (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting || !formData.confirmRisks}
+                    className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
+                        {t('iadj.processing')}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 me-2" />
+                        {t('iadj.submitAdjustment')}
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -562,12 +568,14 @@ export default function InvestmentAdjust() {
               >
                 {t('common:cancel')}
               </button>
-              <button
-                onClick={handleSubmit}
-                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
-              >
-                {t('iadj.confirm')}
-              </button>
+              {canManage && (
+                <button
+                  onClick={handleSubmit}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+                >
+                  {t('iadj.confirm')}
+                </button>
+              )}
             </div>
           </div>
         </div>

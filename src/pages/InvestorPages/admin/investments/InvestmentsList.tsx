@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
 import { useTranslation } from 'react-i18next';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 
 const investments = [
@@ -188,6 +189,8 @@ const allocationLogs = [
 ];
 
 export default function InvestmentsList() {
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_INVESTMENT_MANAGE');
   const { t } = useTranslation('investor');
   const statusKey: Record<string, string> = { 'Active': 'invl.status.active', 'Under Review': 'invl.status.underReview', 'Locked': 'invl.status.locked', 'Pending': 'invl.status.pending', 'Suspended': 'invl.status.suspended', 'Completed': 'invl.status.completed' };
   const tStatus = (v: string) => (statusKey[v] ? t(statusKey[v]) : v);
@@ -296,13 +299,15 @@ export default function InvestmentsList() {
               <Download className="w-4 h-4 me-2" />
               {t('invl.exportData')}
             </button>
-            <Link
-              to="/admin/investments/new"
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              {t('invl.newInvestment')}
-            </Link>
+            {canManage && (
+              <Link
+                to="/admin/investments/new"
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Plus className="w-4 h-4 me-2" />
+                {t('invl.newInvestment')}
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -541,27 +546,33 @@ export default function InvestmentsList() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleEditInvestment(investment)}
-                            className="text-gray-600 hover:text-gray-900"
-                            title={t('invl.editInvestment')}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <Link
-                            to={`/InvestorDashboard/Investments/${investment.id}/adjust`}
-                            className="text-orange-600 hover:text-orange-900"
-                            title={t('invl.adjustInvestment')}
-                          >
-                            <Settings className="w-4 h-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDeleteInvestment(investment)}
-                            className="text-red-600 hover:text-red-900"
-                            title={t('invl.deleteInvestment')}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {canManage && (
+                            <button
+                              onClick={() => handleEditInvestment(investment)}
+                              className="text-gray-600 hover:text-gray-900"
+                              title={t('invl.editInvestment')}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canManage && (
+                            <Link
+                              to={`/InvestorDashboard/Investments/${investment.id}/adjust`}
+                              className="text-orange-600 hover:text-orange-900"
+                              title={t('invl.adjustInvestment')}
+                            >
+                              <Settings className="w-4 h-4" />
+                            </Link>
+                          )}
+                          {canManage && (
+                            <button
+                              onClick={() => handleDeleteInvestment(investment)}
+                              className="text-red-600 hover:text-red-900"
+                              title={t('invl.deleteInvestment')}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

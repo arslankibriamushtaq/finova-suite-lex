@@ -20,8 +20,11 @@ import {
   Upload
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 export default function InvestorDocuments() {
+  const { hasPermission } = usePermissions();
+  const canVerify = hasPermission('PORTFOLIO_INVESTOR_VERIFY');
   const { t } = useTranslation('investor');
   const { investorId } = useParams<{ investorId: string }>();
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -358,7 +361,7 @@ export default function InvestorDocuments() {
                           <Download className="w-4 h-4 me-1" />
                           {t('doc.download')}
                         </button>
-                        {document.status !== 'approved' && (
+                        {document.status !== 'approved' && canVerify && (
                           <button
                             onClick={() => handleApproveDocument(document)}
                             className="text-red-600 hover:text-red-900 flex items-center"
@@ -367,7 +370,7 @@ export default function InvestorDocuments() {
                             {t('common:approve')}
                           </button>
                         )}
-                        {document.status !== 'rejected' && (
+                        {document.status !== 'rejected' && canVerify && (
                           <button
                             onClick={() => handleRejectDocument(document)}
                             className="text-red-600 hover:text-red-900 flex items-center"

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 interface Document {
   id: string;
@@ -29,6 +30,8 @@ interface Document {
 }
 
 export default function KycDocuments() {
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_INVESTOR_MANAGE');
   const { t } = useTranslation('investor');
   const { investorId } = useParams<{ investorId: string }>();
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -308,13 +311,15 @@ export default function KycDocuments() {
                       >
                         <Download className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => handleDeleteDocument(document.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title={t('kycd.deleteDocument')}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {canManage && (
+                        <button
+                          onClick={() => handleDeleteDocument(document.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title={t('kycd.deleteDocument')}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

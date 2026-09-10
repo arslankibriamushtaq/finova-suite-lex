@@ -21,6 +21,7 @@ import {
   ArrowDownRight,
   RefreshCw
 } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 // Mock data for KPIs
 const kpiData = {
@@ -84,6 +85,10 @@ const recentActivities = [
 ];
 
 export default function AllocationDashboard() {
+  // Strategies are readable on PORTFOLIO_ALLOCATION_READ; authoring, cloning,
+  // enabling and deleting them is _ALLOCATION_MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_ALLOCATION_MANAGE');
   const { t } = useTranslation('investor');
   const [refreshing, setRefreshing] = useState(false);
 
@@ -226,16 +231,18 @@ export default function AllocationDashboard() {
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('reports.quickActions')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
-            to="/InvestorDashboard/AllocationEngine/strategies/new"
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
-          >
-            <div className="flex items-center">
-              <Plus className="w-5 h-5 text-black me-3" />
-              <span className="text-sm font-medium text-gray-900">{t('ad.createStrategy')}</span>
-            </div>
-            <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black" />
-          </Link>
+          {canManage && (
+            <Link
+              to="/InvestorDashboard/AllocationEngine/strategies/new"
+              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <div className="flex items-center">
+                <Plus className="w-5 h-5 text-black me-3" />
+                <span className="text-sm font-medium text-gray-900">{t('ad.createStrategy')}</span>
+              </div>
+              <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black" />
+            </Link>
+          )}
 
           <button
             onClick={() => {/* TODO: Open global simulation modal */}}

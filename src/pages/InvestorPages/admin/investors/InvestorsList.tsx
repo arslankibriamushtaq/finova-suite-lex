@@ -24,11 +24,16 @@ import {
 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 
 
 
 export default function InvestorsList() {
+  // Reading the investor book is PORTFOLIO_INVESTOR_READ; registering or
+  // importing investors is a write.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_INVESTOR_MANAGE');
   const navigate = useNavigate();
   const { t } = useTranslation('investor');
   const tLevel = (v: number) => {
@@ -590,13 +595,15 @@ export default function InvestorsList() {
             <p className="text-gray-600">{t('ilst.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
-            <button 
-              onClick={handleImportData}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Upload className="w-4 h-4 me-2" />
-              {t('ilst.import')}
-            </button>
+            {canManage && (
+              <button 
+                onClick={handleImportData}
+                className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                <Upload className="w-4 h-4 me-2" />
+                {t('ilst.import')}
+              </button>
+            )}
             <button 
               onClick={handleExportData}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
@@ -604,13 +611,15 @@ export default function InvestorsList() {
               <Download className="w-4 h-4 me-2" />
               {t('ilst.exportData')}
             </button>
-            <button 
-              onClick={() => setShowTypeSelectionModal(true)}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              {t('ilst.addInvestor')}
-            </button>
+            {canManage && (
+              <button 
+                onClick={() => setShowTypeSelectionModal(true)}
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Plus className="w-4 h-4 me-2" />
+                {t('ilst.addInvestor')}
+              </button>
+            )}
           </div>
         </div>
       </div>

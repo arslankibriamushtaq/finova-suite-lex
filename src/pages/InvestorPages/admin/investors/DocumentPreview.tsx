@@ -28,6 +28,7 @@ import {
   X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 /**
  * The service does not return a list of documents. It returns one record with a
@@ -66,6 +67,10 @@ const statusCode = (status: string | number | null | undefined): number => {
 };
 
 export default function DocumentPreview() {
+  // Viewing and downloading the file is a read; approving or rejecting it is
+  // what PORTFOLIO_INVESTOR_VERIFY is for.
+  const { hasPermission } = usePermissions();
+  const canVerify = hasPermission('PORTFOLIO_INVESTOR_VERIFY');
   const { t } = useTranslation('investor');
   const { investorId } = useParams<{ investorId: string }>();
   const navigate = useNavigate();
@@ -424,7 +429,7 @@ export default function DocumentPreview() {
 
                   {/* Approve/Reject Buttons */}
                   <div className="mt-3 flex gap-2">
-                    {statusCode(doc.status) !== 1 && (
+                    {canVerify && statusCode(doc.status) !== 1 && (
                       <button
                         onClick={() => setVerification(doc, 1)}
                         className="flex-1 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 flex items-center justify-center"
@@ -434,7 +439,7 @@ export default function DocumentPreview() {
                       </button>
                     )}
 
-                    {statusCode(doc.status) !== 2 && (
+                    {canVerify && statusCode(doc.status) !== 2 && (
                       <button
                         onClick={() => setVerification(doc, 2)}
                         className="flex-1 px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex items-center justify-center"

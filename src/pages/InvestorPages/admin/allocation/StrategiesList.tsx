@@ -20,6 +20,7 @@ import {
   Clock,
   AlertTriangle
 } from 'lucide-react';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 // Mock data for strategies
 const strategies = [
@@ -108,6 +109,10 @@ const productOptions = ['All Products', 'POS Loans', 'Auto Loans', 'MSME Loans',
 const riskOptions = ['All Risk Bands', 'Low', 'Medium', 'High'];
 
 export default function StrategiesList() {
+  // Strategies are readable on PORTFOLIO_ALLOCATION_READ; authoring, cloning,
+  // enabling and deleting them is _ALLOCATION_MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_ALLOCATION_MANAGE');
   const { t } = useTranslation('investor');
   const statusKey: Record<string, string> = { 'All Status': 'sl.status.allStatus', 'Published': 'sl.status.published', 'Draft': 'sl.status.draft', 'Paused': 'sl.status.paused' };
   const productKey: Record<string, string> = { 'All Products': 'sl.product.allProducts', 'POS Loans': 'sl.product.pos', 'Auto Loans': 'sl.product.auto', 'MSME Loans': 'sl.product.msme', 'Consumer Loans': 'sl.product.consumer', 'Real Estate': 'sl.product.realEstate' };
@@ -238,13 +243,15 @@ export default function StrategiesList() {
               <Download className="w-4 h-4 me-2" />
               {t('common:export')}
             </button>
-            <Link
-              to="/InvestorDashboard/AllocationEngine/strategies/new"
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4 me-2" />
-              {t('ad.createStrategy')}
-            </Link>
+            {canManage && (
+              <Link
+                to="/InvestorDashboard/AllocationEngine/strategies/new"
+                className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+              >
+                <Plus className="w-4 h-4 me-2" />
+                {t('ad.createStrategy')}
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -317,18 +324,22 @@ export default function StrategiesList() {
               {t('sl.selectedLabel', { count: selectedStrategies.length })}
             </span>
             <div className="flex items-center space-x-3">
-              <button
-                onClick={handleBulkEnable}
-                className="text-sm font-medium text-red-600 hover:text-red-700"
-              >
-                {t('common:enable')}
-              </button>
-              <button
-                onClick={handleBulkDisable}
-                className="text-sm font-medium text-yellow-600 hover:text-yellow-700"
-              >
-                {t('common:disable')}
-              </button>
+              {canManage && (
+                <button
+                  onClick={handleBulkEnable}
+                  className="text-sm font-medium text-red-600 hover:text-red-700"
+                >
+                  {t('common:enable')}
+                </button>
+              )}
+              {canManage && (
+                <button
+                  onClick={handleBulkDisable}
+                  className="text-sm font-medium text-yellow-600 hover:text-yellow-700"
+                >
+                  {t('common:disable')}
+                </button>
+              )}
               <button
                 onClick={handleBulkExport}
                 className="text-sm font-medium text-black hover:text-gray-800"
@@ -441,13 +452,15 @@ export default function StrategiesList() {
                       >
                         <Eye className="w-4 h-4" />
                       </Link>
-                      <Link
-                        to={`/InvestorDashboard/AllocationEngine/strategies/${strategy.id}?edit=true`}
-                        className="text-gray-600 hover:text-gray-900"
-                        title={t('sl.editStrategy')}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Link>
+                      {canManage && (
+                        <Link
+                          to={`/InvestorDashboard/AllocationEngine/strategies/${strategy.id}?edit=true`}
+                          className="text-gray-600 hover:text-gray-900"
+                          title={t('sl.editStrategy')}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Link>
+                      )}
                       <Link
                         to={`/InvestorDashboard/AllocationEngine/strategies/${strategy.id}/simulate`}
                         className="text-red-600 hover:text-red-900"
@@ -462,14 +475,16 @@ export default function StrategiesList() {
                       >
                         {strategy.status === 'Published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                       </button>
-                      <button
-                        onClick={() => handleCloneStrategy(strategy.id)}
-                        className="text-purple-600 hover:text-purple-900"
-                        title={t('sl.cloneStrategy')}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                      {strategy.status === 'Draft' && (
+                      {canManage && (
+                        <button
+                          onClick={() => handleCloneStrategy(strategy.id)}
+                          className="text-purple-600 hover:text-purple-900"
+                          title={t('sl.cloneStrategy')}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      )}
+                      {strategy.status === 'Draft' && canManage && (
                         <button
                           onClick={() => handleDeleteStrategy(strategy.id)}
                           className="text-red-600 hover:text-red-900"

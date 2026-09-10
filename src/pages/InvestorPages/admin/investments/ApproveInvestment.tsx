@@ -5,8 +5,11 @@ import { DownOutlined } from "@ant-design/icons";
 import TableView from "../../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getAllInvestments, approveInvestment, updateWalletBalance } from "../../../../redux/apis/apisInvestor";
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 const ApproveInvestment = () => {
+  const { hasPermission } = usePermissions();
+  const canApprove = hasPermission('PORTFOLIO_INVESTMENT_APPROVE');
   const { t } = useTranslation("investor");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
@@ -114,9 +117,11 @@ const ApproveInvestment = () => {
 
   const menu = (row: any) => (
     <Menu>
-      <Menu.Item key="approve" onClick={() => handleApproveClick(row)}>
-        {t("appinv.approve")}
-      </Menu.Item>
+      {canApprove && (
+        <Menu.Item key="approve" onClick={() => handleApproveClick(row)}>
+          {t("appinv.approve")}
+        </Menu.Item>
+      )}
     </Menu>
   );
 

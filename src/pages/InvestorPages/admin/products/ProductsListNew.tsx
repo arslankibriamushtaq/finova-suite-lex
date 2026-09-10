@@ -30,8 +30,13 @@ import {
   ProductConfiguration
 } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
+import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 export default function ProductsList() {
+  // The shelf is readable on PORTFOLIO_PRODUCT_READ; creating or deleting a
+  // product is _PRODUCT_MANAGE.
+  const { hasPermission } = usePermissions();
+  const canManage = hasPermission('PORTFOLIO_PRODUCT_MANAGE');
   const navigate = useNavigate();
   const { t } = useTranslation('investor');
 
@@ -271,10 +276,12 @@ export default function ProductsList() {
         <Settings className="w-4 h-4 me-2" style={{ display: 'inline' }} />
         {t('pln.menu.configurations')}
       </Menu.Item>
-      <Menu.Item key="delete" onClick={() => handleDeleteClick(row)}>
-        <Trash2 className="w-4 h-4 me-2" style={{ display: 'inline' }} />
-        {t('common:delete')}
-      </Menu.Item>
+      {canManage && (
+        <Menu.Item key="delete" onClick={() => handleDeleteClick(row)}>
+          <Trash2 className="w-4 h-4 me-2" style={{ display: 'inline' }} />
+          {t('common:delete')}
+        </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -400,14 +407,16 @@ export default function ProductsList() {
           <h1 className="text-2xl font-bold text-gray-900">{t('pln.title')}</h1>
           <p className="text-gray-600">{t('pln.subtitle')}</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-          style={{ borderRadius: '2px' }}
-        >
-          <Plus className="w-4 h-4 me-2" />
-          {t('pln.addProduct')}
-        </button>
+        {canManage && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+            style={{ borderRadius: '2px' }}
+          >
+            <Plus className="w-4 h-4 me-2" />
+            {t('pln.addProduct')}
+          </button>
+        )}
       </div>
 
       {/* Products Table */}
