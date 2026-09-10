@@ -1,6 +1,8 @@
 // Simple API utility functions using fetch
 import { v4 as uuidv4 } from 'uuid';
 import { store } from '../store';
+import { clearAdminSession } from '../../utils/adminSession';
+import { redirectToLogin } from '../../utils/redirectToLogin';
 
 /**
  * The bearer token lives in the persisted redux `block` slice — nothing in the
@@ -10,6 +12,23 @@ import { store } from '../store';
  */
 function getAuthToken(): string | null {
   return (store.getState() as any)?.block?.token ?? null;
+}
+
+
+/**
+ * Every call in this file goes out over `fetch`, which has no interceptor — so
+ * unlike the axios services (see utils/axios*.ts) an expired session here just
+ * threw an "HTTP Error: 401" that each page swallowed into a toast, leaving the
+ * user on a permanently empty Portfolio screen. Tear the admin session down and
+ * send the browser to login, the same way the axios 401 handlers do.
+ */
+async function throwIfNotOk(response: Response): Promise<void> {
+  if (response.ok) return;
+  if (response.status === 401) {
+    await clearAdminSession();
+    redirectToLogin();
+  }
+  throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
 }
 
 const API_BASE_URL =`${import.meta.env.VITE_API_BASE_URL}/portfolio-service`;
@@ -43,9 +62,7 @@ export async function apiCall<T>(
     },
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  await throwIfNotOk(response);
 
   return response.json();
 }
@@ -1242,9 +1259,7 @@ export async function getAllLogs(page: number = 1, pageSize: number = 10) {
     headers: defaultHeaders,
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  await throwIfNotOk(response);
 
   return response.json() as Promise<LogListResponse>;
 }
@@ -1301,9 +1316,7 @@ export async function updateWalletBalance(data: UpdateWalletBalanceData): Promis
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-    }
+    await throwIfNotOk(response);
 
     const responseData = await response.json();
     
@@ -1418,9 +1431,7 @@ export async function getInvestorDocumentContent(
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const response = await fetch(url, { method: 'GET', headers });
-  if (!response.ok) {
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  await throwIfNotOk(response);
   return response.blob();
 }
 
@@ -1439,9 +1450,7 @@ export async function downloadInvestorDocument(
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const response = await fetch(url, { method: 'GET', headers });
-  if (!response.ok) {
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  await throwIfNotOk(response);
 
   const disposition = response.headers.get('Content-Disposition') || '';
   const match = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(disposition);
@@ -1601,9 +1610,7 @@ export async function getInvestorLedgerList(
     headers: defaultHeaders,
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  await throwIfNotOk(response);
 
   return response.json() as Promise<InvestorLedgerListResponse>;
 }
@@ -1636,9 +1643,7 @@ export async function getInvestorAccounts(
     headers: defaultHeaders,
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  await throwIfNotOk(response);
 
   return response.json() as Promise<InvestorAccountListResponse>;
 }
