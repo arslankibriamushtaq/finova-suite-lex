@@ -26,6 +26,9 @@ import {
   getAllInvestments,
   approveInvestment,
   updateWalletBalance,
+  getAllProducts,
+  getAllKycInvestors,
+  getAllKybInvestors,
 } from "../../../../redux/apis/apisInvestor";
 import { usePermissions } from "../../../../hooks/useProductPermissions";
 
@@ -46,6 +49,11 @@ const ApproveInvestment = () => {
   const [from, setFrom] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [to, setTo] = useState(0);
+  // The queue rows carry investorId and productId and no names, so both
+  // catalogues are read once and used as lookup tables — the two name columns
+  // rendered "-" for every row without them.
+  const [productNames, setProductNames] = useState<Record<string, string>>({});
+  const [investorNames, setInvestorNames] = useState<Record<string, string>>({});
   const [totalPage, setTotalPage] = useState(0);
   const [approveModalVisible, setApproveModalVisible] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
@@ -54,6 +62,40 @@ const ApproveInvestment = () => {
   useEffect(() => {
     getInvestmentsList();
   }, [page, pageSize]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const products = await getAllProducts(1, 100);
+        if (products?.success) {
+          setProductNames(
+            Object.fromEntries((products.data || []).map((p: any) => [p.id, p.name]))
+          );
+        }
+      } catch {
+        /* the id is shown instead */
+      }
+      try {
+        const [kyc, kyb] = await Promise.all([
+          getAllKycInvestors(1, 100),
+          getAllKybInvestors(1, 100),
+        ]);
+        const names: Record<string, string> = {};
+        for (const k of kyc?.data || []) {
+          if (k.investorId)
+            names[k.investorId] = `${k.firstNameInEnglish || ""} ${k.lastNameInEnglish || ""}`.trim();
+        }
+        for (const k of kyb?.data || []) {
+          if (k.investorId)
+            names[k.investorId] =
+              k.companyName || `${k.firstNameInEnglish || ""} ${k.lastNameInEnglish || ""}`.trim();
+        }
+        setInvestorNames(names);
+      } catch {
+        /* the id is shown instead */
+      }
+    })();
+  }, []);
 
   const getInvestmentsList = async () => {
     try {
@@ -151,7 +193,7 @@ const ApproveInvestment = () => {
   const Headers = [
     {
       name: t("appinv.col.productName"),
-      selector: (row: any) => row.productName || "-",
+      selector: (row: any) => row.productName || productNames[row.productId] || row.productId || "-",
       sortable: true,
     },
     {
@@ -161,7 +203,8 @@ const ApproveInvestment = () => {
     },
     {
       name: t("appinv.col.investorName"),
-      selector: (row: any) => row.investorName || "-",
+      selector: (row: any) =>
+        row.investorName || investorNames[row.investorId] || row.investorId || "-",
       sortable: true,
     },
     {

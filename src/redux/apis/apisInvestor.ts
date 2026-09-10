@@ -1192,15 +1192,52 @@ export interface Document {
 }
 
 // Investment interfaces
+/**
+ * One subscription as `Investment/GetAll` returns it. The service sends ids,
+ * not names — `investorName`/`productName` are absent from the payload and are
+ * resolved by the caller against the investor and product catalogues.
+ *
+ * `firstExtectedReturn` / `extected*Profit` are the service's own misspellings,
+ * sent alongside the corrected `expected*` fields; both are declared so neither
+ * spelling reads as an unknown property.
+ */
 export interface Investment {
   id: string;
   investorId: string;
-  investorName?: string;
   productId: string;
-  productName?: string;
-  amount: number;
+  productPortfolioId: string | null;
+  segmentId: string | null;
+  currencyCode: string | null;
+  profitDistributionFrequency: string | null;
+  investmentAmount: number;
+  processingFee: number;
+  vat: number;
+  totalPayable: number;
+  firstExtectedReturn?: number;
+  extectedMinimumProfit?: number;
+  extectedMaximumProfit?: number;
+  firstExpectedReturn: number;
+  expectedMinimumProfit: number;
+  expectedMaximumProfit: number;
+  fixedPercentageProfit: number;
+  expectedTotalPayment: number;
+  totalPaymentReceived: number;
+  totalReturn: number;
+  capitalRepaid: number;
+  outstandingCapital: number;
+  monthlyReturnAmount: number;
+  yearlyReturnAmount: number;
+  nextPayout: string | null;
+  investmentStatus: boolean;
   status: string;
+  verificationStatus: number;
+  startDate: string | null;
+  maturityDate: string | null;
+  rejectionReason: string | null;
+  approvedAt: string | null;
+  returns: any[];
   createdAt: string;
+  updatedAt: string;
   [key: string]: any;
 }
 
