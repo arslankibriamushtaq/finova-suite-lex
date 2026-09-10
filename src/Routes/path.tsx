@@ -456,16 +456,12 @@ import CreateComodityInfo from "../components/ProductManagement/createComodityIn
 import CraeteProductSettings from "../components/ProductManagement/craeteProductSettings";
 import CreateProductAffiliation from "../components/ProductManagement/createProductAffiliation";
 import CreateRequiredDocuments from "../components/ProductManagement/createRequiredDocuments";
-// import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
-// import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
-// import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
-// import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
+import InvestorAuditLogs from "../pages/InvestorPages/admin/AuditLogs";
+import InvestorNotifications from "../pages/InvestorPages/admin/Notifications";
+import InvestorAdminUsers from "../pages/InvestorPages/admin/AdminUsers";
+import InvestorSystemSettings from "../pages/InvestorPages/admin/SystemSettings";
 
 // Investor Dashboard Components
-// import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
-// import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
-// import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
-// import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
 
 import CreateTicket from "../pages/cmsPages/Tickets/CreateTicket";
 import ContactUs from "../components/WebPages/ContactUs";
@@ -528,16 +524,8 @@ import SelfieStep from "../pages/BusinessOnboarding/steps/SelfieStep";
 import UnderReviewStep from "../pages/BusinessOnboarding/steps/UnderReviewStep";
 import PepStep from "../pages/BusinessOnboarding/steps/PepStep";
 
-// import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
-// import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
-// import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
-// import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
 
 // Investor Dashboard Components
-// import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
-// import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
-// import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
-// import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
 
 export const router = createBrowserRouter(
   [
@@ -2320,10 +2308,10 @@ export const router = createBrowserRouter(
                 { path: "AllocationEngine/risk-profiles", element: <RiskProfiles /> },
 
                 /* Other Admin Pages */
-                //  { path: "AuditLogs", element: <AuditLogs /> },
-                //  { path: "Notifications", element: <Notifications /> },
-                //  { path: "AdminUsers", element: <AdminUsers /> },
-                //  { path: "SystemSettings", element: <SystemSettings /> },
+                { path: "AuditLogs", element: <InvestorAuditLogs /> },
+                { path: "Notifications", element: <InvestorNotifications /> },
+                { path: "AdminUsers", element: <InvestorAdminUsers /> },
+                { path: "SystemSettings", element: <InvestorSystemSettings /> },
               ],
             },
           ],
@@ -2895,10 +2883,10 @@ export const router = createBrowserRouter(
                 { path: "AllocationEngine/risk-profiles", element: <RiskProfiles /> },
 
                 /* Other Admin Pages */
-                //  { path: "AuditLogs", element: <AuditLogs /> },
-                //  { path: "Notifications", element: <Notifications /> },
-                //  { path: "AdminUsers", element: <AdminUsers /> },
-                //  { path: "SystemSettings", element: <SystemSettings /> },
+                { path: "AuditLogs", element: <InvestorAuditLogs /> },
+                { path: "Notifications", element: <InvestorNotifications /> },
+                { path: "AdminUsers", element: <InvestorAdminUsers /> },
+                { path: "SystemSettings", element: <InvestorSystemSettings /> },
               ],
             },
           ],

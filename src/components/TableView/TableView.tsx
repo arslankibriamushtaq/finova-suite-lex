@@ -98,7 +98,6 @@ const TableView = ({
         backgroundColor: "var(--theme-table-background-color)",
         background: "var(--theme-table-background-color)",
         border: "none",
-        borderBottom: "1px solid var(--surface-border)",
         minHeight: "34px",
       },
     },
@@ -139,14 +138,11 @@ const TableView = ({
         justifyContent: "start",
         alignItems: "center",
         background: "var(--theme-table-background-color)",
-        // A column name is a label, not a headline. Small, uppercase and muted
-        // is what lets the ROW be the thing you read — white 12px semibold on
-        // a solid brand bar made the header the loudest element in the table.
-        color: "var(--theme-table-heading-color)",
-        fontSize: "11px",
+        color: "#ffffff",
+        fontSize: "12px",
         fontWeight: "600",
-        letterSpacing: "0.4px",
-        textTransform: "uppercase",
+        letterSpacing: "0.2px",
+        textTransform: "none",
         whiteSpace: "nowrap",
       },
     },

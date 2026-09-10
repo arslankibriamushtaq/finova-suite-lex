@@ -2078,173 +2078,153 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //  },
       ],
     },
-    // {
-    //   label: "Porfolio Management",
-    //   Link: "/InvestorDashboard/Overview",
-    //   img: Images.dashboardIcon,
-    //   imgActive: Images.dashboardIconActive,
-    //   active: pathname.split("/").includes("/InvestorDashboard"),
-    //   menu: [
-    //     {
-    //       label: "Dashboard Overview",
-    //       Link: "Overview",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.dashboardIcon,
-    //       active: pathname.includes("/InvestorDashboard/Overview"),
-    //     },
-    //     {
-    //       label: "Investors",
-    //       Link: "Investors",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.CustomerManagementIcon,
-    //       active: pathname.includes("/InvestorDashboard/Investors"),
-    //     },
-    //     {
-    //       label: "Products & Rates",
-    //       Link: "Products",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.productManagementIcon,
-    //       active: pathname.includes("/InvestorDashboard/Products"),
-    //     },
-    //     {
-    //       label: "Income Ranges",
-    //       Link: "IncomeRanges",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.LovIcon,
-    //       active: pathname == "/InvestorDashboard/IncomeRanges",
-    //     },
-    //     {
-    //       label: "Initial Invest",
-    //       Link: "InitialInvest",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.FinancingApplicationsIcon,
-    //       active: pathname == "/InvestorDashboard/InitialInvest",
-    //     },
-    //     {
-    //       label: "Investment Experience",
-    //       Link: "InvestmentExperience",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.PartnerManagementIcon,
-    //       active: pathname == "/InvestorDashboard/InvestmentExperience",
-    //     },
-    //     {
-    //       label: "Investment Timeline",
-    //       Link: "InvestmentTimeline",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.applicationBoard,
-    //       active: pathname == "/InvestorDashboard/InvestmentTimeline",
-    //     },
-    //     {
-    //       label: "System Settings",
-    //       Link: "SystemSettings",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.SettingsIcon,
-    //       active: pathname.includes("/InvestorDashboard/SystemSettings"),
-    //       submenu: [
 
-    //         {
-    //           label: "Income Ranges",
-    //           Link: "IncomeRanges",
-    //           LinkLable: "/InvestorDashboard/SystemSettings",
-    //           img: Images.LovIcon,
-    //           active: pathname.includes("/InvestorDashboard/SystemSettings/IncomeRanges"),
-    //         },
-    //         {
-    //           label: "Initial Invest",
-    //           Link: "InitialInvest",
-    //           LinkLable: "/InvestorDashboard/SystemSettings",
-    //           img: Images.FinancingApplicationsIcon,
-    //           active: pathname.includes("/InvestorDashboard/SystemSettings/InitialInvest"),
-    //         },
-    //         {
-    //           label: "Investment Experience",
-    //           Link: "InvestmentExperience",
-    //           LinkLable: "/InvestorDashboard/SystemSettings",
-    //           img: Images.PartnerManagementIcon,
-    //           active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentExperience"),
-    //         },
-    //         {
-    //           label: "Investment Timeline",
-    //           Link: "InvestmentTimeline",
-    //           LinkLable: "/InvestorDashboard/SystemSettings",
-    //           img: Images.applicationBoard,
-    //           active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
-    //         },
+    
+    {
+      label: "Porfolio Management",
+      Link: "/InvestorDashboard/Overview",
+      img: Images.dashboardIcon,
+      imgActive: Images.dashboardIconActive,
+      active: pathname.includes("/InvestorDashboard"),
+      menu: [
+        {
+          label: "Dashboard Overview",
+          Link: "Overview",
+          LinkLable: "/InvestorDashboard",
+          img: Images.dashboardIcon,
+          active: pathname.includes("/InvestorDashboard/Overview"),
+        },
+        {
+          label: "Investors",
+          Link: "Investors",
+          LinkLable: "/InvestorDashboard",
+          img: Images.CustomerManagementIcon,
+          active: pathname.includes("/InvestorDashboard/Investors"),
+        },
+        {
+          label: "Products & Rates",
+          Link: "Products",
+          LinkLable: "/InvestorDashboard",
+          img: Images.productManagementIcon,
+          active: pathname.includes("/InvestorDashboard/Products"),
+        },
+        // The four settings screens are routed under `SystemSettings/` (see
+        // Routes/path.tsx), so the flat copies of them that used to sit here
+        // pointed at /InvestorDashboard/IncomeRanges etc. — all 404. The
+        // "System Settings" group below is the same four rows with the paths
+        // the router actually serves.
+        {
+          label: "System Settings",
+          Link: "SystemSettings",
+          LinkLable: "/InvestorDashboard",
+          img: Images.SettingsIcon,
+          active: pathname.includes("/InvestorDashboard/SystemSettings"),
+          submenu: [
 
-    //       ],
-    //     },
-    //     {
-    //       label: "Investment",
-    //       Link: "ApproveInvestment",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.logsIcon,
-    //       active: pathname.includes("/InvestorDashboard/ApproveInvestment"),
-    //     },
-    //     {
-    //       label: "Logs",
-    //       Link: "Logs",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.logsIcon,
-    //       active: pathname.includes("/InvestorDashboard/Logs"),
-    //     },
-    //     {
-    //       label: "Ledger",
-    //       Link: "Ledger",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.reportsIconDark,
-    //       active: pathname.includes("/InvestorDashboard/Ledger"),
-    //     },
-    //     {
-    //       label: "Investments",
-    //       Link: "Investments",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.loanIcon,
-    //       active: pathname == "/InvestorDashboard/Investments",
-    //     },
-    //     {
-    //       label: "Allocation Engine",
-    //       Link: "AllocationEngine",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.ApiManagementIcon,
-    //       active: pathname == "/InvestorDashboard/AllocationEngine",
-    //     },
-    //     {
-    //       label: "Reports",
-    //       Link: "Reports",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.reportsIconDark,
-    //       active: pathname == "/InvestorDashboard/Reports",
-    //     },
-    //     {
-    //       label: "Audit Logs",
-    //       Link: "AuditLogs",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.logsIcon,
-    //       active: pathname == "/InvestorDashboard/AuditLogs",
-    //     },
-    //     {
-    //       label: "Notifications",
-    //       Link: "Notifications",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.notification,
-    //       active: pathname == "/InvestorDashboard/Notifications",
-    //     },
-    //     {
-    //       label: "Admin Users & Roles",
-    //       Link: "AdminUsers",
-    //       LinkLable: "/InvestorDashboard",
-    //       img: Images.DepartmentManagementIcon,
-    //       active: pathname == "/InvestorDashboard/AdminUsers",
-    //     },
+            {
+              label: "Income Ranges",
+              Link: "IncomeRanges",
+              LinkLable: "/InvestorDashboard/SystemSettings",
+              img: Images.LovIcon,
+              active: pathname.includes("/InvestorDashboard/SystemSettings/IncomeRanges"),
+            },
+            {
+              label: "Initial Invest",
+              Link: "InitialInvest",
+              LinkLable: "/InvestorDashboard/SystemSettings",
+              img: Images.FinancingApplicationsIcon,
+              active: pathname.includes("/InvestorDashboard/SystemSettings/InitialInvest"),
+            },
+            {
+              label: "Investment Experience",
+              Link: "InvestmentExperience",
+              LinkLable: "/InvestorDashboard/SystemSettings",
+              img: Images.PartnerManagementIcon,
+              active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentExperience"),
+            },
+            {
+              label: "Investment Timeline",
+              Link: "InvestmentTimeline",
+              LinkLable: "/InvestorDashboard/SystemSettings",
+              img: Images.applicationBoard,
+              active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
+            },
 
-    //   ],
-    // },
+          ],
+        },
+        {
+          label: "Investment",
+          Link: "ApproveInvestment",
+          LinkLable: "/InvestorDashboard",
+          img: Images.logsIcon,
+          active: pathname.includes("/InvestorDashboard/ApproveInvestment"),
+        },
+        {
+          label: "Logs",
+          Link: "Logs",
+          LinkLable: "/InvestorDashboard",
+          img: Images.logsIcon,
+          active: pathname.includes("/InvestorDashboard/Logs"),
+        },
+        {
+          label: "Ledger",
+          Link: "Ledger",
+          LinkLable: "/InvestorDashboard",
+          img: Images.reportsIconDark,
+          active: pathname.includes("/InvestorDashboard/Ledger"),
+        },
+        {
+          label: "Investments",
+          Link: "Investments",
+          LinkLable: "/InvestorDashboard",
+          img: Images.loanIcon,
+          active: pathname == "/InvestorDashboard/Investments",
+        },
+        {
+          label: "Allocation Engine",
+          Link: "AllocationEngine",
+          LinkLable: "/InvestorDashboard",
+          img: Images.ApiManagementIcon,
+          active: pathname == "/InvestorDashboard/AllocationEngine",
+        },
+        {
+          label: "Reports",
+          Link: "Reports",
+          LinkLable: "/InvestorDashboard",
+          img: Images.reportsIconDark,
+          active: pathname == "/InvestorDashboard/Reports",
+        },
+        {
+          label: "Audit Logs",
+          Link: "AuditLogs",
+          LinkLable: "/InvestorDashboard",
+          img: Images.logsIcon,
+          active: pathname == "/InvestorDashboard/AuditLogs",
+        },
+        {
+          label: "Notifications",
+          Link: "Notifications",
+          LinkLable: "/InvestorDashboard",
+          img: Images.notification,
+          active: pathname == "/InvestorDashboard/Notifications",
+        },
+        {
+          label: "Admin Users & Roles",
+          Link: "AdminUsers",
+          LinkLable: "/InvestorDashboard",
+          img: Images.DepartmentManagementIcon,
+          active: pathname == "/InvestorDashboard/AdminUsers",
+        },
+
+      ],
+    },
   ];
 
   // Reference existing Financing-tab modules so they can be reused in the Wallet
   // tab without duplicating their (large) configs.
   const lmsModule = sidebarItems.find((x: any) => x && x.label === "LMS");
   const connectorModule = sidebarItems.find((x: any) => x && x.label === "Connector Management");
+  const portfolioModule = sidebarItems.find((x: any) => x && x.label === "Porfolio Management");
 
   /**
    * LEX — the agentic decisioning layer, a sibling of LOS and LMS under
@@ -3192,6 +3172,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // Every row inside LEX is gated, so a role with none of them would get
         // an empty parent that opens onto nothing.
         lexModule.menu.length > 0 && lexModule,
+        portfolioModule,
       ].filter(Boolean),
     },
     hasAccess("MIDDLEWARE") && connectorModule,

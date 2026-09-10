@@ -1,7 +1,18 @@
 // Simple API utility functions using fetch
 import { v4 as uuidv4 } from 'uuid';
+import { store } from '../store';
 
-const API_BASE_URL =import.meta.env.VITE_REACT_APP_API_INVESTOR_URL;
+/**
+ * The bearer token lives in the persisted redux `block` slice — nothing in the
+ * app ever writes a `localStorage.authToken`, so reading that key sent
+ * `Bearer null` on every call from this file. Read it lazily (per request, not
+ * at module load) so a login that happens after import is picked up.
+ */
+function getAuthToken(): string | null {
+  return (store.getState() as any)?.block?.token ?? null;
+}
+
+const API_BASE_URL =`${import.meta.env.VITE_API_BASE_URL}/portfolio-service`;
 const WalletAPI_BASE_URL = import.meta.env.VITE_REACT_APP_API_WALLET_URL;
 const LEDGER_API_BASE_URL = import.meta.env.VITE_REACT_APP_API_BASE_LMS_URL;
 const LOGS_API_BASE_URL = import.meta.env.VITE_REACT_APP_API_INVESTOR_URL;
@@ -18,10 +29,11 @@ export async function apiCall<T>(
   };
 
   // Add auth token if available
-  const token = localStorage.getItem('authToken');
-
+  const token = getAuthToken();
+  if (token) {
     defaultHeaders.Authorization = `Bearer ${token}`;
-  
+  }
+
 
   const response = await fetch(url, {
     ...options,
@@ -1221,7 +1233,7 @@ export async function getAllLogs(page: number = 1, pageSize: number = 10) {
     'Content-Type': 'application/json',
     'Accept': '*/*',
     'Request-Id': uuidv4(),
-    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+    'Authorization': `Bearer ${getAuthToken()}`,
   };
 
 
@@ -1265,9 +1277,9 @@ const generateUUID = (): string => {
 };
 
 // Update Wallet Balance API
-const token = localStorage.getItem('authToken');
 export async function updateWalletBalance(data: UpdateWalletBalanceData): Promise<UpdateWalletBalanceResponse> {
   try {
+    const token = getAuthToken();
     const url = `${WalletAPI_BASE_URL}/api/UserWallet/UpdateWalletBalance`;
 
     const defaultHeaders: Record<string, string> = {
@@ -1489,7 +1501,7 @@ export async function getInvestorLedgerList(
   if (toDate) {
     params.append('ToDate', toDate);
   }
-  // const token = localStorage.getItem('authToken');
+  const token = getAuthToken();
   const url = `${LEDGER_API_BASE_URL}/api/AccountLedger/GetInvestorLedgerList?${params.toString()}`;
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -1533,7 +1545,7 @@ export async function getInvestorAccounts(
     'Request-Id': uuidv4(),
   };
 
-  const token = localStorage.getItem('authToken');
+  const token = getAuthToken();
   if (token) {
     defaultHeaders.Authorization = `Bearer ${token}`;
   }

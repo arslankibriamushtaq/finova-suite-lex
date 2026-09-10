@@ -67,12 +67,13 @@
   --chart-series-1: var(--brand-600);
   --radius: 2px;
 
-  /* Status colors — Finova has no green, so positive sits at the brand step
-     and negative sits deeper in the same ramp. */
-  --color-success: var(--brand-500);
-  --color-success-bg: var(--brand-50);
-  --color-success-border: var(--brand-200);
-  --color-success-text: var(--brand-700);
+  /* Status colors. Success is GREEN: a confirmation and a failure must not be
+     the same colour, or the colour stops carrying the message. Negative stays
+     in the brand ramp. */
+  --color-success: #16a34a;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-success-text: #15803d;
 
   --color-error: var(--brand-800);
   --color-error-bg: var(--brand-100);
@@ -127,7 +128,7 @@
   --color-danger-dark: #a40000;
   --color-teal-accent: var(--brand-400);
   --color-orange: #ff9900;
-  --color-green-teal: var(--brand-500);
+  --color-green-teal: #16a34a;
   --color-purple-dark: #39244f;
   --color-purple-medium: #614fa2;
 
@@ -155,13 +156,13 @@
   --color-teal-light-bg: var(--brand-100);
   --color-mint-bg: var(--brand-50);
   --color-mint-light-bg: var(--brand-100);
-  --color-green-light-bg: var(--brand-100);
+  --color-green-light-bg: #dcfce7;
   --color-blue-light-bg: #e6f7ff;
   --color-blue-xlight-bg: #e1f4ff;
   --color-warning-yellow: #fed932;
   --color-danger-red: #d7232c;
   --color-orange-alt: #ff9811;
-  --color-green-success-light: var(--brand-400);
+  --color-green-success-light: #4ade80;
 
   /* Near-white surfaces */
   --color-surface-cloud: #f9f9f9;
@@ -188,7 +189,7 @@
   --color-block-fallback:   #607D8B;
 
   /* LMS status badge colors */
-  --color-status-green:    var(--brand-300);
+  --color-status-green:    #16a34a;
   --color-status-red-soft: #D86969;
   --color-status-amber:    #FAB65E;
   --color-status-coral:    #F85F54;
@@ -256,7 +257,10 @@
   --timeline-risk:        var(--chart-5);
   --timeline-fraud:       var(--chart-5);
   --timeline-block:       var(--color-warning);
-  --timeline-wallet:      var(--color-success);
+  /* Not a success semantic — a category accent that borrowed the token.
+     Pinned to the brand step so the timeline keeps its palette now that
+     --color-success is green. */
+  --timeline-wallet:      var(--brand-500);
   --timeline-transaction: var(--chart-3);
   --timeline-card:        var(--chart-2);
   --timeline-loan:        #7c3aed;
@@ -322,10 +326,10 @@ html.dark,
   --chart-series-1: var(--brand-400);
 
   /* App surface / status — dark variants */
-  --color-success: var(--brand-400);
-  --color-success-bg: rgba(200, 29, 37, 0.12);
-  --color-success-border: rgba(200, 29, 37, 0.35);
-  --color-success-text: var(--brand-200);
+  --color-success: #4ade80;
+  --color-success-bg: rgba(34, 197, 94, 0.12);
+  --color-success-border: rgba(34, 197, 94, 0.35);
+  --color-success-text: #bbf7d0;
 
   --color-error: #ef4444;
   --color-error-bg: rgba(239, 68, 68, 0.12);
@@ -360,11 +364,11 @@ html.dark,
   --theme-heading-text-color: #f1f5f9;
   --theme-cards-background-color: #161821;
   --theme-cards-text-color: #e6eaf2;
-  --theme-table-background-color: var(--surface-card-alt);
-  --theme-table-heading-color: var(--muted-foreground);
+  --theme-table-background-color: var(--brand-800);
+  --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #e6eaf2;
-  --theme-table-row-alt: transparent;
-  --theme-table-row-hover: var(--surface-card-hover);
+  --theme-table-row-alt: #2A1114;   /* red-tinted stripe (dark) */
+  --theme-table-row-hover: #3A171A;
   /* Subtle red-tinted sidebar surface — follows the Finova logo color */
   --theme-flow-sidebar-logo-bg: #150B0D;
   --theme-flow-dashboard-sidebar-bg: #1A0D0F;
@@ -1291,13 +1295,13 @@ html.dark header.rdt_TableHeadRow,
 html.dark .rdt_TableHead > .rdt_TableHeadRow {
   background-color: var(--theme-table-background-color) !important;
   background: var(--theme-table-background-color) !important;
-  border-bottom: 1px solid var(--surface-border) !important;
+  border-bottom: none !important;
 }
 html.dark .rdt_TableCol,
 html.dark .rdt_TableCol_Sortable,
 html.dark .rdt_TableHeadRow .rdt_TableCol {
   background-color: transparent !important;
-  color: var(--theme-table-heading-color) !important;
+  color: #ffffff !important;
 }
 html.dark .rdt_TableCell {
   background-color: transparent !important;
@@ -1527,7 +1531,7 @@ html.dark .rdt_TableCell .text-green-500,
 html.dark .no-table .text-green-600,
 html.dark .no-table .text-green-700,
 html.dark .no-table .text-green-500 {
-  color: #D96368 !important;
+  color: #4ade80 !important;
 }
 html.dark .rdt_TableCell .text-red-500,
 html.dark .rdt_TableCell .text-red-600,
@@ -1975,20 +1979,11 @@ html.dark .bg-white .recharts-wrapper {
   --theme-heading-text-color: #090909;
   --theme-cards-background-color: transparent;
   --theme-cards-text-color: transparent;
-  /* The table is the working canvas, not chrome. A solid brand-red bar with
-     white text and pink zebra striping is the one thing on these screens that
-     still reads as a 2010 admin template: the heaviest element on the page is
-     the row of column names, which is the part nobody needs to read twice.
-     Neutral header, muted label text, and NO stripe — rows separate on the
-     hairline border they already carry. Colour in a table should mean
-     something (a breached SLA, a status), and it cannot while the table paints
-     every other row. Brand stays on the sidebar and the header — chrome around
-     a neutral canvas. */
-  --theme-table-background-color: var(--surface-card-alt);
-  --theme-table-heading-color: var(--muted-foreground);
+  --theme-table-background-color: var(--brand-600);
+  --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #0f172a;
-  --theme-table-row-alt: transparent;
-  --theme-table-row-hover: var(--surface-card-hover);
+  --theme-table-row-alt: var(--brand-50);   /* light red stripe — matches theme */
+  --theme-table-row-hover: var(--brand-100);
   /* Subtle red-tinted sidebar surface — follows the Finova logo color */
   --theme-flow-sidebar-logo-bg: var(--brand-50);
   --theme-flow-dashboard-sidebar-bg: var(--brand-50);

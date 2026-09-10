@@ -105,8 +105,8 @@ const getStates = async () => {
         position="top-center"
         reverseOrder={false}
         toastOptions={{
-          /* react-hot-toast paints its success tick green by default. */
-          success: { iconTheme: { primary: "#AB1920", secondary: "#ffffff" } },
+          /* Success is green — a confirmation must not look like a failure. */
+          success: { iconTheme: { primary: "#16a34a", secondary: "#ffffff" } },
         }}
       />
       <I18nextProvider i18n={i18n}>
@@ -118,9 +118,7 @@ const getStates = async () => {
             token: {
               colorPrimary: "#C81D25",
               colorInfo: "#2563eb",
-              /* No green anywhere: antd success takes the deep brand red, which
-                 stays distinct from the brighter default colorError. */
-              colorSuccess: "#AB1920",
+              colorSuccess: "#16a34a",
               colorLink: "#AB1920",
               colorLinkHover: "#C81D25",
               borderRadius: 2,
