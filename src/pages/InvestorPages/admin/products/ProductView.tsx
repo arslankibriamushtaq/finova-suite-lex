@@ -6,6 +6,12 @@ import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { getProductById, Product } from "../../../../redux/apis/apisInvestor";
 import Loader from "../../../../components/Loader/Loader";
+import {
+  PRODUCT_STATUSES,
+  PRODUCT_CATEGORIES,
+  enumToNumber,
+  humaniseEnum,
+} from './productEnums';
 
 const ProductView = () => {
   const { t } = useTranslation("investor");
@@ -40,7 +46,8 @@ const ProductView = () => {
     }
   };
 
-  const getProductStatusText = (status: number) => {
+  // "ACTIVE" or 0 — the service has sent both.
+  const getProductStatusText = (status: number | string) => {
     const statusMap: { [key: number]: string } = {
       0: t('pv.status.active'),
       1: t('pv.status.inactive'),
@@ -48,10 +55,28 @@ const ProductView = () => {
       3: t('pv.status.suspended'),
       4: t('pv.status.launching')
     };
-    return statusMap[status] || t('pv.status.unknown');
+    return statusMap[enumToNumber(status, PRODUCT_STATUSES, -1)] || t('pv.status.unknown');
   };
 
-  const getProductStatusColor = (status: number) => {
+  const getProductCategoryText = (category: number | string | undefined) => {
+    const categoryMap: { [key: number]: string } = {
+      0: t("pln.cat.equity"),
+      1: t("pln.cat.fixedIncome"),
+      2: t("pln.cat.realEstate"),
+      3: t("pln.cat.commodities"),
+      4: t("pln.cat.mutualFunds"),
+      5: t("pln.cat.etf"),
+      6: t("pln.cat.crypto"),
+      7: t("pln.cat.altInvestments"),
+      8: t("pln.cat.cash"),
+    };
+    if (category === undefined || category === null || category === "") return "-";
+    return (
+      categoryMap[enumToNumber(category, PRODUCT_CATEGORIES, -1)] || humaniseEnum(category) || "-"
+    );
+  };
+
+  const getProductStatusColor = (status: number | string) => {
     const colorMap: { [key: number]: string } = {
       0: '#AB1920', // Green for Active
       1: '#8c8c8c', // Gray for Inactive
@@ -59,7 +84,7 @@ const ProductView = () => {
       3: '#faad14', // Yellow for Suspended
       4: '#1890ff'  // Blue for Launching
     };
-    return colorMap[status] || '#8c8c8c';
+    return colorMap[enumToNumber(status, PRODUCT_STATUSES, -1)] || '#8c8c8c';
   };
 
   if (loading) {
@@ -134,7 +159,7 @@ const ProductView = () => {
             {productData.minimumInvestment?.toLocaleString() || "0"} SAR
           </Descriptions.Item>
           <Descriptions.Item label={t("pv.label.category")}>
-            {productData.productCategory || "-"}
+            {getProductCategoryText(productData.productCategory)}
           </Descriptions.Item>
           <Descriptions.Item label={t("pv.label.status")}>
             <span
@@ -153,7 +178,15 @@ const ProductView = () => {
             {productData.launchDate ? new Date(productData.launchDate).toLocaleDateString() : "-"}
           </Descriptions.Item>
           <Descriptions.Item label={t("pv.label.duration")}>
-            {productData.investmentDuration ? t("pv.months", { value: productData.investmentDuration }) : "-"}
+            {/* The service sends a named term ("MEDIUM_TERM"), not a month
+                count — "MEDIUM_TERM months" was the old rendering. A number
+                still reads as months. */}
+            {productData.investmentDuration
+              ? typeof productData.investmentDuration === "number" ||
+                !Number.isNaN(Number(productData.investmentDuration))
+                ? t("pv.months", { value: productData.investmentDuration })
+                : humaniseEnum(productData.investmentDuration)
+              : "-"}
           </Descriptions.Item>
           <Descriptions.Item label={t("pv.label.segmentId")}>
             <span className="text-sm">{productData.segmentId || "-"}</span>

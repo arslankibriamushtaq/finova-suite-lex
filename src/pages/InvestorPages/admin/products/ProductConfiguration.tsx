@@ -30,6 +30,13 @@ import type { ProductConfiguration } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
 import Loader from '../../../../components/Loader/Loader';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
+import {
+  PRODUCT_STATUSES,
+  PROFIT_FREQUENCIES,
+  RISK_LEVELS,
+  enumToNumber,
+  tenureUnitOf,
+} from './productEnums';
 
 interface ConfigurationData {
   // Amounts tab
@@ -117,66 +124,6 @@ const initialConfigData: ConfigurationData = {
   regulatoryApprovalRequired: false
 };
 
-
-/**
- * The service answers with named enums now — "MONTHS", "QUARTERLY", "LOW",
- * "ACTIVE" — where it used to send the ordinals this form still speaks. Both
- * shapes are accepted on the way in so a configuration written by either
- * version of the service lands in the right control; the form keeps posting
- * the ordinals the write endpoints take.
- */
-const TENURE_UNITS: Record<string, string> = {
-  '1': 'Months',
-  '2': 'Years',
-  '3': 'Days',
-  MONTHS: 'Months',
-  YEARS: 'Years',
-  DAYS: 'Days',
-  MONTH: 'Months',
-  YEAR: 'Years',
-  DAY: 'Days',
-};
-
-const PROFIT_FREQUENCIES: Record<string, number> = {
-  QUARTERLY: 0,
-  SEMI_ANNUALLY: 1,
-  SEMIANNUALLY: 1,
-  ANNUALLY: 2,
-  YEARLY: 2,
-  ON_MATURITY: 3,
-  MATURITY: 3,
-};
-
-const RISK_LEVELS: Record<string, number> = {
-  LOW: 0,
-  MEDIUM: 1,
-  MODERATE: 1,
-  HIGH: 2,
-  VERY_HIGH: 3,
-  EXTREME: 4,
-};
-
-const PRODUCT_STATUSES: Record<string, number> = {
-  ACTIVE: 0,
-  INACTIVE: 1,
-  CLOSED: 2,
-  SUSPENDED: 3,
-  LAUNCHING: 4,
-};
-
-/** An enum that may arrive as its ordinal or as its name. */
-const enumToNumber = (value: any, names: Record<string, number>): number => {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    if (value.trim() !== '' && !Number.isNaN(Number(value))) return Number(value);
-    const mapped = names[value.toUpperCase()];
-    if (mapped !== undefined) return mapped;
-  }
-  return 0;
-};
-
-const tenureUnitOf = (value: any): string =>
-  TENURE_UNITS[String(value ?? '').toUpperCase()] || TENURE_UNITS[String(value)] || '0';
 
 export default function ProductConfiguration() {
   const { hasPermission } = usePermissions();

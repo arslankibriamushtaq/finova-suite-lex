@@ -39,6 +39,11 @@ import {
 } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
+import {
+  PRODUCT_STATUSES,
+  PRODUCT_CATEGORIES,
+  enumToNumber,
+} from './productEnums';
 
 export default function ProductsList() {
   // The shelf is readable on PORTFOLIO_PRODUCT_READ; creating or deleting a
@@ -49,7 +54,8 @@ export default function ProductsList() {
   const { t } = useTranslation('investor');
 
   // Helper function to get product status text
-  const getProductStatusText = (status: number) => {
+  // The service sends "ACTIVE" now, not 0 — read either.
+  const getProductStatusText = (status: number | string) => {
     const statusMap = {
       0: 'pln.status.active',
       1: 'pln.status.inactive',
@@ -57,7 +63,7 @@ export default function ProductsList() {
       3: 'pln.status.suspended',
       4: 'pln.status.launching'
     };
-    const key = statusMap[status as keyof typeof statusMap];
+    const key = statusMap[enumToNumber(status, PRODUCT_STATUSES, -1) as keyof typeof statusMap];
     return key ? t(key) : t('pln.status.unknown');
   };
 
@@ -68,8 +74,8 @@ export default function ProductsList() {
    * statuses furthest apart in meaning rendered identically, which is the one
    * thing a status column must never do.
    */
-  const productStatusTone = (status: number) => {
-    switch (status) {
+  const productStatusTone = (status: number | string) => {
+    switch (enumToNumber(status, PRODUCT_STATUSES, -1)) {
       case 0:
         return TONES.emerald; // Active
       case 3:
@@ -83,7 +89,7 @@ export default function ProductsList() {
   };
 
   // Helper function to get product category text
-  const getProductCategoryText = (category: number) => {
+  const getProductCategoryText = (category: number | string) => {
     const categoryMap = {
       0: 'pln.cat.equity',
       1: 'pln.cat.fixedIncome',
@@ -95,7 +101,7 @@ export default function ProductsList() {
       7: 'pln.cat.altInvestments',
       8: 'pln.cat.cash'
     };
-    const key = categoryMap[category as keyof typeof categoryMap];
+    const key = categoryMap[enumToNumber(category, PRODUCT_CATEGORIES, -1) as keyof typeof categoryMap];
     return key ? t(key) : t('pln.cat.unknown');
   };
 
