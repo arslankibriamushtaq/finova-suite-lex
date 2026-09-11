@@ -150,33 +150,34 @@ const ApproveInvestment = () => {
       }
 
       if (approveResult.success) {
-        // Step 2: If approval succeeds, update wallet balance
+        // The approval is committed on the server at this point. It used to be
+        // reported as a failure whenever the wallet top-up that follows it did
+        // not go through — the row kept its pending badge, the list was not
+        // refreshed, and the operator saw only an error, most often
+        // "VITE_REACT_APP_API_WALLET_URL is not set", which is a deployment
+        // gap in a different service and says nothing about the investment.
+        setData((prevData: any[]) =>
+          prevData.map((item: any) =>
+            item.id === selectedInvestment.id ? { ...item, verificationStatus: 1 } : item
+          )
+        );
+        toast.success(approveResult.notificationMessage || t("appinv.success"));
+        setApproveModalVisible(false);
+        setSelectedInvestment(null);
+        getInvestmentsList();
+
+        // The wallet top-up is a separate service and a separate outcome. It
+        // is reported on its own terms rather than as the approval's verdict.
         const walletUpdateResult = await updateWalletBalance({
           userId: selectedInvestment.investorId,
           investment: selectedInvestment.investmentAmount || 0,
         });
-
-        // Only update status and refresh if BOTH APIs succeeded
-        if (walletUpdateResult.success) {
-          // Both APIs succeeded - update the status in the table
-          setData((prevData: any[]) =>
-            prevData.map((item: any) =>
-              item.id === selectedInvestment.id ? { ...item, verificationStatus: 1 } : item
-            )
+        if (!walletUpdateResult.success) {
+          toast.error(
+            t("appinv.walletWarning", {
+              reason: walletUpdateResult.error || t("appinv.walletError"),
+            })
           );
-
-          toast.success(
-            walletUpdateResult?.data?.notificationMessage ||
-              walletUpdateResult?.message ||
-              t("appinv.success")
-          );
-          setApproveModalVisible(false);
-          setSelectedInvestment(null);
-          // Refresh the list to get latest data
-          getInvestmentsList();
-        } else {
-          // Wallet update failed - don't update status or refresh list
-          toast.error(walletUpdateResult.error || t("appinv.walletError"));
         }
       }
       setApproving(false);

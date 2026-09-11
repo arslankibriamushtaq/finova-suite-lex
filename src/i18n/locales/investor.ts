@@ -969,6 +969,7 @@ const investor: ModuleLocale = {
     "appinv.approveError": "Failed to approve investment",
     "appinv.success": "Investment approved and wallet balance updated successfully",
     "appinv.walletError": "Investment approval failed: wallet balance could not be updated",
+    "appinv.walletWarning": "Investment approved, but the wallet balance was not updated: {{reason}}",
     "appinv.approve": "Approve",
     "appinv.confirmDescription":
       "Approving credits the investor's wallet with this amount. It cannot be undone from here.",
@@ -3717,6 +3718,7 @@ const investor: ModuleLocale = {
     "appinv.approveError": "Échec de l’approbation de l’investissement",
     "appinv.success": "Investissement approuvé et solde du portefeuille mis à jour avec succès",
     "appinv.walletError": "Échec de l’approbation de l’investissement : le solde du portefeuille n’a pas pu être mis à jour",
+    "appinv.walletWarning": "Investissement approuvé, mais le solde du portefeuille n'a pas été mis à jour : {{reason}}",
     "appinv.approve": "Approuver",
     "appinv.confirmDescription":
       "L’approbation crédite le portefeuille de l’investisseur de ce montant. Elle ne peut pas être annulée ici.",
@@ -6466,6 +6468,7 @@ const investor: ModuleLocale = {
     "appinv.approveError": "فشل في الموافقة على الاستثمار",
     "appinv.success": "تمت الموافقة على الاستثمار وتحديث رصيد المحفظة بنجاح",
     "appinv.walletError": "فشلت الموافقة على الاستثمار: تعذّر تحديث رصيد المحفظة",
+    "appinv.walletWarning": "تمت الموافقة على الاستثمار، لكن لم يتم تحديث رصيد المحفظة: {{reason}}",
     "appinv.approve": "موافقة",
     "appinv.confirmDescription":
       "الموافقة تضيف هذا المبلغ إلى محفظة المستثمر، ولا يمكن التراجع عنها من هنا.",
