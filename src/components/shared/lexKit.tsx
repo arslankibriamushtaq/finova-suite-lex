@@ -1,7 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   Ban,
+  ChevronDown,
   Info,
   TrendingDown,
   TrendingUp,
@@ -10,6 +13,12 @@ import {
 
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { SearchField } from "./filterKit";
 import {
   Select,
@@ -632,3 +641,97 @@ export const LexScope = ({
     {productName || allProductsLabel} / {sectorName || allSectorsLabel}
   </span>
 );
+
+/* ------------------------------------------------------------------ */
+/* Row actions                                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The actions menu for a table row.
+ *
+ * The list screens had each grown their own version of this: one ghost icon
+ * button per action, side by side. A column of unlabelled glyphs tells a
+ * reader nothing — an eye, a page, a cog and a bin all look equally like
+ * "something happens here", and the only way to find out is to hover each one
+ * and wait for a title attribute. One labelled trigger says there are actions
+ * and names them when it opens.
+ *
+ * The stop-propagation wrapper is what keeps a click on the menu from also
+ * registering as a click on the row underneath it.
+ */
+export const LexRowActions = ({
+  children,
+  label,
+}: {
+  children: React.ReactNode;
+  label?: string;
+}) => {
+  const { t } = useTranslation("common");
+  return (
+    <div
+      className="relative inline-block"
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            {label ?? t("select")}
+            <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="z-[9999]">
+          {children}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
+
+/**
+ * One entry in a LexRowActions menu. Give it `to` for a link or `onSelect`
+ * for a handler.
+ *
+ * A handler entry calls preventDefault on Radix's select event: that stops the
+ * menu closing and returning focus to the trigger while a dialog the handler
+ * opens is taking focus for itself, which otherwise leaves the dialog unfocused.
+ * A link entry wants the ordinary close, so it does not.
+ */
+export const LexRowAction = ({
+  icon: Icon,
+  children,
+  onSelect,
+  to,
+  destructive,
+}: {
+  icon?: LucideIcon;
+  children: React.ReactNode;
+  onSelect?: () => void;
+  to?: string;
+  destructive?: boolean;
+}) => {
+  const body = (
+    <>
+      {Icon ? <Icon className="h-4 w-4" /> : null}
+      {children}
+    </>
+  );
+  if (to) {
+    return (
+      <DropdownMenuItem asChild variant={destructive ? "destructive" : "default"}>
+        <Link to={to}>{body}</Link>
+      </DropdownMenuItem>
+    );
+  }
+  return (
+    <DropdownMenuItem
+      variant={destructive ? "destructive" : "default"}
+      onSelect={(e) => {
+        e.preventDefault();
+        onSelect?.();
+      }}
+    >
+      {body}
+    </DropdownMenuItem>
+  );
+};
