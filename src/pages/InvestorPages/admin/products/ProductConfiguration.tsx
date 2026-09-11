@@ -117,6 +117,67 @@ const initialConfigData: ConfigurationData = {
   regulatoryApprovalRequired: false
 };
 
+
+/**
+ * The service answers with named enums now — "MONTHS", "QUARTERLY", "LOW",
+ * "ACTIVE" — where it used to send the ordinals this form still speaks. Both
+ * shapes are accepted on the way in so a configuration written by either
+ * version of the service lands in the right control; the form keeps posting
+ * the ordinals the write endpoints take.
+ */
+const TENURE_UNITS: Record<string, string> = {
+  '1': 'Months',
+  '2': 'Years',
+  '3': 'Days',
+  MONTHS: 'Months',
+  YEARS: 'Years',
+  DAYS: 'Days',
+  MONTH: 'Months',
+  YEAR: 'Years',
+  DAY: 'Days',
+};
+
+const PROFIT_FREQUENCIES: Record<string, number> = {
+  QUARTERLY: 0,
+  SEMI_ANNUALLY: 1,
+  SEMIANNUALLY: 1,
+  ANNUALLY: 2,
+  YEARLY: 2,
+  ON_MATURITY: 3,
+  MATURITY: 3,
+};
+
+const RISK_LEVELS: Record<string, number> = {
+  LOW: 0,
+  MEDIUM: 1,
+  MODERATE: 1,
+  HIGH: 2,
+  VERY_HIGH: 3,
+  EXTREME: 4,
+};
+
+const PRODUCT_STATUSES: Record<string, number> = {
+  ACTIVE: 0,
+  INACTIVE: 1,
+  CLOSED: 2,
+  SUSPENDED: 3,
+  LAUNCHING: 4,
+};
+
+/** An enum that may arrive as its ordinal or as its name. */
+const enumToNumber = (value: any, names: Record<string, number>): number => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    if (value.trim() !== '' && !Number.isNaN(Number(value))) return Number(value);
+    const mapped = names[value.toUpperCase()];
+    if (mapped !== undefined) return mapped;
+  }
+  return 0;
+};
+
+const tenureUnitOf = (value: any): string =>
+  TENURE_UNITS[String(value ?? '').toUpperCase()] || TENURE_UNITS[String(value)] || '0';
+
 export default function ProductConfiguration() {
   const { hasPermission } = usePermissions();
   const canManage = hasPermission('PORTFOLIO_PRODUCT_MANAGE');
@@ -125,7 +186,7 @@ export default function ProductConfiguration() {
   const { t } = useTranslation('investor');
 
   // Helper function to get product status text
-  const getProductStatusText = (status: number) => {
+  const getProductStatusText = (status: number | string) => {
     const statusMap = {
       0: 'pln.status.active',
       1: 'pln.status.inactive',
@@ -133,7 +194,7 @@ export default function ProductConfiguration() {
       3: 'pln.status.suspended',
       4: 'pln.status.launching'
     };
-    const key = statusMap[status as keyof typeof statusMap];
+    const key = statusMap[enumToNumber(status, PRODUCT_STATUSES) as keyof typeof statusMap];
     return key ? t(key) : t('pln.status.unknown');
   };
   const tenureUnitLabel = (v: string) => {
@@ -231,8 +292,10 @@ export default function ProductConfiguration() {
         setLoading(true);
 
         // Fetch currencies
+        let currencyList: Currency[] = [];
         const currenciesResponse = await getAllCurrencies(1, 100);
         if (currenciesResponse.success) {
+          currencyList = currenciesResponse.data;
           setCurrencies(currenciesResponse.data);
 
           // Set default currency if available
@@ -242,7 +305,7 @@ export default function ProductConfiguration() {
           }
         } else {
           // Fallback to a basic currency list if API fails
-          setCurrencies([
+          currencyList = [
             {
               id: 'cc572887-2bed-4b69-5187-08de0ca65c2f',
               name: 'US Dollar',
@@ -253,7 +316,8 @@ export default function ProductConfiguration() {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString()
             }
-          ]);
+          ];
+          setCurrencies(currencyList);
           setConfigData(prev => ({ ...prev, baseCurrency: 'cc572887-2bed-4b69-5187-08de0ca65c2f' }));
         }
 
@@ -263,7 +327,12 @@ export default function ProductConfiguration() {
             const productResponse = await getProductById(productId);
             if (productResponse.success && productResponse.data) {
               setProduct(productResponse.data);
-           
+              // GetById returns the configuration inline when there is one, so
+              // the form opens filled instead of waiting for a button press.
+              // `currencies` state is not committed yet inside this effect —
+              // hand the freshly fetched list over rather than reading stale [].
+              const inlineConfig = (productResponse.data as any).configuration;
+              if (inlineConfig) applyConfiguration(inlineConfig, currencyList);
             } else {
             
               toast.error(t('pc.toast.loadProductFailed'));
@@ -481,6 +550,56 @@ export default function ProductConfiguration() {
     navigate(-1);
   };
 
+  /**
+   * Fill the form from a configuration record.
+   *
+   * This used to live inside the Edit button's handler, so a product that was
+   * already configured opened with an empty form: the values existed, nothing
+   * read them until the operator clicked. `Product/GetById` now returns the
+   * configuration inline, so the same mapping runs on load.
+   */
+  const applyConfiguration = (config: any, currencyList: Currency[] = currencies) => {
+    setExistingConfiguration(config);
+    setIsEditMode(true);
+
+    // The record names its currency by code; the picker is keyed by id.
+    const currencyId =
+      config.currencyId ||
+      currencyList.find((c) => c.currencyCode === config.currencyCode)?.id ||
+      '';
+
+    setConfigData((prev) => ({
+      ...prev,
+      minimumInvestment: config.minimumInvestmentAmount || 0,
+      maximumInvestment: config.maximumInvestmentAmount || 0,
+      investmentIncrement: config.investmentIncrement || 0,
+      // Was hardcoded to 0, so a saved limit was silently reset on every edit.
+      investementLimit: config.investmentLimit || 0,
+      baseCurrency: currencyId || prev.baseCurrency,
+      minimumTenure: config.minimumInvestmentTenure || 0,
+      maximumTenure: config.maximumInvestmentTenure || 0,
+      tenureUnit: tenureUnitOf(config.minimumInvestmentTenureUnit),
+      earlyWithdrawalAllowed: (config.earlyWithdrawalPenalty || 0) > 0,
+      earlyWithdrawalPenalty: config.earlyWithdrawalPenalty || 0,
+      principalWithdrawalPercentage: config.withdrawalPercentageAtMaturity || 0,
+      withdrawalProcessingDays: config.withdrawalProcessingDays || 0,
+      returnType: (config.fixedPercentageAmount || 0) > 0 ? 'fixed' : 'average',
+      fixedReturnPercentage: config.fixedPercentageAmount || 0,
+      expectedReturnMin: config.minimumExpectedReturnPercentage || 0,
+      expectedReturnMax: config.maximumExpectedReturnPercentage || 0,
+      profitDistributionFrequency: enumToNumber(
+        config.profitDistributionFrequency,
+        PROFIT_FREQUENCIES
+      ),
+      maxInvestors: config.maximumInvestors || 0,
+      minInvestorsToActivate: config.minimumInvestors || 0,
+      maxInvestmentsPerUser: config.minimumInvestmentsPerUser || 0,
+      riskLevel: enumToNumber(config.riskLevel, RISK_LEVELS),
+      processingFee: config.processingFee || 0,
+      vat: config.vat || 0,
+    }));
+  };
+
   // Fetch existing configuration and pre-fill fields
   const handleEditConfiguration = async () => {
     if (!productId) {
@@ -502,56 +621,7 @@ export default function ProductConfiguration() {
         
         if (response.success && response.data) {
           
-          const config = response.data;
-          setExistingConfiguration(config);
-          setIsEditMode(true);
-          
-          // Map API response to component state
-          const tenureUnitMap: { [key: number]: string } = {
-            0: '0',
-            1: 'Months',
-            2: 'Years',
-            3: 'Days'
-          };
-          
-          setConfigData({
-            minimumInvestment: config.minimumInvestmentAmount || 0,
-            maximumInvestment: config.maximumInvestmentAmount || 0,
-            investmentIncrement: config.investmentIncrement || 0,
-            baseCurrency: config.currencyId || '',
-            minimumTenure: config.minimumInvestmentTenure || 0,
-            maximumTenure: config.maximumInvestmentTenure || 0,
-            tenureUnit: tenureUnitMap[config.minimumInvestmentTenureUnit] || '0',
-            earlyWithdrawalAllowed: config.earlyWithdrawalPenalty > 0,
-            earlyWithdrawalPenalty: config.earlyWithdrawalPenalty || 0,
-            investmentPeriodDuration: 0,
-            investmentPeriodUnit: '0',
-            lockInPeriod: 0,
-            investementLimit:0,
-            lockInUnit: '0',
-            autoRenewal: false,
-            principalWithdrawalPercentage: config.withdrawalPercentageAtMaturity || 0,
-            withdrawalProcessingDays: config.withdrawalProcessingDays || 0,
-            allowPartialWithdrawal: false,
-            returnType: config.fixedPercentageAmount > 0 ? 'fixed' : 'average',
-            fixedReturnPercentage: config.fixedPercentageAmount || 0,
-            expectedReturnMin: config.minimumExpectedReturnPercentage || 0,
-            expectedReturnMax: config.maximumExpectedReturnPercentage || 0,
-            profitDistributionFrequency: config.profitDistributionFrequency || 0,
-            guaranteedReturn: false,
-            enableCompounding: false,
-            maxInvestors: config.maximumInvestors || 0,
-            minInvestorsToActivate: config.minimumInvestors || 0,
-            allowMultipleInvestments: false,
-            maxInvestmentsPerUser: config.minimumInvestmentsPerUser || 0,
-            riskLevel: config.riskLevel || 0,
-            processingFee: (config as any).processingFee || 0,
-            vat: (config as any).vat || 0,
-            shariahCompliant: false,
-            kycRequired: false,
-            regulatoryApprovalRequired: false
-          });
-          
+          applyConfiguration(response.data);
           toast.success(response?.notificationMessage || t('pc.toast.loaded'));
         } else {
           toast.error(t('pc.toast.loadDetailsFailed'));

@@ -606,19 +606,76 @@ export async function deleteInvestmentTimelineById(id: string) {
 }
 
 // Product CRUD API functions
+/**
+ * A product's configuration as `Product/GetById` embeds it. Separate from the
+ * `ProductConfiguration` interfaces above — there are two of them, declaration-
+ * merged, one of which is a legacy name/value pair — and honest about the
+ * enums arriving as names (`"MONTHS"`, `"QUARTERLY"`, `"LOW"`) with the
+ * ordinals still possible from an older service.
+ */
+export interface ProductConfigurationDetail {
+  id: string;
+  productId: string;
+  currencyId?: string;
+  currencyCode?: string;
+  minimumInvestmentAmount: number;
+  maximumInvestmentAmount: number;
+  investmentIncrement: number;
+  investmentLimit: number;
+  availableBalance: number;
+  minimumInvestmentTenure: number;
+  minimumInvestmentTenureUnit: number | string;
+  maximumInvestmentTenure: number;
+  maximumInvestmentTenureUnit: number | string;
+  earlyWithdrawalPenalty: number;
+  withdrawalPercentageAtMaturity: number;
+  withdrawalProcessingDays: number;
+  minimumExpectedReturnPercentage: number;
+  maximumExpectedReturnPercentage: number;
+  fixedPercentageAmount: number;
+  profitDistributionFrequency: number | string;
+  riskLevel: number | string;
+  minimumInvestors: number;
+  maximumInvestors: number;
+  minimumInvestmentsPerUser: number;
+  processingFee?: number;
+  vat?: number;
+  vatAmount?: number;
+  totalCharge?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * The service now names its enums — `productStatus: "ACTIVE"`,
+ * `productCategory: "ALTERNATIVE_INVESTMENTS"`, `investmentDuration:
+ * "MEDIUM_TERM"` — where it used to send the ordinals the screens were written
+ * against. Both are declared so a caller cannot assume the number and be
+ * quietly wrong; the screens normalise on the way in.
+ *
+ * `GetById` also returns the product's configuration inline, with `isConfigured`
+ * saying whether there is one — so a configured product no longer needs a
+ * second round trip to fill its form.
+ */
 export interface Product {
   id: string;
   name: string;
+  nameAr?: string;
   type: string;
   code: string;
   expectedReturn: number;
   minimumInvestment: number;
-  productCategory: number;
+  productCategory: number | string;
   description: string;
-  productStatus: number;
-  launchDate: string;
-  investmentDuration: number;
-  segmentId: string;
+  productStatus: number | string;
+  launchDate: string | null;
+  investmentDuration: number | string;
+  segmentId: string | null;
+  sourceSystem?: string;
+  sourceReference?: string;
+  isConfigured?: boolean;
+  isOpenForSubscription?: boolean;
+  configuration?: ProductConfigurationDetail | null;
   createdAt: string;
   updatedAt: string;
 }
