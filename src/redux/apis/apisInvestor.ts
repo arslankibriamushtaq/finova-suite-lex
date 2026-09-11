@@ -16,6 +16,36 @@ function getAuthToken(): string | null {
 
 
 /**
+ * A failed call, carrying the body the service sent with it.
+ *
+ * The service answers a rejected write with HTTP 400 and a body naming the
+ * fields — `["investmentIncrement: must be greater than 0", …]`. `fetch` does
+ * not throw on 400, so the old `throw new Error("HTTP Error: 400")` discarded
+ * that body before any caller saw it, and the pages fell back to their own
+ * generic "Failed to save" toast. The reasons ride along on the error instead.
+ */
+export class ApiError extends Error {
+  status: number;
+  responseCode?: number;
+  notificationMessage?: string;
+  errors?: string[];
+
+  constructor(status: number, body: any, statusText: string) {
+    const reasons: string[] = Array.isArray(body?.errors) ? body.errors : [];
+    super(
+      reasons.join('\n') ||
+        body?.notificationMessage ||
+        `HTTP Error: ${status} ${statusText}`
+    );
+    this.name = 'ApiError';
+    this.status = status;
+    this.responseCode = body?.responseCode;
+    this.notificationMessage = body?.notificationMessage;
+    this.errors = reasons.length ? reasons : undefined;
+  }
+}
+
+/**
  * Every call in this file goes out over `fetch`, which has no interceptor — so
  * unlike the axios services (see utils/axios*.ts) an expired session here just
  * threw an "HTTP Error: 401" that each page swallowed into a toast, leaving the
@@ -28,7 +58,15 @@ async function throwIfNotOk(response: Response): Promise<void> {
     await clearAdminSession();
     redirectToLogin();
   }
-  throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+  // A non-JSON error body (a proxy's HTML, an empty 502) must not turn the
+  // failure into a parse error that hides the status.
+  let body: any = null;
+  try {
+    body = await response.clone().json();
+  } catch {
+    /* no body to report */
+  }
+  throw new ApiError(response.status, body, response.statusText);
 }
 
 /**

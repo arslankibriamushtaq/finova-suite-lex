@@ -146,6 +146,9 @@ export default function ProductConfiguration() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+  // What the service rejected, verbatim. Only four fields have an inline slot,
+  // and a rejection can name any of them — so the list is also shown whole.
+  const [serverErrors, setServerErrors] = useState<string[]>([]);
   const [configData, setConfigData] = useState<ConfigurationData>(initialConfigData);
   const [isEditMode, setIsEditMode] = useState(false);
   const [existingConfiguration, setExistingConfiguration] = useState<ProductConfiguration | null>(null);
@@ -321,6 +324,9 @@ export default function ProductConfiguration() {
   const handleSave = async () => {
     try {
       setSaving(true);
+      // A fresh attempt starts from a clean slate — a stale list of reasons
+      // above the tabs reads as though this save failed too.
+      setServerErrors([]);
 
       if (!productId) {
         toast.error(t('pc.toast.productIdRequired'));
@@ -450,13 +456,21 @@ export default function ProductConfiguration() {
         }
       }
     } catch (err: any) {
-      // Handle errors from catch block
-      if (err?.response?.errors && Array.isArray(err.response.errors)) {
-        err.response.errors.forEach((error: string) => {
-          toast.error(error);
-        });
+      // A rejected save arrives as HTTP 400 with the failing fields listed in
+      // the body ("investmentIncrement: must be greater than 0"). It reaches
+      // here as an ApiError carrying them; `err.response` is an axios shape
+      // this file never produces, so reading it showed nothing at all.
+      const reasons: string[] = Array.isArray(err?.errors)
+        ? err.errors
+        : Array.isArray(err?.response?.errors)
+          ? err.response.errors
+          : [];
+      if (reasons.length) {
+        setServerErrors(reasons);
+        setValidationErrors((prev) => ({ ...prev, ...fieldErrorsFrom(reasons) }));
+        toast.error(err?.notificationMessage || t('pc.toast.validationFailed'));
       } else {
-        toast.error(err?.response?.errors || t('pc.toast.saveError'));
+        toast.error(err?.notificationMessage || err?.message || t('pc.toast.saveError'));
       }
     } finally {
       setSaving(false);
@@ -551,6 +565,29 @@ export default function ProductConfiguration() {
     } finally {
       setLoadingConfiguration(false);
     }
+  };
+
+  /**
+   * The service names its own fields ("minimumInvestmentTenure"), the form
+   * names them differently ("minimumTenure"). Map the ones that have an inline
+   * slot so the message lands under the input that caused it; the rest are
+   * covered by the list above the tabs.
+   */
+  const SERVER_FIELD_TO_FORM: Record<string, string> = {
+    minimumInvestmentAmount: 'minimumInvestment',
+    maximumInvestmentAmount: 'maximumInvestment',
+    minimumInvestmentTenure: 'minimumTenure',
+    maximumInvestmentTenure: 'maximumTenure',
+  };
+
+  const fieldErrorsFrom = (reasons: string[]): { [key: string]: string } => {
+    const mapped: { [key: string]: string } = {};
+    for (const reason of reasons) {
+      const [field, ...rest] = reason.split(':');
+      const formField = SERVER_FIELD_TO_FORM[field.trim()];
+      if (formField) mapped[formField] = (rest.join(':') || reason).trim();
+    }
+    return mapped;
   };
 
   // Clear validation error for a specific field
@@ -1436,6 +1473,19 @@ export default function ProductConfiguration() {
         )}
       </div>
 
+
+      {serverErrors.length > 0 && (
+        <div className="rounded-lg border border-red-300 bg-red-50 p-4">
+          <p className="text-sm font-semibold text-red-800">{t('pc.toast.validationFailed')}</p>
+          <ul className="mt-2 list-disc ps-5 space-y-1">
+            {serverErrors.map((error) => (
+              <li key={error} className="text-sm text-red-700">
+                {error}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Info Banner */}
       <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
