@@ -3,22 +3,28 @@ import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Download,
-  Calendar,
-  Filter,
   RefreshCw,
   TrendingUp,
   TrendingDown,
-  DollarSign,
   Building,
   CreditCard,
   Banknote,
   FileText,
-  Eye,
   Mail,
   Printer
 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
+
+import { Button } from '../../../../components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../../components/ui/select';
+import { LexNotice, LexPageHeader } from '../../../../components/shared/lexKit';
 
 const balanceSheetData = {
   asOfDate: '2024-01-31',
@@ -77,14 +83,16 @@ export default function BalanceSheet() {
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [viewMode, setViewMode] = useState('detailed');
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  // The locale was pinned and the currency hardcoded, so the statement read
+  // the same in every language and ignored the currency its own data declares.
+  // Note that data still says USD while the rest of this module is in SAR.
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(undefined, {
       style: 'currency',
-      currency: 'USD',
+      currency: balanceSheetData.currency || 'SAR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
 
   const getChange = (current: number, previous: number) => {
     const change = ((current - previous) / previous) * 100;
@@ -94,136 +102,129 @@ export default function BalanceSheet() {
     };
   };
 
-  const handleExport = () => {
-    alert(t('bs.exportSuccess'));
-  };
+  // Export, print and email each popped a browser dialog reporting success for
+  // work that never ran. The statement is a module-level literal.
+  const notConnected = () => toast.error(t('invl.notConnected'));
 
-  const handlePrint = () => {
-    alert(t('bs.printSuccess'));
-  };
-
-  const handleEmail = () => {
-    alert(t('bs.emailSuccess'));
-  };
+  const handleExport = notConnected;
+  const handlePrint = notConnected;
+  const handleEmail = notConnected;
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              to="/InvestorDashboard/Reports"
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="w-4 h-4 me-2" />
-              {t('pl.backToReports')}
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('bs.title')}</h1>
-              <p className="text-gray-600">{t('bs.subtitle', { date: balanceSheetData.asOfDate })}</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 me-2" />
-              {t('common:refresh')}
-            </button>
-            <button
-              onClick={handlePrint}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Printer className="w-4 h-4 me-2" />
-              {t('pl.print')}
-            </button>
-            <button
-              onClick={handleEmail}
-              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Mail className="w-4 h-4 me-2" />
-              {t('reports.emailReports')}
-            </button>
-            <button
-              onClick={handleExport}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
-            >
-              <Download className="w-4 h-4 me-2" />
-              {t('common:export')}
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="service">
+      <LexPageHeader
+        icon={Building}
+        title={t('bs.title')}
+        subtitle={t('bs.subtitle', { date: balanceSheetData.asOfDate })}
+      >
+        <Button asChild variant="ghost" size="sm" className="gap-2">
+          <Link to="/InvestorDashboard/Reports">
+            <ArrowLeft className="h-4 w-4" />
+            {t('pl.backToReports')}
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm" className="gap-2" onClick={notConnected}>
+          <RefreshCw className="h-4 w-4" />
+          {t('common:refresh')}
+        </Button>
+        <Button variant="outline" size="sm" className="gap-2" onClick={handlePrint}>
+          <Printer className="h-4 w-4" />
+          {t('pl.print')}
+        </Button>
+        <Button variant="outline" size="sm" className="gap-2" onClick={handleEmail}>
+          <Mail className="h-4 w-4" />
+          {t('reports.emailReports')}
+        </Button>
+        <Button size="sm" className="gap-2" onClick={handleExport}>
+          <Download className="h-4 w-4" />
+          {t('common:export')}
+        </Button>
+      </LexPageHeader>
 
-      {/* Controls */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
-            <button
+      {/* Every figure on this page is a module-level literal — there is no
+          fetch in this file. A balance sheet that looks authoritative and is
+          not is worth saying out loud. Delete this notice when the endpoint
+          lands. */}
+      <LexNotice tone="amber" icon={FileText}>
+        {t('invl.notConnected')}
+      </LexNotice>
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="inline-flex rounded-md border p-0.5">
+            <Button
+              variant={viewMode === 'detailed' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-7"
               onClick={() => setViewMode('detailed')}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                viewMode === 'detailed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
-              }`}
             >
               {t('bs.view.detailed')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={viewMode === 'summary' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-7"
               onClick={() => setViewMode('summary')}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                viewMode === 'summary' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
-              }`}
             >
               {t('bs.view.summary')}
-            </button>
+            </Button>
           </div>
-          <select className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-            <option value="current">{t('bs.period.current')}</option>
-            <option value="comparison">{t('bs.period.comparison')}</option>
-            <option value="historical">{t('bs.period.historical')}</option>
-          </select>
-        </div>
-        <div className="text-sm text-gray-500">
-          {t('bs.generatedOn', { date: new Date().toLocaleDateString() })}
+          {/* The period dropdown had state behind it but was never bound to it,
+              so choosing a period did nothing at all. */}
+          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <SelectTrigger className="w-full sm:w-52">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="current">{t('bs.period.current')}</SelectItem>
+              <SelectItem value="comparison">{t('bs.period.comparison')}</SelectItem>
+              <SelectItem value="historical">{t('bs.period.historical')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className="ms-auto whitespace-nowrap text-xs text-muted-foreground">
+            {t('bs.generatedOn', { date: new Date().toLocaleDateString() })}
+          </span>
         </div>
       </div>
 
       {/* Balance Sheet */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">{t('bs.title')}</h3>
-          <p className="text-sm text-gray-600">{t('bs.asOf', { date: balanceSheetData.asOfDate })}</p>
+      <div className="pro-card overflow-hidden p-0">
+        <div className="border-b px-6 py-4">
+          <h3 className="text-lg font-semibold text-foreground">{t('bs.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('bs.asOf', { date: balanceSheetData.asOfDate })}</p>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted/40">
               <tr>
-                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {t('bs.col.account')}
                 </th>
-                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-end text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {t('bs.col.currentPeriod')}
                 </th>
-                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-end text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {t('bs.col.previousPeriod')}
                 </th>
-                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-end text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {t('bs.col.change')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-border">
               {/* ASSETS */}
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <Building className="w-5 h-5 text-black me-2" />
-                    <span className="text-sm font-bold text-blue-900">{t('bs.row.assets')}</span>
+                    <span className="text-sm font-bold text-foreground">{t('bs.row.assets')}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-blue-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-foreground">
                   {formatCurrency(balanceSheetData.assets.totalAssets)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(previousPeriod.totalAssets)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm">
@@ -231,7 +232,7 @@ export default function BalanceSheet() {
                     const change = getChange(balanceSheetData.assets.totalAssets, previousPeriod.totalAssets);
                     return (
                       <div className={`flex items-center justify-end ${
-                        change.type === 'positive' ? 'text-slate-500' : 'text-red-600'
+                        change.type === 'positive' ? 'text-foreground' : 'text-destructive'
                       }`}>
                         {change.type === 'positive' ? (
                           <TrendingUp className="w-4 h-4 me-1" />
@@ -246,14 +247,14 @@ export default function BalanceSheet() {
               </tr>
 
               {/* Current Assets */}
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.currentAssets')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-foreground">
                   {formatCurrency(balanceSheetData.assets.currentAssets.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(24200000)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -265,12 +266,12 @@ export default function BalanceSheet() {
                 <>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.cashEquivalents')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.cashEquivalents')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.assets.currentAssets.cash + balanceSheetData.assets.currentAssets.cashEquivalents)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(19800000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -279,12 +280,12 @@ export default function BalanceSheet() {
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.accountsReceivable')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.accountsReceivable')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.assets.currentAssets.accountsReceivable)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(2950000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -293,12 +294,12 @@ export default function BalanceSheet() {
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.otherCurrentAssets')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.otherCurrentAssets')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.assets.currentAssets.prepaidExpenses + balanceSheetData.assets.currentAssets.otherCurrentAssets)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(1450000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -309,14 +310,14 @@ export default function BalanceSheet() {
               )}
 
               {/* Non-Current Assets */}
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.nonCurrentAssets')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-foreground">
                   {formatCurrency(balanceSheetData.assets.nonCurrentAssets.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(251030000)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -328,12 +329,12 @@ export default function BalanceSheet() {
                 <>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.investments')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.investments')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.assets.nonCurrentAssets.investments)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(232500000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -342,12 +343,12 @@ export default function BalanceSheet() {
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.propertyEquipment')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.propertyEquipment')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.assets.nonCurrentAssets.propertyEquipment)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(14800000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -356,12 +357,12 @@ export default function BalanceSheet() {
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.otherAssets')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.otherAssets')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.assets.nonCurrentAssets.intangibleAssets + balanceSheetData.assets.nonCurrentAssets.otherAssets)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(3730000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -382,7 +383,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-red-900">
                   {formatCurrency(balanceSheetData.liabilities.totalLiabilities)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(previousPeriod.totalLiabilities)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -391,14 +392,14 @@ export default function BalanceSheet() {
               </tr>
 
               {/* Current Liabilities */}
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.currentLiabilities')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-foreground">
                   {formatCurrency(balanceSheetData.liabilities.currentLiabilities.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(9200000)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -407,14 +408,14 @@ export default function BalanceSheet() {
               </tr>
 
               {/* Non-Current Liabilities */}
-              <tr className="bg-gray-50">
+              <tr className="bg-muted/40">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.nonCurrentLiabilities')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-foreground">
                   {formatCurrency(balanceSheetData.liabilities.nonCurrentLiabilities.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(29750000)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -433,7 +434,7 @@ export default function BalanceSheet() {
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-red-900">
                   {formatCurrency(balanceSheetData.equity.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(previousPeriod.totalEquity)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -445,26 +446,26 @@ export default function BalanceSheet() {
                 <>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.paidInCapital')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.paidInCapital')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.equity.paidInCapital)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(150000000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       0.0%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.retainedEarnings')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.retainedEarnings')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.equity.retainedEarnings)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(81280000)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -473,15 +474,15 @@ export default function BalanceSheet() {
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.accumulatedOCI')}</span>
+                      <span className="text-sm text-muted-foreground ms-8">{t('bs.row.accumulatedOCI')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-foreground">
                       {formatCurrency(balanceSheetData.equity.accumulatedOCI)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       {formatCurrency(5000000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                       0.0%
                     </td>
                   </tr>
@@ -489,14 +490,14 @@ export default function BalanceSheet() {
               )}
 
               {/* Verification Row */}
-              <tr className="bg-gray-100 border-t-2 border-gray-700">
+              <tr className="bg-muted border-t-2 border-border">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-bold text-blue-900">{t('bs.row.liabilitiesEquity')}</span>
+                  <span className="text-sm font-bold text-foreground">{t('bs.row.liabilitiesEquity')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-blue-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-foreground">
                   {formatCurrency(balanceSheetData.liabilities.totalLiabilities + balanceSheetData.equity.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-muted-foreground">
                   {formatCurrency(previousPeriod.totalLiabilities + previousPeriod.totalEquity)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
@@ -508,10 +509,11 @@ export default function BalanceSheet() {
         </div>
       </div>
 
-      {/* Notes */}
-      <div className="mt-6 bg-gray-50 rounded-lg p-6">
-        <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('bs.notes')}</h4>
-        <div className="text-sm text-gray-600 space-y-2">
+      <div className="pro-card mt-3 p-4">
+        <h4 className="m-0 mb-3 text-sm font-semibold tracking-tight text-foreground">
+          {t('bs.notes')}
+        </h4>
+        <div className="space-y-1.5 text-sm text-muted-foreground">
           <p>• {t('bs.note1')}</p>
           <p>• {t('bs.note2')}</p>
           <p>• {t('bs.note3')}</p>
