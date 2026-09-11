@@ -1,12 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Descriptions, Table, Card } from "antd";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Receipt, ShieldCheck, UserCheck } from "lucide-react";
 import toast from "react-hot-toast";
-import { getKycByInvestorId, getKybByInvestorId, getTransactionHistoryByInvestorId } from "../../../../redux/apis/apisInvestor";
+
+import {
+  getKycByInvestorId,
+  getKybByInvestorId,
+  getTransactionHistoryByInvestorId,
+} from "../../../../redux/apis/apisInvestor";
 import TableView from "../../../../components/TableView/TableView";
-import Loader from "../../../../components/Loader/Loader";
+import { Badge } from "../../../../components/ui/badge";
+import { Button } from "../../../../components/ui/button";
+import { Tabs, TabsContent } from "../../../../components/ui/tabs";
+import {
+  Block,
+  DetailTabsList,
+  DetailTabsTrigger,
+  EmptyState,
+  Field,
+  TabSkeleton,
+} from "../../../../components/shared/detailKit";
+import { TONES } from "../../../../components/shared/detailKitUtils";
+import { LexNotice, LexPageHeader } from "../../../../components/shared/lexKit";
+
+const formatMoney = (amount?: number) =>
+  `SAR ${Number(amount ?? 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+
+/**
+ * Fields the record carries that this screen does not show: internal ids the
+ * operator cannot act on, and the raw image blob.
+ */
+const HIDDEN_FIELDS = new Set([
+  "profileimage",
+  "profile_image",
+  "countryid",
+  "country_id",
+  "verificationstatus",
+  "verification_status",
+  "language",
+  "issuancecountryid",
+  "issuance_country_id",
+  "timezone",
+  "time_zone",
+  "currencyid",
+  "currency_id",
+  "verificationstatusid",
+  "verification_status_id",
+  "lastlogin",
+  "last_login",
+]);
+
+/** `dateOfBirth` → `Date Of Birth`. The API key is the only label we have. */
+const labelFor = (key: string) =>
+  (key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")).replace(/\s+/g, " ").trim();
 
 const KycKybDetail = () => {
   const { t } = useTranslation("investor");
@@ -16,323 +66,274 @@ const KycKybDetail = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [showTransactions, setShowTransactions] = useState(false);
+  const [transactionsLoaded, setTransactionsLoaded] = useState(false);
   const [transactionsLoading, setTransactionsLoading] = useState(false);
+  const [tab, setTab] = useState("details");
 
-  useEffect(() => {
-    if (investorId) {
-      fetchDetailData();
-    }
-  }, [investorId, type]);
-
-  const fetchDetailData = async () => {
+  const fetchDetailData = useCallback(async () => {
     if (!investorId) return;
-
     try {
       setLoading(true);
-      let response;
-      
-      if (type === "kyc") {
-        response = await getKycByInvestorId(investorId);
-      } else {
-        response = await getKybByInvestorId(investorId);
-      }
+      setError(null);
+      const response =
+        type === "kyc"
+          ? await getKycByInvestorId(investorId)
+          : await getKybByInvestorId(investorId);
 
       if (response?.success) {
         setDetailData(response.data || {});
       } else {
-        toast.error(response?.notificationMessage || t("kkd.fetchError"));
+        const message = response?.notificationMessage || t("kkd.fetchError");
+        setError(message);
+        toast.error(message);
       }
-    } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || t("kkd.fetchError"));
+    } catch (err: any) {
+      const message = err?.notificationMessage || err?.message || t("kkd.fetchError");
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [investorId, type, t]);
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     if (!investorId) return;
-
     try {
       setTransactionsLoading(true);
       const response = await getTransactionHistoryByInvestorId(investorId);
-
       if (response?.success) {
-        const transactionsData = response.data || [];
-        setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
-        setShowTransactions(true);
+        const data = response.data || [];
+        setTransactions(Array.isArray(data) ? data : []);
+        setTransactionsLoaded(true);
       } else {
         toast.error(response?.notificationMessage || t("kkd.txFetchError"));
       }
-    } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || t("kkd.txFetchError"));
+    } catch (err: any) {
+      toast.error(err?.notificationMessage || err?.message || t("kkd.txFetchError"));
     } finally {
       setTransactionsLoading(false);
     }
-  };
+  }, [investorId, t]);
+
+  useEffect(() => {
+    fetchDetailData();
+  }, [fetchDetailData]);
+
+  /* The history was behind a "View All Transactions" button that replaced
+     itself with the table. Opening the tab is the same intent, so the tab is
+     the trigger — and it still only fetches once. */
+  useEffect(() => {
+    if (tab === "transactions" && !transactionsLoaded && !transactionsLoading) {
+      fetchTransactions();
+    }
+  }, [tab, transactionsLoaded, transactionsLoading, fetchTransactions]);
+
+  /* TransactionType: 0=Deposit … 6=Return. */
+  const TX_TYPE_KEYS = [
+    "kkd.txType.deposit",
+    "kkd.txType.withdrawal",
+    "kkd.txType.transfer",
+    "kkd.txType.payment",
+    "kkd.txType.refund",
+    "kkd.txType.investment",
+    "kkd.txType.return",
+  ];
+
+  /**
+   * TransactionStatus: 0=Pending … 4=Reversed.
+   *
+   * These were five inline background colours, two of which (Failed and
+   * Reversed) were both reds a shade apart, and Completed was a green the
+   * brand does not have. Five statuses now read as five distinct tones.
+   */
+  const TX_STATUS = [
+    { key: "kkd.txStatus.pending", tone: TONES.amber },
+    { key: "kkd.txStatus.completed", tone: TONES.emerald },
+    { key: "kkd.txStatus.failed", tone: TONES.red },
+    { key: "kkd.txStatus.cancelled", tone: TONES.slate },
+    { key: "kkd.txStatus.reversed", tone: TONES.sky },
+  ];
 
   const transactionHeaders = [
     {
       name: t("kkd.col.txId"),
-      selector: (row: any) => row.id || "-",
-      sortable: true,
-      width: "200px",
+      cell: (row: any) => (
+        <span className="truncate font-mono text-xs text-muted-foreground">{row.id || "—"}</span>
+      ),
+      width: "220px",
     },
     {
       name: t("kkd.col.txType"),
       cell: (row: any) => {
-        // TransactionType enum: starts at 0
-        const typeValue = row.transactionType !== undefined 
-          ? (typeof row.transactionType === 'number' ? row.transactionType : parseInt(row.transactionType))
-          : (row.type !== undefined ? (typeof row.type === 'number' ? row.type : parseInt(row.type)) : null);
-        
-        // If it's already a string and not a number, return as is
-        if (typeValue === null || isNaN(typeValue)) {
-          return row.transactionType || row.type || "-";
+        const raw = row.transactionType ?? row.type;
+        const value = typeof raw === "number" ? raw : parseInt(raw, 10);
+        if (raw === undefined || raw === null || Number.isNaN(value)) {
+          return <span className="text-sm">{raw?.toString() || "—"}</span>;
         }
-        
-        // TransactionType enum: 0=Deposit, 1=Withdrawal, 2=Transfer, 3=Payment, 4=Refund, 5=Investment, 6=Return
-        let typeText = t("kkd.txType.unknown");
-
-        switch (typeValue) {
-          case 0:
-            typeText = t("kkd.txType.deposit");
-            break;
-          case 1:
-            typeText = t("kkd.txType.withdrawal");
-            break;
-          case 2:
-            typeText = t("kkd.txType.transfer");
-            break;
-          case 3:
-            typeText = t("kkd.txType.payment");
-            break;
-          case 4:
-            typeText = t("kkd.txType.refund");
-            break;
-          case 5:
-            typeText = t("kkd.txType.investment");
-            break;
-          case 6:
-            typeText = t("kkd.txType.return");
-            break;
-          default:
-            typeText = row.transactionType?.toString() || row.type?.toString() || t("kkd.txType.unknown");
-        }
-        
-        return typeText;
+        return (
+          <span className="text-sm text-foreground">
+            {TX_TYPE_KEYS[value] ? t(TX_TYPE_KEYS[value]) : t("kkd.txType.unknown")}
+          </span>
+        );
       },
-      sortable: true,
+      width: "160px",
     },
     {
       name: t("common:amount"),
-      selector: (row: any) => row.amount ? `SAR ${row.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-",
-      sortable: true,
-      width: "150px",
+      cell: (row: any) => (
+        <span className="text-sm font-medium tabular-nums text-foreground">
+          {row.amount === undefined || row.amount === null ? "—" : formatMoney(row.amount)}
+        </span>
+      ),
+      width: "160px",
     },
     {
       name: t("common:description"),
-      selector: (row: any) => row.description || "-",
-      sortable: true,
+      cell: (row: any) => (
+        <span className="truncate text-sm text-muted-foreground">{row.description || "—"}</span>
+      ),
     },
     {
       name: t("common:status"),
       cell: (row: any) => {
-        // TransactionStatus enum: 0=Pending, 1=Completed, 2=Failed, 3=Cancelled, 4=Reversed
-        const statusValue = row.status !== undefined ? (typeof row.status === 'number' ? row.status : parseInt(row.status)) : 0;
-        let statusText = t("kkd.txStatus.pending");
-        let statusColor = "var(--color-warning-amber)"; // Yellow for Pending
-
-        switch (statusValue) {
-          case 0:
-            statusText = t("kkd.txStatus.pending");
-            statusColor = "var(--color-warning-amber)"; // Yellow
-            break;
-          case 1:
-            statusText = t("kkd.txStatus.completed");
-            statusColor = "var(--color-success)"; // Green
-            break;
-          case 2:
-            statusText = t("kkd.txStatus.failed");
-            statusColor = "var(--color-error)"; // Red
-            break;
-          case 3:
-            statusText = t("kkd.txStatus.cancelled");
-            statusColor = "#8c8c8c"; // Gray
-            break;
-          case 4:
-            statusText = t("kkd.txStatus.reversed");
-            statusColor = "var(--color-error-light)"; // Light Red
-            break;
-          default:
-            statusText = row.status?.toString() || t("kkd.txStatus.pending");
-            statusColor = "var(--color-warning-amber)";
-        }
-        
+        const raw = row.status;
+        const value = typeof raw === "number" ? raw : parseInt(raw, 10);
+        const entry = TX_STATUS[Number.isNaN(value) ? 0 : value];
+        if (!entry) return <span className="text-sm">{raw?.toString() || "—"}</span>;
         return (
-          <span
-            style={{
-              padding: "6px 12px",
-              borderRadius: "2px",
-              backgroundColor: statusColor,
-              color: "white",
-              fontSize: "12px",
-            }}
-          >
-            {statusText}
-          </span>
+          <Badge variant="outline" className={`border font-medium ${entry.tone}`}>
+            {t(entry.key)}
+          </Badge>
         );
       },
-      sortable: true,
+      width: "140px",
     },
     {
       name: t("common:createdAt"),
-      selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleString() : "-",
-      sortable: true,
-      width: "180px",
+      cell: (row: any) => (
+        <span className="whitespace-nowrap text-sm text-muted-foreground">
+          {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
+        </span>
+      ),
+      width: "190px",
     },
   ];
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader />
-        </div>
-      </div>
-    );
-  }
+  const renderValue = (key: string, value: any) => {
+    if (value === null || value === undefined || value === "") return "—";
+    if (typeof value === "boolean") return value ? t("common:yes") : t("common:no");
+
+    const lower = key.toLowerCase();
+
+    if (typeof value === "object") {
+      // A nested object used to be dumped as JSON.stringify into the value
+      // column. Kept readable rather than pretty: it is still raw, but it no
+      // longer stretches the row.
+      return (
+        <span className="font-mono text-[11px] leading-relaxed text-muted-foreground">
+          {JSON.stringify(value)}
+        </span>
+      );
+    }
+    if (typeof value === "number" && lower.includes("amount")) return formatMoney(value);
+    if (lower.includes("employeedesignation") || lower.includes("employee_designation")) {
+      /* The enum comment on this switch said 0=Intern, 1=JuniorDeveloper … but
+         the branches mapped 0=CEO, 1=CFO, 2=Director, and a second unreachable
+         `case 0` meant Manager was never reached. Only these four labels exist
+         in the locale file, so the order below is the reachable half of what
+         was there — worth confirming against the service's enum. */
+      const designations = ["kkd.desig.ceo", "kkd.desig.cfo", "kkd.desig.director", "kkd.desig.manager"];
+      const index = typeof value === "number" ? value : parseInt(value, 10);
+      return designations[index] ? t(designations[index]) : value?.toString() || "—";
+    }
+    if (lower.includes("date") || lower.endsWith("at")) {
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? String(value) : parsed.toLocaleString();
+    }
+    return String(value);
+  };
+
+  const fields = detailData
+    ? Object.keys(detailData).filter((key) => !HIDDEN_FIELDS.has(key.toLowerCase()))
+    : [];
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <div className="service">
+      <LexPageHeader
+        icon={type === "kyc" ? UserCheck : ShieldCheck}
+        title={type === "kyc" ? t("kkd.kycDetail") : t("kkd.kybDetail")}
+        subtitle={t("kkd.subtitle")}
+      >
         <Button
-          icon={<ArrowLeft className="w-4 h-4" />}
+          variant="ghost"
+          size="sm"
+          className="gap-2"
           onClick={() => navigate("/InvestorDashboard/Investors")}
-          className="mb-4"
         >
+          <ArrowLeft className="h-4 w-4" />
           {t("kycd.backToInvestors")}
         </Button>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {type === "kyc" ? t("kkd.kycDetail") : t("kkd.kybDetail")}
-        </h1>
-      </div>
+      </LexPageHeader>
 
-      <Card className="mb-6">
-        <Descriptions title={t("kkd.investorInfo")} bordered column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}>
-          {detailData &&
-            Object.keys(detailData)
-              .filter((key) => {
-                const lowerKey = key.toLowerCase();
-                // Filter out unwanted fields
-                return (
-                  lowerKey !== "profileimage" && 
-                  lowerKey !== "profile_image" &&
-                  lowerKey !== "countryid" &&
-                  lowerKey !== "country_id" &&
-                  lowerKey !== "verificationstatus" &&
-                  lowerKey !== "verification_status" &&
-                  lowerKey !== "language" &&
-                  lowerKey !== "issuancecountryid" &&
-                  lowerKey !== "issuance_country_id" &&
-                  lowerKey !== "timezone" &&
-                  lowerKey !== "time_zone" &&
-                  lowerKey !== "currencyid" &&
-                  lowerKey !== "currency_id" &&
-                  lowerKey !== "verificationstatusid" &&
-                  lowerKey !== "verification_status_id" &&
-                  lowerKey !== "lastlogin" &&
-                  lowerKey !== "last_login"
-                );
-              })
-              .map((key) => {
-                // Skip nested objects for now, display them as JSON string
-                const value = detailData[key];
-                let displayValue: any = value;
-
-                if (value === null || value === undefined) {
-                  displayValue = "-";
-                } else if (typeof value === "object") {
-                  displayValue = JSON.stringify(value, null, 2);
-                } else if (typeof value === "boolean") {
-                  displayValue = value ? t("common:yes") : t("common:no");
-                } else if (typeof value === "number" && key.toLowerCase().includes("amount")) {
-                  displayValue = `SAR ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                } else if (key.toLowerCase().includes("employeedesignation") || key.toLowerCase().includes("employee_designation")) {
-                  // EmployeeDesignation enum: 0=Intern, 1=JuniorDeveloper, 2=Developer, 3=SeniorDeveloper, 4=TeamLead, 5=Manager, 6=Director, 7=VicePresident, 8=President, 9=CEO
-                  const designationValue = typeof value === 'number' ? value : parseInt(value);
-                  switch (designationValue) {
-                    case 0:
-                      displayValue = t("kkd.desig.ceo");
-                      break;
-                    case 1:
-                      displayValue = t("kkd.desig.cfo");
-                      break;
-                    case 2:
-                      displayValue = t("kkd.desig.director");
-                      break;
-                    case 0:
-                      displayValue = t("kkd.desig.manager");
-                      break;
-
-                      displayValue = t("kkd.desig.ceo");
-                      break;
-                    default:
-
-                      displayValue = value?.toString() || "-";
-                  }
-                } else if (key.toLowerCase().includes("date") || key.toLowerCase().includes("at")) {
-                  try {
-                    displayValue = new Date(value).toLocaleString();
-                  } catch {
-                    displayValue = value;
-                  }
-                }
-
-                return (
-                  <Descriptions.Item key={key} label={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")}>
-                    {displayValue}
-                  </Descriptions.Item>
-                );
-              })}
-        </Descriptions>
-      </Card>
-
-      {!showTransactions && (
-        <Card>
-          <Button
-            type="primary"
-            onClick={fetchTransactions}
-            loading={transactionsLoading}
-            style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
-          >
-            {t("kkd.viewAllTransactions")}
-          </Button>
-        </Card>
+      {error && (
+        <LexNotice tone="red" icon={AlertTriangle}>
+          {error}
+        </LexNotice>
       )}
 
-      {showTransactions && (
-        <Card title={t("kkd.transactionHistory")} className="mt-6">
-          <TableView
-            header={transactionHeaders}
-            data={transactions}
-            totalRows={transactions.length}
-            isLoading={transactionsLoading}
-            from={1}
-            page={1}
-            totalPage={1}
-            setPage={() => {}}
-            pageSize={transactions.length || 10}
-            setPageSize={() => {}}
-            to={transactions.length}
-          />
-        </Card>
-      )}
+      <Tabs value={tab} onValueChange={setTab}>
+        <DetailTabsList>
+          <DetailTabsTrigger value="details">{t("kkd.tab.details")}</DetailTabsTrigger>
+          <DetailTabsTrigger value="transactions">{t("kkd.tab.transactions")}</DetailTabsTrigger>
+        </DetailTabsList>
+
+        <TabsContent value="details" className="mt-3">
+          {loading ? (
+            <TabSkeleton variant="fields" />
+          ) : fields.length === 0 ? (
+            <Block title={t("kkd.investorInfo")} icon={UserCheck}>
+              <EmptyState icon={UserCheck} text={t("kkd.noDetails")} />
+            </Block>
+          ) : (
+            <Block title={t("kkd.investorInfo")} icon={UserCheck}>
+              {/* Two columns on wide screens, one on a phone — the old
+                  Descriptions grid collapsed the same way. */}
+              <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+                {fields.map((key) => (
+                  <Field key={key} label={labelFor(key)} value={renderValue(key, detailData[key])} />
+                ))}
+              </div>
+            </Block>
+          )}
+        </TabsContent>
+
+        <TabsContent value="transactions" className="mt-3">
+          <Block title={t("kkd.transactionHistory")} icon={Receipt}>
+            {!transactionsLoading && transactionsLoaded && transactions.length === 0 ? (
+              <EmptyState icon={Receipt} text={t("kkd.noTransactions")} />
+            ) : (
+              <TableView
+                header={transactionHeaders}
+                data={transactions}
+                totalRows={transactions.length}
+                isLoading={transactionsLoading}
+                from={transactions.length ? 1 : 0}
+                page={1}
+                totalPage={1}
+                setPage={() => {}}
+                pageSize={transactions.length || 10}
+                setPageSize={() => {}}
+                to={transactions.length}
+              />
+            )}
+          </Block>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
 
 export default KycKybDetail;
-

@@ -13,7 +13,13 @@ import {
   EmptyState,
 } from '../../../../components/shared/detailKit';
 import { TONES } from '../../../../components/shared/detailKitUtils';
-import { LexMetricTile, LexNotice, LexPageHeader } from '../../../../components/shared/lexKit';
+import {
+  LexMetricTile,
+  LexNotice,
+  LexPageHeader,
+  LexRowAction,
+  LexRowActions,
+} from '../../../../components/shared/lexKit';
 import { getInvestorDashboard, getAllCountries, getAllKycInvestors, getAllKybInvestors, createBusinessShare, Country, InvestorKyc, InvestorKyb } from '../../../../redux/apis/apisInvestor';
 
 import {
@@ -631,26 +637,14 @@ export default function InvestorsList() {
   );
 
   const actionsCell = (row: any) => (
-    <div className="flex items-center gap-1">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0"
-        onClick={() => handleViewInvestor(row)}
-        title={t('ilst.action.viewDetails')}
-      >
-        <Eye className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0"
-        onClick={() => handleViewDocuments(row)}
-        title={t('ilst.action.viewDocuments')}
-      >
-        <FileText className="h-4 w-4" />
-      </Button>
-    </div>
+    <LexRowActions>
+      <LexRowAction icon={Eye} onSelect={() => handleViewInvestor(row)}>
+        {t('ilst.action.viewDetails')}
+      </LexRowAction>
+      <LexRowAction icon={FileText} onSelect={() => handleViewDocuments(row)}>
+        {t('ilst.action.viewDocuments')}
+      </LexRowAction>
+    </LexRowActions>
   );
 
   const individualHeaders = [
@@ -682,7 +676,7 @@ export default function InvestorsList() {
       width: '220px',
     },
     { name: t('ils.col.verificationStatus'), cell: verificationCell, width: '150px' },
-    { name: t('common:actions'), cell: actionsCell, width: '110px' },
+    { name: t('common:actions'), cell: actionsCell, width: '130px' },
   ];
 
   const businessHeaders = [
@@ -718,7 +712,7 @@ export default function InvestorsList() {
       width: '220px',
     },
     { name: t('ils.col.verificationStatus'), cell: verificationCell, width: '150px' },
-    { name: t('common:actions'), cell: actionsCell, width: '110px' },
+    { name: t('common:actions'), cell: actionsCell, width: '130px' },
   ];
 
   return (

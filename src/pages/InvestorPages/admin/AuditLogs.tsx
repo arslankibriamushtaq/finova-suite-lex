@@ -13,12 +13,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../components/ui/select';
-import { EmptyState } from '../../../components/shared/detailKit';
+import { EmptyState, Field } from '../../../components/shared/detailKit';
 import { TONES } from '../../../components/shared/detailKitUtils';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/dialog';
 import {
   LexMetricTile,
   LexNotice,
   LexPageHeader,
+  LexRowAction,
+  LexRowActions,
   LexSearch,
 } from '../../../components/shared/lexKit';
 import {
@@ -416,17 +425,16 @@ export default function AuditLogs() {
     {
       name: t('common:actions'),
       cell: (row: any) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => setSelectedLog(selectedLog === row.id ? null : row.id)}
-          title={t('common:viewDetails')}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
+        <LexRowActions>
+          <LexRowAction
+            icon={Eye}
+            onSelect={() => setSelectedLog(selectedLog === row.id ? null : row.id)}
+          >
+            {t('common:viewDetails')}
+          </LexRowAction>
+        </LexRowActions>
       ),
-      width: '90px',
+      width: '130px',
     },
   ];
 
@@ -560,106 +568,94 @@ export default function AuditLogs() {
       </div>
 
 
-      {/* Log Details Modal */}
-      {selectedLog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Audit Log Details</h3>
-              <button
-                onClick={() => setSelectedLog(null)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                ×
-              </button>
-            </div>
+      <Dialog open={selectedLog !== null} onOpenChange={(open) => !open && setSelectedLog(null)}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <FileText className="h-4 w-4" />
+              </span>
+              {t('iaud.detailsTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
-            {(() => {
-              const log = auditLogs.find(l => l.id === selectedLog);
-              if (!log) return null;
+          {(() => {
+            const log = auditLogs.find((l) => l.id === selectedLog);
+            if (!log) return null;
+            return (
+              <div className="max-h-[70vh] overflow-y-auto">
+                {/* The panel printed status and severity as plain sentences
+                    while the table beside it rendered them as toned badges. */}
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={`border font-medium ${getStatusColor(log.status)}`}
+                  >
+                    {log.status}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`border font-medium ${getSeverityColor(log.severity)}`}
+                  >
+                    {log.severity}
+                  </Badge>
+                </div>
 
-              return (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium text-gray-600">Timestamp:</span>
-                      <p className="text-gray-900">{formatTimestamp(log.timestamp)}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">User:</span>
-                      <p className="text-gray-900">{log.user} ({log.userType})</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">Action:</span>
-                      <p className="text-gray-900">{log.action}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">Category:</span>
-                      <p className="text-gray-900">{log.category}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">Status:</span>
-                      <p className="text-gray-900">{log.status}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">Severity:</span>
-                      <p className="text-gray-900">{log.severity}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">IP Address:</span>
-                      <p className="text-gray-900">{log.ipAddress}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-600">Module:</span>
-                      <p className="text-gray-900">{log.module}</p>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+                  <Field
+                    label={t('iaud.col.timestamp')}
+                    value={formatTimestamp(log.timestamp)}
+                  />
+                  <Field label={t('iaud.user')} value={`${log.user} (${log.userType})`} />
+                  <Field label={t('iaud.action')} value={log.action} />
+                  <Field label={t('iaud.category')} value={log.category} />
+                  <Field label={t('iaud.module')} value={log.module} />
+                  <Field label={t('iaud.col.ipAddress')} value={log.ipAddress} mono />
+                </div>
 
+                <div className="mt-4 space-y-3">
                   <div>
-                    <span className="font-medium text-gray-600">Description:</span>
-                    <p className="text-gray-900 mt-1">{log.description}</p>
+                    <p className="m-0 mb-1 text-xs text-muted-foreground">
+                      {t('iaud.description')}
+                    </p>
+                    <p className="m-0 text-sm leading-relaxed text-foreground">
+                      {log.description}
+                    </p>
                   </div>
-
                   <div>
-                    <span className="font-medium text-gray-600">User Agent:</span>
-                    <p className="text-gray-900 mt-1 text-xs">{log.userAgent}</p>
+                    <p className="m-0 mb-1 text-xs text-muted-foreground">
+                      {t('iaud.userAgent')}
+                    </p>
+                    <p className="m-0 break-all font-mono text-xs text-muted-foreground">
+                      {log.userAgent}
+                    </p>
                   </div>
-
                   <div>
-                    <span className="font-medium text-gray-600">Additional Details:</span>
-                    <div className="mt-2 bg-gray-50 rounded-lg p-4">
-                      <pre className="text-xs text-gray-900 whitespace-pre-wrap">
-                        {JSON.stringify(log.details, null, 2)}
-                      </pre>
-                    </div>
+                    <p className="m-0 mb-1.5 text-xs text-muted-foreground">
+                      {t('iaud.additionalDetails')}
+                    </p>
+                    <pre className="m-0 overflow-x-auto rounded-lg border bg-muted/40 p-3 text-xs leading-relaxed text-foreground">
+                      {JSON.stringify(log.details, null, 2)}
+                    </pre>
                   </div>
                 </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
+              </div>
+            );
+          })()}
 
-      {/* Pagination */}
-      <div className="mt-6 flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          Showing 1 to {filteredLogs.length} of {auditLogs.length} results
-        </div>
-        <div className="flex items-center space-x-2">
-          <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
-            Previous
-          </button>
-          <button className="px-3 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg">
-            1
-          </button>
-          <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-            2
-          </button>
-          <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-            Next
-          </button>
-        </div>
-      </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedLog(null)}>
+              {t('common:close')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Was a hand-rolled pager with hardcoded "1" and "2" buttons, none of
+          them wired to anything, over a list the table already shows in full. */}
+      <p className="mt-3 text-xs text-muted-foreground">
+        {t('iaud.countLabel', { shown: filteredLogs.length, total: auditLogs.length })}
+      </p>
     </div>
   );
 }

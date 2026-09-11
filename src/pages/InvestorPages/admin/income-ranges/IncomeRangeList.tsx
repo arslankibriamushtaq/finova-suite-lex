@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
+  Pencil,
   Trash2,
   Eye,
-  X,
   AlertTriangle,
   Loader2,
   RefreshCw,
@@ -13,8 +13,23 @@ import {
 } from 'lucide-react';
 import TableView from '../../../../components/TableView/TableView';
 import { Button } from '../../../../components/ui/button';
-import { EmptyState } from '../../../../components/shared/detailKit';
-import { LexNotice, LexPageHeader, LexSearch } from '../../../../components/shared/lexKit';
+import { EmptyState, Field } from '../../../../components/shared/detailKit';
+import { Input } from '../../../../components/ui/input';
+import { Label } from '../../../../components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
+import {
+  LexNotice,
+  LexPageHeader,
+  LexRowAction,
+  LexRowActions,
+  LexSearch,
+} from '../../../../components/shared/lexKit';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
   
 import {
@@ -75,9 +90,15 @@ export default function IncomeRangeList() {
       
       if (result.success) {
         setIncomeRanges(result.data);
-        setTotalPages(result.pageInfo.totalPages);
-        setTotalCount(result.pageInfo.totalCount);
-        setCurrentPage(result.pageInfo.page);
+        // The server does not always send a total. Falling back to the rows it
+        // did return beats rendering "1 to NaN of 0" over a table with rows in it.
+        const info = result.pageInfo || {};
+        const rows = Array.isArray(result.data) ? result.data.length : 0;
+        setTotalCount(Number.isFinite(info.totalCount) ? info.totalCount : rows);
+        setTotalPages(Number.isFinite(info.totalPages) && info.totalPages > 0 ? info.totalPages : 1);
+        // Same guard: an absent pageInfo.page would reset the pager to
+        // undefined and take the footer's arithmetic with it.
+        setCurrentPage(Number.isFinite(info.page) && info.page > 0 ? info.page : page);
       } else {
         throw new Error(result.notificationMessage || t('irl.fetchFail'));
       }
@@ -106,6 +127,10 @@ export default function IncomeRangeList() {
    * and only inside the delete confirmation — so the figure a reader checked
    * before deleting a row was in a different currency from the row itself.
    */
+  // The panels pinned the US locale, so a French or Arabic operator still read
+  // "September 8, 2026". toLocaleString follows the runtime locale instead.
+  const stamp = (value?: string | null) => (value ? new Date(value).toLocaleString() : '—');
+
   const formatCurrency = (amount: number) => {
     if (amount >= 1000000) return `SAR ${(amount / 1000000).toFixed(1)}M`;
     if (amount >= 1000) return `SAR ${(amount / 1000).toFixed(0)}K`;
@@ -238,7 +263,7 @@ export default function IncomeRangeList() {
   const stampCell = (value: string) =>
     value ? (
       <span className="whitespace-nowrap text-xs text-muted-foreground">
-        {new Date(value).toLocaleDateString('en-US', {
+        {new Date(value).toLocaleDateString(undefined, {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
@@ -266,30 +291,18 @@ export default function IncomeRangeList() {
     {
       name: t('common:actions'),
       cell: (row: IncomeRange) => (
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => handleViewClick(row.id)}
-            title={t('irl.viewDetails')}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
+        <LexRowActions>
+          <LexRowAction icon={Eye} onSelect={() => handleViewClick(row.id)}>
+            {t('irl.viewDetails')}
+          </LexRowAction>
           {canManage && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-              onClick={() => handleDeleteClick(row)}
-              title={t('irl.deleteTitle')}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <LexRowAction destructive icon={Trash2} onSelect={() => handleDeleteClick(row)}>
+              {t('common:delete')}
+            </LexRowAction>
           )}
-        </div>
+        </LexRowActions>
       ),
-      width: '120px',
+      width: '130px',
     },
   ];
 
@@ -356,324 +369,257 @@ export default function IncomeRangeList() {
       </div>
 
 
-      {/* Create Income Range Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('irl.createTitle')}</h3>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Plus className="h-4 w-4" />
+              </span>
+              {t('irl.createTitle')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {formError && (
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+              <p className="m-0 text-sm text-destructive">{formError}</p>
             </div>
+          )}
 
-            {formError && (
-              <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-                <div className="flex items-center">
-                  <AlertTriangle className="w-4 h-4 text-red-500 me-2" />
-                  <p className="text-red-700 text-sm">{formError}</p>
-                </div>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="irl-create-min">{t('irl.minAmountRequired')}</Label>
+              <div className="relative">
+                <Input
+                  id="irl-create-min"
+                  type="number"
+                  min="0"
+                  step="1"
+                  className="pe-14"
+                  value={formData.minimumAmount || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, minimumAmount: e.target.value ? Number(e.target.value) : 0 })
+                  }
+                  placeholder="100"
+                />
+                {/* The suffix inside these boxes read USD, on a platform whose
+                    every other figure is in SAR. */}
+                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
+                  SAR
+                </span>
               </div>
-            )}
-
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('irl.minAmountRequired')}</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={formData.minimumAmount || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData({ ...formData, minimumAmount: value ? Number(value) : 0 });
-                    }}
-                    className="w-full px-3 py-2 pe-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="100"
-                    min="0"
-                    step="1"
-                  />
-                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 text-sm font-medium">USD</span>
-                  </div>
-                </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="irl-create-max">{t('irl.maxAmountRequired')}</Label>
+              <div className="relative">
+                <Input
+                  id="irl-create-max"
+                  type="number"
+                  min="0"
+                  step="1"
+                  className="pe-14"
+                  value={formData.maximumAmount || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, maximumAmount: e.target.value ? Number(e.target.value) : 0 })
+                  }
+                  placeholder="100000"
+                />
+                {/* The suffix inside these boxes read USD, on a platform whose
+                    every other figure is in SAR. */}
+                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
+                  SAR
+                </span>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('irl.maxAmountRequired')}</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={formData.maximumAmount || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData({ ...formData, maximumAmount: value ? Number(value) : 0 });
-                    }}
-                    className="w-full px-3 py-2 pe-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="100000"
-                    min="0"
-                    step="1"
-                  />
-                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 text-sm font-medium">USD</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  {t('common:cancel')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCreate}
-                  disabled={formLoading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {formLoading ? (
-                    <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin me-2" />
-                      {t('irl.creating')}
-                    </div>
-                  ) : (
-                    t('irl.createBtn')
-                  )}
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Edit Income Range Modal */}
-      {showEditModal && selectedIncomeRange && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('irl.editTitle')}</h3>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleCreate} disabled={formLoading} className="gap-2">
+              {formLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {formLoading ? t('irl.creating') : t('irl.createBtn')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Pencil className="h-4 w-4" />
+              </span>
+              {t('irl.editTitle')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {formError && (
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+              <p className="m-0 text-sm text-destructive">{formError}</p>
             </div>
+          )}
 
-            {formError && (
-              <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-                <div className="flex items-center">
-                  <AlertTriangle className="w-4 h-4 text-red-500 me-2" />
-                  <p className="text-red-700 text-sm">{formError}</p>
-                </div>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="irl-edit-min">{t('irl.minAmountRequired')}</Label>
+              <div className="relative">
+                <Input
+                  id="irl-edit-min"
+                  type="number"
+                  min="0"
+                  step="1"
+                  className="pe-14"
+                  value={formData.minimumAmount || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, minimumAmount: e.target.value ? Number(e.target.value) : 0 })
+                  }
+                  placeholder="100"
+                />
+                {/* The suffix inside these boxes read USD, on a platform whose
+                    every other figure is in SAR. */}
+                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
+                  SAR
+                </span>
               </div>
-            )}
-
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('irl.minAmountRequired')}</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={formData.minimumAmount || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData({ ...formData, minimumAmount: value ? Number(value) : 0 });
-                    }}
-                    className="w-full px-3 py-2 pe-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="100"
-                    min="0"
-                    step="1"
-                  />
-                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 text-sm font-medium">USD</span>
-                  </div>
-                </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="irl-edit-max">{t('irl.maxAmountRequired')}</Label>
+              <div className="relative">
+                <Input
+                  id="irl-edit-max"
+                  type="number"
+                  min="0"
+                  step="1"
+                  className="pe-14"
+                  value={formData.maximumAmount || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, maximumAmount: e.target.value ? Number(e.target.value) : 0 })
+                  }
+                  placeholder="100000"
+                />
+                {/* The suffix inside these boxes read USD, on a platform whose
+                    every other figure is in SAR. */}
+                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
+                  SAR
+                </span>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('irl.maxAmountRequired')}</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={formData.maximumAmount || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData({ ...formData, maximumAmount: value ? Number(value) : 0 });
-                    }}
-                    className="w-full px-3 py-2 pe-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="100000"
-                    min="0"
-                    step="1"
-                  />
-                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 text-sm font-medium">USD</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  {t('common:cancel')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleUpdate}
-                  disabled={formLoading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {formLoading ? (
-                    <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin me-2" />
-                      {t('irl.updating')}
-                    </div>
-                  ) : (
-                    t('irl.updateBtn')
-                  )}
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* View Income Range Modal */}
-      {showViewModal && selectedIncomeRange && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('irl.detailsTitle')}</h3>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleUpdate} disabled={formLoading} className="gap-2">
+              {formLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {formLoading ? t('irl.updating') : t('irl.updateBtn')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Wallet className="h-4 w-4" />
+              </span>
+              {t('irl.detailsTitle')}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedIncomeRange && (
+            <div>
+              {/* A range is one fact. The minimum used to be red and the maximum
+                  black, as if the two ends meant opposite things. */}
+              <p className="m-0 mb-3 text-xl font-semibold tabular-nums tracking-tight text-foreground">
+                {formatCurrency(selectedIncomeRange.minimumAmount)} &ndash;{' '}
+                {formatCurrency(selectedIncomeRange.maximumAmount)}
+              </p>
+              <Field
+                label={t('irl.col.minAmount')}
+                value={formatCurrency(selectedIncomeRange.minimumAmount)}
+              />
+              <Field
+                label={t('irl.col.maxAmount')}
+                value={formatCurrency(selectedIncomeRange.maximumAmount)}
+              />
+              <Field label={t('common:createdAt')} value={stamp(selectedIncomeRange.createdAt)} />
+              <Field label={t('common:updatedAt')} value={stamp(selectedIncomeRange.updatedAt)} />
+              <Field label={t('irl.label.id')} value={selectedIncomeRange.id} mono />
             </div>
+          )}
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.label.id')}</label>
-                <p className="text-sm text-gray-900">{selectedIncomeRange.id}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.minAmount')}</label>
-                <p className="text-lg font-semibold text-red-600">{selectedIncomeRange.minimumAmount}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.maxAmount')}</label>
-                <p className="text-lg font-semibold text-black">{selectedIncomeRange.maximumAmount}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:createdAt')}</label>
-                <p className="text-sm text-gray-900">
-                  {new Date(selectedIncomeRange.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  })}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:updatedAt')}</label>
-                <p className="text-sm text-gray-900">
-                  {new Date(selectedIncomeRange.updatedAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  })}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t('common:close')}
-              </button>
-              <button
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowViewModal(false)}>
+              {t('common:close')}
+            </Button>
+            {canManage && selectedIncomeRange && (
+              <Button
+                className="gap-2"
                 onClick={() => {
                   setShowViewModal(false);
                   handleEditClick(selectedIncomeRange);
                 }}
-                className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
               >
+                <Pencil className="h-4 w-4" />
                 {t('irl.editBtn')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && selectedIncomeRange && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('irl.deleteTitle')}</h3>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            {formError && (
-              <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-                <div className="flex items-center">
-                  <AlertTriangle className="w-4 h-4 text-red-500 me-2" />
-                  <p className="text-red-700 text-sm">{formError}</p>
-                </div>
-              </div>
+              </Button>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                {t('irl.deleteConfirm', { range: `${formatCurrency(selectedIncomeRange.minimumAmount)} - ${formatCurrency(selectedIncomeRange.maximumAmount)}` })}
-              </p>
-            </div>
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Trash2 className="h-4 w-4" />
+              </span>
+              {t('irl.deleteTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t('common:cancel')}
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={formLoading}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {formLoading ? (
-                  <div className="flex items-center">
-                    <Loader2 className="w-4 h-4 animate-spin me-2" />
-                    {t('irl.deleting')}
-                  </div>
-                ) : (
-                  t('irl.deleteBtn')
-                )}
-              </button>
+          {formError && (
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+              <p className="m-0 text-sm text-destructive">{formError}</p>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+
+          {selectedIncomeRange && (
+            <p className="m-0 text-sm text-muted-foreground">
+              {t('irl.deleteConfirm', {
+                range: `${formatCurrency(selectedIncomeRange.minimumAmount)} - ${formatCurrency(
+                  selectedIncomeRange.maximumAmount
+                )}`,
+              })}
+            </p>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={formLoading}
+              className="gap-2"
+            >
+              {formLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {formLoading ? t('irl.deleting') : t('irl.deleteBtn')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

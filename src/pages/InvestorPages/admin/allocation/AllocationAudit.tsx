@@ -29,11 +29,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../components/ui/select';
-import { EmptyState } from '../../../../components/shared/detailKit';
+import { EmptyState, Field } from '../../../../components/shared/detailKit';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
 import { TONES } from '../../../../components/shared/detailKitUtils';
 import {
   LexNotice,
   LexPageHeader,
+  LexRowAction,
+  LexRowActions,
   LexSearch,
 } from '../../../../components/shared/lexKit';
 
@@ -377,17 +386,13 @@ export default function AllocationAudit() {
     {
       name: t('common:actions'),
       cell: (row: any) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => handleViewDetails(row)}
-          title={t('aud.viewDetails')}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
+        <LexRowActions>
+          <LexRowAction icon={Eye} onSelect={() => handleViewDetails(row)}>
+            {t('aud.viewDetails')}
+          </LexRowAction>
+        </LexRowActions>
       ),
-      width: '90px',
+      width: '130px',
     },
   ];
 
@@ -533,92 +538,72 @@ export default function AllocationAudit() {
       </div>
 
 
-      {/* Details Modal */}
-      {showDetails && selectedLog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('aud.detailsTitle')}</h3>
-              <button
-                onClick={() => setShowDetails(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                ✕
-              </button>
-            </div>
+      <Dialog open={showDetails} onOpenChange={setShowDetails}>
+        <DialogContent className="pro-dialog max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <FileText className="h-4 w-4" />
+              </span>
+              {t('aud.detailsTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.eventId')}</label>
-                  <p className="text-sm text-gray-900">{selectedLog.id}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.timestamp')}</label>
-                  <p className="text-sm text-gray-900">{new Date(selectedLog.timestamp).toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:type')}</label>
-                  <p className="text-sm text-gray-900">{getTypeLabel(selectedLog.type)}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.actor')}</label>
-                  <p className="text-sm text-gray-900">{selectedLog.actorName} ({tActor(selectedLog.actor)})</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.outcome')}</label>
-                  <p className={`text-sm font-medium ${
-                    selectedLog.outcome === 'success' ? 'text-red-600' :
-                    selectedLog.outcome === 'failure' ? 'text-red-600' :
-                    selectedLog.outcome === 'warning' ? 'text-yellow-600' :
-                    'text-gray-600'
-                  }`}>
-                    {tOutcome(selectedLog.outcome)}
-                  </p>
-                </div>
+          {selectedLog && (
+            <div className="max-h-[70vh] overflow-y-auto">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                {/* The panel coloured success and failure the same red, the one
+                    distinction an audit log exists to make. The table's badge
+                    already had this right; the panel now uses it too. */}
+                <Badge
+                  variant="outline"
+                  className={`border font-medium ${outcomeTone(selectedLog.outcome)}`}
+                >
+                  {tOutcome(selectedLog.outcome)}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  {getTypeLabel(selectedLog.type)}
+                </span>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('sl.col.strategy')}</label>
-                  <p className="text-sm text-gray-900">{selectedLog.strategyName}</p>
-                  <p className="text-sm text-gray-500">{selectedLog.strategyId}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.loanId')}</label>
-                  <p className="text-sm text-gray-900">{selectedLog.loanId || t('aud.na')}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.ipAddress')}</label>
-                  <p className="text-sm text-gray-900">{selectedLog.metadata.ipAddress}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.sessionId')}</label>
-                  <p className="text-sm text-gray-900">{selectedLog.metadata.sessionId}</p>
-                </div>
+              <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+                <Field
+                  label={t('aud.col.timestamp')}
+                  value={new Date(selectedLog.timestamp).toLocaleString()}
+                />
+                <Field
+                  label={t('aud.col.actor')}
+                  value={`${selectedLog.actorName} (${tActor(selectedLog.actor)})`}
+                />
+                <Field label={t('sl.col.strategy')} value={selectedLog.strategyName} />
+                <Field
+                  label={t('aud.col.loanId')}
+                  value={selectedLog.loanId || t('aud.na')}
+                  mono
+                />
+                <Field label={t('aud.ipAddress')} value={selectedLog.metadata.ipAddress} mono />
+                <Field label={t('aud.sessionId')} value={selectedLog.metadata.sessionId} mono />
+                <Field label={t('aud.eventId')} value={selectedLog.id} mono />
               </div>
-            </div>
 
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">{t('aud.eventDetails')}</label>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <pre className="text-sm text-gray-900 whitespace-pre-wrap">
+              <div className="mt-4">
+                <p className="m-0 mb-1.5 text-xs text-muted-foreground">
+                  {t('aud.eventDetails')}
+                </p>
+                <pre className="m-0 overflow-x-auto rounded-lg border bg-muted/40 p-3 text-xs leading-relaxed text-foreground">
                   {JSON.stringify(selectedLog.details, null, 2)}
                 </pre>
               </div>
             </div>
+          )}
 
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setShowDetails(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t('common:close')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDetails(false)}>
+              {t('common:close')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

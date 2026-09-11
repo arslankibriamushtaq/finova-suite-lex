@@ -9,7 +9,6 @@ import {
   DollarSign,
   TrendingUp,
   Wallet,
-  X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -24,13 +23,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../components/ui/select';
-import { EmptyState } from '../../../../components/shared/detailKit';
+import { EmptyState, Field } from '../../../../components/shared/detailKit';
 import { TONES } from '../../../../components/shared/detailKitUtils';
 import {
   LexMetricTile,
   LexPageHeader,
+  LexRowAction,
+  LexRowActions,
   LexSearch,
 } from '../../../../components/shared/lexKit';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
 import {
   getAllInvestments,
@@ -307,29 +315,21 @@ export default function InvestmentsList() {
     {
       name: t('common:actions'),
       cell: (row: Investment) => (
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => setSelectedInvestment(row)}
-            title={t('irl.viewDetails')}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
+        <LexRowActions>
+          <LexRowAction icon={Eye} onSelect={() => setSelectedInvestment(row)}>
+            {t('irl.viewDetails')}
+          </LexRowAction>
           {canManage && (
-            <Button asChild variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Link
-                to={`/InvestorDashboard/Investments/${row.id}/adjust`}
-                title={t('invl.adjustInvestment')}
-              >
-                <Settings className="h-4 w-4" />
-              </Link>
-            </Button>
+            <LexRowAction
+              icon={Settings}
+              to={`/InvestorDashboard/Investments/${row.id}/adjust`}
+            >
+              {t('invl.adjustInvestment')}
+            </LexRowAction>
           )}
-        </div>
+        </LexRowActions>
       ),
-      width: '120px',
+      width: '130px',
     },
   ];
 
@@ -490,47 +490,48 @@ export default function InvestmentsList() {
         )}
       </div>
 
-      {selectedInvestment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="pro-card mx-4 max-h-screen w-full max-w-3xl overflow-y-auto p-6">
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="m-0 text-lg font-semibold tracking-tight text-foreground">
-                {t('invl.detailsTitle')}
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setSelectedInvestment(null)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+      <Dialog
+        open={selectedInvestment !== null}
+        onOpenChange={(open) => !open && setSelectedInvestment(null)}
+      >
+        <DialogContent className="pro-dialog max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <BarChart3 className="h-4 w-4" />
+              </span>
+              {t('invl.detailsTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
-              {detailRows.map(([label, value]) => (
-                <div key={label}>
-                  <p className="m-0 text-xs text-muted-foreground">{label}</p>
-                  <p className="m-0 text-sm text-foreground">{value}</p>
-                </div>
-              ))}
-            </div>
+          {selectedInvestment && (
+            <div className="max-h-[70vh] overflow-y-auto">
+              <div className="mb-3">{statusBadge(selectedInvestment.status)}</div>
 
-            {selectedInvestment.rejectionReason && (
-              <div className="mt-4">
-                <p className="m-0 text-xs text-muted-foreground">{t('invl.rejectionReason')}</p>
-                <p className="m-0 text-sm text-destructive">{selectedInvestment.rejectionReason}</p>
+              <div className="grid grid-cols-1 gap-x-8 md:grid-cols-2">
+                {detailRows.map(([label, value]) => (
+                  <Field key={label} label={label} value={value} />
+                ))}
               </div>
-            )}
 
-            <div className="mt-6 flex justify-end">
-              <Button variant="outline" size="sm" onClick={() => setSelectedInvestment(null)}>
-                {t('common:close')}
-              </Button>
+              {selectedInvestment.rejectionReason && (
+                <div className="mt-4">
+                  <p className="m-0 text-xs text-muted-foreground">{t('invl.rejectionReason')}</p>
+                  <p className="m-0 text-sm text-destructive">
+                    {selectedInvestment.rejectionReason}
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
-      )}
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedInvestment(null)}>
+              {t('common:close')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

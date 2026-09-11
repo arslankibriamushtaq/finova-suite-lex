@@ -1,17 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Descriptions, Card, Button } from "antd";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarClock,
+  Coins,
+  Package,
+  PackageX,
+  Percent,
+  Settings,
+} from "lucide-react";
 import toast from "react-hot-toast";
+
 import { getProductById, Product } from "../../../../redux/apis/apisInvestor";
-import Loader from "../../../../components/Loader/Loader";
 import {
   PRODUCT_STATUSES,
   PRODUCT_CATEGORIES,
   enumToNumber,
   humaniseEnum,
-} from './productEnums';
+} from "./productEnums";
+import { Badge } from "../../../../components/ui/badge";
+import { Button } from "../../../../components/ui/button";
+import { Block, EmptyState, Field, TabSkeleton } from "../../../../components/shared/detailKit";
+import { TONES } from "../../../../components/shared/detailKitUtils";
+import { LexMetricTile, LexPageHeader } from "../../../../components/shared/lexKit";
+import { cn } from "../../../../lib/utils";
+
+/**
+ * ProductStatus, in the order the service numbers them.
+ *
+ * These were five inline hex values, and two of them were the same colour:
+ * Active was `#AB1920` (labelled "Green for Active" in a comment, though it is
+ * the brand red) and Closed `#ff4d4f`. A live product and a closed one both
+ * rendered as a red pill — the two states an operator most needs to tell apart.
+ *
+ * Indexed by ordinal, which is why the status goes through `enumToNumber`
+ * first: the service sends the name ("ACTIVE") and takes the number back.
+ */
+const PRODUCT_STATUS = [
+  { key: "pv.status.active", tone: TONES.emerald },
+  { key: "pv.status.inactive", tone: TONES.slate },
+  { key: "pv.status.closed", tone: TONES.red },
+  { key: "pv.status.suspended", tone: TONES.amber },
+  { key: "pv.status.launching", tone: TONES.sky },
+];
 
 const ProductView = () => {
   const { t } = useTranslation("investor");
@@ -21,19 +53,11 @@ const ProductView = () => {
   const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState<Product | null>(null);
 
-  useEffect(() => {
-    if (productId) {
-      fetchProductData();
-    }
-  }, [productId]);
-
-  const fetchProductData = async () => {
+  const fetchProductData = useCallback(async () => {
     if (!productId) return;
-
     try {
       setLoading(true);
       const response = await getProductById(productId);
-
       if (response?.success) {
         setProductData(response.data || null);
       } else {
@@ -44,19 +68,14 @@ const ProductView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId, t]);
 
-  // "ACTIVE" or 0 — the service has sent both.
-  const getProductStatusText = (status: number | string) => {
-    const statusMap: { [key: number]: string } = {
-      0: t('pv.status.active'),
-      1: t('pv.status.inactive'),
-      2: t('pv.status.closed'),
-      3: t('pv.status.suspended'),
-      4: t('pv.status.launching')
-    };
-    return statusMap[enumToNumber(status, PRODUCT_STATUSES, -1)] || t('pv.status.unknown');
-  };
+  useEffect(() => {
+    fetchProductData();
+  }, [fetchProductData]);
+
+  const money = (value?: number) => `SAR ${Number(value ?? 0).toLocaleString()}`;
+  const stamp = (value?: string | null) => (value ? new Date(value).toLocaleString() : "—");
 
   const getProductCategoryText = (category: number | string | undefined) => {
     const categoryMap: { [key: number]: string } = {
@@ -70,135 +89,125 @@ const ProductView = () => {
       7: t("pln.cat.altInvestments"),
       8: t("pln.cat.cash"),
     };
-    if (category === undefined || category === null || category === "") return "-";
+    if (category === undefined || category === null || category === "") return "—";
     return (
-      categoryMap[enumToNumber(category, PRODUCT_CATEGORIES, -1)] || humaniseEnum(category) || "-"
+      categoryMap[enumToNumber(category, PRODUCT_CATEGORIES, -1)] || humaniseEnum(category) || "—"
     );
   };
 
-  const getProductStatusColor = (status: number | string) => {
-    const colorMap: { [key: number]: string } = {
-      0: '#AB1920', // Green for Active
-      1: '#8c8c8c', // Gray for Inactive
-      2: '#ff4d4f', // Red for Closed
-      3: '#faad14', // Yellow for Suspended
-      4: '#1890ff'  // Blue for Launching
-    };
-    return colorMap[enumToNumber(status, PRODUCT_STATUSES, -1)] || '#8c8c8c';
+  /* The service sends a named term ("MEDIUM_TERM"), not a month count —
+     "MEDIUM_TERM months" was the old rendering. A number still reads as months. */
+  const durationText = (value: Product["investmentDuration"]) => {
+    if (!value) return "—";
+    return typeof value === "number" || !Number.isNaN(Number(value))
+      ? t("pv.months", { value })
+      : humaniseEnum(value);
   };
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader />
-        </div>
-      </div>
-    );
-  }
+  const status = productData
+    ? PRODUCT_STATUS[enumToNumber(productData.productStatus, PRODUCT_STATUSES, -1)]
+    : undefined;
 
-  if (!productData) {
-    return (
-      <div className="p-6">
-        <Card>
-          <div className="text-center py-8">
-            <p className="text-gray-500">{t("pv.notFound")}</p>
-            <Button
-              type="primary"
-              onClick={() => navigate('/InvestorDashboard/Products')}
-              className="mt-4"
-            >
-              {t("pv.backToList")}
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  const statusColor = getProductStatusColor(productData.productStatus);
+  const statusBadge = productData ? (
+    <Badge variant="outline" className={cn("border font-medium", status?.tone ?? TONES.slate)}>
+      {status ? t(status.key) : t("pv.status.unknown")}
+    </Badge>
+  ) : null;
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <div className="service">
+      <LexPageHeader
+        icon={Package}
+        title={productData?.name || t("pv.detailsTitle")}
+        subtitle={t("pv.subtitle")}
+      >
         <Button
-          icon={<ArrowLeft className="w-4 h-4" />}
+          variant="ghost"
+          size="sm"
+          className="gap-2"
           onClick={() => navigate("/InvestorDashboard/Products")}
-          className="mb-4"
         >
+          <ArrowLeft className="h-4 w-4" />
           {t("pv.backToList")}
         </Button>
-        <h1 className="text-3xl font-bold text-gray-900">{t("pv.detailsTitle")}</h1>
-      </div>
+        {productData && (
+          <Button
+            size="sm"
+            className="gap-2"
+            onClick={() => navigate(`/InvestorDashboard/Products/${productData.id}/config`)}
+          >
+            <Settings className="h-4 w-4" />
+            {t("pln.menu.configurations")}
+          </Button>
+        )}
+      </LexPageHeader>
 
-      <Card>
-        <Descriptions
-          title={t("pv.infoTitle")}
-          bordered
-          column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-        >
-          <Descriptions.Item label={t("pv.label.id")}>
-            <span className="text-sm">{productData.id}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.name")}>
-            <span className="font-semibold text-lg">{productData.name}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.type")}>
-            {productData.type || "-"}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.code")}>
-            <span>{productData.code || "-"}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={t("common:description")} span={2}>
-            {productData.description || "-"}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.expectedReturn")}>
-            {productData.expectedReturn}%
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.minInvestment")}>
-            {productData.minimumInvestment?.toLocaleString() || "0"} SAR
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.category")}>
-            {getProductCategoryText(productData.productCategory)}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.status")}>
-            <span
-              style={{
-                padding: "6px 12px",
-                borderRadius: "2px",
-                backgroundColor: statusColor,
-                color: "white",
-                fontSize: "12px",
-              }}
-            >
-              {getProductStatusText(productData.productStatus)}
-            </span>
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.launchDate")}>
-            {productData.launchDate ? new Date(productData.launchDate).toLocaleDateString() : "-"}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.duration")}>
-            {/* The service sends a named term ("MEDIUM_TERM"), not a month
-                count — "MEDIUM_TERM months" was the old rendering. A number
-                still reads as months. */}
-            {productData.investmentDuration
-              ? typeof productData.investmentDuration === "number" ||
-                !Number.isNaN(Number(productData.investmentDuration))
-                ? t("pv.months", { value: productData.investmentDuration })
-                : humaniseEnum(productData.investmentDuration)
-              : "-"}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("pv.label.segmentId")}>
-            <span className="text-sm">{productData.segmentId || "-"}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={t("common:createdAt")}>
-            {productData.createdAt ? new Date(productData.createdAt).toLocaleString() : "-"}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("common:updatedAt")}>
-            {productData.updatedAt ? new Date(productData.updatedAt).toLocaleString() : "-"}
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
+      {loading ? (
+        <TabSkeleton variant="fields" />
+      ) : !productData ? (
+        <div className="pro-card p-4">
+          <EmptyState icon={PackageX} text={t("pv.notFound")} />
+        </div>
+      ) : (
+        <>
+          {/* The three numbers that decide whether this product is worth
+              opening — they were rows fourteen deep in a description list. */}
+          <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <LexMetricTile
+              label={t("pv.label.expectedReturn")}
+              icon={Percent}
+              tone="emerald"
+              value={`${productData.expectedReturn ?? 0}%`}
+            />
+            <LexMetricTile
+              label={t("pv.label.minInvestment")}
+              icon={Coins}
+              tone="sky"
+              value={money(productData.minimumInvestment)}
+            />
+            <LexMetricTile
+              label={t("pv.label.duration")}
+              icon={CalendarClock}
+              tone="slate"
+              value={durationText(productData.investmentDuration)}
+            />
+          </div>
+
+          <Block title={t("pv.infoTitle")} icon={Package} right={statusBadge}>
+            <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+              <Field label={t("pv.label.name")} value={productData.name || "—"} />
+              <Field label={t("pv.label.status")} value={statusBadge} />
+              <Field label={t("pv.label.type")} value={humaniseEnum(productData.type) || "—"} />
+              <Field label={t("pv.label.code")} value={productData.code || "—"} />
+              <Field
+                label={t("pv.label.category")}
+                value={getProductCategoryText(productData.productCategory)}
+              />
+              <Field
+                label={t("pv.label.launchDate")}
+                value={
+                  productData.launchDate
+                    ? new Date(productData.launchDate).toLocaleDateString()
+                    : "—"
+                }
+              />
+              <Field label={t("pv.label.id")} value={productData.id} mono />
+              <Field label={t("pv.label.segmentId")} value={productData.segmentId || "—"} mono />
+              <Field label={t("common:createdAt")} value={stamp(productData.createdAt)} />
+              <Field label={t("common:updatedAt")} value={stamp(productData.updatedAt)} />
+            </div>
+
+            {/* Description reads as prose, so it gets the full width rather than
+                being squeezed into a label/value row. */}
+            <div className="mt-4 border-t pt-3">
+              <p className="m-0 mb-1 text-xs text-muted-foreground">{t("common:description")}</p>
+              <p className="m-0 text-sm leading-relaxed text-foreground">
+                {productData.description || "—"}
+              </p>
+            </div>
+          </Block>
+        </>
+      )}
     </div>
   );
 };

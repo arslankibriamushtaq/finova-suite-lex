@@ -19,16 +19,28 @@ import {
   Download,
   Eye,
   FileText,
-  Search,
   Calendar,
   File,
   CheckCircle,
   XCircle,
   Clock,
-  X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
+
+import { Badge } from '../../../../components/ui/badge';
+import { Button } from '../../../../components/ui/button';
+import { Skeleton } from '../../../../components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
+import { EmptyState } from '../../../../components/shared/detailKit';
+import { TONES } from '../../../../components/shared/detailKitUtils';
+import { LexPageHeader, LexSearch } from '../../../../components/shared/lexKit';
+import { cn } from '../../../../lib/utils';
 
 /**
  * The service does not return a list of documents. It returns one record with a
@@ -196,22 +208,23 @@ export default function DocumentPreview() {
   const getStatusIcon = (status: string | number) => {
     switch (statusCode(status)) {
       case 1:
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-red-600" />;
       case 2:
-        return <XCircle className="w-4 h-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-red-700" />;
       default:
-        return <Clock className="w-4 h-4 text-yellow-500" />;
+        return <Clock className="h-4 w-4 text-amber-500" />;
     }
   };
 
-  const getStatusColor = (status: string | number) => {
+  // Verified was a green the brand does not have, and pending a raw yellow.
+  const getStatusTone = (status: string | number) => {
     switch (statusCode(status)) {
       case 1:
-        return 'bg-green-100 text-green-800';
+        return TONES.emerald;
       case 2:
-        return 'bg-red-100 text-red-800';
+        return TONES.red;
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return TONES.amber;
     }
   };
 
@@ -300,155 +313,147 @@ export default function DocumentPreview() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              to="/InvestorDashboard/Investors"
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="w-5 h-5 me-2" />
-              {t('kycd.backToInvestors')}
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('dpv.title')}</h1>
-            </div>
-          </div>
+    <div className="service">
+      <LexPageHeader icon={FileText} title={t('dpv.title')} subtitle={t('dpv.subtitle')}>
+        <Button asChild variant="ghost" size="sm" className="gap-2">
+          <Link to="/InvestorDashboard/Investors">
+            <ArrowLeft className="h-4 w-4" />
+            {t('kycd.backToInvestors')}
+          </Link>
+        </Button>
+      </LexPageHeader>
+
+      <div className="pro-card p-3 mb-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <LexSearch
+            id="document-search"
+            className="flex-1"
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder={t('doc.searchPlaceholder')}
+          />
+          <span className="whitespace-nowrap text-xs text-muted-foreground">
+            {t('dpv.countLabel', { shown: filteredDocuments.length, total: documents.length })}
+          </span>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center space-x-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder={t('doc.searchPlaceholder')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Documents Grid */}
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-gray-500">{t('kycd.loading')}</div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="pro-card p-3">
+              <Skeleton className="mb-3 h-40 w-full rounded-lg" />
+              <Skeleton className="mb-2 h-4 w-2/3" />
+              <Skeleton className="mb-3 h-3 w-1/2" />
+              <div className="flex gap-2">
+                <Skeleton className="h-8 flex-1 rounded-md" />
+                <Skeleton className="h-8 flex-1 rounded-md" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : filteredDocuments.length === 0 ? (
-        <div className="text-center py-12">
-          <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('doc.noDocuments')}</h3>
-          <p className="text-gray-500">{t('dpv.noMatch')}</p>
+        <div className="pro-card p-4">
+          <EmptyState
+            icon={FileText}
+            text={documents.length === 0 ? t('doc.noDocuments') : t('dpv.noMatch')}
+          />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredDocuments.map((doc) => {
             const content = contentUrls[doc.documentId];
             return (
-              <div
-                key={doc.documentId}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
-              >
-                {/* Large preview */}
-                <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100">
+              <div key={doc.documentId} className="pro-card flex flex-col p-3">
+                <div className="relative mb-3 h-40 overflow-hidden rounded-lg border bg-muted/40">
                   {content && isImage(content.type) ? (
-                    <img src={content.url} alt={doc.label} className="w-full h-full object-cover" />
+                    <img src={content.url} alt={doc.label} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="mb-2">
-                          {content ? (
-                            <FileText className="w-12 h-12 text-red-500 mx-auto" />
-                          ) : (
-                            <File className="w-12 h-12 text-gray-400 mx-auto" />
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500 font-medium">
-                          {content ? content.type || t('dpv.noImageFound') : t('kycd.loading')}
-                        </p>
-                      </div>
+                    <div className="flex h-full flex-col items-center justify-center gap-2 px-3 text-center">
+                      {content ? (
+                        <FileText className="h-8 w-8 text-muted-foreground/60" />
+                      ) : (
+                        <File className="h-8 w-8 text-muted-foreground/40" />
+                      )}
+                      <p className="m-0 truncate text-xs text-muted-foreground">
+                        {content ? content.type || t('dpv.noImageFound') : t('kycd.loading')}
+                      </p>
                     </div>
                   )}
-
-                  {/* Status Badge Overlay */}
-                  <div className="absolute top-4 right-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full shadow-lg ${getStatusColor(
-                        doc.status
-                      )}`}
-                    >
-                      {getStatusText(doc.status)}
-                    </span>
-                  </div>
+                  <Badge
+                    variant="outline"
+                    className={cn('absolute end-2 top-2 border font-medium', getStatusTone(doc.status))}
+                  >
+                    {getStatusText(doc.status)}
+                  </Badge>
                 </div>
 
-                {/* Document Info */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-sm font-medium text-gray-900 truncate flex-1 me-2">
-                      {doc.label}
-                    </h3>
-                    {getStatusIcon(doc.status)}
-                  </div>
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <h3 className="m-0 truncate text-sm font-semibold tracking-tight text-foreground">
+                    {doc.label}
+                  </h3>
+                  {getStatusIcon(doc.status)}
+                </div>
 
-                  <div className="space-y-2 text-xs text-gray-500 mb-4">
-                    <div className="flex items-center">
-                      <Calendar className="w-3 h-3 me-1" />
-                      <span>
-                        {doc.expiryDate ? new Date(doc.expiryDate).toLocaleDateString() : '—'}
-                      </span>
-                    </div>
-                  </div>
+                {/* The date sat on its own next to a calendar icon, with nothing
+                    to say what it was a date of. */}
+                <p className="m-0 mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Calendar className="h-3.5 w-3.5 shrink-0" />
+                  {doc.expiryDate
+                    ? `${t('dpv.expiresLabel')} ${new Date(doc.expiryDate).toLocaleDateString()}`
+                    : t('dpv.noExpiry')}
+                </p>
 
-                  {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-2">
-                    <button
+                <div className="mt-auto flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1.5"
                       onClick={() => handlePreviewDocument(doc)}
                       disabled={!content}
-                      className="flex-1 px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 disabled:opacity-50 flex items-center justify-center"
                     >
-                      <Eye className="w-3 h-3 me-1" />
+                      <Eye className="h-3.5 w-3.5" />
                       {t('doc.preview')}
-                    </button>
-
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1.5"
                       onClick={() => handleDownloadDocument(doc)}
-                      className="flex-1 px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 disabled:opacity-50 flex items-center justify-center"
                     >
-                      <Download className="w-3 h-3 me-1" />
+                      <Download className="h-3.5 w-3.5" />
                       {t('doc.download')}
-                    </button>
+                    </Button>
                   </div>
 
-                  {/* Approve/Reject Buttons */}
-                  <div className="mt-3 flex gap-2">
-                    {canVerify && statusCode(doc.status) !== 1 && (
-                      <button
-                        onClick={() => setVerification(doc, 1)}
-                        className="flex-1 px-3 py-2 text-xs font-medium text-green-700 bg-green-50 rounded-lg hover:bg-green-100 flex items-center justify-center"
-                      >
-                        <CheckCircle className="w-3 h-3 me-1" />
-                        {t('common:approve')}
-                      </button>
-                    )}
-
-                    {canVerify && statusCode(doc.status) !== 2 && (
-                      <button
-                        onClick={() => setVerification(doc, 2)}
-                        className="flex-1 px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex items-center justify-center"
-                      >
-                        <XCircle className="w-3 h-3 me-1" />
-                        {t('common:reject')}
-                      </button>
-                    )}
-                  </div>
+                  {/* A document is never both approved and rejected, so one of
+                      the two buttons always shows to someone who can verify. */}
+                  {canVerify && (
+                    <div className="flex gap-2">
+                      {statusCode(doc.status) !== 1 && (
+                        <Button
+                          size="sm"
+                          className="flex-1 gap-1.5"
+                          onClick={() => setVerification(doc, 1)}
+                        >
+                          <CheckCircle className="h-3.5 w-3.5" />
+                          {t('common:approve')}
+                        </Button>
+                      )}
+                      {statusCode(doc.status) !== 2 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => setVerification(doc, 2)}
+                        >
+                          <XCircle className="h-3.5 w-3.5" />
+                          {t('common:reject')}
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -456,26 +461,26 @@ export default function DocumentPreview() {
         </div>
       )}
 
-      {/* Document Preview Modal */}
-      {previewDocument && contentUrls[previewDocument.documentId] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="relative w-full h-full flex flex-col bg-white">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-              <h2 className="text-lg font-semibold text-gray-900 truncate flex-1 me-4">
-                {previewDocument.label}
-              </h2>
-              <button
-                onClick={closePreview}
-                className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label={t('dpv.closePreview')}
-              >
-                <X className="w-6 h-6 text-gray-600" />
-              </button>
-            </div>
+      {/* Was a hand-rolled fixed overlay with its own close button: no escape
+          key, no focus trap, and nothing returning focus to the card behind it. */}
+      <Dialog
+        open={!!previewDocument && !!contentUrls[previewDocument.documentId]}
+        onOpenChange={(open) => {
+          if (!open) closePreview();
+        }}
+      >
+        <DialogContent className="pro-dialog max-w-5xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <FileText className="h-4 w-4" />
+              </span>
+              <span className="truncate">{previewDocument?.label}</span>
+            </DialogTitle>
+          </DialogHeader>
 
-            {/* Preview */}
-            <div className="flex-1 relative overflow-auto bg-gray-100">
+          {previewDocument && contentUrls[previewDocument.documentId] && (
+            <div className="h-[70vh] overflow-auto rounded-lg border bg-muted/30">
               {isImage(contentUrls[previewDocument.documentId].type) ? (
                 <img
                   src={contentUrls[previewDocument.documentId].url}
@@ -485,15 +490,15 @@ export default function DocumentPreview() {
               ) : (
                 <iframe
                   src={contentUrls[previewDocument.documentId].url}
-                  className="w-full h-full border-0"
+                  className="h-full w-full border-0"
                   title={previewDocument.label}
                   allow="fullscreen"
                 />
               )}
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

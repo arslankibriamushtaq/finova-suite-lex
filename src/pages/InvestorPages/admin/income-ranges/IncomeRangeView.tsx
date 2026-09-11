@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Descriptions, Card, Button } from "antd";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, SearchX, Wallet } from "lucide-react";
 import toast from "react-hot-toast";
+
 import { getIncomeRangeById, IncomeRange } from "../../../../redux/apis/apisInvestor";
-import Loader from "../../../../components/Loader/Loader";
+import { Button } from "../../../../components/ui/button";
+import { Block, EmptyState, Field, TabSkeleton } from "../../../../components/shared/detailKit";
+import { LexPageHeader } from "../../../../components/shared/lexKit";
+
+const LIST_PATH = "/InvestorDashboard/SystemSettings/IncomeRanges";
 
 const IncomeRangeView = () => {
   const { t } = useTranslation("investor");
@@ -15,19 +19,11 @@ const IncomeRangeView = () => {
   const [loading, setLoading] = useState(false);
   const [incomeRangeData, setIncomeRangeData] = useState<IncomeRange | null>(null);
 
-  useEffect(() => {
-    if (incomeRangeId) {
-      fetchIncomeRangeData();
-    }
-  }, [incomeRangeId]);
-
-  const fetchIncomeRangeData = async () => {
+  const fetchIncomeRangeData = useCallback(async () => {
     if (!incomeRangeId) return;
-
     try {
       setLoading(true);
       const response = await getIncomeRangeById(incomeRangeId);
-
       if (response?.success) {
         setIncomeRangeData(response.data || null);
       } else {
@@ -38,76 +34,53 @@ const IncomeRangeView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [incomeRangeId, t]);
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader />
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchIncomeRangeData();
+  }, [fetchIncomeRangeData]);
 
-  if (!incomeRangeData) {
-    return (
-      <div className="p-6">
-        <Card>
-          <div className="text-center py-8">
-            <p className="text-gray-500">{t("irv.notFound")}</p>
-            <Button
-              type="primary"
-              onClick={() => navigate('/InvestorDashboard/SystemSettings/IncomeRanges')}
-              className="mt-4"
-            >
-              {t("irv.backToList")}
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+  // The list renders amounts as `SAR 1,234`; the detail page used to put the
+  // currency after the number, so the same figure read differently either side
+  // of a click.
+  const money = (value?: number) => `SAR ${Number(value ?? 0).toLocaleString()}`;
+  const stamp = (value?: string | null) => (value ? new Date(value).toLocaleString() : "—");
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Button
-          icon={<ArrowLeft className="w-4 h-4" />}
-          onClick={() => navigate("/InvestorDashboard/SystemSettings/IncomeRanges")}
-          className="mb-4"
-        >
+    <div className="service">
+      <LexPageHeader icon={Wallet} title={t("irv.detailsTitle")} subtitle={t("irv.subtitle")}>
+        <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate(LIST_PATH)}>
+          <ArrowLeft className="h-4 w-4" />
           {t("irv.backToList")}
         </Button>
-        <h1 className="text-3xl font-bold text-gray-900">{t("irv.detailsTitle")}</h1>
-      </div>
+      </LexPageHeader>
 
-      <Card>
-        <Descriptions
-          title={t("irv.infoTitle")}
-          bordered
-          column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
-        >
-          <Descriptions.Item label={t("irv.label.id")}>
-            <span className="text-sm">{incomeRangeData.id}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={t("irv.label.minAmount")}>
-            {incomeRangeData.minimumAmount?.toLocaleString() || "0"} SAR
-          </Descriptions.Item>
-          <Descriptions.Item label={t("irv.label.maxAmount")}>
-            {incomeRangeData.maximumAmount?.toLocaleString() || "0"} SAR
-          </Descriptions.Item>
-          <Descriptions.Item label={t("common:createdAt")}>
-            {incomeRangeData.createdAt ? new Date(incomeRangeData.createdAt).toLocaleString() : "-"}
-          </Descriptions.Item>
-          <Descriptions.Item label={t("common:updatedAt")}>
-            {incomeRangeData.updatedAt ? new Date(incomeRangeData.updatedAt).toLocaleString() : "-"}
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
+      {loading ? (
+        <TabSkeleton variant="fields" />
+      ) : !incomeRangeData ? (
+        <div className="pro-card p-4">
+          <EmptyState icon={SearchX} text={t("irv.notFound")} />
+        </div>
+      ) : (
+        <Block title={t("irv.infoTitle")} icon={Wallet}>
+          {/* A range is one fact, not two, so the band leads and the two
+              endpoints stay below it. */}
+          <p className="m-0 mb-1 text-xs text-muted-foreground">{t("irv.spanLabel")}</p>
+          <p className="m-0 mb-4 text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+            {money(incomeRangeData.minimumAmount)} &ndash; {money(incomeRangeData.maximumAmount)}
+          </p>
+
+          <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+            <Field label={t("irv.label.minAmount")} value={money(incomeRangeData.minimumAmount)} />
+            <Field label={t("irv.label.maxAmount")} value={money(incomeRangeData.maximumAmount)} />
+            <Field label={t("common:createdAt")} value={stamp(incomeRangeData.createdAt)} />
+            <Field label={t("common:updatedAt")} value={stamp(incomeRangeData.updatedAt)} />
+            <Field label={t("irv.label.id")} value={incomeRangeData.id} mono />
+          </div>
+        </Block>
+      )}
     </div>
   );
 };
 
 export default IncomeRangeView;
-

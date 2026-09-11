@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Save,
-  X,
   DollarSign,
   Clock,
   Calendar,
@@ -10,7 +9,8 @@ import {
   Users,
   Settings,
   Loader2,
-  CheckCircle
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,34 @@ import {
   enumToNumber,
   tenureUnitOf,
 } from './productEnums';
+
+import { Badge } from '../../../../components/ui/badge';
+import { Button } from '../../../../components/ui/button';
+import { Tabs } from '../../../../components/ui/tabs';
+import { DetailTabsList, DetailTabsTrigger } from '../../../../components/shared/detailKit';
+import { TONES } from '../../../../components/shared/detailKitUtils';
+import { LexNotice, LexPageHeader } from '../../../../components/shared/lexKit';
+import { cn } from '../../../../lib/utils';
+
+/**
+ * One control class for every field on this page.
+ *
+ * The originals tinted the placeholder the same colour as the value, so an
+ * empty field read as a filled-in one.
+ */
+const FIELD =
+  'w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
+const FIELD_ERROR = 'border-destructive focus:ring-destructive';
+
+/** ProductStatus, in service order. Active and Closed both used to render as
+ *  `bg-red-100 text-red-800` — a live product and a closed one looked the same. */
+const PRODUCT_STATUS_TONE = [
+  TONES.emerald,
+  TONES.slate,
+  TONES.red,
+  TONES.amber,
+  TONES.sky,
+];
 
 interface ConfigurationData {
   // Amounts tab
@@ -636,7 +664,7 @@ export default function ProductConfiguration() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.amounts.minLabel')}
                 </label>
                 <div className="relative">
@@ -646,17 +674,13 @@ export default function ProductConfiguration() {
                       setConfigData(prev => ({ ...prev, minimumInvestment: Number(e.target.value) }));
                       clearFieldError('minimumInvestment');
                     }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-black placeholder:text-black ${
-                      validationErrors.minimumInvestment 
-                        ? 'border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:ring-gray-500'
-                    }`}
+                    className={cn(FIELD, validationErrors.minimumInvestment && FIELD_ERROR)}
                     placeholder="0"
                   />
                   <select
                     value={configData.baseCurrency}
                     onChange={(e) => setConfigData(prev => ({ ...prev, baseCurrency: e.target.value }))}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-foreground focus:outline-none"
                   >
                     {currencies.map(currency => (
                       <option key={currency.id} value={currency.id}>
@@ -666,32 +690,28 @@ export default function ProductConfiguration() {
                   </select>
                 </div>
                 {validationErrors.minimumInvestment && (
-                  <p className="text-xs text-red-600 mt-1">{validationErrors.minimumInvestment}</p>
+                  <p className="mt-1 text-xs text-destructive">{validationErrors.minimumInvestment}</p>
                 )}
                 {!validationErrors.minimumInvestment && (
-                  <p className="text-xs text-black mt-1">{t('pc.amounts.minHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.amounts.minHelp')}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.amounts.maxLabel')}
                 </label>
                 <div className="relative">
                   <input
                     value={configData.maximumInvestment}
                     onChange={(e) => setConfigData(prev => ({ ...prev, maximumInvestment: Number(e.target.value) }))}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-black placeholder:text-black ${
-                      validationErrors.maximumInvestment 
-                        ? 'border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:ring-gray-500'
-                    }`}
+                    className={cn(FIELD, validationErrors.maximumInvestment && FIELD_ERROR)}
                     placeholder="0"
                   />
                   <select
                     value={configData.baseCurrency}
                     onChange={(e) => setConfigData(prev => ({ ...prev, baseCurrency: e.target.value }))}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-foreground focus:outline-none"
                   >
                     {currencies.map(currency => (
                       <option key={currency.id} value={currency.id}>
@@ -701,28 +721,28 @@ export default function ProductConfiguration() {
                   </select>
                 </div>
                 {validationErrors.maximumInvestment && (
-                  <p className="text-xs text-red-600 mt-1">{validationErrors.maximumInvestment}</p>
+                  <p className="mt-1 text-xs text-destructive">{validationErrors.maximumInvestment}</p>
                 )}
                 {!validationErrors.maximumInvestment && (
-                  <p className="text-xs text-black mt-1">{t('pc.amounts.maxHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.amounts.maxHelp')}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.amounts.incrementLabel')}
                 </label>
                 <div className="relative">
                   <input
                     value={configData.investmentIncrement}
                     onChange={(e) => setConfigData(prev => ({ ...prev, investmentIncrement: Number(e.target.value) }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                    className={FIELD}
                     placeholder="0"
                   />
                   <select
                     value={configData.baseCurrency}
                     onChange={(e) => setConfigData(prev => ({ ...prev, baseCurrency: e.target.value }))}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-foreground focus:outline-none"
                   >
                     {currencies.map(currency => (
                       <option key={currency.id} value={currency.id}>
@@ -731,17 +751,17 @@ export default function ProductConfiguration() {
                     ))}
                   </select>
                 </div>
-                <p className="text-xs text-black mt-1">{t('pc.amounts.incrementHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.amounts.incrementHelp')}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.amounts.baseCurrencyLabel')}
                 </label>
                 <select
                   value={configData.baseCurrency}
                   onChange={(e) => setConfigData(prev => ({ ...prev, baseCurrency: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                  className={FIELD}
                 >
                   {currencies.map(currency => (
                     <option key={currency.id} value={currency.id}>
@@ -749,7 +769,7 @@ export default function ProductConfiguration() {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-black mt-1">{t('pc.amounts.baseCurrencyHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.amounts.baseCurrencyHelp')}</p>
               </div>
             </div>
           </div>
@@ -759,30 +779,26 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">{t('pc.tenure.title')}</h3>
-              <p className="text-sm text-black mb-6">{t('pc.tenure.subtitle')}</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">{t('pc.tenure.title')}</h3>
+              <p className="text-sm text-foreground mb-6">{t('pc.tenure.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.tenure.minLabel')}
                 </label>
                 <div className="relative">
                   <input
                     value={configData.minimumTenure}
                     onChange={(e) => setConfigData(prev => ({ ...prev, minimumTenure: Number(e.target.value) }))}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-black placeholder:text-black ${
-                      validationErrors.minimumTenure 
-                        ? 'border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:ring-gray-500'
-                    }`}
+                    className={cn(FIELD, validationErrors.minimumTenure && FIELD_ERROR)}
                     placeholder="0"
                   />
                   <select
                     value={configData.tenureUnit}
                     onChange={(e) => setConfigData(prev => ({ ...prev, tenureUnit: e.target.value }))}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-foreground focus:outline-none"
                   >
                     <option value="0">{t('pc.unit.selectUnit')}</option>
                     <option value="Months">{t('pc.unit.months')}</option>
@@ -791,32 +807,28 @@ export default function ProductConfiguration() {
                   </select>
                 </div>
                 {validationErrors.minimumTenure && (
-                  <p className="text-xs text-red-600 mt-1">{validationErrors.minimumTenure}</p>
+                  <p className="mt-1 text-xs text-destructive">{validationErrors.minimumTenure}</p>
                 )}
                 {!validationErrors.minimumTenure && (
-                  <p className="text-xs text-black mt-1">{t('pc.tenure.minHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.tenure.minHelp')}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.tenure.maxLabel')}
                 </label>
                 <div className="relative">
                   <input
                     value={configData.maximumTenure}
                     onChange={(e) => setConfigData(prev => ({ ...prev, maximumTenure: Number(e.target.value) }))}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent text-black placeholder:text-black ${
-                      validationErrors.maximumTenure 
-                        ? 'border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:ring-gray-500'
-                    }`}
+                    className={cn(FIELD, validationErrors.maximumTenure && FIELD_ERROR)}
                     placeholder="0"
                   />
                   <select
                     value={configData.tenureUnit}
                     onChange={(e) => setConfigData(prev => ({ ...prev, tenureUnit: e.target.value }))}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-foreground focus:outline-none"
                   >
                     <option value="0">{t('pc.unit.selectUnit')}</option>
                     <option value="Months">{t('pc.unit.months')}</option>
@@ -825,10 +837,10 @@ export default function ProductConfiguration() {
                   </select>
                 </div>
                 {validationErrors.maximumTenure && (
-                  <p className="text-xs text-red-600 mt-1">{validationErrors.maximumTenure}</p>
+                  <p className="mt-1 text-xs text-destructive">{validationErrors.maximumTenure}</p>
                 )}
                 {!validationErrors.maximumTenure && (
-                  <p className="text-xs text-black mt-1">{t('pc.tenure.maxHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.tenure.maxHelp')}</p>
                 )}
               </div>
             </div>
@@ -840,17 +852,17 @@ export default function ProductConfiguration() {
                   id="earlyWithdrawal"
                   checked={configData.earlyWithdrawalAllowed}
                   onChange={(e) => setConfigData(prev => ({ ...prev, earlyWithdrawalAllowed: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
-                <label htmlFor="earlyWithdrawal" className="ms-2 text-sm font-medium text-black">
+                <label htmlFor="earlyWithdrawal" className="ms-2 text-sm font-medium text-foreground">
                   {t('pc.tenure.allowEarly')}
                 </label>
               </div>
-              <p className="text-xs text-black mb-4">{t('pc.tenure.allowEarlyHelp')}</p>
+              <p className="text-xs text-foreground mb-4">{t('pc.tenure.allowEarlyHelp')}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.tenure.penaltyLabel')}
                   </label>
                   <div className="relative">
@@ -858,28 +870,28 @@ export default function ProductConfiguration() {
                       step="0.01"
                       value={configData.earlyWithdrawalPenalty}
                       onChange={(e) => setConfigData(prev => ({ ...prev, earlyWithdrawalPenalty: Number(e.target.value) }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                      className={FIELD}
                       placeholder="0"
                       disabled={!configData.earlyWithdrawalAllowed}
                     />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-foreground">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">{t('pc.tenure.penaltyHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.tenure.penaltyHelp')}</p>
                 </div>
               </div>
             </div>
 
             {/* Tenure Summary */}
-            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.tenure.summary')}</h4>
+            <div className="pro-card p-4">
+              <h4 className="text-lg font-medium text-foreground mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.tenure.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">{t('pc.tenure.minTenure')}</span>
-                  <span className="ms-2 text-black">{configData.minimumTenure} {tenureUnitLabel(configData.tenureUnit)}</span>
+                  <span className="font-medium text-foreground">{t('pc.tenure.minTenure')}</span>
+                  <span className="ms-2 text-foreground">{configData.minimumTenure} {tenureUnitLabel(configData.tenureUnit)}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">{t('pc.tenure.maxTenure')}</span>
-                  <span className="ms-2 text-black">{configData.maximumTenure} {tenureUnitLabel(configData.tenureUnit)}</span>
+                  <span className="font-medium text-foreground">{t('pc.tenure.maxTenure')}</span>
+                  <span className="ms-2 text-foreground">{configData.maximumTenure} {tenureUnitLabel(configData.tenureUnit)}</span>
                 </div>
               </div>
             </div>
@@ -898,22 +910,22 @@ export default function ProductConfiguration() {
                     id="autoRenewal"
                     checked={configData.autoRenewal}
                     onChange={(e) => setConfigData(prev => ({ ...prev, autoRenewal: e.target.checked }))}
-                    className="rounded border-gray-300 text-black focus:ring-gray-500"
+                    className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                   />
-                  <label htmlFor="autoRenewal" className="ms-2 text-sm font-medium text-black">
+                  <label htmlFor="autoRenewal" className="ms-2 text-sm font-medium text-foreground">
                     {t('pc.period.autoRenewal')}
                   </label>
                 </div>
-                <p className="text-xs text-black">{t('pc.period.autoRenewalHelp')}</p>
+                <p className="text-xs text-foreground">{t('pc.period.autoRenewalHelp')}</p>
               </div>
             </div>
 
             <div className="border-t pt-6">
-              <h4 className="text-lg font-medium text-black mb-4">{t('pc.period.principalSettings')}</h4>
+              <h4 className="text-lg font-medium text-foreground mb-4">{t('pc.period.principalSettings')}</h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.period.principalPctLabel')}
                   </label>
                   <div className="relative">
@@ -921,25 +933,25 @@ export default function ProductConfiguration() {
                       step="0.01"
                       value={configData.principalWithdrawalPercentage}
                       onChange={(e) => setConfigData(prev => ({ ...prev, principalWithdrawalPercentage: Number(e.target.value) }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                      className={FIELD}
                       placeholder="0"
                     />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-foreground">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">{t('pc.period.principalPctHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.period.principalPctHelp')}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.period.processingLabel')}
                   </label>
                   <input
                     value={configData.withdrawalProcessingDays}
                     onChange={(e) => setConfigData(prev => ({ ...prev, withdrawalProcessingDays: Number(e.target.value) }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                    className={FIELD}
                     placeholder="0"
                   />
-                  <p className="text-xs text-black mt-1">{t('pc.period.processingHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.period.processingHelp')}</p>
                 </div>
               </div>
 
@@ -950,27 +962,27 @@ export default function ProductConfiguration() {
                     id="partialWithdrawal"
                     checked={configData.allowPartialWithdrawal}
                     onChange={(e) => setConfigData(prev => ({ ...prev, allowPartialWithdrawal: e.target.checked }))}
-                    className="rounded border-gray-300 text-black focus:ring-gray-500"
+                    className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                   />
-                  <label htmlFor="partialWithdrawal" className="ms-2 text-sm font-medium text-black">
+                  <label htmlFor="partialWithdrawal" className="ms-2 text-sm font-medium text-foreground">
                     {t('pc.period.partial')}
                   </label>
                 </div>
-                <p className="text-xs text-black">{t('pc.period.partialHelp')}</p>
+                <p className="text-xs text-foreground">{t('pc.period.partialHelp')}</p>
               </div>
             </div>
 
             {/* Investment Period Summary */}
-            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.period.summary')}</h4>
+            <div className="pro-card p-4">
+              <h4 className="text-lg font-medium text-foreground mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.period.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">{t('pc.period.principalWithdrawal')}</span>
-                  <span className="ms-2 text-black">{t('pc.period.atMaturity', { value: configData.principalWithdrawalPercentage || 0 })}</span>
+                  <span className="font-medium text-foreground">{t('pc.period.principalWithdrawal')}</span>
+                  <span className="ms-2 text-foreground">{t('pc.period.atMaturity', { value: configData.principalWithdrawalPercentage || 0 })}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">{t('pc.period.processingTime')}</span>
-                  <span className="ms-2 text-black">{t('pc.period.days', { value: configData.withdrawalProcessingDays || 0 })}</span>
+                  <span className="font-medium text-foreground">{t('pc.period.processingTime')}</span>
+                  <span className="ms-2 text-foreground">{t('pc.period.days', { value: configData.withdrawalProcessingDays || 0 })}</span>
                 </div>
               </div>
             </div>
@@ -981,13 +993,13 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">{t('pc.returns.title')}</h3>
-              <p className="text-sm text-black mb-6">{t('pc.returns.subtitle')}</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">{t('pc.returns.title')}</h3>
+              <p className="text-sm text-foreground mb-6">{t('pc.returns.subtitle')}</p>
             </div>
 
             {/* Return Type Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-black mb-3">{t('pc.returns.typeLabel')}</label>
+              <label className="block text-sm font-medium text-foreground mb-3">{t('pc.returns.typeLabel')}</label>
               <div className="flex gap-6">
                 <label className="flex items-center">
                   <input
@@ -999,7 +1011,7 @@ export default function ProductConfiguration() {
                     className="text-[#C81D25] border-gray-300 me-2"
                     style={{ accentColor: 'var(--foreground)' }}
                   />
-                  <span className="text-sm text-black ms-2">{t('pc.returns.fixed')}</span>
+                  <span className="text-sm text-foreground ms-2">{t('pc.returns.fixed')}</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -1011,7 +1023,7 @@ export default function ProductConfiguration() {
                     className="text-[#C81D25] border-gray-300  me-2"
                     style={{ accentColor: 'var(--foreground)' }}
                   />
-                  <span className="text-sm  text-black ms-2">{t('pc.returns.average')}</span>
+                  <span className="text-sm  text-foreground ms-2">{t('pc.returns.average')}</span>
                 </label>
               </div>
             </div>
@@ -1020,7 +1032,7 @@ export default function ProductConfiguration() {
             {configData.returnType === 'fixed' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.returns.fixedPctLabel')}
                   </label>
                   <div className="relative">
@@ -1036,13 +1048,13 @@ export default function ProductConfiguration() {
                           setConfigData(prev => ({ ...prev, fixedReturnPercentage: value }));
                         }
                       }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                      className={FIELD}
                       placeholder="0"
                       required
                     />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-foreground">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">{t('pc.returns.fixedPctHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.returns.fixedPctHelp')}</p>
                 </div>
               </div>
             )}
@@ -1051,7 +1063,7 @@ export default function ProductConfiguration() {
             {configData.returnType === 'average' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.returns.minLabel')}
                   </label>
                   <div className="relative">
@@ -1060,17 +1072,17 @@ export default function ProductConfiguration() {
                       step="0.01"
                       value={configData.expectedReturnMin}
                       onChange={(e) => setConfigData(prev => ({ ...prev, expectedReturnMin: Number(e.target.value) }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                      className={FIELD}
                       placeholder="0"
                       required
                     />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-foreground">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">{t('pc.returns.minHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.returns.minHelp')}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.returns.maxLabel')}
                   </label>
                   <div className="relative">
@@ -1079,26 +1091,26 @@ export default function ProductConfiguration() {
                       step="0.01"
                       value={configData.expectedReturnMax}
                       onChange={(e) => setConfigData(prev => ({ ...prev, expectedReturnMax: Number(e.target.value) }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                      className={FIELD}
                       placeholder="0"
                       required
                     />
-                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
+                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-foreground">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">{t('pc.returns.maxHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.returns.maxHelp')}</p>
                 </div>
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.returns.freqLabel')}
                 </label>
                 <select
                   value={configData.profitDistributionFrequency}
                   onChange={(e) => setConfigData(prev => ({ ...prev, profitDistributionFrequency: Number(e.target.value) }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                  className={FIELD}
                   required
                 >
                   <option value={0}>{t('pc.freq.quarterly')}</option>
@@ -1106,7 +1118,7 @@ export default function ProductConfiguration() {
                   <option value={2}>{t('pc.freq.annually')}</option>
                   <option value={3}>{t('pc.freq.onMaturity')}</option>
                 </select>
-                <p className="text-xs text-black mt-1">{t('pc.returns.freqHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.returns.freqHelp')}</p>
               </div>
             </div>
 
@@ -1117,13 +1129,13 @@ export default function ProductConfiguration() {
                   id="guaranteedReturn"
                   checked={configData.guaranteedReturn}
                   onChange={(e) => setConfigData(prev => ({ ...prev, guaranteedReturn: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
                 <div className="ms-2">
-                  <label htmlFor="guaranteedReturn" className="text-sm font-medium text-black">
+                  <label htmlFor="guaranteedReturn" className="text-sm font-medium text-foreground">
                     {t('pc.returns.guaranteed')}
                   </label>
-                  <p className="text-xs text-black">{t('pc.returns.guaranteedHelp')}</p>
+                  <p className="text-xs text-foreground">{t('pc.returns.guaranteedHelp')}</p>
                 </div>
               </div>
 
@@ -1133,24 +1145,24 @@ export default function ProductConfiguration() {
                   id="enableCompounding"
                   checked={configData.enableCompounding}
                   onChange={(e) => setConfigData(prev => ({ ...prev, enableCompounding: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
                 <div className="ms-2">
-                  <label htmlFor="enableCompounding" className="text-sm font-medium text-black">
+                  <label htmlFor="enableCompounding" className="text-sm font-medium text-foreground">
                     {t('pc.returns.compounding')}
                   </label>
-                  <p className="text-xs text-black">{t('pc.returns.compoundingHelp')}</p>
+                  <p className="text-xs text-foreground">{t('pc.returns.compoundingHelp')}</p>
                 </div>
               </div>
             </div>
 
             {/* Returns Summary */}
-            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.returns.summary')}</h4>
+            <div className="pro-card p-4">
+              <h4 className="text-lg font-medium text-foreground mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.returns.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">{t('pc.returns.expectedReturn')}</span>
-                  <span className="ms-2 text-black">
+                  <span className="font-medium text-foreground">{t('pc.returns.expectedReturn')}</span>
+                  <span className="ms-2 text-foreground">
                     {configData.returnType === 'fixed'
                       ? t('pc.returns.summaryFixed', { value: configData.fixedReturnPercentage || 0 })
                       : t('pc.returns.summaryAverage', { min: configData.expectedReturnMin || 0, max: configData.expectedReturnMax || 0 })
@@ -1158,8 +1170,8 @@ export default function ProductConfiguration() {
                   </span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">{t('pc.returns.distribution')}</span>
-                  <span className="ms-2 text-black">{getReturnTermText(configData.profitDistributionFrequency)}</span>
+                  <span className="font-medium text-foreground">{t('pc.returns.distribution')}</span>
+                  <span className="ms-2 text-foreground">{getReturnTermText(configData.profitDistributionFrequency)}</span>
                 </div>
               </div>
             </div>
@@ -1170,35 +1182,35 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">{t('pc.investors.title')}</h3>
-              <p className="text-sm text-black mb-6">{t('pc.investors.subtitle')}</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">{t('pc.investors.title')}</h3>
+              <p className="text-sm text-foreground mb-6">{t('pc.investors.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.investors.maxLabel')}
                 </label>
                 <input
                   value={configData.maxInvestors}
                   onChange={(e) => setConfigData(prev => ({ ...prev, maxInvestors: Number(e.target.value) }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                  className={FIELD}
                   placeholder="0"
                 />
-                <p className="text-xs text-black mt-1">{t('pc.investors.maxHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.investors.maxHelp')}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.investors.minLabel')}
                 </label>
                 <input
                   value={configData.minInvestorsToActivate}
                   onChange={(e) => setConfigData(prev => ({ ...prev, minInvestorsToActivate: Number(e.target.value) }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                  className={FIELD}
                   placeholder="0"
                 />
-                <p className="text-xs text-black mt-1">{t('pc.investors.minHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.investors.minHelp')}</p>
               </div>
             </div>
 
@@ -1209,44 +1221,44 @@ export default function ProductConfiguration() {
                   id="allowMultipleInvestments"
                   checked={configData.allowMultipleInvestments}
                   onChange={(e) => setConfigData(prev => ({ ...prev, allowMultipleInvestments: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
                 <div className="ms-2">
-                  <label htmlFor="allowMultipleInvestments" className="text-sm font-medium text-black">
+                  <label htmlFor="allowMultipleInvestments" className="text-sm font-medium text-foreground">
                     {t('pc.investors.allowMultiple')}
                   </label>
-                  <p className="text-xs text-black">{t('pc.investors.allowMultipleHelp')}</p>
+                  <p className="text-xs text-foreground">{t('pc.investors.allowMultipleHelp')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pc.investors.maxPerUserLabel')}
                   </label>
                   <input
                     value={configData.maxInvestmentsPerUser}
                     onChange={(e) => setConfigData(prev => ({ ...prev, maxInvestmentsPerUser: Number(e.target.value) }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                    className={FIELD}
                     placeholder="0"
                     disabled={!configData.allowMultipleInvestments}
                   />
-                  <p className="text-xs text-black mt-1">{t('pc.investors.maxPerUserHelp')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('pc.investors.maxPerUserHelp')}</p>
                 </div>
               </div>
             </div>
 
             {/* Investor Settings Summary */}
-            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.investors.summary')}</h4>
+            <div className="pro-card p-4">
+              <h4 className="text-lg font-medium text-foreground mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.investors.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">{t('pc.investors.maxInvestors')}</span>
-                  <span className="ms-2 text-black">{configData.maxInvestors.toLocaleString()}</span>
+                  <span className="font-medium text-foreground">{t('pc.investors.maxInvestors')}</span>
+                  <span className="ms-2 text-foreground">{configData.maxInvestors.toLocaleString()}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">{t('pc.investors.minToActivate')}</span>
-                  <span className="ms-2 text-black">{configData.minInvestorsToActivate || 0}</span>
+                  <span className="font-medium text-foreground">{t('pc.investors.minToActivate')}</span>
+                  <span className="ms-2 text-foreground">{configData.minInvestorsToActivate || 0}</span>
                 </div>
               </div>
             </div>
@@ -1257,19 +1269,19 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">{t('pc.advanced.title')}</h3>
-              <p className="text-sm text-black mb-6">{t('pc.advanced.subtitle')}</p>
+              <h3 className="text-lg font-medium text-foreground mb-2">{t('pc.advanced.title')}</h3>
+              <p className="text-sm text-foreground mb-6">{t('pc.advanced.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.advanced.riskLabel')}
                 </label>
                 <select
                   value={configData.riskLevel}
                   onChange={(e) => setConfigData(prev => ({ ...prev, riskLevel: Number(e.target.value) }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                  className={FIELD}
                 >
                   <option value={0}>{t('pc.risk.low')}</option>
                   <option value={1}>{t('pc.risk.medium')}</option>
@@ -1277,11 +1289,11 @@ export default function ProductConfiguration() {
                   <option value={3}>{t('pc.risk.veryHigh')}</option>
                   <option value={4}>{t('pc.risk.extreme')}</option>
                 </select>
-                <p className="text-xs text-black mt-1">{t('pc.advanced.riskHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.advanced.riskHelp')}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.advanced.processingFeeLabel')}
                 </label>
                 <div className="relative">
@@ -1291,16 +1303,16 @@ export default function ProductConfiguration() {
                     min="0"
                     value={configData.processingFee}
                     onChange={(e) => setConfigData(prev => ({ ...prev, processingFee: Number(e.target.value) }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                    className={FIELD}
                     placeholder="0"
                     required
                   />
                 
                 </div>
-                <p className="text-xs text-black mt-1">{t('pc.advanced.processingFeeHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.advanced.processingFeeHelp')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                  {t('pc.advanced.collectionLimitLabel')}
                 </label>
                 <div className="relative">
@@ -1310,17 +1322,17 @@ export default function ProductConfiguration() {
                     min="0"
                     value={configData.investementLimit}
                     onChange={(e) => setConfigData(prev => ({ ...prev, investementLimit: Number(e.target.value) }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                    className={FIELD}
                     placeholder="0"
                     required
                   />
                  
                 </div>
-                <p className="text-xs text-black mt-1">{t('pc.advanced.processingFeeHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.advanced.processingFeeHelp')}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pc.advanced.vatLabel')}
                 </label>
                 <div className="relative">
@@ -1330,13 +1342,13 @@ export default function ProductConfiguration() {
                     min="0"
                     value={configData.vat}
                     onChange={(e) => setConfigData(prev => ({ ...prev, vat: Number(e.target.value) }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
+                    className={FIELD}
                     placeholder="0"
                     required
                   />
-                  <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
+                  <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-foreground">%</span>
                 </div>
-                <p className="text-xs text-black mt-1">{t('pc.advanced.vatHelp')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('pc.advanced.vatHelp')}</p>
               </div>
             </div>
 
@@ -1347,13 +1359,13 @@ export default function ProductConfiguration() {
                   id="shariahCompliant"
                   checked={configData.shariahCompliant}
                   onChange={(e) => setConfigData(prev => ({ ...prev, shariahCompliant: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
                 <div className="ms-2">
-                  <label htmlFor="shariahCompliant" className="text-sm font-medium text-black">
+                  <label htmlFor="shariahCompliant" className="text-sm font-medium text-foreground">
                     {t('pc.advanced.shariah')}
                   </label>
-                  <p className="text-xs text-black">{t('pc.advanced.shariahHelp')}</p>
+                  <p className="text-xs text-foreground">{t('pc.advanced.shariahHelp')}</p>
                 </div>
               </div>
 
@@ -1363,13 +1375,13 @@ export default function ProductConfiguration() {
                   id="kycRequired"
                   checked={configData.kycRequired}
                   onChange={(e) => setConfigData(prev => ({ ...prev, kycRequired: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
                 <div className="ms-2">
-                  <label htmlFor="kycRequired" className="text-sm font-medium text-black">
+                  <label htmlFor="kycRequired" className="text-sm font-medium text-foreground">
                     {t('pc.advanced.kyc')}
                   </label>
-                  <p className="text-xs text-black">{t('pc.advanced.kycHelp')}</p>
+                  <p className="text-xs text-foreground">{t('pc.advanced.kycHelp')}</p>
                 </div>
               </div>
 
@@ -1379,13 +1391,13 @@ export default function ProductConfiguration() {
                   id="regulatoryApprovalRequired"
                   checked={configData.regulatoryApprovalRequired}
                   onChange={(e) => setConfigData(prev => ({ ...prev, regulatoryApprovalRequired: e.target.checked }))}
-                  className="rounded border-gray-300 text-black focus:ring-gray-500"
+                  className="rounded border-gray-300 text-foreground focus:ring-gray-500"
                 />
                 <div className="ms-2">
-                  <label htmlFor="regulatoryApprovalRequired" className="text-sm font-medium text-black">
+                  <label htmlFor="regulatoryApprovalRequired" className="text-sm font-medium text-foreground">
                     {t('pc.advanced.regApproval')}
                   </label>
-                  <p className="text-xs text-black">{t('pc.advanced.regApprovalHelp')}</p>
+                  <p className="text-xs text-foreground">{t('pc.advanced.regApprovalHelp')}</p>
                 </div>
               </div>
 
@@ -1393,20 +1405,20 @@ export default function ProductConfiguration() {
 
 
             {/* Advanced Settings Summary */}
-            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.advanced.summary')}</h4>
+            <div className="pro-card p-4">
+              <h4 className="text-lg font-medium text-foreground mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.advanced.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">{t('pc.advanced.riskLevel')}</span>
-                  <span className="ms-2 text-black">{getRiskLevelText(configData.riskLevel)}</span>
+                  <span className="font-medium text-foreground">{t('pc.advanced.riskLevel')}</span>
+                  <span className="ms-2 text-foreground">{getRiskLevelText(configData.riskLevel)}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">{t('pc.advanced.processingFee')}</span>
-                  <span className="ms-2 text-black">SAR {configData.processingFee.toLocaleString()}</span>
+                  <span className="font-medium text-foreground">{t('pc.advanced.processingFee')}</span>
+                  <span className="ms-2 text-foreground">SAR {configData.processingFee.toLocaleString()}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">{t('pc.advanced.vat')}</span>
-                  <span className="ms-2 text-black">{configData.vat}%</span>
+                  <span className="font-medium text-foreground">{t('pc.advanced.vat')}</span>
+                  <span className="ms-2 text-foreground">{configData.vat}%</span>
                 </div>
               </div>
             </div>
@@ -1438,125 +1450,94 @@ export default function ProductConfiguration() {
 //     );
 //   }
 
+  const statusTone = product
+    ? PRODUCT_STATUS_TONE[enumToNumber(product.productStatus, PRODUCT_STATUSES, -1)] ??
+      TONES.slate
+    : TONES.slate;
+
   return (
-    <div className="p-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={handleCancel}
-            className="flex items-center text-black hover:text-black"
-          >
-            <ArrowLeft className="w-5 h-5 me-2" />
-            {t('common:back')}
-          </button>
-          <div>
-            <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-black me-2 ms-2">
-                {isEditMode ? t('pc.header.editTitle') : t('pc.header.title')}
-              </h1>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                product?.productStatus === 0 ? 'bg-red-100 text-red-800' : // Active
-                product?.productStatus === 1 ? 'bg-gray-100 text-gray-800' : // Inactive
-                product?.productStatus === 2 ? 'bg-red-100 text-red-800' : // Closed
-                product?.productStatus === 3 ? 'bg-yellow-100 text-yellow-800' : // Suspended
-                product?.productStatus === 4 ? 'bg-gray-100 text-gray-900' : // Launching
-                'bg-gray-100 text-gray-800' // Default
-              }`}>
-                <CheckCircle className="w-3 h-3 me-1" />
-                {product ? getProductStatusText(product.productStatus) : t('pc.header.loading')}
-              </span>
-            </div>
-          </div>
-        </div>
+    <div className="service">
+      <LexPageHeader
+        icon={Settings}
+        title={isEditMode ? t('pc.header.editTitle') : t('pc.header.title')}
+        subtitle={product?.name}
+      >
+        <Badge variant="outline" className={cn('border font-medium', statusTone)}>
+          {product ? getProductStatusText(product.productStatus) : t('pc.header.loading')}
+        </Badge>
+        <Button variant="ghost" size="sm" className="gap-2" onClick={handleCancel}>
+          <ArrowLeft className="h-4 w-4" />
+          {t('common:back')}
+        </Button>
         {!isEditMode && canManage && (
-          <button
+          <Button
+            size="sm"
+            className="gap-2"
             onClick={handleEditConfiguration}
             disabled={loadingConfiguration}
-            className="px-4 py-2 text-sm font-medium  bg-black rounded-lg text-white rounded-lg  disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
             {loadingConfiguration ? (
-              <>
-                <Loader  />
-
-              </>
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <>
-                <Settings className="w-4 h-4 me-2" />
-                {t('pc.header.editConfig')}
-              </>
+              <Settings className="h-4 w-4" />
             )}
-          </button>
+            {t('pc.header.editConfig')}
+          </Button>
         )}
-      </div>
+      </LexPageHeader>
 
+      <LexNotice tone="sky" icon={Info}>
+        <strong>{t('pc.banner.important')}</strong> {t('pc.banner.text')}
+      </LexNotice>
 
+      {/* Upstream names the fields the service rejected; it was a raw red
+          panel, which is the same job LexNotice already does. */}
       {serverErrors.length > 0 && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-4">
-          <p className="text-sm font-semibold text-red-800">{t('pc.toast.validationFailed')}</p>
-          <ul className="mt-2 list-disc ps-5 space-y-1">
+        <LexNotice tone="red" icon={AlertTriangle}>
+          <p className="m-0 font-semibold">{t('pc.toast.validationFailed')}</p>
+          <ul className="m-0 mt-1 list-disc space-y-0.5 ps-5">
             {serverErrors.map((error) => (
-              <li key={error} className="text-sm text-red-700">
-                {error}
-              </li>
+              <li key={error}>{error}</li>
             ))}
           </ul>
-        </div>
+        </LexNotice>
       )}
 
-      {/* Info Banner */}
-      <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ms-3">
-            <p className="text-sm text-gray-800">
-              <strong>{t('pc.banner.important')}</strong> {t('pc.banner.text')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <LexNotice tone="sky" icon={Info}>
+        <strong>{t('pc.banner.important')}</strong> {t('pc.banner.text')}
+      </LexNotice>
 
-      {/* Tabs */}
-      <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border-b border-gray-200 mb-6 rounded-t-lg w-full">
-        <nav className="-mb-px flex justify-between w-full px-4 py-3">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-3">
+        <DetailTabsList>
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-4 border-b-2 font-medium text-sm flex items-center flex-1 justify-center ${
-                  activeTab === tab.id
-                    ? 'border-gray-700 text-black'
-                    : 'border-transparent text-black hover:text-black hover:border-gray-300'
-                }`}
-                style={{ color: 'var(--theme-heading-text-color)' }}
-              >
-                <Icon className="w-4 h-4 me-2" />
+              <DetailTabsTrigger key={tab.id} value={tab.id} className="gap-2">
+                <Icon className="h-4 w-4" />
                 {tab.label}
-              </button>
+              </DetailTabsTrigger>
             );
           })}
-        </nav>
-      </div>
+        </DetailTabsList>
+      </Tabs>
 
-      {/* Tab Content */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-        {renderTabContent()}
-      </div>
+      <div className="pro-card p-4 mb-3">{renderTabContent()}</div>
 
       {/* Configuration Summary - Only show on Amounts tab */}
       {activeTab === 'amounts' && (
-        <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.summary.title')}</h3>
+        <div className="pro-card p-4 mb-3">
+          <div className="mb-3 flex items-center gap-2.5">
+            <span className="pro-head-badge">
+              <DollarSign className="h-4 w-4" />
+            </span>
+            <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              {t('pc.summary.title')}
+            </h3>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div>
-              <span className="font-medium text-black">{t('pc.summary.minInvestment')}</span>
-              <span className="ms-2 text-black">
+              <span className="font-medium text-foreground">{t('pc.summary.minInvestment')}</span>
+              <span className="ms-2 text-foreground">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   const currencyDisplay = selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1565,8 +1546,8 @@ export default function ProductConfiguration() {
               </span>
             </div>
             <div>
-              <span className="font-medium text-black">{t('pc.summary.maxInvestment')}</span>
-              <span className="ms-2 text-black">
+              <span className="font-medium text-foreground">{t('pc.summary.maxInvestment')}</span>
+              <span className="ms-2 text-foreground">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   const currencyDisplay = selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1575,8 +1556,8 @@ export default function ProductConfiguration() {
               </span>
             </div>
             <div>
-              <span className="font-medium text-black">{t('pc.summary.increment')}</span>
-              <span className="ms-2 text-black">
+              <span className="font-medium text-foreground">{t('pc.summary.increment')}</span>
+              <span className="ms-2 text-foreground">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   const currencyDisplay = selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1585,8 +1566,8 @@ export default function ProductConfiguration() {
               </span>
             </div>
             <div>
-              <span className="font-medium text-black">{t('pc.summary.currency')}</span>
-              <span className="ms-2 text-black">
+              <span className="font-medium text-foreground">{t('pc.summary.currency')}</span>
+              <span className="ms-2 text-foreground">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   return selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1597,36 +1578,30 @@ export default function ProductConfiguration() {
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex justify-end space-x-3">
-        <button
-          onClick={handleCancel}
-          className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-        >
+      <div className="flex flex-wrap justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={handleCancel}>
           {t('common:cancel')}
-        </button>
+        </Button>
         {canManage && (
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
+          <Button size="sm" className="gap-2" onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 {activeTab === 'advanced' ? t('pc.action.saving') : t('pc.action.processing')}
               </>
             ) : (
               <>
-                <Save className="w-4 h-4 me-2" />
-                {activeTab === 'advanced' ? t('pc.action.saveConfig') : (() => {
-                  const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
-                  const nextTab = tabs[currentTabIndex + 1];
-                  return t('pc.action.continueTo', { tab: nextTab.label });
-                })()}
+                <Save className="h-4 w-4" />
+                {activeTab === 'advanced'
+                  ? t('pc.action.saveConfig')
+                  : (() => {
+                      const currentTabIndex = tabs.findIndex((tab) => tab.id === activeTab);
+                      const nextTab = tabs[currentTabIndex + 1];
+                      return t('pc.action.continueTo', { tab: nextTab.label });
+                    })()}
               </>
             )}
-          </button>
+          </Button>
         )}
       </div>
    
