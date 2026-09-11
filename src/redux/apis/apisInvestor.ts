@@ -92,8 +92,6 @@ function requireBase(name: string, value: string | undefined): string {
 }
 
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/portfolio-service`;
-const walletBase = () =>
-  requireBase('VITE_REACT_APP_API_WALLET_URL', import.meta.env.VITE_REACT_APP_API_WALLET_URL);
 const ledgerBase = () =>
   requireBase('VITE_REACT_APP_API_BASE_LMS_URL', import.meta.env.VITE_REACT_APP_API_BASE_LMS_URL);
 const logsBase = () =>
@@ -1438,84 +1436,6 @@ export async function getAllLogs(page: number = 1, pageSize: number = 10) {
   await throwIfNotOk(response);
 
   return parseJson<LogListResponse>(response, url);
-}
-
-// Update Wallet Balance interfaces
-export interface UpdateWalletBalanceData {
-  userId: string;
-  investment: number;
-  [key: string]: any;
-}
-
-export interface UpdateWalletBalanceResponse {
-  success: boolean;
-  data?: any;
-  message?: string;
-  error?: string;
-  notificationMessage?: string;
-}
-
-// Generate random UUID helper function
-const generateUUID = (): string => {
-  if (typeof globalThis !== 'undefined' && (globalThis as any)?.crypto?.randomUUID) {
-    return (globalThis as any).crypto.randomUUID();
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c: string) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
-
-// Update Wallet Balance API
-export async function updateWalletBalance(data: UpdateWalletBalanceData): Promise<UpdateWalletBalanceResponse> {
-  try {
-    const token = getAuthToken();
-    const url = `${walletBase()}/api/UserWallet/UpdateWalletBalance`;
-
-    const defaultHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Request-Id': data.userId || generateUUID(),
-      'Authorization': `Bearer ${token}`,
-    };
-
-    // Add auth token if available
-
-    if (token) {
-      defaultHeaders.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: defaultHeaders,
-      body: JSON.stringify(data),
-    });
-
-    await throwIfNotOk(response);
-
-    const responseData = await parseJson<any>(response, url);
-    
-    // Check if the API response indicates failure
-    if (responseData.success === false) {
-      return {
-        success: false,
-        error: responseData.notificationMessage || 'Failed to update wallet balance'
-      };
-    }
-    
-    // If successful
-    return {
-      success: true,
-      data: responseData.data || responseData,
-      message: responseData.notificationMessage || 'Wallet balance updated successfully'
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      error: error?.notificationMessage || error?.message || 'Failed to update wallet balance'
-    };
-  }
 }
 
 // Approve Investment interfaces

@@ -25,7 +25,6 @@ import { TONES } from "../../../../components/shared/detailKitUtils";
 import {
   getAllInvestments,
   approveInvestment,
-  updateWalletBalance,
   getAllProducts,
   getAllKycInvestors,
   getAllKybInvestors,
@@ -150,12 +149,6 @@ const ApproveInvestment = () => {
       }
 
       if (approveResult.success) {
-        // The approval is committed on the server at this point. It used to be
-        // reported as a failure whenever the wallet top-up that follows it did
-        // not go through — the row kept its pending badge, the list was not
-        // refreshed, and the operator saw only an error, most often
-        // "VITE_REACT_APP_API_WALLET_URL is not set", which is a deployment
-        // gap in a different service and says nothing about the investment.
         setData((prevData: any[]) =>
           prevData.map((item: any) =>
             item.id === selectedInvestment.id ? { ...item, verificationStatus: 1 } : item
@@ -165,20 +158,6 @@ const ApproveInvestment = () => {
         setApproveModalVisible(false);
         setSelectedInvestment(null);
         getInvestmentsList();
-
-        // The wallet top-up is a separate service and a separate outcome. It
-        // is reported on its own terms rather than as the approval's verdict.
-        const walletUpdateResult = await updateWalletBalance({
-          userId: selectedInvestment.investorId,
-          investment: selectedInvestment.investmentAmount || 0,
-        });
-        if (!walletUpdateResult.success) {
-          toast.error(
-            t("appinv.walletWarning", {
-              reason: walletUpdateResult.error || t("appinv.walletError"),
-            })
-          );
-        }
       }
       setApproving(false);
     } catch (error: any) {
