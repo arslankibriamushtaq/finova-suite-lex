@@ -2189,19 +2189,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/InvestorDashboard",
           active: isUnder("/InvestorDashboard/ApproveInvestment"),
         },
-        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
-          label: "Logs",
-          Link: "Logs",
-          LinkLable: "/InvestorDashboard",
-          active: isUnder("/InvestorDashboard/Logs"),
-        },
-        hasAccess("PORTFOLIO_FUND_READ") && {
-          label: "Ledger",
-          noIcon: true,
-          Link: "Ledger",
-          LinkLable: "/InvestorDashboard",
-          active: isUnder("/InvestorDashboard/Ledger"),
-        },
+        // hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
+        //   label: "Logs",
+        //   Link: "Logs",
+        //   LinkLable: "/InvestorDashboard",
+        //   active: isUnder("/InvestorDashboard/Logs"),
+        // },
+        // hasAccess("PORTFOLIO_FUND_READ") && {
+        //   label: "Ledger",
+        //   noIcon: true,
+        //   Link: "Ledger",
+        //   LinkLable: "/InvestorDashboard",
+        //   active: isUnder("/InvestorDashboard/Ledger"),
+        // },
         hasAccess("PORTFOLIO_INVESTMENT_READ") && {
           label: "Investments",
           Link: "Investments",
@@ -2227,18 +2227,18 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/InvestorDashboard",
           active: isUnder("/InvestorDashboard/AuditLogs"),
         },
-        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
-          label: "Notifications",
-          Link: "Notifications",
-          LinkLable: "/InvestorDashboard",
-          active: isUnder("/InvestorDashboard/Notifications"),
-        },
-        hasAccess("PORTFOLIO_SETTINGS_MANAGE") && {
-          label: "Admin Users & Roles",
-          Link: "AdminUsers",
-          LinkLable: "/InvestorDashboard",
-          active: isUnder("/InvestorDashboard/AdminUsers"),
-        },
+        // hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
+        //   label: "Notifications",
+        //   Link: "Notifications",
+        //   LinkLable: "/InvestorDashboard",
+        //   active: isUnder("/InvestorDashboard/Notifications"),
+        // },
+        // hasAccess("PORTFOLIO_SETTINGS_MANAGE") && {
+        //   label: "Admin Users & Roles",
+        //   Link: "AdminUsers",
+        //   LinkLable: "/InvestorDashboard",
+        //   active: isUnder("/InvestorDashboard/AdminUsers"),
+        // },
 
       ].filter(Boolean),
     },

@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../components/ui/select';
-import { EmptyState, Field } from '../../../../components/shared/detailKit';
+import { EmptyState } from '../../../../components/shared/detailKit';
 import { TONES } from '../../../../components/shared/detailKitUtils';
 import {
   LexMetricTile,
@@ -333,61 +333,84 @@ export default function InvestmentsList() {
     },
   ];
 
-  const detailRows: [string, string][] = selectedInvestment
+  /**
+   * The panel groups its figures instead of listing them: what was agreed,
+   * what it returns, what has actually moved, and when. Eighteen rows in one
+   * flat grid made "Processing Fee" and "Outstanding Capital" look like the
+   * same kind of fact.
+   */
+  const detailGroups: { title: string; rows: [string, string][] }[] = selectedInvestment
     ? [
-        [t('invl.investor'), investorLabel(selectedInvestment)],
-        [t('invl.product'), productLabel(selectedInvestment)],
-        [
-          t('invl.investmentAmount'),
-          money(selectedInvestment.investmentAmount, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.processingFee'),
-          money(selectedInvestment.processingFee, selectedInvestment.currencyCode),
-        ],
-        [t('invl.vat'), money(selectedInvestment.vat, selectedInvestment.currencyCode)],
-        [
-          t('invl.totalPayable'),
-          money(selectedInvestment.totalPayable, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.expectedPayment'),
-          money(selectedInvestment.expectedTotalPayment, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.firstReturn'),
-          money(selectedInvestment.firstExpectedReturn, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.monthlyReturn'),
-          money(selectedInvestment.monthlyReturnAmount, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.yearlyReturn'),
-          money(selectedInvestment.yearlyReturnAmount, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.received'),
-          money(selectedInvestment.totalPaymentReceived, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.capitalRepaid'),
-          money(selectedInvestment.capitalRepaid, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.outstandingCapital'),
-          money(selectedInvestment.outstandingCapital, selectedInvestment.currencyCode),
-        ],
-        [
-          t('invl.frequency'),
-          selectedInvestment.profitDistributionFrequency
-            ? humanise(selectedInvestment.profitDistributionFrequency)
-            : '—',
-        ],
-        [t('invl.startDate'), date(selectedInvestment.startDate)],
-        [t('invl.maturityDate'), date(selectedInvestment.maturityDate)],
-        [t('invl.nextPayout'), date(selectedInvestment.nextPayout)],
-        [t('common:status'), statusLabel(selectedInvestment.status)],
+        {
+          title: t('invl.group.agreement'),
+          rows: [
+            [
+              t('invl.investmentAmount'),
+              money(selectedInvestment.investmentAmount, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.processingFee'),
+              money(selectedInvestment.processingFee, selectedInvestment.currencyCode),
+            ],
+            [t('invl.vat'), money(selectedInvestment.vat, selectedInvestment.currencyCode)],
+            [
+              t('invl.totalPayable'),
+              money(selectedInvestment.totalPayable, selectedInvestment.currencyCode),
+            ],
+          ],
+        },
+        {
+          title: t('invl.group.returns'),
+          rows: [
+            [
+              t('invl.expectedPayment'),
+              money(selectedInvestment.expectedTotalPayment, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.firstReturn'),
+              money(selectedInvestment.firstExpectedReturn, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.monthlyReturn'),
+              money(selectedInvestment.monthlyReturnAmount, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.yearlyReturn'),
+              money(selectedInvestment.yearlyReturnAmount, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.frequency'),
+              selectedInvestment.profitDistributionFrequency
+                ? humanise(selectedInvestment.profitDistributionFrequency)
+                : '—',
+            ],
+          ],
+        },
+        {
+          title: t('invl.group.settlement'),
+          rows: [
+            [
+              t('invl.received'),
+              money(selectedInvestment.totalPaymentReceived, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.capitalRepaid'),
+              money(selectedInvestment.capitalRepaid, selectedInvestment.currencyCode),
+            ],
+            [
+              t('invl.outstandingCapital'),
+              money(selectedInvestment.outstandingCapital, selectedInvestment.currencyCode),
+            ],
+          ],
+        },
+        {
+          title: t('invl.group.schedule'),
+          rows: [
+            [t('invl.startDate'), date(selectedInvestment.startDate)],
+            [t('invl.maturityDate'), date(selectedInvestment.maturityDate)],
+            [t('invl.nextPayout'), date(selectedInvestment.nextPayout)],
+          ],
+        },
       ]
     : [];
 
@@ -494,7 +517,7 @@ export default function InvestmentsList() {
         open={selectedInvestment !== null}
         onOpenChange={(open) => !open && setSelectedInvestment(null)}
       >
-        <DialogContent className="pro-dialog max-w-3xl">
+        <DialogContent className="pro-dialog sm:max-w-5xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
               <span className="pro-head-badge">
@@ -505,23 +528,69 @@ export default function InvestmentsList() {
           </DialogHeader>
 
           {selectedInvestment && (
-            <div className="max-h-[70vh] overflow-y-auto">
-              <div className="mb-3">{statusBadge(selectedInvestment.status)}</div>
-
-              <div className="grid grid-cols-1 gap-x-8 md:grid-cols-2">
-                {detailRows.map(([label, value]) => (
-                  <Field key={label} label={label} value={value} />
-                ))}
+            <div className="max-h-[72vh] space-y-3 overflow-y-auto pe-1">
+              {/* Who and what, with the headline figure — the investor and the
+                  product were two rows lost among sixteen others. */}
+              <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 rounded-lg border bg-muted/40 p-4">
+                <div className="min-w-0 flex-1 basis-48">
+                  <p className="m-0 truncate text-base font-semibold tracking-tight text-foreground">
+                    {investorLabel(selectedInvestment)}
+                  </p>
+                  <p className="m-0 truncate text-sm text-muted-foreground">
+                    {productLabel(selectedInvestment)}
+                  </p>
+                  <div className="mt-2">{statusBadge(selectedInvestment.status)}</div>
+                </div>
+                <div className="min-w-0 shrink-0 text-start sm:text-end">
+                  <p className="m-0 text-xs text-muted-foreground">
+                    {t('invl.investmentAmount')}
+                  </p>
+                  {/* Steps down on a phone: at 2xl the longest amounts push the
+                      band wider than the dialog. */}
+                  <p className="m-0 whitespace-nowrap text-xl font-semibold tabular-nums tracking-tight text-foreground sm:text-2xl">
+                    {money(selectedInvestment.investmentAmount, selectedInvestment.currencyCode)}
+                  </p>
+                </div>
               </div>
 
               {selectedInvestment.rejectionReason && (
-                <div className="mt-4">
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3">
                   <p className="m-0 text-xs text-muted-foreground">{t('invl.rejectionReason')}</p>
                   <p className="m-0 text-sm text-destructive">
                     {selectedInvestment.rejectionReason}
                   </p>
                 </div>
               )}
+
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {detailGroups.map((group) => (
+                  // min-w-0 is what lets a grid column shrink; without it the
+                  // values below hold the track open and overflow the card.
+                  <div key={group.title} className="min-w-0 rounded-lg border bg-card p-4">
+                    <h4 className="m-0 mb-3 border-b pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      {group.title}
+                    </h4>
+                    <dl className="m-0 grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+                      {group.rows.map(([label, value]) => (
+                        <div key={label} className="min-w-0">
+                          <dt className="m-0 truncate text-xs text-muted-foreground" title={label}>
+                            {label}
+                          </dt>
+                          {/* The figure is what the row is for, so it leads on
+                              weight. truncate with a title keeps an unusually
+                              long value from reshaping the grid. */}
+                          <dd
+                            className="m-0 truncate text-sm font-semibold tabular-nums text-foreground"
+                            title={value}
+                          >
+                            {value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

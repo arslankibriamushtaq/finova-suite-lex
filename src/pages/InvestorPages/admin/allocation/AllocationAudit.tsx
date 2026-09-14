@@ -539,7 +539,7 @@ export default function AllocationAudit() {
 
 
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="pro-dialog max-w-3xl">
+        <DialogContent className="pro-dialog sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
               <span className="pro-head-badge">
