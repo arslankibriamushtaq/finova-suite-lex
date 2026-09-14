@@ -549,9 +549,9 @@ export default function InvestorStatements() {
             <span className="pro-head-badge">
               <FileText className="h-4 w-4" />
             </span>
-            <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
               {t('ist.templatesTitle')}
-            </h3>
+            </h4>
           </div>
           <Button variant="outline" size="sm" className="gap-2" onClick={notConnected}>
             <FileText className="h-4 w-4" />

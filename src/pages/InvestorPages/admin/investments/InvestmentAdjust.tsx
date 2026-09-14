@@ -3,19 +3,77 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
+  ArrowLeftRight,
   Save,
-  X,
   AlertTriangle,
   TrendingUp,
+  TrendingDown,
   DollarSign,
   Calculator,
   RefreshCw,
   CheckCircle,
-  Info
+  Loader2,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
 
 import { Button } from '../../../../components/ui/button';
+import { Checkbox } from '../../../../components/ui/checkbox';
+import { Input } from '../../../../components/ui/input';
+import { Label } from '../../../../components/ui/label';
+import { Textarea } from '../../../../components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../../components/ui/select';
+import {
+  LexAmountInput,
+  LexNotice,
+  LexPageHeader,
+} from '../../../../components/shared/lexKit';
+import { TONES } from '../../../../components/shared/detailKitUtils';
+import { cn } from '../../../../lib/utils';
+
+/**
+ * The four kinds of adjustment.
+ *
+ * The tone used to be assembled from a colour name inside a template literal,
+ * which Tailwind never sees: it scans source text and cannot resolve an
+ * interpolation. None of those classes were ever generated, so the selected
+ * card carried no highlight at all. Written out here, and on the app's own
+ * tones rather than the blue and purple that were reached for.
+ */
+const ADJUSTMENT_TYPES = [
+  { value: 'add', label: 'iadj.type.add', icon: TrendingUp, tone: TONES.emerald },
+  { value: 'redeem', label: 'iadj.type.redeem', icon: TrendingDown, tone: TONES.red },
+  { value: 'rebalance', label: 'iadj.type.rebalance', icon: RefreshCw, tone: TONES.amber },
+  { value: 'transfer', label: 'iadj.type.transfer', icon: ArrowLeftRight, tone: TONES.sky },
+] as const;
+
+const REASONS = [
+  'client_request',
+  'rebalancing',
+  'risk_management',
+  'market_opportunity',
+  'liquidity_needs',
+  'compliance',
+  'error_correction',
+  'other',
+] as const;
+
+const REASON_KEYS: Record<string, string> = {
+  client_request: 'iadj.reason.clientRequest',
+  rebalancing: 'iadj.reason.rebalancing',
+  risk_management: 'iadj.reason.riskManagement',
+  market_opportunity: 'iadj.reason.marketOpportunity',
+  liquidity_needs: 'iadj.reason.liquidityNeeds',
+  compliance: 'iadj.reason.compliance',
+  error_correction: 'iadj.reason.errorCorrection',
+  other: 'iadj.reason.other',
+};
 import {
   Dialog,
   DialogContent,
@@ -212,325 +270,286 @@ export default function InvestmentAdjust() {
 
   const newValues = calculateNewValues();
 
+  const errorText = (field: string) =>
+    errors[field] ? (
+      <p className="m-0 mt-1 flex items-center gap-1 text-xs text-destructive">
+        <AlertTriangle className="h-3 w-3 shrink-0" />
+        {errors[field]}
+      </p>
+    ) : null;
+
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-4 mb-4">
-          <Link
-            to="/InvestorDashboard/Investments"
-            className="flex items-center text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft className="w-4 h-4 me-2" />
+    <div className="service">
+      <LexPageHeader
+        icon={SlidersHorizontal}
+        title={t('iadj.title')}
+        subtitle={t('iadj.subtitle')}
+      >
+        <Button asChild variant="ghost" size="sm" className="gap-2">
+          <Link to="/InvestorDashboard/Investments">
+            <ArrowLeft className="h-4 w-4" />
             {t('iadj.backToInvestments')}
           </Link>
+        </Button>
+      </LexPageHeader>
+
+      {/* Every figure on this page is a module-level literal — there is no
+          fetch in this file, and nothing it submits reaches a service. */}
+      <LexNotice tone="amber" icon={AlertTriangle}>
+        {t('invl.notConnected')}
+      </LexNotice>
+
+      <div className="pro-card p-4 mb-3">
+        <div className="mb-3 flex items-center gap-2.5">
+          <span className="pro-head-badge">
+            <DollarSign className="h-4 w-4" />
+          </span>
+          <h2 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            {t('iadj.currentDetails')}
+          </h2>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('iadj.title')}</h1>
-        <p className="text-gray-600">{t('iadj.subtitle')}</p>
+        <dl className="m-0 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            [t('iadj.investor'), investmentData.investorName],
+            [t('iadj.product'), investmentData.productName],
+            [t('iadj.currentValue'), formatCurrency(investmentData.currentValue)],
+            [t('iadj.unitsHeld'), investmentData.currentUnits.toLocaleString()],
+          ].map(([label, value]) => (
+            <div key={label} className="min-w-0">
+              <dt className="m-0 truncate text-xs text-muted-foreground">{label}</dt>
+              <dd className="m-0 truncate text-sm font-semibold tabular-nums text-foreground">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
-      <div className="max-w-4xl mx-auto">
-        {/* Investment Summary */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('iadj.currentDetails')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div>
-              <p className="text-sm text-gray-600">{t('iadj.investor')}</p>
-              <p className="text-lg font-medium text-gray-900">{investmentData.investorName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('iadj.product')}</p>
-              <p className="text-lg font-medium text-gray-900">{investmentData.productName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('iadj.currentValue')}</p>
-              <p className="text-lg font-medium text-gray-900">{formatCurrency(investmentData.currentValue)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">{t('iadj.unitsHeld')}</p>
-              <p className="text-lg font-medium text-gray-900">{investmentData.currentUnits.toLocaleString()}</p>
-            </div>
-          </div>
+      <div className="pro-card p-4">
+        <div className="mb-3 flex items-center gap-2.5">
+          <span className="pro-head-badge">
+            <SlidersHorizontal className="h-4 w-4" />
+          </span>
+          <h2 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            {t('iadj.adjustmentDetails')}
+          </h2>
         </div>
 
-        {/* Adjustment Form */}
-        <div className="bg-white rounded-lg border border-gray-200 p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('iadj.adjustmentDetails')}</h2>
-
-          <div className="space-y-6">
-            {/* Adjustment Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                {t('iadj.adjustmentType')}
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {[
-                  { value: 'add', label: 'iadj.type.add', icon: TrendingUp, color: 'red' },
-                  { value: 'redeem', label: 'iadj.type.redeem', icon: TrendingUp, color: 'orange' },
-                  { value: 'rebalance', label: 'iadj.type.rebalance', icon: RefreshCw, color: 'blue' },
-                  { value: 'transfer', label: 'iadj.type.transfer', icon: RefreshCw, color: 'purple' }
-                ].map((type) => (
-                  <label key={type.value} className="relative">
+        <div className="space-y-4">
+          <div>
+            <Label className="mb-2 block">{t('iadj.adjustmentType')}</Label>
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+              {ADJUSTMENT_TYPES.map((type) => {
+                const selected = formData.adjustmentType === type.value;
+                return (
+                  <label
+                    key={type.value}
+                    className={cn(
+                      'flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border p-3 text-center transition-colors',
+                      selected ? `${type.tone} border` : 'hover:bg-muted/50'
+                    )}
+                  >
                     <input
                       type="radio"
                       name="adjustmentType"
                       value={type.value}
-                      checked={formData.adjustmentType === type.value}
+                      checked={selected}
                       onChange={(e) => handleInputChange('adjustmentType', e.target.value)}
                       className="sr-only"
                     />
-                    <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                      formData.adjustmentType === type.value
-                        ? `border-${type.color}-500 bg-${type.color}-50`
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}>
-                      <type.icon className={`w-6 h-6 mx-auto mb-2 ${
-                        formData.adjustmentType === type.value ? `text-${type.color}-600` : 'text-gray-400'
-                      }`} />
-                      <p className={`text-sm font-medium text-center ${
-                        formData.adjustmentType === type.value ? `text-${type.color}-900` : 'text-gray-900'
-                      }`}>
-                        {t(type.label)}
-                      </p>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Amount and Units */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('iadj.amountLabel', { ctx: formData.adjustmentType === 'redeem' ? t('iadj.toRedeem') : t('iadj.toInvest') })}
-                </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.amount}
-                    onChange={(e) => handleInputChange('amount', e.target.value)}
-                    className={`ps-10 pe-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
-                      errors.amount ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    placeholder="0.00"
-                  />
-                </div>
-                {errors.amount && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 me-1" />
-                    {errors.amount}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('iadj.units')}
-                </label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  value={formData.units}
-                  onChange={(e) => handleInputChange('units', e.target.value)}
-                  className={`px-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
-                    errors.units ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="0.0000"
-                />
-                {errors.units && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 me-1" />
-                    {errors.units}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('iadj.pricePerUnit')}
-                </label>
-                <div className="space-y-2">
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange('price', e.target.value)}
-                    disabled={formData.useCurrentPrice}
-                    className={`px-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
-                      formData.useCurrentPrice ? 'bg-gray-50' : ''
-                    } ${errors.price ? 'border-red-300' : 'border-gray-300'}`}
-                  />
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={formData.useCurrentPrice}
-                      onChange={(e) => handleInputChange('useCurrentPrice', e.target.checked)}
-                      className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
+                    <type.icon
+                      className={cn('h-5 w-5', selected ? '' : 'text-muted-foreground')}
                     />
-                    {t('iadj.useCurrentPrice')}
+                    <span className="text-xs font-medium">{t(type.label)}</span>
                   </label>
-                </div>
-                {errors.price && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 me-1" />
-                    {errors.price}
-                  </p>
-                )}
-              </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="adj-amount">
+                {t('iadj.amountLabel', {
+                  ctx:
+                    formData.adjustmentType === 'redeem'
+                      ? t('iadj.toRedeem')
+                      : t('iadj.toInvest'),
+                })}
+              </Label>
+              <LexAmountInput
+                id="adj-amount"
+                unitPosition="start"
+                invalid={Boolean(errors.amount)}
+                value={formData.amount}
+                onChange={(next) => handleInputChange('amount', next)}
+                placeholder="0.00"
+              />
+              {errorText('amount')}
             </div>
 
-            {/* Reason and Notes */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('iadj.reasonLabel')}
-                </label>
-                <select
-                  value={formData.reason}
-                  onChange={(e) => handleInputChange('reason', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
-                    errors.reason ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                >
-                  <option value="">{t('iadj.selectReason')}</option>
-                  <option value="client_request">{t('iadj.reason.clientRequest')}</option>
-                  <option value="rebalancing">{t('iadj.reason.rebalancing')}</option>
-                  <option value="risk_management">{t('iadj.reason.riskManagement')}</option>
-                  <option value="market_opportunity">{t('iadj.reason.marketOpportunity')}</option>
-                  <option value="liquidity_needs">{t('iadj.reason.liquidityNeeds')}</option>
-                  <option value="compliance">{t('iadj.reason.compliance')}</option>
-                  <option value="error_correction">{t('iadj.reason.errorCorrection')}</option>
-                  <option value="other">{t('iadj.reason.other')}</option>
-                </select>
-                {errors.reason && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 me-1" />
-                    {errors.reason}
-                  </p>
-                )}
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="adj-units">{t('iadj.units')}</Label>
+              <Input
+                id="adj-units"
+                type="number"
+                step="0.0001"
+                className={cn(errors.units && 'border-destructive')}
+                value={formData.units}
+                onChange={(e) => handleInputChange('units', e.target.value)}
+                placeholder="0.0000"
+              />
+              {errorText('units')}
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('iadj.effectiveDate')}
-                </label>
-                <input
-                  type="date"
-                  value={formData.effectiveDate}
-                  onChange={(e) => handleInputChange('effectiveDate', e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+            <div className="space-y-1.5">
+              <Label htmlFor="adj-price">{t('iadj.pricePerUnit')}</Label>
+              <Input
+                id="adj-price"
+                type="number"
+                step="0.01"
+                disabled={formData.useCurrentPrice}
+                className={cn(errors.price && 'border-destructive')}
+                value={formData.price}
+                onChange={(e) => handleInputChange('price', e.target.value)}
+              />
+              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Checkbox
+                  checked={formData.useCurrentPrice}
+                  onCheckedChange={(checked) =>
+                    handleInputChange('useCurrentPrice', checked === true)
+                  }
                 />
-              </div>
+                {t('iadj.useCurrentPrice')}
+              </label>
+              {errorText('price')}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="adj-reason">{t('iadj.reasonLabel')}</Label>
+              <Select
+                value={formData.reason}
+                onValueChange={(value) => handleInputChange('reason', value)}
+              >
+                <SelectTrigger
+                  id="adj-reason"
+                  className={cn(errors.reason && 'border-destructive')}
+                >
+                  <SelectValue placeholder={t('iadj.selectReason')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {REASONS.map((reason) => (
+                    <SelectItem key={reason} value={reason}>
+                      {t(REASON_KEYS[reason])}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errorText('reason')}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('iadj.additionalNotes')}
-              </label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => handleInputChange('notes', e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                placeholder={t('iadj.notesPlaceholder')}
+            <div className="space-y-1.5">
+              <Label htmlFor="adj-date">{t('iadj.effectiveDate')}</Label>
+              <Input
+                id="adj-date"
+                type="date"
+                min={new Date().toISOString().split('T')[0]}
+                value={formData.effectiveDate}
+                onChange={(e) => handleInputChange('effectiveDate', e.target.value)}
               />
             </div>
+          </div>
 
-            {/* Risk Acknowledgment */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 me-3" />
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('iadj.riskAck')}</h3>
-                  <p className="text-sm text-yellow-700 mb-3">
-                    {t('iadj.riskText')}
-                  </p>
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={formData.confirmRisks}
-                      onChange={(e) => handleInputChange('confirmRisks', e.target.checked)}
-                      className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
-                    />
-                    {t('iadj.riskConfirm')}
-                  </label>
-                  {errors.confirmRisks && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertTriangle className="w-3 h-3 me-1" />
-                      {errors.confirmRisks}
-                    </p>
-                  )}
-                </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="adj-notes">{t('iadj.additionalNotes')}</Label>
+            <Textarea
+              id="adj-notes"
+              rows={3}
+              value={formData.notes}
+              onChange={(e) => handleInputChange('notes', e.target.value)}
+              placeholder={t('iadj.notesPlaceholder')}
+            />
+          </div>
+
+          {/* The acknowledgement is the gate on the submit button, so it keeps
+              a tone of its own rather than reading as another form row. */}
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-500/10">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <div className="min-w-0 flex-1">
+                <h4 className="m-0 mb-1 text-sm font-semibold text-amber-900 dark:text-amber-200">
+                  {t('iadj.riskAck')}
+                </h4>
+                <p className="m-0 mb-2 text-sm text-amber-800 dark:text-amber-300">
+                  {t('iadj.riskText')}
+                </p>
+                <label className="flex items-center gap-2 text-sm text-amber-900 dark:text-amber-200">
+                  <Checkbox
+                    checked={formData.confirmRisks}
+                    onCheckedChange={(checked) =>
+                      handleInputChange('confirmRisks', checked === true)
+                    }
+                  />
+                  {t('iadj.riskConfirm')}
+                </label>
+                {errorText('confirmRisks')}
               </div>
             </div>
+          </div>
 
-            {/* Preview Impact */}
-            {(formData.amount || formData.units) && (
-              <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
-                <div className="flex items-start">
-                  <Calculator className="w-5 h-5 text-black mt-0.5 me-3" />
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">{t('iadj.impactPreview')}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-800">{t('iadj.currentValueLabel')}</p>
-                        <p className="font-medium text-blue-900">{formatCurrency(investmentData.currentValue)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-800">{t('iadj.projectedValue')}</p>
-                        <p className="font-medium text-blue-900">{formatCurrency(newValues.newValue)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-800">{t('iadj.impactLabel')}</p>
-                        <p className="font-medium text-blue-900">{newValues.impact}</p>
-                      </div>
-                    </div>
+          {(formData.amount || formData.units) && (
+            <div className="rounded-lg border bg-muted/40 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Calculator className="h-4 w-4 text-muted-foreground" />
+                <h4 className="m-0 text-sm font-semibold text-foreground">
+                  {t('iadj.impactPreview')}
+                </h4>
+              </div>
+              <dl className="m-0 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-3">
+                {[
+                  [t('iadj.currentValueLabel'), formatCurrency(investmentData.currentValue)],
+                  [t('iadj.projectedValue'), formatCurrency(newValues.newValue)],
+                  [t('iadj.impactLabel'), newValues.impact],
+                ].map(([label, value]) => (
+                  <div key={label} className="min-w-0">
+                    <dt className="m-0 truncate text-xs text-muted-foreground">{label}</dt>
+                    {/* Was a dark blue, a colour this app uses nowhere else. */}
+                    <dd className="m-0 truncate text-sm font-semibold tabular-nums text-foreground">
+                      {value}
+                    </dd>
                   </div>
-                </div>
-              </div>
-            )}
+                ))}
+              </dl>
+            </div>
+          )}
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-              <Link
-                to="/InvestorDashboard/Investments"
-                className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                <X className="w-4 h-4 me-2" />
-                {t('common:cancel')}
-              </Link>
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-4">
+            <Button asChild variant="outline" size="sm">
+              <Link to="/InvestorDashboard/Investments">{t('common:cancel')}</Link>
+            </Button>
 
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={handlePreview}
-                  className="flex items-center px-6 py-2 text-sm font-medium text-gray-800 bg-gray-100 rounded-lg hover:bg-blue-200"
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={handlePreview}>
+                <Calculator className="h-4 w-4" />
+                {t('iadj.previewChanges')}
+              </Button>
+              {canManage && (
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !formData.confirmRisks}
                 >
-                  <Calculator className="w-4 h-4 me-2" />
-                  {t('iadj.previewChanges')}
-                </button>
-                {canManage && (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting || !formData.confirmRisks}
-                    className="flex items-center px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
-                        {t('iadj.processing')}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-4 h-4 me-2" />
-                        {t('iadj.submitAdjustment')}
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+                  {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  {isSubmitting ? t('iadj.processing') : t('iadj.submitAdjustment')}
+                </Button>
+              )}
             </div>
           </div>
         </div>

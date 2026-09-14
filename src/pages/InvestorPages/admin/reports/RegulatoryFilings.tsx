@@ -503,9 +503,9 @@ export default function RegulatoryFilings() {
               <span className="pro-head-badge">
                 <Calendar className="h-4 w-4" />
               </span>
-              <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
                 {t('rf.upcomingDeadlines')}
-              </h3>
+              </h4>
             </div>
             <div className="space-y-2">
               {upcomingDeadlines.map((deadline, index) => (
@@ -542,9 +542,9 @@ export default function RegulatoryFilings() {
               <span className="pro-head-badge">
                 <Scale className="h-4 w-4" />
               </span>
-              <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
                 {t('rf.regulators')}
-              </h3>
+              </h4>
             </div>
             <div className="space-y-2.5">
               {regulators.map((regulator) => (
@@ -576,9 +576,9 @@ export default function RegulatoryFilings() {
               <span className="pro-head-badge">
                 <Shield className="h-4 w-4" />
               </span>
-              <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+              <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
                 {t('reports.quickActions')}
-              </h3>
+              </h4>
             </div>
             {/* These three were buttons with no handler at all — they looked
                 exactly like the ones that do something. */}

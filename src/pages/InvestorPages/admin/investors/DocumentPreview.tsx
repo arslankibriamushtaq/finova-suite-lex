@@ -389,9 +389,9 @@ export default function DocumentPreview() {
                 </div>
 
                 <div className="mb-2 flex items-start justify-between gap-2">
-                  <h3 className="m-0 truncate text-sm font-semibold tracking-tight text-foreground">
+                  <h4 className="m-0 truncate text-sm font-semibold tracking-tight text-foreground">
                     {doc.label}
-                  </h3>
+                  </h4>
                   {getStatusIcon(doc.status)}
                 </div>
 
@@ -469,7 +469,7 @@ export default function DocumentPreview() {
           if (!open) closePreview();
         }}
       >
-        <DialogContent className="pro-dialog max-w-5xl">
+        <DialogContent className="pro-dialog sm:max-w-5xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
               <span className="pro-head-badge">

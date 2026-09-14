@@ -735,3 +735,77 @@ export const LexRowAction = ({
     </DropdownMenuItem>
   );
 };
+
+/* ------------------------------------------------------------------ */
+/* Currency field                                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A number input with its currency shown inside the box.
+ *
+ * The unit is a sibling of the input rather than an absolutely-positioned
+ * overlay, so it reserves its own space and cannot land on top of the value.
+ * The overlay version needed a padding override on the input to clear it, and
+ * that override is not reliable: the Input already sets `px-3`, tailwind-merge
+ * keeps both classes, and the winner comes down to stylesheet order.
+ */
+export const LexAmountInput = ({
+  id,
+  value,
+  onChange,
+  placeholder,
+  unit = "SAR",
+  unitPosition = "end",
+  invalid,
+  disabled,
+  step = "0.01",
+  min,
+  className,
+}: {
+  id?: string;
+  value: string | number;
+  onChange: (next: string) => void;
+  placeholder?: string;
+  unit?: string;
+  unitPosition?: "start" | "end";
+  invalid?: boolean;
+  disabled?: boolean;
+  step?: string;
+  min?: string;
+  className?: string;
+}) => {
+  const addon = (
+    <span className="shrink-0 select-none px-3 text-xs font-medium text-muted-foreground">
+      {unit}
+    </span>
+  );
+  return (
+    <div
+      className={cn(
+        "flex h-9 w-full items-center rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow]",
+        "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+        invalid && "border-destructive",
+        disabled && "pointer-events-none opacity-50",
+        className
+      )}
+    >
+      {unitPosition === "start" ? addon : null}
+      <input
+        id={id}
+        type="number"
+        step={step}
+        min={min}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={cn(
+          "h-full w-full min-w-0 flex-1 bg-transparent text-sm tabular-nums text-foreground outline-none",
+          "placeholder:text-muted-foreground disabled:cursor-not-allowed",
+          unitPosition === "start" ? "pe-3" : "ps-3"
+        )}
+      />
+      {unitPosition === "end" ? addon : null}
+    </div>
+  );
+};

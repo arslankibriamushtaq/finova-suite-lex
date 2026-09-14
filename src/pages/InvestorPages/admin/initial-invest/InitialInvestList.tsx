@@ -11,7 +11,6 @@ import {
 import TableView from '../../../../components/TableView/TableView';
 import { Button } from '../../../../components/ui/button';
 import { EmptyState, Field } from '../../../../components/shared/detailKit';
-import { Input } from '../../../../components/ui/input';
 import { Label } from '../../../../components/ui/label';
 import {
   Dialog,
@@ -25,6 +24,7 @@ import {
   LexPageHeader,
   LexRowAction,
   LexRowActions,
+  LexAmountInput,
   LexSearch,
 } from '../../../../components/shared/lexKit';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
@@ -366,49 +366,29 @@ export default function InitialInvestList() {
           <form onSubmit={handleCreate} className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="iil-create-min">{t('irl.col.minAmount')}</Label>
-              <div className="relative">
-                <Input
-                  id="iil-create-min"
-                  type="number"
-                  min="0"
-                  step="1"
-                  className="pe-14"
-                  value={formData.minimumAmount || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, minimumAmount: e.target.value ? Number(e.target.value) : 0 })
-                  }
-                  placeholder="0"
-                  required
-                />
-                {/* The suffix inside these boxes read USD, on a platform whose
-                    every other figure is in SAR. */}
-                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
-                  SAR
-                </span>
-              </div>
+              <LexAmountInput
+                id="iil-create-min"
+                step="1"
+                min="0"
+                value={formData.minimumAmount || ''}
+                onChange={(next) =>
+                  setFormData({ ...formData, minimumAmount: next ? Number(next) : 0 })
+                }
+                placeholder="0"
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="iil-create-max">{t('irl.col.maxAmount')}</Label>
-              <div className="relative">
-                <Input
-                  id="iil-create-max"
-                  type="number"
-                  min="0"
-                  step="1"
-                  className="pe-14"
-                  value={formData.maximumAmount || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, maximumAmount: e.target.value ? Number(e.target.value) : 0 })
-                  }
-                  placeholder="10000"
-                  required
-                />
-                {/* The suffix inside these boxes read USD, on a platform whose
-                    every other figure is in SAR. */}
-                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
-                  SAR
-                </span>
-              </div>
+              <LexAmountInput
+                id="iil-create-max"
+                step="1"
+                min="0"
+                value={formData.maximumAmount || ''}
+                onChange={(next) =>
+                  setFormData({ ...formData, maximumAmount: next ? Number(next) : 0 })
+                }
+                placeholder="10000"
+              />
             </div>
 
             <DialogFooter>
@@ -438,49 +418,29 @@ export default function InitialInvestList() {
           <form onSubmit={handleUpdate} className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="iil-edit-min">{t('irl.col.minAmount')}</Label>
-              <div className="relative">
-                <Input
-                  id="iil-edit-min"
-                  type="number"
-                  min="0"
-                  step="1"
-                  className="pe-14"
-                  value={formData.minimumAmount || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, minimumAmount: e.target.value ? Number(e.target.value) : 0 })
-                  }
-                  placeholder="0"
-                  required
-                />
-                {/* The suffix inside these boxes read USD, on a platform whose
-                    every other figure is in SAR. */}
-                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
-                  SAR
-                </span>
-              </div>
+              <LexAmountInput
+                id="iil-edit-min"
+                step="1"
+                min="0"
+                value={formData.minimumAmount || ''}
+                onChange={(next) =>
+                  setFormData({ ...formData, minimumAmount: next ? Number(next) : 0 })
+                }
+                placeholder="0"
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="iil-edit-max">{t('irl.col.maxAmount')}</Label>
-              <div className="relative">
-                <Input
-                  id="iil-edit-max"
-                  type="number"
-                  min="0"
-                  step="1"
-                  className="pe-14"
-                  value={formData.maximumAmount || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, maximumAmount: e.target.value ? Number(e.target.value) : 0 })
-                  }
-                  placeholder="10000"
-                  required
-                />
-                {/* The suffix inside these boxes read USD, on a platform whose
-                    every other figure is in SAR. */}
-                <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-xs font-medium text-muted-foreground">
-                  SAR
-                </span>
-              </div>
+              <LexAmountInput
+                id="iil-edit-max"
+                step="1"
+                min="0"
+                value={formData.maximumAmount || ''}
+                onChange={(next) =>
+                  setFormData({ ...formData, maximumAmount: next ? Number(next) : 0 })
+                }
+                placeholder="10000"
+              />
             </div>
 
             <DialogFooter>
