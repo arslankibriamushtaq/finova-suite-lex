@@ -2,10 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
+  ArrowRight as ArrowRightIcon,
   BadgeCheck,
+  Building2,
   BookOpen,
   Boxes,
   Check,
+  CircleCheck,
+  User,
   ChevronLeft,
   ChevronRight,
   Lock,
@@ -310,6 +314,39 @@ const moduleLabel = (code: string): string =>
     .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
     .join(" ");
 
+/**
+ * The two ways in. Kept as data so the two cards cannot drift apart in markup —
+ * they are the same card twice, and the only thing that differs is what it says.
+ */
+const INVESTOR_TYPES = [
+  {
+    id: "individual",
+    icon: User,
+    title: "Individual Investor",
+    blurb: "Invest as an individual person with personal verification",
+    points: [
+      "Personal KYC verification",
+      "Individual investment limits",
+      "Personal tax reporting",
+      "Simplified onboarding process",
+    ],
+  },
+  {
+    id: "business",
+    icon: Building2,
+    title: "Business Investor",
+    blurb: "Invest as a business entity with corporate verification",
+    points: [
+      "Corporate KYB verification",
+      "Higher investment limits",
+      "Business tax benefits",
+      "Corporate account management",
+    ],
+  },
+] as const;
+
+type InvestorType = (typeof INVESTOR_TYPES)[number]["id"];
+
 const LandingHome = () => {
   const navigate = useNavigate();
 
@@ -326,6 +363,9 @@ const LandingHome = () => {
   // The catalogue, priced by the server. Nothing on this page computes a total.
   const [packages, setPackages] = useState<CatalogPackage[] | null>(null);
   const [cycle, setCycle] = useState<BillingCycle>("MONTHLY");
+  /* Pre-selected rather than empty: there is no wrong answer to recover from,
+     and an empty state would leave Continue disabled for no reason. */
+  const [investorType, setInvestorType] = useState<InvestorType>("individual");
 
   /** The header only earns its border once the hero has moved under it. */
   useEffect(() => {
@@ -789,6 +829,70 @@ const LandingHome = () => {
             Prices exclude VAT, which is shown on the quote before you commit. Core Platform is
             included with every subscription at no cost.
           </p>
+        </div>
+      </section>
+
+      {/* --- Choose an investor type -------------------------------------- */}
+      <section className="ln-section" id="investor-type">
+        <div className="ln-wrap">
+          <div className="ln-narrow text-center" data-reveal-item>
+            <h2 className="ln-h2">Choose Your Investor Type</h2>
+            <p className="ln-body mt-4">Select how you would like to invest with us</p>
+          </div>
+
+          {/* A label around a real radio, not a button full of spans. A button
+              may only hold phrasing content, so the whole card had to be inline
+              — and inline boxes are where inherited text decoration lands. The
+              radio also gives arrow-key navigation and "1 of 2" for free. */}
+          <fieldset className="ln-choice mt-10" data-reveal-item>
+            <legend className="sr-only">Investor type</legend>
+            {INVESTOR_TYPES.map((type) => {
+              const Icon = type.icon;
+              return (
+                <label className="ln-choice__card" key={type.id}>
+                  <input
+                    className="ln-choice__input"
+                    type="radio"
+                    name="investor-type"
+                    value={type.id}
+                    checked={investorType === type.id}
+                    onChange={() => setInvestorType(type.id)}
+                  />
+                  <span className="ln-choice__icon" aria-hidden="true">
+                    <Icon className="h-6 w-6" />
+                  </span>
+                  <span className="ln-choice__title">{type.title}</span>
+                  <p className="ln-choice__blurb">{type.blurb}</p>
+                  <ul className="ln-choice__points">
+                    {type.points.map((point) => (
+                      <li className="ln-choice__point" key={point}>
+                        <CircleCheck className="ln-choice__tick" aria-hidden="true" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </label>
+              );
+            })}
+          </fieldset>
+
+          <div className="mt-10 flex justify-center" data-reveal-item>
+            {/* There is no investor signup route in this app yet, so this opens
+                the same sales mailto the rest of the page uses rather than
+                linking somewhere that 404s. The chosen type rides in the
+                subject; point it at the real flow once one exists. */}
+            <a
+              className="ln-btn ln-btn--primary ln-btn--round"
+              href={`mailto:sales@finova.sa?subject=${encodeURIComponent(
+                `Investor enquiry — ${
+                  INVESTOR_TYPES.find((type) => type.id === investorType)?.title ?? ""
+                }`
+              )}`}
+            >
+              Continue
+              <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </section>
 
