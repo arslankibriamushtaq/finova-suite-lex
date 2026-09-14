@@ -560,8 +560,15 @@ export default function InvestorsList() {
 
 
   const handleViewDocuments = (investor: any) => {
-    // Navigate to document preview page with investor ID and type
-    window.location.href = `Investors/document-preview/${investor.investorId}?type=${activeTab}`;
+    /*
+     * Was window.location.href, which is a full browser navigation: the whole
+     * SPA tears down and boots again, so the app's start-up splash covers the
+     * screen instead of the target page's own skeleton. It was also a relative
+     * path, resolved against whatever the current URL happened to be.
+     */
+    navigate(
+      `/InvestorDashboard/Investors/document-preview/${investor.investorId}?type=${activeTab}`
+    );
   };
 
 
@@ -1678,7 +1685,7 @@ export default function InvestorsList() {
 
       {/* View Investor Modal */}
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
-        <DialogContent className="pro-dialog max-w-4xl">
+        <DialogContent className="pro-dialog sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
               <span className="pro-head-badge">
@@ -1688,6 +1695,8 @@ export default function InvestorsList() {
             </DialogTitle>
           </DialogHeader>
 
+          {selectedInvestor && (
+          <div className="max-h-[70vh] overflow-y-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
@@ -1809,6 +1818,8 @@ export default function InvestorsList() {
                 {t('ilst.action.editInvestor')}
               </button>
             </div>
+          </div>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -1824,11 +1835,13 @@ export default function InvestorsList() {
             </DialogTitle>
           </DialogHeader>
 
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">
-                {t('ilst.deletePrefix')}<strong>{selectedInvestor.name}</strong>{t('ilst.deleteSuffix')}
+            {selectedInvestor && (
+              <p className="m-0 text-sm text-muted-foreground">
+                {t('ilst.deletePrefix')}
+                <strong className="text-foreground">{selectedInvestor.name}</strong>
+                {t('ilst.deleteSuffix')}
               </p>
-            </div>
+            )}
 
             <div className="flex justify-end space-x-3">
               <button

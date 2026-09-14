@@ -28,7 +28,6 @@ import {
 } from '../../../../redux/apis/apisInvestor';
 import type { ProductConfiguration } from '../../../../redux/apis/apisInvestor';
 import toast from 'react-hot-toast';
-import Loader from '../../../../components/Loader/Loader';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
 import {
   PRODUCT_STATUSES,
@@ -41,7 +40,11 @@ import {
 import { Badge } from '../../../../components/ui/badge';
 import { Button } from '../../../../components/ui/button';
 import { Tabs } from '../../../../components/ui/tabs';
-import { DetailTabsList, DetailTabsTrigger } from '../../../../components/shared/detailKit';
+import {
+  DetailTabsList,
+  DetailTabsTrigger,
+  TabSkeleton,
+} from '../../../../components/shared/detailKit';
 import { TONES } from '../../../../components/shared/detailKitUtils';
 import { LexNotice, LexPageHeader } from '../../../../components/shared/lexKit';
 import { cn } from '../../../../lib/utils';
@@ -1430,11 +1433,7 @@ export default function ProductConfiguration() {
     }
   };
 
-  if (loading) {
-    return (
-      <Loader/>
-    );
-  }
+
 
 //   if (!product) {
 //     return (
@@ -1486,10 +1485,6 @@ export default function ProductConfiguration() {
         )}
       </LexPageHeader>
 
-      <LexNotice tone="sky" icon={Info}>
-        <strong>{t('pc.banner.important')}</strong> {t('pc.banner.text')}
-      </LexNotice>
-
       {/* Upstream names the fields the service rejected; it was a raw red
           panel, which is the same job LexNotice already does. */}
       {serverErrors.length > 0 && (
@@ -1521,7 +1516,9 @@ export default function ProductConfiguration() {
         </DetailTabsList>
       </Tabs>
 
-      <div className="pro-card p-4 mb-3">{renderTabContent()}</div>
+      <div className="pro-card p-4 mb-3">
+        {loading ? <TabSkeleton variant="fields" count={3} /> : renderTabContent()}
+      </div>
 
       {/* Configuration Summary - Only show on Amounts tab */}
       {activeTab === 'amounts' && (
@@ -1530,9 +1527,9 @@ export default function ProductConfiguration() {
             <span className="pro-head-badge">
               <DollarSign className="h-4 w-4" />
             </span>
-            <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">
+            <h4 className="m-0 text-sm font-semibold tracking-tight text-foreground">
               {t('pc.summary.title')}
-            </h3>
+            </h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div>
