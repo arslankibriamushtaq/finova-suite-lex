@@ -10,11 +10,13 @@ import BrandLogo from "../shared/BrandLogo";
 import SuperAdmin from "./SuperAdmin";
 import { themeStyle } from "../Config/Theme";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Notifications from "./NotificationModule";
 import { Select } from "antd";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 
 const DashboardHeaderLms = () => {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const [showSuperAdmin, setShowSuperAdmin] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -57,6 +59,9 @@ const DashboardHeaderLms = () => {
             <div>
               <button
                 className="bar-btn"
+                type="button"
+                aria-label={t("toggleSidebar")}
+                title={t("toggleSidebar")}
                 onClick={() => dispatch(authSlice.actions.toggleSidebar())}
               >
                 <FaBars />

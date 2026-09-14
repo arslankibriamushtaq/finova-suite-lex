@@ -1680,10 +1680,44 @@ div#DataTables_Table_0_paginate {
   padding-left: 300px;
 }
 
+/* The sidebar toggle. It was a bare glyph on the page: no size, no shape, no
+   hover, and no focus ring — so it read as a stray character rather than a
+   control, and keyboard users had nothing to see when they tabbed onto it.
+   The position property is left alone: Header.tsx overrides it inline and the
+   LMS header relies on the static placement this gives. */
 .bar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
   background-color: transparent;
-  border: none;
+  color: var(--theme-heading-text-color, #1f2937);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   position: absolute;
+}
+
+.bar-btn:hover {
+  background-color: rgba(200, 29, 37, 0.08);
+  border-color: rgba(200, 29, 37, 0.18);
+  color: var(--theme-primary, #c81d25);
+}
+
+.bar-btn:active {
+  background-color: rgba(200, 29, 37, 0.14);
+}
+
+/* Visible only to the keyboard, so the pointer does not get a ring on click. */
+.bar-btn:focus-visible {
+  outline: none;
+  border-color: rgba(200, 29, 37, 0.45);
+  box-shadow: 0 0 0 3px rgba(200, 29, 37, 0.18);
 }
 
 .structure-btn {

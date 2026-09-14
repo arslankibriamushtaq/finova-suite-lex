@@ -97,6 +97,10 @@ const DashboardHeader = () => {
           <div className="d-flex align-items-center ps-0">
             <button
               className="bar-btn"
+              type="button"
+              aria-label={t("toggleSidebar")}
+              title={t("toggleSidebar")}
+              aria-expanded={!collapsed}
               style={{ position: "relative", zIndex: 1001 }}
               onClick={() => {
                 if (window.innerWidth <= 768) {
