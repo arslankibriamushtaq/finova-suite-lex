@@ -1,6 +1,51 @@
 # Permission Catalog — Portfolio Management
 
-**One module. 13 codes. Nothing here exists in the catalog today.**
+> ## ✅ Answered — nothing to register (identity-service V133–V142)
+>
+> All **27** PORTFOLIO codes and the module already exist, and `super_admin`, `admin` and
+> `TESTING123_TENANT_ADMIN` each hold 27/27. The catalogue landed as migrations alongside
+> portfolio-service, which is why `grep PORTFOLIO docs/` found nothing — the gap was in our
+> documentation, not in theirs. `role_permissions` was written by V142 from each role's existing Casbin
+> rules, so the registered-but-never-granted failure of the previous round did not repeat.
+>
+> Server-side enforcement was already in place: every route in portfolio-service carries
+> `@SecuredEndpoint`, checked by the SDK's Casbin filter against Redis.
+>
+> **Two of our gates were on the wrong code. Both are now fixed.**
+>
+> | Screen | Was | Now |
+> |---|---|---|
+> | Reports and its 16 screens | `PORTFOLIO_DASHBOARD_READ` | `PORTFOLIO_ADMIN_DASHBOARD_READ` |
+> | Income Ranges · Initial Invest · Investment Experience · Investment Timeline | `PORTFOLIO_SETTINGS_*` | `PORTFOLIO_REFERENCE_*` |
+>
+> The first was a privilege question, not a tidiness one. `PORTFOLIO_DASHBOARD_READ` guards
+> `portfolio.dashboards` — a single investor's own portfolio, which is what the investor portal calls for
+> the signed-in investor. Reports is the whole book, so the old gate let anyone who could see their own
+> dashboard read every investor's.
+>
+> The second was silently broken: those four screens are served by the catalogue controllers, which
+> enforce `portfolio.catalogs`. On the settings code a role saw the menu row and then took a 403 on every
+> call. It went unnoticed because `super_admin` and `admin` hold both codes.
+>
+> The System Settings group now opens on **either** code — its own screen is `portfolio.system-settings`
+> while all four children are catalogues, so requiring only the settings code would hide all four from a
+> role that can actually use them.
+>
+> **The three questions below are answered.** The two dashboard codes are deliberate and stay separate;
+> `PORTFOLIO_INVESTOR_VERIFY` stays its own code, as we hoped; and no admin-users code exists — when the
+> Admin Users & Roles row returns it gets its own rather than `PORTFOLIO_SETTINGS_MANAGE`. A note to that
+> effect sits on the commented-out row in the sidebar.
+>
+> **Twelve codes we did not ask for are already live**, covering screens this app has not built:
+> `PORTFOLIO_REFERENCE_*`, `PORTFOLIO_PRODUCT_LIFECYCLE`, `PORTFOLIO_FUND_MANAGE`,
+> `PORTFOLIO_PAYOUT_EXECUTE`, `PORTFOLIO_ALLOCATION_APPROVE`, `PORTFOLIO_ALLOCATION_EXECUTE`,
+> `PORTFOLIO_COMPLIANCE_*`, `PORTFOLIO_FX_*`. Use these rather than widening an existing code.
+>
+> Figures are DEV at Flyway head V144; not yet checked in QA. Test with `admin`, never `super_admin`.
+>
+> The original request is kept below for the rationale behind each code.
+
+**One module. 13 codes.**
 
 **Where they must appear:** `GET /identity-service/api/v1/permissions/role/{roleId}`
 **Ask:** 1 new module (`PORTFOLIO`) · 13 new permission codes

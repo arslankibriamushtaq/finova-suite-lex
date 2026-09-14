@@ -45,10 +45,13 @@ import toast from 'react-hot-toast';
 
 
 export default function IncomeRangeList() {
-  // Portfolio settings are configuration: reading the list is PORTFOLIO_SETTINGS_READ
-  // (which is what put this page in the menu), but changing one needs _MANAGE.
+  /* These four screens are served by the catalogue controllers, which
+     enforce portfolio.catalogs — that is PORTFOLIO_REFERENCE_*, not
+     PORTFOLIO_SETTINGS_*. On the settings code a role saw the menu row and
+     then took a 403 on every call; it went unnoticed because super_admin and
+     admin hold both. */
   const { hasPermission } = usePermissions();
-  const canManage = hasPermission('PORTFOLIO_SETTINGS_MANAGE');
+  const canManage = hasPermission('PORTFOLIO_REFERENCE_MANAGE');
   const { t } = useTranslation('investor');
   const navigate = useNavigate();
   const [incomeRanges, setIncomeRanges] = useState<IncomeRange[]>([]);

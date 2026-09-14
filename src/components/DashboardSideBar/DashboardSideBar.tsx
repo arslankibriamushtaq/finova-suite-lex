@@ -2161,7 +2161,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // pointed at /InvestorDashboard/IncomeRanges etc. — all 404. The
         // "System Settings" group below is the same four rows with the paths
         // the router actually serves.
-        hasAccess("PORTFOLIO_SETTINGS_READ") && {
+        /* The group's own screen reads portfolio.system-settings, but all
+           four children are catalogue screens on portfolio.catalogs — so it
+           opens for either, or a reference-only role would see no group. */
+        hasAccess(["PORTFOLIO_SETTINGS_READ", "PORTFOLIO_REFERENCE_READ"]) && {
           label: "System Settings",
           Icon: SlidersHorizontal,
           Link: "SystemSettings",
@@ -2169,25 +2172,25 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: isUnder("/InvestorDashboard/SystemSettings"),
           submenu: [
 
-            hasAccess("PORTFOLIO_SETTINGS_READ") && {
+            hasAccess("PORTFOLIO_REFERENCE_READ") && {
               label: "Income Ranges",
               Link: "IncomeRanges",
               LinkLable: "/InvestorDashboard/SystemSettings",
               active: isUnder("/InvestorDashboard/SystemSettings/IncomeRanges"),
             },
-            hasAccess("PORTFOLIO_SETTINGS_READ") && {
+            hasAccess("PORTFOLIO_REFERENCE_READ") && {
               label: "Initial Invest",
               Link: "InitialInvest",
               LinkLable: "/InvestorDashboard/SystemSettings",
               active: isUnder("/InvestorDashboard/SystemSettings/InitialInvest"),
             },
-            hasAccess("PORTFOLIO_SETTINGS_READ") && {
+            hasAccess("PORTFOLIO_REFERENCE_READ") && {
               label: "Investment Experience",
               Link: "InvestmentExperience",
               LinkLable: "/InvestorDashboard/SystemSettings",
               active: isUnder("/InvestorDashboard/SystemSettings/InvestmentExperience"),
             },
-            hasAccess("PORTFOLIO_SETTINGS_READ") && {
+            hasAccess("PORTFOLIO_REFERENCE_READ") && {
               label: "Investment Timeline",
               Link: "InvestmentTimeline",
               LinkLable: "/InvestorDashboard/SystemSettings",
@@ -2227,7 +2230,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/InvestorDashboard",
           active: isUnder("/InvestorDashboard/AllocationEngine"),
         },
-        hasAccess("PORTFOLIO_DASHBOARD_READ") && {
+        /* PORTFOLIO_DASHBOARD_READ guards `portfolio.dashboards` — one
+           investor's own portfolio, which is what the investor portal calls for
+           the signed-in investor. Reports is the whole book, so it belongs on
+           the admin object. Gating it on the investor code let anyone who can
+           see their own dashboard read every investor's. */
+        hasAccess("PORTFOLIO_ADMIN_DASHBOARD_READ") && {
           label: "Reports",
           noIcon: true,
           Link: "Reports",
@@ -2246,6 +2254,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   LinkLable: "/InvestorDashboard",
         //   active: isUnder("/InvestorDashboard/Notifications"),
         // },
+        /* Still hidden. identity-service confirmed no admin-users code
+           exists and that PORTFOLIO_SETTINGS_MANAGE grants nothing beyond
+           portfolio.system-settings — so do not restore it on this gate. Ask
+           them to register one when the row comes back. */
         // hasAccess("PORTFOLIO_SETTINGS_MANAGE") && {
         //   label: "Admin Users & Roles",
         //   Link: "AdminUsers",
