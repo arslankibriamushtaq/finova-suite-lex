@@ -1577,6 +1577,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               //   LinkLable: "/Lms/Setting",
               //   active: pathname.includes("/Lms/Setting/ProductFee"),
               // },
+              /* Journey configuration reads and writes product settings, so it
+                 gates on the settings read code. PRODUCT_READ is listed
+                 alongside it as the fallback: only PRODUCT_SETTINGS_UPDATE is
+                 referenced anywhere in this app, so whether the catalogue
+                 carries a matching _READ is unconfirmed, and hasAccess takes
+                 the list as an OR. Drop PRODUCT_READ once the code is
+                 confirmed registered. */
+              hasAccess(["PRODUCT_SETTINGS_READ", "PRODUCT_READ"]) && {
+                label: "Journey Configuration",
+                Link: "JourneyConfig",
+                LinkLable: "/Lms/Setting",
+                active: isUnder("/Lms/Setting/JourneyConfig"),
+              },
               // hasAccess("delinquency_module") &&
               hasAccess("POLICY_READ") && {
                 label: "Delinquency",

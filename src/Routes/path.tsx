@@ -253,6 +253,7 @@ import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistor
 import WaiveOffDetails from "../pages/lmsPages/LoanManagement/WaiveOffDetails";
 import CreateInvoice from "../components/Loans/CreateInvoice";
 import DeliquencyManagement from "../components/Products/Deliquency/DeliquencyManagement";
+import JourneyAdmin from "../components/Products/JourneyAdmin/JourneyAdmin";
 import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleConfigManagement";
 import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyManagement";
 import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScoring";
@@ -1755,6 +1756,10 @@ export const router = createBrowserRouter(
               element: <ProductManagement />,
             },
             {
+              path: "Lms/Setting/JourneyConfig",
+              element: <JourneyAdmin />,
+            },
+            {
               path: "Lms/Setting/Deliquency",
               element: <DeliquencyManagement />,
             },
@@ -2467,6 +2472,10 @@ export const router = createBrowserRouter(
             {
               path: "Lms/Setting/ProductManagement",
               element: <ProductManagement />,
+            },
+            {
+              path: "Lms/Setting/JourneyConfig",
+              element: <JourneyAdmin />,
             },
             {
               path: "Lms/Setting/Deliquency",

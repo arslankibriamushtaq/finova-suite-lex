@@ -24,6 +24,7 @@ import partner from "./locales/partner";
 import cms from "./locales/cms";
 import financing from "./locales/financing";
 import dashboard from "./locales/dashboard";
+import journeyAdmin from "./locales/journeyAdmin";
 import reconciliation from "./locales/reconciliation";
 import walletBlocks from "./locales/walletBlocks";
 import sullisCash from "./locales/sullisCash";
@@ -66,6 +67,7 @@ const modules: ModuleLocale[] = [
   cms,
   financing,
   dashboard,
+  journeyAdmin,
   reconciliation,
   walletBlocks,
   sullisCash,
