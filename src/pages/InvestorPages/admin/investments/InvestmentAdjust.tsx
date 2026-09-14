@@ -15,6 +15,15 @@ import {
 } from 'lucide-react';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
 
+import { Button } from '../../../../components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
+
 // Mock data - in real app, this would come from API based on investment ID
 const investmentData = {
   id: 1,
@@ -166,13 +175,12 @@ export default function InvestmentAdjust() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(undefined, {
       style: 'currency',
-      currency: 'USD',
+      currency: 'SAR',
       minimumFractionDigits: 2,
     }).format(amount);
-  };
 
   const calculateNewValues = () => {
     const currentValue = investmentData.currentValue;
@@ -528,58 +536,73 @@ export default function InvestmentAdjust() {
         </div>
       </div>
 
-      {/* Preview Modal */}
-      {showPreview && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('iadj.previewTitle')}</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t('iadj.typeColon')}</span>
-                <span className="font-medium">{t(`iadj.type.${formData.adjustmentType}`)}</span>
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Calculator className="h-4 w-4" />
+              </span>
+              {t('iadj.previewTitle')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <dl className="m-0 space-y-2 text-sm">
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted-foreground">{t('iadj.typeColon')}</dt>
+              <dd className="m-0 font-medium text-foreground">
+                {t(`iadj.type.${formData.adjustmentType}`)}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted-foreground">{t('iadj.amountColon')}</dt>
+              <dd className="m-0 font-medium tabular-nums text-foreground">
+                {formatCurrency(parseFloat(formData.amount))}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted-foreground">{t('iadj.unitsColon')}</dt>
+              <dd className="m-0 font-medium tabular-nums text-foreground">
+                {parseFloat(formData.units).toLocaleString()}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted-foreground">{t('iadj.priceColon')}</dt>
+              {/* Was a literal "$" in front of the number, on a platform whose
+                  every other figure goes through formatCurrency. */}
+              <dd className="m-0 font-medium tabular-nums text-foreground">
+                {formatCurrency(parseFloat(formData.price))}
+              </dd>
+            </div>
+            <div className="space-y-2 border-t pt-3">
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">{t('iadj.newTotalValue')}</dt>
+                <dd className="m-0 font-medium tabular-nums text-foreground">
+                  {formatCurrency(newValues.newValue)}
+                </dd>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t('iadj.amountColon')}</span>
-                <span className="font-medium">{formatCurrency(parseFloat(formData.amount))}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t('iadj.unitsColon')}</span>
-                <span className="font-medium">{parseFloat(formData.units).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">{t('iadj.priceColon')}</span>
-                <span className="font-medium">${parseFloat(formData.price)}</span>
-              </div>
-              <div className="border-t pt-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{t('iadj.newTotalValue')}</span>
-                  <span className="font-medium">{formatCurrency(newValues.newValue)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">{t('iadj.newTotalUnits')}</span>
-                  <span className="font-medium">{newValues.newUnits.toLocaleString()}</span>
-                </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted-foreground">{t('iadj.newTotalUnits')}</dt>
+                <dd className="m-0 font-medium tabular-nums text-foreground">
+                  {newValues.newUnits.toLocaleString()}
+                </dd>
               </div>
             </div>
-            <div className="flex items-center space-x-3 mt-6">
-              <button
-                onClick={() => setShowPreview(false)}
-                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-              >
-                {t('common:cancel')}
-              </button>
-              {canManage && (
-                <button
-                  onClick={handleSubmit}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
-                >
-                  {t('iadj.confirm')}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+          </dl>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreview(false)}>
+              {t('common:cancel')}
+            </Button>
+            {canManage && (
+              <Button onClick={handleSubmit} className="gap-2">
+                <CheckCircle className="h-4 w-4" />
+                {t('iadj.confirm')}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
-  X,
   Eye,
   Settings,
   Trash2,
@@ -16,6 +15,13 @@ import {
 import TableView from '../../../../components/TableView/TableView';
 import { Badge } from '../../../../components/ui/badge';
 import { Button } from '../../../../components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +49,7 @@ import {
   PRODUCT_STATUSES,
   PRODUCT_CATEGORIES,
   enumToNumber,
+  humaniseEnum,
 } from './productEnums';
 
 export default function ProductsList() {
@@ -485,65 +492,63 @@ export default function ProductsList() {
         />
       </div>
 
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('pln.createProduct')}</h3>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Plus className="h-4 w-4" />
+              </span>
+              {t('pln.createProduct')}
+            </DialogTitle>
+          </DialogHeader>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.productName')}
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.productName')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.productType')}
                   </label>
                   <input
                     type="text"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.productType')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.productCode')}
                   </label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.productCode')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.expectedReturnPct')}
                   </label>
                   <input
@@ -551,34 +556,34 @@ export default function ProductsList() {
                    
                     value={formData.expectedReturn}
                     onChange={(e) => setFormData({ ...formData, expectedReturn: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.expectedReturn')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.minimumInvestment')}
                   </label>
                   <input
                     type="text"
                     value={formData.minimumInvestment}
                     onChange={(e) => setFormData({ ...formData, minimumInvestment: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.minimumInvestment')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.productCategory')}
                   </label>
                   <select
                     value={formData.productCategory}
                     onChange={(e) => setFormData({ ...formData, productCategory: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     required
                   >
                     <option value={0}>{t('pln.cat.equity')}</option>
@@ -594,13 +599,13 @@ export default function ProductsList() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.productStatus')}
                   </label>
                   <select
                     value={formData.productStatus}
                     onChange={(e) => setFormData({ ...formData, productStatus: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     required
                   >
                     <option value={0}>{t('pln.status.active')}</option>
@@ -612,41 +617,41 @@ export default function ProductsList() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.launchDate')}
                   </label>
                   <input
                     type="datetime-local"
                     value={formData.launchDate}
                     onChange={(e) => setFormData({ ...formData, launchDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.investmentDuration')}
                   </label>
                   <input
                     type="text"
                     value={formData.investmentDuration}
                     onChange={(e) => setFormData({ ...formData, investmentDuration: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.investmentDuration')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
                     {t('pln.field.segmentId')}
                   </label>
                   <input
                     type="text"
                     value={formData.segmentId}
                     onChange={(e) => setFormData({ ...formData, segmentId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     placeholder={t('pln.ph.segmentId')}
                     required
                   />
@@ -654,13 +659,13 @@ export default function ProductsList() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-1.5 block text-sm font-medium text-foreground">
                   {t('pln.field.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder={t('pln.ph.description')}
                   rows={3}
                   required
@@ -693,326 +698,135 @@ export default function ProductsList() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
-      {/* Edit Product Modal - Removed since edit functionality is not used */}
-      {false && selectedProduct && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('pln.editProduct')}</h3>
-              <button
-                onClick={() => {}}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form onSubmit={(e) => { e.preventDefault(); }} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.productName')}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder={t('pln.ph.productName')}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.productType')}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder={t('pln.ph.productType')}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.productCode')}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.code}
-                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder={t('pln.ph.productCode')}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.productCategory')}
-                  </label>
-                  <select
-                    value={formData.productCategory}
-                    onChange={(e) => setFormData({ ...formData, productCategory: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    required
-                  >
-                    <option value={0}>{t('pln.cat.equity')}</option>
-                    <option value={1}>{t('pln.cat.fixedIncome')}</option>
-                    <option value={2}>{t('pln.cat.realEstate')}</option>
-                    <option value={3}>{t('pln.cat.commodities')}</option>
-                    <option value={4}>{t('pln.cat.mutualFunds')}</option>
-                    <option value={5}>{t('pln.cat.etf')}</option>
-                    <option value={6}>{t('pln.cat.crypto')}</option>
-                    <option value={7}>{t('pln.cat.altInvestments')}</option>
-                    <option value={8}>{t('pln.cat.cash')}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.productStatus')}
-                  </label>
-                  <select
-                    value={formData.productStatus}
-                    onChange={(e) => setFormData({ ...formData, productStatus: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    required
-                  >
-                    <option value={0}>{t('pln.status.active')}</option>
-                    <option value={1}>{t('pln.status.inactive')}</option>
-                    <option value={2}>{t('pln.status.closed')}</option>
-                    <option value={3}>{t('pln.status.suspended')}</option>
-                    <option value={4}>{t('pln.status.launching')}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.launchDate')}
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={formData.launchDate}
-                    onChange={(e) => setFormData({ ...formData, launchDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.investmentDuration')}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.investmentDuration}
-                    onChange={(e) => setFormData({ ...formData, investmentDuration: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder={t('pln.ph.investmentDuration')}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('pln.field.segmentId')}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.segmentId}
-                    onChange={(e) => setFormData({ ...formData, segmentId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder={t('pln.ph.segmentId')}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('pln.field.description')}
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                  placeholder={t('pln.ph.description')}
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => {}}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  {t('common:cancel')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={formLoading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                >
-                  {formLoading ? (
-                    <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin me-2" />
-                      {t('pln.updating')}
-                    </div>
-                  ) : (
-                    t('pln.updateProduct')
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* View Product Modal */}
-      {showViewModal && selectedProduct && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('pln.productDetails')}</h3>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Package className="h-4 w-4" />
+              </span>
+              {t('pln.productDetails')}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="space-y-4">
+          {selectedProduct && (
+            <div className="max-h-[70vh] space-y-4 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.view.id')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.view.id')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.id}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.view.name')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.view.name')}</label>
                   <p className="text-lg font-semibold text-gray-900">{selectedProduct.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:type')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('common:type')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.type}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.col.code')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.col.code')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.code}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.col.expectedReturn')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.col.expectedReturn')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.expectedReturn}%</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.minimumInvestment')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.field.minimumInvestment')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.minimumInvestment.toLocaleString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.productCategory')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.field.productCategory')}</label>
                   <p className="text-sm text-gray-900">{getProductCategoryText(selectedProduct.productCategory)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.productStatus')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.field.productStatus')}</label>
                   <p className="text-sm text-gray-900">{getProductStatusText(selectedProduct.productStatus)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.launchDate')}</label>
-                  <p className="text-sm text-gray-900">
-                    {new Date(selectedProduct.launchDate).toLocaleDateString()}
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.field.launchDate')}</label>
+                  <p className="text-sm text-foreground">
+                    {selectedProduct.launchDate
+                      ? new Date(selectedProduct.launchDate).toLocaleDateString()
+                      : '—'}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.view.investmentDuration')}</label>
-                  <p className="text-sm text-gray-900">{t('pln.view.months', { count: selectedProduct.investmentDuration })}</p>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.view.investmentDuration')}</label>
+                  <p className="text-sm text-foreground">
+                    {Number.isNaN(Number(selectedProduct.investmentDuration))
+                      ? humaniseEnum(selectedProduct.investmentDuration)
+                      : t('pln.view.months', {
+                          count: Number(selectedProduct.investmentDuration) || 0,
+                        })}
+                  </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.segmentId')}</label>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.field.segmentId')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.segmentId}</p>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.description')}</label>
+                <label className="mb-1.5 block text-sm font-medium text-foreground">{t('pln.field.description')}</label>
                 <p className="text-sm text-gray-900">{selectedProduct.description}</p>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t('common:close')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowViewModal(false)}>
+              {t('common:close')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && selectedProduct && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('pln.deleteProduct')}</h3>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Trash2 className="h-4 w-4" />
+              </span>
+              {t('pln.deleteProduct')}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="mb-6">
-              <p className="text-gray-600 mb-4">
-                {t('pln.confirmDelete')}
-              </p>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex items-center">
-                  <Package className="w-5 h-5 text-gray-700 me-2" />
-                  <p className="text-sm text-gray-700">
-                    <span className="font-medium">{t('pln.productLabel')}</span> {selectedProduct.name}
-                  </p>
-                </div>
-              </div>
+          <p className="m-0 text-sm text-muted-foreground">{t('pln.confirmDelete')}</p>
+          {selectedProduct && (
+            <div className="flex items-center gap-2 rounded-lg border bg-muted/40 p-3">
+              <Package className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="text-sm text-foreground">
+                <span className="font-medium">{t('pln.productLabel')}</span>{' '}
+                {selectedProduct.name}
+              </span>
             </div>
+          )}
 
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t('common:cancel')}
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={formLoading}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                {formLoading ? (
-                  <div className="flex items-center">
-                    <Loader2 className="w-4 h-4 animate-spin me-2" />
-                    {t('pln.deleting')}
-                  </div>
-                ) : (
-                  t('pln.deleteProduct')
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={formLoading}
+              className="gap-2"
+            >
+              {formLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {formLoading ? t('pln.deleting') : t('pln.deleteProduct')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

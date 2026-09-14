@@ -6,6 +6,12 @@ import { useTranslation } from 'react-i18next';
 import TableView from '../../../../components/TableView/TableView';
 import { Badge } from '../../../../components/ui/badge';
 import { Button } from '../../../../components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
 import { Tabs, TabsContent } from '../../../../components/ui/tabs';
 import {
   DetailTabsList,
@@ -29,7 +35,6 @@ import {
   Mail,
   Phone,
   AlertTriangle,
-  X,
   Upload,
   FileText,
   User,
@@ -850,18 +855,16 @@ export default function InvestorsList() {
 
 
       {/* Type Selection Modal */}
-      {showTypeSelectionModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('ils.selectType')}</h3>
-              <button
-                onClick={() => setShowTypeSelectionModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      <Dialog open={showTypeSelectionModal} onOpenChange={setShowTypeSelectionModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Users className="h-4 w-4" />
+              </span>
+              {t('ils.selectType')}
+            </DialogTitle>
+          </DialogHeader>
 
             <div className="space-y-4">
               <p className="text-gray-600 mb-4">{t('ils.chooseType')}</p>
@@ -1060,28 +1063,20 @@ export default function InvestorsList() {
                 {t('common:cancel')}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Create Investor Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <PlusIcon className="h-4 w-4" />
+              </span>
                 {t('ils.createTitle', { type: selectedInvestorType === 'individual' ? t('ilst.type.individual') : t('ils.business') })}
-              </h3>
-              <button
-                onClick={() => {
-                  setShowCreateModal(false);
-                  setShowSendLink(false);
-                }}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+            </DialogTitle>
+          </DialogHeader>
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1678,23 +1673,20 @@ export default function InvestorsList() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* View Investor Modal */}
-      {showViewModal && selectedInvestor && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('ilst.viewTitle')}</h3>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="pro-dialog max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Eye className="h-4 w-4" />
+              </span>
+              {t('ilst.viewTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
@@ -1817,23 +1809,20 @@ export default function InvestorsList() {
                 {t('ilst.action.editInvestor')}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && selectedInvestor && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('ilst.deleteTitle')}</h3>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Trash2 className="h-4 w-4" />
+              </span>
+              {t('ilst.deleteTitle')}
+            </DialogTitle>
+          </DialogHeader>
 
             <div className="mb-6">
               <p className="text-sm text-gray-600">
@@ -1855,9 +1844,8 @@ export default function InvestorsList() {
                 {t('ilst.action.deleteInvestor')}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
     </div>
   );

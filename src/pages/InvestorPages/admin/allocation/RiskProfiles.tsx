@@ -17,6 +17,25 @@ import {
 } from 'lucide-react';
 import { usePermissions } from '../../../../hooks/useProductPermissions';
 
+import { Button } from '../../../../components/ui/button';
+import { Input } from '../../../../components/ui/input';
+import { Label } from '../../../../components/ui/label';
+import { Textarea } from '../../../../components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../../components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../../components/ui/dialog';
+
 // Mock data for risk profiles
 const customerRiskProfiles = [
   {
@@ -495,137 +514,97 @@ export default function RiskProfiles() {
         </div>
       )}
 
-      {/* Create Profile Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('rp.createModalTitle')}</h3>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                ✕
-              </button>
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="pro-dialog sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Plus className="h-4 w-4" />
+              </span>
+              {t('rp.createModalTitle')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-type">{t('rp.profileType')}</Label>
+              <Select defaultValue="customer">
+                <SelectTrigger id="rp-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="customer">{t('rp.customerProfileOpt')}</SelectItem>
+                  <SelectItem value="investor">{t('rp.investorProfileOpt')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.profileType')}</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                  <option value="customer">{t('rp.customerProfileOpt')}</option>
-                  <option value="investor">{t('rp.investorProfileOpt')}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.profileName')}</label>
-                <input
-                  type="text"
-                  placeholder={t('rp.enterName')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.description')}</label>
-                <textarea
-                  placeholder={t('rp.describeProfile')}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.defaultRatePct')}</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.volatilityPct')}</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  {t('common:cancel')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCreateProfile}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  {t('rp.createProfile')}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Import Modal */}
-      {showImportModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">{t('rp.importModalTitle')}</h3>
-              <button
-                onClick={() => setShowImportModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                ✕
-              </button>
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-name">{t('rp.profileName')}</Label>
+              <Input id="rp-name" type="text" placeholder={t('rp.enterName')} />
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.uploadCsv')}</label>
-                <input
-                  type="file"
-                  accept=".csv"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-desc">{t('rp.description')}</Label>
+              <Textarea id="rp-desc" rows={3} placeholder={t('rp.describeProfile')} />
+            </div>
 
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-600">
-                  {t('rp.csvHint')}
-                </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-default-rate">{t('rp.defaultRatePct')}</Label>
+                <Input id="rp-default-rate" type="number" step="0.1" placeholder="0.0" />
               </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowImportModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  {t('common:cancel')}
-                </button>
-                <button
-                  onClick={handleImportProfiles}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
-                >
-                  {t('rp.import')}
-                </button>
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-volatility">{t('rp.volatilityPct')}</Label>
+                <Input id="rp-volatility" type="number" step="0.1" placeholder="0.0" />
               </div>
             </div>
           </div>
-        </div>
-      )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleCreateProfile} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t('rp.createProfile')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="pro-dialog sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5">
+              <span className="pro-head-badge">
+                <Upload className="h-4 w-4" />
+              </span>
+              {t('rp.importModalTitle')}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-csv">{t('rp.uploadCsv')}</Label>
+              <Input id="rp-csv" type="file" accept=".csv" />
+            </div>
+            <p className="m-0 rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
+              {t('rp.csvHint')}
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowImportModal(false)}>
+              {t('common:cancel')}
+            </Button>
+            <Button onClick={handleImportProfiles} className="gap-2">
+              <Upload className="h-4 w-4" />
+              {t('rp.import')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
