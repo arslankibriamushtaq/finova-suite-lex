@@ -10,6 +10,7 @@ import {
   Check,
   CircleCheck,
   User,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Lock,
@@ -21,6 +22,12 @@ import {
 } from "lucide-react";
 
 import BrandLogo from "../../components/shared/BrandLogo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
 import {
   getCatalogPackages,
   type BillingCycle,
@@ -354,6 +361,9 @@ type InvestorType = (typeof INVESTOR_TYPES)[number]["id"];
  */
 const INVESTOR_APP_BASE = "https://finova-investor.netlify.app/investor-type/1";
 
+/** The investor app's own sign-in, which is not under the tenant path above. */
+const INVESTOR_APP_LOGIN = "https://finova-investor.netlify.app/investor-type/login";
+
 const LandingHome = () => {
   const navigate = useNavigate();
 
@@ -530,10 +540,35 @@ const LandingHome = () => {
           </nav>
 
           {/* An outlined pill, not a filled one: the design keeps the only
-              solid red on the page for the hero's own call to action. */}
-          <a className="ln-navbtn" href="/login">
-            Sign In
-          </a>
+              solid red on the page for the hero's own call to action.
+
+              Two workspaces sign in at different places, so this opens rather
+              than navigates. The menu is the honest shape for that: a button
+              that goes to one of two destinations should say so before it
+              moves, not pick one and hope. */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="ln-navbtn ln-navbtn--menu">
+              Sign In
+              <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" sideOffset={8} className="z-[2000] min-w-52">
+              <DropdownMenuItem asChild>
+                <a href="/login">
+                  <Building2 className="h-4 w-4" aria-hidden="true" />
+                  Tenant Workspace
+                </a>
+              </DropdownMenuItem>
+              {/* rel is not optional with target="_blank": without noopener the
+                  page that opens can reach back through window.opener. */}
+              <DropdownMenuItem asChild>
+                <a href={INVESTOR_APP_LOGIN} target="_blank" rel="noopener noreferrer">
+                  <User className="h-4 w-4" aria-hidden="true" />
+                  Investor Workspace
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -844,7 +879,7 @@ const LandingHome = () => {
         <div className="ln-wrap">
           <div className="ln-narrow text-center" data-reveal-item>
             <h2 className="ln-h2">
-              Join Finova as an <span className="ln-underline">Investor</span>
+              Join Us as an <span className="ln-underline">Investor</span>
             </h2>
             <p className="ln-body mt-4">
               Choose the account that fits how you invest, then continue to registration.
