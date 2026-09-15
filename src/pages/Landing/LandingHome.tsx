@@ -843,8 +843,12 @@ const LandingHome = () => {
       <section className="ln-section" id="investor-type">
         <div className="ln-wrap">
           <div className="ln-narrow text-center" data-reveal-item>
-            <h2 className="ln-h2">Choose Your Investor Type</h2>
-            <p className="ln-body mt-4">Select how you would like to invest with us</p>
+            <h2 className="ln-h2">
+              Join Finova as an <span className="ln-underline">Investor</span>
+            </h2>
+            <p className="ln-body mt-4">
+              Choose the account that fits how you invest, then continue to registration.
+            </p>
           </div>
 
           {/* A label around a real radio, not a button full of spans. A button
