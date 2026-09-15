@@ -309,16 +309,44 @@ function RailControls({ rail, label }: { rail: ReturnType<typeof useRail>; label
  * gave every other plan thirty codes' worth of empty space under a five-line
  * list. Seven is what the design draws.
  */
-const PLAN_MODULES_SHOWN = 7;
 
 /** Questions shown before "View all" — the design's own count. */
 const FAQ_COLLAPSED = 5;
+
+/* Words the title-caser must leave alone. Without this the list reads Kyc, Kyb,
+   Los, Lms, Lex and Pii — every one of them an acronym the reader already knows
+   and the card has just misspelled. It mattered less when only seven modules
+   showed; now that every one is named, it is most of the column. */
+const MODULE_ACRONYMS = new Set([
+  "LOS",
+  "LMS",
+  "LEX",
+  "KYC",
+  "KYB",
+  "PII",
+  "API",
+  "OTP",
+  "SMS",
+  "CRM",
+  "COA",
+  "GL",
+  "FX",
+  "AML",
+  "BNPL",
+  "QR",
+  "IVR",
+  "POS",
+]);
 
 const moduleLabel = (code: string): string =>
   code
     .split(/[_\-\s]+/)
     .filter(Boolean)
-    .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+    .map((word) =>
+      MODULE_ACRONYMS.has(word.toUpperCase())
+        ? word.toUpperCase()
+        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    )
     .join(" ");
 
 /**
@@ -836,18 +864,17 @@ const LandingHome = () => {
                     <div className="ln-plan__body">
                       {pkg.descriptionEn && <p className="ln-plan__note">{pkg.descriptionEn}</p>}
 
+                      {/* Every module the package carries, named. The list
+                          scrolls within the card past a certain height, so a
+                          twenty-six module bundle does not push its own
+                          Subscribe button off the bottom of a three-card row. */}
                       <ul className="ln-plan__list">
-                        {pkg.moduleCodes.slice(0, PLAN_MODULES_SHOWN).map((code) => (
+                        {pkg.moduleCodes.map((code) => (
                           <li key={code}>
                             <Check aria-hidden="true" />
                             {moduleLabel(code)}
                           </li>
                         ))}
-                        {pkg.moduleCodes.length > PLAN_MODULES_SHOWN && (
-                          <li className="ln-plan__more">
-                            +{pkg.moduleCodes.length - PLAN_MODULES_SHOWN} more modules
-                          </li>
-                        )}
                       </ul>
 
                       <button

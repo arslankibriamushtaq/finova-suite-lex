@@ -964,7 +964,14 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   padding: 2.5rem 1.5rem 1.75rem;
+}
+
+/* Pushed to the bottom of the card, so Subscribe sits on the same line across
+   a row of packages that carry different numbers of modules. */
+.fin-landing .ln-plan__body > .ln-btn {
+  margin-top: auto;
 }
 
 .fin-landing .ln-plan__note {
@@ -974,8 +981,27 @@
   color: var(--muted-foreground);
 }
 
+/* The longest bundle is twenty-six modules and the shortest is a handful, so
+   the lists are left to scroll rather than allowed to set the card height —
+   otherwise one long card stretches the whole row and the short ones become
+   mostly empty space. The cap only bites on the long ones. */
 .fin-landing .ln-plan__list {
   margin-bottom: 1.75rem;
+  max-height: 17rem;
+  overflow-y: auto;
+  /* Room for the scrollbar so the last character is not sitting under it. */
+  padding-inline-end: 0.25rem;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.fin-landing .ln-plan__list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fin-landing .ln-plan__list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 18%, transparent);
 }
 
 .fin-landing .ln-plan__list li {
@@ -986,15 +1012,6 @@
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--foreground);
-}
-
-/* The overflow count sits in the list but is not a feature, so it carries no
-   tick and steps back to the muted tone. Indented to the text column the ticked
-   rows use, so the left edge stays straight. */
-.fin-landing .ln-plan__more {
-  padding-inline-start: 1.375rem;
-  color: var(--muted-foreground);
-  font-style: italic;
 }
 
 .fin-landing .ln-plan__list svg {
