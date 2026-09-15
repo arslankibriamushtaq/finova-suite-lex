@@ -25,7 +25,15 @@ axiosTenancy.interceptors.request.use((reqConfig) => {
   const config = { ...reqConfig };
   const token = store.getState().block.token;
   if (token) config.headers["Authorization"] = `Bearer ${token}`;
-  config.headers["Content-Type"] = "application/json";
+  // A FormData body must keep the browser's own multipart content type: it
+  // carries the boundary, which nothing else can reproduce. Forcing JSON here
+  // made the site-asset upload fail with a 415 naming multipart as the only
+  // type the endpoint accepts.
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  } else {
+    config.headers["Content-Type"] = "application/json";
+  }
   return config;
 });
 

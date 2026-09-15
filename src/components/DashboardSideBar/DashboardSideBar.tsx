@@ -2602,6 +2602,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         LinkLable: "/TenantPortal",
         active: pathname.startsWith("/TenantPortal/Invoices"),
       },
+      {
+        label: "Your Website",
+        Link: "Website",
+        LinkLable: "/TenantPortal",
+        active: pathname.startsWith("/TenantPortal/Website"),
+      },
     ],
   };
 

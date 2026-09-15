@@ -6,6 +6,7 @@ import LayoutInvestor from "../Layout/LayoutInvestor";
 import RoutetoDash from "../components/DashboardHeader/RoutetoDash";
 import LandingDashboardPage from "../components/Dashboard/LandingDashboardPage";
 import LandingHome from "../pages/Landing/LandingHome";
+import TenantSitePreviewPage from "../pages/TenantSite/TenantSitePreviewPage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import TenantSignupLayout from "../pages/TenantSignup/TenantSignupLayout";
@@ -25,6 +26,7 @@ import TenantProfile from "../pages/TenantPortal/TenantProfile";
 import TenantSubscription from "../pages/TenantPortal/TenantSubscription";
 import TenantApiDocs from "../pages/TenantPortal/TenantApiDocs";
 import TenantEntitlements from "../pages/TenantPortal/TenantEntitlements";
+import TenantWebsite from "../pages/TenantPortal/TenantWebsite";
 import TenantInvoices from "../pages/TenantPortal/TenantInvoices";
 import TenantSupport from "../pages/TenantPortal/TenantSupport";
 import TenantSupportTaxonomy from "../pages/TenantPortal/TenantSupportTaxonomy";
@@ -565,6 +567,13 @@ export const router = createBrowserRouter(
       element: <LandingHome />,
     },
 
+    // A tenant admin previewing its unpublished website. The live tenant site
+    // is served by hostname, not by path — see `resolveSiteHost`.
+    {
+      path: "/site/preview",
+      element: <TenantSitePreviewPage />,
+    },
+
     {
       path: "/About",
       element: <AboutPage />,
@@ -893,6 +902,7 @@ export const router = createBrowserRouter(
             { path: "/TenantPortal/Subscription", element: <TenantSubscription /> },
             { path: "/TenantPortal/ApiDocs", element: <TenantApiDocs /> },
             { path: "/TenantPortal/Entitlements", element: <TenantEntitlements /> },
+            { path: "/TenantPortal/Website", element: <TenantWebsite /> },
             { path: "/TenantPortal/Invoices", element: <TenantInvoices /> },
             // The tenant's own customers' complaints — a separate screen from the
             // platform queue above, never one with a toggle.
