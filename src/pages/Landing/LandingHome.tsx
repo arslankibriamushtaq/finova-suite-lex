@@ -347,6 +347,13 @@ const INVESTOR_TYPES = [
 
 type InvestorType = (typeof INVESTOR_TYPES)[number]["id"];
 
+/**
+ * The investor app, which is a separate deployment — hence an absolute URL and
+ * a new tab rather than a route. `1` is the tenant segment its own routing
+ * expects; the last segment is the selected card's id.
+ */
+const INVESTOR_APP_BASE = "https://finova-investor.netlify.app/investor-type/1";
+
 const LandingHome = () => {
   const navigate = useNavigate();
 
@@ -877,20 +884,20 @@ const LandingHome = () => {
           </fieldset>
 
           <div className="mt-10 flex justify-center" data-reveal-item>
-            {/* There is no investor signup route in this app yet, so this opens
-                the same sales mailto the rest of the page uses rather than
-                linking somewhere that 404s. The chosen type rides in the
-                subject; point it at the real flow once one exists. */}
+            {/* rel is not optional with target="_blank": without noopener the
+                page that opens can reach back through window.opener and
+                navigate this one. */}
             <a
               className="ln-btn ln-btn--primary ln-btn--round"
-              href={`mailto:sales@finova.sa?subject=${encodeURIComponent(
-                `Investor enquiry — ${
-                  INVESTOR_TYPES.find((type) => type.id === investorType)?.title ?? ""
-                }`
-              )}`}
+              href={`${INVESTOR_APP_BASE}/${investorType}`}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Continue
               <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+              {/* Said out loud for a screen reader, because the icon does not
+                  say it and a tab opening unannounced is disorienting. */}
+              <span className="sr-only">(opens in a new tab)</span>
             </a>
           </div>
         </div>
